@@ -1,0 +1,11 @@
+# Dependency directory
+node_modules/
+
+# Environment variables file
+.env
+
+# Uploads directory (contains large media files)
+public/uploads/
+
+# Optional: Log files, build outputs, etc.
+*.log

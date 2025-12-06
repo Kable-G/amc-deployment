@@ -1,0 +1,285 @@
+// server-fixed-auth.js - Main application file with working authentication
+// This is your complete server with the authentication issue resolved
+
+// Global Error Handlers - Place these first!
+process.on('uncaughtException', (err, origin) => {
+  console.error('<<<<< UNCAUGHT EXCEPTION >>>>>');
+  console.error('Error:', err);
+  console.error('Origin:', origin);
+  // process.exit(1); // Consider exiting after an uncaught exception
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('<<<<< UNHANDLED REJECTION >>>>>');
+  console.error('Reason:', reason);
+  // console.error('Promise:', promise); // Optional: Log the promise
+});
+
+// 1. Import necessary modules
+const express = require('express');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const path = require('path');
+const cron = require('node-cron'); // For scheduled tasks
+
+// Import Models
+const RadarAlert = require('./models/RadarAlert');
+const RadarAlertArchive = require('./models/RadarAlertArchive');
+const User = require('./models/User'); // Required for populate operations in routes
+const Client = require('./models/Client'); // Required for populate operations in routes
+// <<< MODIFICATION: Import the new DownloadEvent model for tracking >>>
+const DownloadEvent = require('./models/DownloadEvent');
+// <<< END MODIFICATION >>>
+
+// Import Routes - REAL AUTHENTICATION ENABLED
+const eventsRoutes = require('./routes/events.routes');
+const authRoutes = require('./routes/auth-no-rate-limit.routes'); // REAL AUTH - WITHOUT RATE LIMITING FOR TESTING
+const adminRoutes = require('./routes/admin'); // ADMIN MANAGEMENT - Platform admin only
+const adminPageRoutes = require('./routes/adminRoutes'); // PAGE PROTECTION - Admin page serving
+const centerRoutes = require('./routes/centerRoutes.js');
+const vaultRoutes = require('./routes/vaultRoutes.js');
+const radarRoutes = require('./routes/radarRoutes.js');
+const analyticsRoutes = require('./routes/analytics.routes.js');
+const amcAnalyticsRoutes = require('./routes/amcAnalytics.routes.js');
+const downloadRoutes = require('./routes/downloadRoutes.js');
+const zipDownloadRoutes = require('./routes/zip-download-working.routes.js');
+
+// Import Enterprise Client Onboarding Routes
+const companyRoutes = require('./routes/companyRoutes');
+const userManagementRoutes = require('./routes/userManagement');
+const auditRoutes = require('./routes/auditRoutes');
+
+// 2. Load environment variables
+dotenv.config();
+
+// 3. Initialize Express App
+const app = express();
+
+// 4. Core Middleware
+app.use(cors()); // Enable CORS for all origins (suitable for development)
+app.use(express.json()); // To parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // To parse URL-encoded bodies
+
+// --- STATIC FILE SERVING ---
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+// Serve analytics tracker script
+app.use('/js', express.static(path.join(__dirname, 'public', 'js')));
+// NOTE: Frontend static files are served AFTER admin route protection (see below)
+
+if (process.env.NODE_ENV === 'development') {
+  mongoose.set('debug', true);
+}
+
+// 5. Database Connection & Cron Job Scheduling
+const connectDB = async () => {
+  try {
+    const mongoURI = process.env.MONGO_URI;
+    if (!mongoURI) {
+      throw new Error('MongoDB URI not found in .env file. Please set MONGO_URI.');
+    }
+    
+    console.log('🔌 Attempting MongoDB connection...');
+    console.log('Connection string:', mongoURI.replace(/:[^:@]*@/, ':****@')); // Hide password in logs
+    
+    await mongoose.connect(mongoURI, {
+      serverSelectionTimeoutMS: 10000, // 10 second timeout
+      socketTimeoutMS: 45000, // 45 second socket timeout
+      maxPoolSize: 10, // Maintain up to 10 socket connections
+      minPoolSize: 1, // Reduce minimum connections to avoid pool issues
+      bufferCommands: false // Disable mongoose buffering
+    });
+    
+    console.log('✅ MongoDB Connected successfully using Atlas!');
+    // Start the server immediately after DB connection to bypass blocking issues
+    const PORT = process.env.PORT || 5000;
+    console.log('About to start listening on port', PORT);
+    app.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+      console.log(`API base URL is http://localhost:${PORT}/api/v1/`);
+      console.log('✅ REAL AUTHENTICATION ENABLED - Full JWT-based authentication active');
+      console.log('✅ AUTHENTICATION ISSUE RESOLVED - Rate limiting temporarily disabled for stability');
+    });
+
+    cron.schedule('* * * * *', async () => { // Your existing cron job logic
+        console.log('ARCHIVE TASK: Running scheduled task to archive old Radar Alerts...');
+        const now = new Date();
+        try {
+            const expiredAlerts = await RadarAlert.find({ eventDateTime: { $lt: now } });
+            if (expiredAlerts.length > 0) {
+                console.log(`ARCHIVE TASK: Found ${expiredAlerts.length} expired Radar Alerts to archive.`);
+                for (const alert of expiredAlerts) {
+                    const archiveData = {
+                        uuid: alert.uuid, title: alert.title, eventDateTime: alert.eventDateTime,
+                        brand: alert.brand, clientId: alert.clientId, region: alert.region,
+                        tags: alert.tags, description: alert.description, teaserImagePath: alert.teaserImagePath,
+                        status: 'archived', // BUG FIX: Explicitly set the status to 'archived'
+                        user: alert.user, originalCreatedAt: alert.createdAt,
+                        archivedAt: new Date()
+                    };
+                    if (!archiveData.clientId && alert.user) {
+                        console.warn(`ARCHIVE TASK: Alert ${alert._id} ("${alert.title}") is missing clientId. User: ${alert.user}. This may cause issues if RadarAlertArchiveSchema requires clientId.`);
+                    }
+                    try {
+                        await RadarAlertArchive.create(archiveData);
+                        await RadarAlert.findByIdAndDelete(alert._id);
+                        console.log(`ARCHIVE TASK: Successfully archived and deleted Radar Alert: "${alert.title}" (Original ID: ${alert._id}, Client ID: ${archiveData.clientId || 'N/A'})`);
+                    } catch (dbError) {
+                        console.error(`ARCHIVE TASK: Error processing alert ${alert._id} ("${alert.title}") for archiving:`, dbError.message);
+                    }
+                }
+            } else {
+                console.log('ARCHIVE TASK: No expired Radar Alerts to archive at this time.');
+            }
+        } catch (error) {
+            console.error('ARCHIVE TASK: General error during Radar Alert archiving task:', error.message);
+        }
+    });
+
+  } catch (err) {
+    console.error('MongoDB Connection Error:', err.message);
+    process.exit(1);
+  }
+};
+connectDB();
+
+// --- MOUNT API ROUTERS HERE (prefixed with /api/v1) - REAL AUTH ENABLED ---
+console.log('🔧 Mounting API routes...');
+app.use('/api/v1/auth', authRoutes); // REAL AUTH - PROPER AUTHENTICATION
+app.use('/api/v1/admin', adminRoutes); // ADMIN MANAGEMENT - Platform admin only
+app.use('/api/v1/events', eventsRoutes);
+app.use('/api/v1/center', centerRoutes);
+app.use('/api/v1/vault', vaultRoutes);
+app.use('/api/v1/radar', radarRoutes);
+app.use('/api/v1/analytics', analyticsRoutes);
+app.use('/api/v1/amc-analytics', amcAnalyticsRoutes);
+app.use('/api/v1/downloads', downloadRoutes); // NEW: Comprehensive download tracking routes
+app.use('/api/v1/zip', zipDownloadRoutes); // NEW: ZIP download functionality
+
+// Mount Enterprise Client Onboarding Routes
+app.use('/api/companies', companyRoutes); // Company creation and invitation endpoints
+app.use('/api/user-management', userManagementRoutes); // User management within companies (moved to avoid conflicts)
+app.use('/api/audit', auditRoutes); // Audit and analytics
+
+// --- ALTERNATIVE ENTERPRISE CLIENT ONBOARDING ROUTES (REMOVED TO AVOID CONFLICTS) ---
+// app.use('/api/v1/companies', companyRoutes); // REMOVED: Duplicate mounting causing conflicts
+// app.use('/api/v1/user-management', userManagementRoutes); // REMOVED: Duplicate mounting causing conflicts
+app.use('/api/v1/audit', auditRoutes); // Alternative mounting for analytics and audit logs
+console.log('✅ All API routes mounted successfully with REAL AUTHENTICATION');
+console.log('✅ Enterprise client onboarding routes mounted');
+
+// --- MOUNT ADMIN PAGE ROUTES (for protected page serving) ---
+console.log('🔧 Mounting admin page routes...');
+app.use('/', adminPageRoutes); // PAGE PROTECTION - Admin page serving with authentication
+console.log('✅ Admin page routes mounted successfully');
+
+// Add a catch-all API route to debug missing routes
+app.use('/api/*', (req, res) => {
+  console.log('❌ Unmatched API route:', req.method, req.originalUrl);
+  res.status(404).json({
+    success: false,
+    error: 'API route not found',
+    method: req.method,
+    path: req.originalUrl,
+    availableRoutes: ['/api/v1/zip/test', '/api/v1/zip/release/:id/zip']
+  });
+});
+
+// --- PORTAL ROUTING ---
+console.log('🔧 Setting up portal routes...');
+
+// Main login route (Dropbox-style)
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'Frontend', 'login-dropbox-style.html'));
+});
+
+// Legacy portal routes (keeping for backward compatibility)
+app.get('/client', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'Frontend', 'client.html'));
+});
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'Frontend', 'admin.html'));
+});
+
+console.log('✅ Portal routes configured');
+
+// --- ACCESS DENIED PAGE ---
+app.get('/access-denied', (req, res) => {
+    const reason = req.query.reason || 'unknown';
+    const page = req.query.page || 'unknown';
+    const role = req.query.role || 'unknown';
+    
+    res.status(403).send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <title>Access Denied - AutoMediaCenter</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+                .error-container { background: white; padding: 3rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; max-width: 500px; }
+                h1 { color: #dc3545; margin-bottom: 1rem; font-size: 2rem; }
+                p { color: #6c757d; margin-bottom: 2rem; line-height: 1.6; }
+                .btn { display: inline-block; padding: 12px 24px; background: #007bff; color: white; text-decoration: none; border-radius: 8px; margin: 0 10px; font-weight: 500; transition: background 0.3s; }
+                .btn:hover { background: #0056b3; }
+                .btn-secondary { background: #6c757d; }
+                .btn-secondary:hover { background: #545b62; }
+                .details { background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 1rem 0; font-size: 0.9em; color: #495057; }
+            </style>
+        </head>
+        <body>
+            <div class="error-container">
+                <h1>🚫 Access Denied</h1>
+                <p><strong>Your account is not authorized to perform this action.</strong></p>
+                <div class="details">
+                    <strong>Reason:</strong> ${reason}<br>
+                    <strong>Page:</strong> ${page}<br>
+                    <strong>Your Role:</strong> ${role}
+                </div>
+                <p>If you believe this is an error, please contact the AutoMediaCenter administrator.</p>
+                <a href="/" class="btn">🏠 Go to AutoMediaCenter</a>
+                <a href="/login" class="btn btn-secondary">🔐 Login</a>
+            </div>
+        </body>
+        </html>
+    `);
+});
+
+// --- STATIC FILE SERVING - NO AUTHENTICATION CHECKS ---
+console.log('🔧 Setting up static file serving...');
+
+// Serve public directory files (including success page) with cache control
+app.use(express.static(path.join(__dirname, 'public'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
+// Serve Frontend directory files
+app.use(express.static(path.join(__dirname, '..', 'Frontend')));
+console.log('✅ Static file serving configured');
+
+// 7. Error Handling Middleware
+app.use((err, req, res, next) => {
+  console.error("Express Error Handler Caught:", err.name, "-", err.message);
+  if (process.env.NODE_ENV !== 'production') {
+    console.error(err.stack);
+  }
+  if (res.headersSent) {
+    return next(err);
+  }
+  const statusCode = err.status || err.statusCode || 500;
+  res.status(statusCode).json({
+    success: false,
+    error: err.name || 'ServerError',
+    message: process.env.NODE_ENV === 'production' && statusCode === 500
+             ? 'An unexpected internal server error occurred.'
+             : err.message,
+  });
+});
+
+// 8. Start the Server - REMOVED DUPLICATE (server starts in connectDB function)
+console.log('REACHED END OF SERVER-FIXED-AUTH.JS FILE');
