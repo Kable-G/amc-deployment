@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - MongoDB Authentication Test Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-headings: #343a40;
+            --accent-primary: #0d6efd;
+            --accent-primary-hover: #0b5ed7;
+            --accent-success: #28a745;
+            --accent-warning: #ffc107;
+            --accent-danger: #dc3545;
+            --border-primary: #dee2e6;
+            --border-secondary: #e0e0e0;
+            --shadow-primary: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.12);
+            --font-family-main: 'Poppins', sans-serif;
+        }
+
+        body.dark-mode {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2c2c2c;
+            --text-primary: #e0e0e0;
+            --text-secondary: #adb5bd;
+            --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff;
+            --accent-primary-hover: #5fa0ff;
+            --border-primary: #3a3a3a;
+            --border-secondary: #444;
+            --shadow-primary: rgba(0, 0, 0, 0.25);
+            --shadow-hover: rgba(0, 0, 0, 0.35);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: var(--font-family-main); 
+            background-color: var(--bg-primary); 
+            color: var(--text-primary); 
+            line-height: 1.6; 
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            border-bottom: 2px solid var(--border-primary);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: var(--text-headings);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            color: var(--text-secondary);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .setup-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+
+        .setup-notice h4 {
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        .setup-notice code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .user-level-card {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px var(--shadow-primary);
+            border: 2px solid var(--border-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .user-level-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px var(--shadow-hover);
+            border-color: var(--accent-primary);
+        }
+
+        .user-level-card.active {
+            border-color: var(--accent-success);
+            background-color: rgba(40, 167, 69, 0.05);
+        }
+
+        .user-level-card.existing {
+            border: 3px solid #ffd700;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-header i {
+            font-size: 2em;
+            margin-right: 15px;
+            padding: 15px;
+            border-radius: 50%;
+            color: white;
+        }
+
+        .user-card i { background-color: #6c757d; }
+        .client-card i { background-color: var(--accent-primary); }
+        .admin-card i { background-color: var(--accent-danger); }
+        .existing-card i { background-color: #ffd700; color: #333; }
+
+        .card-header h3 {
+            font-size: 1.4em;
+            color: var(--text-headings);
+        }
+
+        .card-header .badge {
+            margin-left: auto;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: white;
+        }
+
+        .badge-user { background-color: #6c757d; }
+        .badge-client { background-color: var(--accent-primary); }
+        .badge-admin { background-color: var(--accent-danger); }
+        .badge-existing { background-color: #ffd700; color: #333; }
+
+        .permissions-list {
+            margin-bottom: 20px;
+        }
+
+        .permissions-list h4 {
+            font-size: 1em;
+            color: var(--text-headings);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .permissions-list h4 i {
+            margin-right: 8px;
+            font-size: 1em;
+            color: var(--accent-success);
+        }
+
+        .permissions-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .permissions-list li {
+            padding: 6px 0;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+
+        .permissions-list li i {
+            margin-right: 8px;
+            color: var(--accent-success);
+            font-size: 0.8em;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background-color: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-btn:hover {
+            background-color: var(--accent-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-btn i {
+            margin-right: 8px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .current-session {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px var(--shadow-primary);
+            border-left: 4px solid var(--accent-success);
+        }
+
+        .session-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .session-details h3 {
+            color: var(--text-headings);
+            margin-bottom: 5px;
+        }
+
+        .session-details p {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background-color: var(--accent-danger);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        .test-actions {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px var(--shadow-primary);
+        }
+
+        .test-actions h3 {
+            color: var(--text-headings);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .test-actions h3 i {
+            margin-right: 10px;
+            color: var(--accent-primary);
+        }
+
+        .test-btn {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .test-btn:hover {
+            background: #218838;
+        }
+
+        .test-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: var(--accent-primary-hover);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .session-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> AutoMediaCenter MongoDB Authentication Test</h1>
+            <p>Test real MongoDB authentication with three-level user system</p>
+            <span id="connectionStatus" class="status-indicator status-disconnected">Backend Disconnected</span>
+        </div>
+
+        <div class="setup-notice">
+            <h4>🚀 Setup Instructions:</h4>
+            <p>1. Run <code>node ../Backend/setup-test-auth.js</code> to create test users and clients</p>
+            <p>2. Make sure your backend server is running on <code>http://localhost:5000</code></p>
+            <p>3. Add auth test routes to your main server file: <code>app.use('/api/v1/auth-test', require('./routes/authTestRoutes'));</code></p>
+        </div>
+
+        <div id="currentSession" class="current-session" style="display: none;">
+            <div class="session-info">
+                <div class="session-details">
+                    <h3 id="sessionUserLevel">Not Logged In</h3>
+                    <p id="sessionUserEmail">No active session</p>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <div class="test-grid">
+            <!-- Your Existing Account -->
+            <div class="user-level-card client-card existing-card" id="existingCard">
+                <div class="card-header">
+                    <i class="fas fa-home existing-card"></i>
+                    <div>
+                        <h3>Your Existing Account</h3>
+                        <span class="badge badge-existing">Preserved</span>
+                    </div>
+                </div>
+                <div class="permissions-list">
+                    <h4><i class="fas fa-star"></i> Your Account (Preserved)</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> All your existing data preserved</li>
+                        <li><i class="fas fa-check"></i> Upload dashboard access</li>
+                        <li><i class="fas fa-check"></i> Manage your releases</li>
+                        <li><i class="fas fa-check"></i> Test Client Corp association</li>
+                        <li><i class="fas fa-check"></i> Updated to client_user role</li>
+                    </ul>
+                </div>
+                <button class="login-btn" onclick="loginWithMongoDB('testuser@example.com', 'password123')">
+                    <span class="loading" style="display: none;"></span>
+                    <i class="fas fa-sign-in-alt"></i> Login to Your Account
+                </button>
+            </div>
+
+            <!-- Public User Level -->
+            <div class="user-level-card user-card" id="userCard">
+                <div class="card-header">
+                    <i class="fas fa-user"></i>
+                    <div>
+                        <h3>Public User</h3>
+                        <span class="badge badge-user">Level 1</span>
+                    </div>
+                </div>
+                <div class="permissions-list">
+                    <h4><i class="fas fa-eye"></i> Access Permissions</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> AutoMediaCenter public pages</li>
+                        <li><i class="fas fa-check"></i> AutoMediaRadar public pages</li>
+                        <li><i class="fas fa-check"></i> View published releases</li>
+                        <li><i class="fas fa-times" style="color: var(--accent-danger);"></i> Upload dashboard</li>
+                        <li><i class="fas fa-times" style="color: var(--accent-danger);"></i> Management tools</li>
+                    </ul>
+                </div>
+                <button class="login-btn" onclick="loginWithMongoDB('public@test.com', 'password123')">
+                    <span class="loading" style="display: none;"></span>
+                    <i class="fas fa-sign-in-alt"></i> Login as Public User
+                </button>
+            </div>
+
+            <!-- Client Admin Level -->
+            <div class="user-level-card client-card" id="clientCard">
+                <div class="card-header">
+                    <i class="fas fa-user-tie"></i>
+                    <div>
+                        <h3>Client Admin</h3>
+                        <span class="badge badge-client">Level 2</span>
+                    </div>
+                </div>
+                <div class="permissions-list">
+                    <h4><i class="fas fa-key"></i> Access Permissions</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> All public pages</li>
+                        <li><i class="fas fa-check"></i> Upload dashboard</li>
+                        <li><i class="fas fa-check"></i> Manage releases</li>
+                        <li><i class="fas fa-check"></i> Client management tools</li>
+                        <li><i class="fas fa-times" style="color: var(--accent-danger);"></i> Platform admin functions</li>
+                    </ul>
+                </div>
+                <button class="login-btn" onclick="loginWithMongoDB('clientadmin@test.com', 'password123')">
+                    <span class="loading" style="display: none;"></span>
+                    <i class="fas fa-sign-in-alt"></i> Login as Client Admin
+                </button>
+            </div>
+
+            <!-- Admin User Level -->
+            <div class="user-level-card admin-card" id="adminCard">
+                <div class="card-header">
+                    <i class="fas fa-user-shield"></i>
+                    <div>
+                        <h3>Platform Admin</h3>
+                        <span class="badge badge-admin">Level 3</span>
+                    </div>
+                </div>
+                <div class="permissions-list">
+                    <h4><i class="fas fa-crown"></i> Access Permissions</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> All client permissions</li>
+                        <li><i class="fas fa-check"></i> Delete any content</li>
+                        <li><i class="fas fa-check"></i> Modify any content</li>
+                        <li><i class="fas fa-check"></i> User management</li>
+                        <li><i class="fas fa-check"></i> System settings</li>
+                        <li><i class="fas fa-check"></i> Full platform control</li>
+                    </ul>
+                </div>
+                <button class="login-btn" onclick="loginWithMongoDB('admin@test.com', 'password123')">
+                    <span class="loading" style="display: none;"></span>
+                    <i class="fas fa-sign-in-alt"></i> Login as Platform Admin
+                </button>
+            </div>
+        </div>
+
+        <div id="testActions" class="test-actions" style="display: none;">
+            <h3><i class="fas fa-flask"></i> Authentication Tests</h3>
+            <button class="test-btn" onclick="testPageAccess('AssetDBmenu1.6.html')">Test Upload Dashboard Access</button>
+            <button class="test-btn" onclick="testPageAccess('manage_releases.html')">Test Manage Releases Access</button>
+            <button class="test-btn" onclick="testPageAccess('admin-dashboard.html')">Test Admin Dashboard Access</button>
+            <button class="test-btn" onclick="testAction('upload_release', 'new_release')">Test Upload Action</button>
+            <button class="test-btn" onclick="testAction('delete_release', 'release_123')">Test Delete Action</button>
+            <button class="test-btn" onclick="testAction('manage_users', 'user_456')">Test User Management</button>
+            <button class="test-btn" onclick="refreshPermissions()">Refresh Permissions</button>
+            <button class="test-btn" onclick="clearTestResults()">Clear Test Results</button>
+            <div id="testResults" class="test-results" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'http://localhost:5000/api/v1';
+        let currentUser = null;
+        let authToken = null;
+
+        // Dark mode functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+
+        function applyTheme(theme) {
+            const icon = darkModeToggle.querySelector('i');
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                icon.className = 'fas fa-sun';
+                darkModeToggle.title = "Switch to Light Mode";
+            } else {
+                body.classList.remove('dark-mode');
+                icon.className = 'fas fa-moon';
+                darkModeToggle.title = "Switch to Dark Mode";
+            }
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 
+            (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(savedTheme);
+
+        darkModeToggle.addEventListener('click', () => {
+            const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Check backend connection and existing session on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkBackendConnection();
+            
+            const savedToken = localStorage.getItem('authToken');
+            const savedUser = localStorage.getItem('currentUser');
+            
+            if (savedToken && savedUser) {
+                authToken = savedToken;
+                currentUser = JSON.parse(savedUser);
+                showUserInfo();
+                loadUserPermissions();
+            }
+        });
+
+        // Check backend connection
+        async function checkBackendConnection() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: 'test', password: 'test' })
+                });
+                
+                // Even if login fails, if we get a response, backend is connected
+                document.getElementById('connectionStatus').textContent = 'Backend Connected';
+                document.getElementById('connectionStatus').className = 'status-indicator status-connected';
+            } catch (error) {
+                console.error('Backend connection failed:', error);
+                document.getElementById('connectionStatus').textContent = 'Backend Disconnected';
+                document.getElementById('connectionStatus').className = 'status-indicator status-disconnected';
+            }
+        }
+
+        // MongoDB login function
+        async function loginWithMongoDB(email, password) {
+            const button = event.target;
+            const loading = button.querySelector('.loading');
+            
+            try {
+                // Show loading state
+                button.disabled = true;
+                loading.style.display = 'inline-block';
+
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    authToken = data.token;
+                    currentUser = data.user;
+                    
+                    // Save to localStorage
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    showUserInfo();
+                    await loadUserPermissions();
+                    
+                    // Visual feedback
+                    document.querySelectorAll('.user-level-card').forEach(card => {
+                        card.classList.remove('active');
+                    });
+                    button.closest('.user-level-card').classList.add('active');
+                    
+                    alert(`✅ Login successful! Welcome, ${currentUser.name}`);
+                } else {
+                    alert(`❌ Login failed: ${data.error}`);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert(`❌ Login error: ${error.message}. Make sure the backend server is running.`);
+            } finally {
+                // Hide loading state
+                button.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        // Show user info
+        function showUserInfo() {
+            const currentSession = document.getElementById('currentSession');
+            const sessionUserLevel = document.getElementById('sessionUserLevel');
+            const sessionUserEmail = document.getElementById('sessionUserEmail');
+            const testActions = document.getElementById('testActions');
+            
+            const levelBadge = getUserLevelBadge(currentUser.role);
+            
+            sessionUserLevel.textContent = `${currentUser.name} (${levelBadge.text})`;
+            sessionUserEmail.textContent = `${currentUser.email} • Role: ${currentUser.role}`;
+            
+            currentSession.style.display = 'block';
+            testActions.style.display = 'block';
+        }
+
+        // Get user level badge
+        function getUserLevelBadge(role) {
+            switch(role) {
+                case 'media_user':
+                    return { class: 'level-1', text: 'Level 1 - Public User' };
+                case 'client_user':
+                    return { class: 'level-2', text: 'Level 2 - Client User' };
+                case 'client_admin':
+                    return { class: 'level-2', text: 'Level 2 - Client Admin' };
+                case 'platform_admin':
+                    return { class: 'level-3', text: 'Level 3 - Platform Admin' };
+                default:
+                    return { class: 'level-1', text: 'Unknown Level' };
+            }
+        }
+
+        // Load user permissions
+        async function loadUserPermissions() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth-test/user-info`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayTestResult('User Info Loaded', { 
+                        message: `Permissions loaded for ${data.data.role}`, 
+                        hasAccess: true,
+                        userLevel: data.data.userLevel,
+                        clientInfo: data.data.client ? `Client: ${data.data.client.name}` : 'No client association'
+                    });
+                } else {
+                    console.error('Failed to load permissions:', data.error);
+                    displayTestResult('Permission Loading', { error: data.error, hasAccess: false });
+                }
+            } catch (error) {
+                console.error('Error loading permissions:', error);
+                displayTestResult('Permission Loading', { error: error.message, hasAccess: false });
+            }
+        }
+
+        // Refresh permissions
+        async function refreshPermissions() {
+            if (!authToken) {
+                alert('Please login first');
+                return;
+            }
+            await loadUserPermissions();
+        }
+
+        // Test page access
+        async function testPageAccess(pageName) {
+            if (!authToken) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth-test/page-access/${pageName}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                displayTestResult(`Page Access Test: ${pageName}`, data.data);
+            } catch (error) {
+                console.error('Error testing page access:', error);
+                displayTestResult(`Page Access Test: ${pageName}`, { error: error.message, hasAccess: false });
+            }
+        }
+
+        // Test action
+        async function testAction(action, target) {
+            if (!authToken) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth-test/simulate-action`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action, target })
+                });
+
+                const data = await response.json();
+                displayTestResult(`Action Test: ${action}`, data.data);
+            } catch (error) {
+                console.error('Error testing action:', error);
+                displayTestResult(`Action Test: ${action}`, { error: error.message, canPerform: false });
+            }
+        }
+
+        // Display test result
+        function displayTestResult(testName, result) {
+            const testResults = document.getElementById('testResults');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const isSuccess = result.hasAccess || result.canPerform || (!result.error && result.message);
+            const statusIcon = isSuccess ? '✅' : '❌';
+            const statusText = isSuccess ? 'SUCCESS' : 'DENIED/ERROR';
+            
+            let resultHtml = `
+                <div style="margin-bottom: 15px; padding: 10px; border-left: 4px solid ${isSuccess ? '#28a745' : '#dc3545'}; background: ${isSuccess ? '#d4edda' : '#f8d7da'};">
+                    <strong>${statusIcon} ${testName}</strong> - ${timestamp}<br>
+                    <strong>Status:</strong> ${statusText}<br>
+                    <strong>Result:</strong> ${result.reason || result.message || result.error || 'No details provided'}<br>
+                    ${result.requiredRoles ? `<strong>Required Roles:</strong> ${result.requiredRoles.join(', ')}<br>` : ''}
+                    <strong>Your Role:</strong> ${result.userRole || currentUser.role}
+                    ${result.pageName ? `<br><strong>Page:</strong> ${result.pageName}` : ''}
+                    ${result.target ? `<br><strong>Target:</strong> ${result.target}` : ''}
+                    ${result.userLevel ? `<br><strong>User Level:</strong> ${result.userLevel}` : ''}
+                    ${result.clientInfo ? `<br><strong>Client:</strong> ${result.clientInfo}` : ''}
+                </div>
+            `;
+            
+            testResults.innerHTML = resultHtml + testResults.innerHTML;
+            testResults.style.display = 'block';
+        }
+
+        // Clear test results
+        function clearTestResults() {
+            document.getElementById('testResults').innerHTML = '';
+            document.getElementById('testResults').style.display = 'none';
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            
+            document.getElementById('currentSession').style.display = 'none';
+            document.getElementById('testActions').style.display = 'none';
+            document.getElementById('testResults').style.display = 'none';
+            
+            document.querySelectorAll('.user-level-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            alert('✅ Logged out successfully');
+        });
+    </script>
+</body>
+</html>

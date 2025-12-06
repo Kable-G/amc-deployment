@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Manage Radar Alerts</title>
+    
+    <!-- Enterprise Sidebar System -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <script src="components/sidebar.js"></script>
+    
+    <script type="module">
+      import { protectPage } from "./auth.js";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        protectPage();       // ✅ Checks login and role properly
+        // Sidebar is now auto-initialized by components/sidebar.js
+      });
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+<style>
+        :root {
+            --bg-primary: #f8f9fa; --bg-secondary: #ffffff; --bg-tertiary: #e9ecef;
+            --text-primary: #212529; --text-secondary: #6c757d; --text-headings: #343a40;
+            --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #5a6268;
+
+            --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
+            
+            --border-primary: #dee2e6; --border-secondary: #e0e0e0; --border-color-light: #e9ecef;
+            --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+            --icon-available: var(--accent-primary); --icon-unavailable: #ced4da;
+            --shadow-primary: rgba(0, 0, 0, 0.07); --shadow-hover: rgba(0, 0, 0, 0.1);
+            --overlay-bg: rgba(0, 0, 0, 0.65);
+            --tag-bg: var(--bg-tertiary); --tag-text: var(--text-secondary);
+            --color-info: #17a2b8;
+            --color-warning: #ffc107;
+            --brand-band-light-bg: #212529; --brand-band-light-text: #f8f9fa;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --bg-image-placeholder: #e9ecef;
+            --font-family-main: 'Poppins', sans-serif;
+            --sidebar-width: 260px;
+            --header-height: 61px;
+            --footer-height: 60px;
+            --accent-primary-rgb: 13, 110, 253;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --highlight-color-rgb: 255, 193, 7;
+            --notification-error: #dc3545;
+            --accent-action-positive: #28a745;
+            --accent-action-positive-hover: #218838;
+            --accent-action-positive-rgb: 40, 167, 69;
+            --accent-action-danger: #dc3545;
+            --accent-action-danger-hover: #c82333;
+            --selection-dot-color: var(--accent-primary); /* Blue for selection */
+        }
+
+        body.dark-mode {
+            --bg-primary: #121212; --bg-secondary: #1e1e1e; --bg-tertiary: #2c2c2c;
+            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #545b62;
+            
+            --border-primary: #3a3a3a; --border-secondary: #444; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+            --icon-available: var(--accent-primary); --icon-unavailable: #555;
+            --shadow-primary: rgba(0, 0, 0, 0.25); --shadow-hover: rgba(0, 0, 0, 0.35);
+            --overlay-bg: rgba(0, 0, 0, 0.75);
+            --tag-bg: #4a4a4a; --tag-text: var(--text-primary);
+            --brand-band-light-bg: #f8f9fa; --brand-band-light-text: #212529;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --color-info: #36c4d9;
+            --color-warning: #ffd04a;
+            --bg-image-placeholder: #2c2c2c;
+            --accent-primary-rgb: 63, 145, 255;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --accent-action-positive: #20c997;
+            --accent-action-positive-hover: #1ba984;
+            --accent-action-positive-rgb: 32, 201, 151;
+            --accent-action-danger: #e74c3c;
+            --accent-action-danger-hover: #d63031;
+            --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-family-main); background-color: var(--bg-primary); color: var(--text-primary); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; transition: background-color 0.3s ease, color 0.3s ease; }
+        a { color: var(--accent-primary); text-decoration: none; } a:hover { color: var(--accent-primary-hover); text-decoration: underline; }
+        .app-container { display: flex; flex-direction: column; flex-grow: 1; }
+        .app-body { display: flex; flex-grow: 1; transition: margin-left 0.3s ease; }
+        .app-header { background-color: var(--header-bg); color: var(--header-text); padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-primary); position: fixed; top: 0; left: 0; right: 0; z-index: 10000; height: var(--header-height); width: 100%; }
+        .app-header .logo h1 { font-size: 1.5em; font-weight: bold; margin: 0; }
+        
+        .app-header .user-actions-group { display: flex; align-items: center; gap: 20px;}
+        .app-header .user-info { font-size: 0.9em; } .app-header .user-info span { opacity: 0.8; }
+        .app-header .logout-link { color: var(--header-link); text-decoration: none; font-size: 0.9em;}
+        .app-header .logout-link:hover { color: var(--header-text); } .app-header .logout-link i { margin-right: 5px; }
+
+        .cart-indicator, .notification-indicator { position: relative; display: inline-flex; align-items: center; cursor: pointer; color: var(--header-link); transition: color 0.2s ease; font-size: 1.1em; }
+        .cart-indicator:hover, .notification-indicator:hover { color: var(--header-text); }
+        .cart-badge, .notification-badge { position: absolute; top: -8px; right: -10px; background-color: var(--accent-primary); color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: bold; transform: scale(0); transition: transform 0.2s ease-out; }
+        .notification-badge { background-color: var(--notification-error); top: -5px; right: -8px; width: 16px; height: 16px;}
+        .cart-indicator.has-items .cart-badge, .notification-indicator.has-new .notification-badge { transform: scale(1); }
+        .cart-indicator.has-items > i.fa-shopping-cart { color: var(--highlight-color); animation: pulseCartIcon 1.5s infinite; }
+        @keyframes pulseCartIcon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .amc-header-right { display: flex; align-items: center; gap: 15px; }
+        .amc-menu-dots { background: none; border: none; color: var(--header-link); font-size: 1.2em; cursor: pointer; padding: 5px; }
+        .amc-menu-dots:hover { color: var(--header-text); }
+
+        .btn-icon { background:transparent; border:none; padding:5px 8px; margin-left:10px; cursor:pointer; }
+        .btn-icon i { color:var(--header-link); font-size:1.1em; }
+        .btn-icon:hover i { color: var(--header-text); }
+
+  :root{
+    /* adjust if your header height differs on this page */
+    --amc-header-h: 72px;
+    --amc-sidebar-expanded: 264px;
+    --amc-sidebar-collapsed: 72px;
+
+    /* colors (light) */
+    --amc-bg: #ffffff;
+    --amc-line: #E5E7EB;
+    --amc-text: #0f172a;
+    --amc-muted:#64748b;
+
+    /* colors (dark) */
+    --amc-bg-dark: #0f1115;
+    --amc-line-dark: rgba(255,255,255,.12);
+    --amc-text-dark:#e5e7eb;
+    --amc-muted-dark:#94a3b8;
+  }
+
+  /* Body layout variables (expanded by default) */
+  body{
+    --amc-sidebar-w: var(--amc-sidebar-expanded);
+    padding-top: var(--amc-header-h);
+  }
+  /* When collapsed (remembered in localStorage) */
+  body.amc-collapsed{ --amc-sidebar-w: var(--amc-sidebar-collapsed); }
+
+  /* Sidebar (fixed, left) */
+  .amc-sidebar{
+    position: fixed; top: var(--amc-header-h); left:0; bottom:0;
+    width: var(--amc-sidebar-w);
+    background: var(--amc-bg);
+    border-right: 1px solid var(--amc-line);
+    overflow: hidden auto;
+    transition: width .18s ease;
+    z-index: 900;
+  }
+  /* Dark mode support if your page toggles a class on <body> */
+  body.theme-dark .amc-sidebar{
+    background: var(--amc-bg-dark);
+    border-right-color: var(--amc-line-dark);
+    color: var(--amc-text-dark);
+  }
+
+  /* Sidebar sections rendered by sidebar-builder.js */
+  .sidebar-section{ padding: 14px 10px; }
+  .sidebar-section-header{
+    margin: 8px 12px; font: 700 12px/1 Inter, ui-sans-serif, system-ui;
+    color: var(--amc-muted); text-transform: uppercase; letter-spacing: .4px;
+  }
+  .sidebar-list{ list-style:none; margin:0; padding:4px; }
+  .sidebar-item{ margin: 2px 6px; }
+  .sidebar-link{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:10px;
+    color: inherit; text-decoration:none; font: 600 14px/1.2 Inter, ui-sans-serif, system-ui;
+  }
+  .sidebar-link:hover{ background: rgba(2,6,23,.04); }
+  body.theme-dark .sidebar-link:hover{ background: rgba(255,255,255,.06); }
+  .sidebar-link.active{ background: rgba(11,116,255,.10); color:#0b74ff; }
+
+  /* Collapsed state: show only icons (your builder currently uses emoji; they'll still render) */
+  body.amc-collapsed .sidebar-section-header{ display:none; }
+  body.amc-collapsed .sidebar-link{ justify-content:center; }
+  body.amc-collapsed .sidebar-link::after{ content:""; } /* prevent text wrap jitter */
+
+  /* Main content shifts to the right of the sidebar */
+  .amc-main{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
+
+  /* Hamburger button (place it in your header) */
+  .amc-hamburger{
+    margin-left: 12px;
+    width: 40px; height: 40px; border-radius: 10px;
+    background: #fff; border: 1px solid rgba(0,0,0,.06);
+    display:grid; place-items:center; cursor:pointer;
+  }
+  .amc-hamburger:hover{ background:#f8fafc; }
+  body.theme-dark .amc-hamburger{ background:#141821; border-color:rgba(255,255,255,.08); }
+  body.theme-dark .amc-hamburger:hover{ background:#18202C; }
+
+  .amc-hamburger-box{ width:20px; height:14px; position:relative; }
+  .amc-hamburger-inner, .amc-hamburger-inner::before, .amc-hamburger-inner::after{
+    width:20px; height:2px; background:#0b0c10; position:absolute; left:0; border-radius:2px; content:"";
+    transition: transform .18s ease, opacity .18s ease, background .18s ease;
+  }
+  .amc-hamburger-inner{ top:6px; }
+  .amc-hamburger-inner::before{ top:-6px; }
+  .amc-hamburger-inner::after{ top:6px; }
+  body.theme-dark .amc-hamburger-inner, body.theme-dark .amc-hamburger-inner::before, body.theme-dark .amc-hamburger-inner::after{
+    background:#e5e7eb;
+  }
+
+  /* Animate to "X" when collapsed */
+  body.amc-collapsed .amc-hamburger-inner{ transform: rotate(45deg); }
+  body.amc-collapsed .amc-hamburger-inner::before{ transform: translateY(6px) rotate(90deg); }
+  body.amc-collapsed .amc-hamburger-inner::after{ transform: translateY(-6px) rotate(90deg); }
+
+  /* Responsive: auto-collapse on small screens (session only) */
+  @media (max-width: 980px){
+    body{ --amc-sidebar-w: var(--amc-sidebar-collapsed); }
+  }
+
+        :root {
+            --bg-primary: #f8f9fa; --bg-secondary: #ffffff; --bg-tertiary: #f1f3f5;
+            --text-primary: #212529; --text-secondary: #495057; --text-headings: #212529;
+            --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7; --accent-secondary: #6c757d; --accent-secondary-hover: #5c636a;
+            --border-primary: #dee2e6; --border-secondary: #e9ecef; 
+            --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+            --color-info: #17a2b8; --color-warning: #ffc107; --color-danger: #dc3545; --color-success: #198754;
+            --font-family-main: 'Poppins', sans-serif; 
+            --sidebar-width: 260px; --header-height: 61px;
+        }
+
+        body.dark-mode {
+            --bg-primary: #1a1a1a; --bg-secondary: #252526; --bg-tertiary: #3a3a3a;
+            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff; --accent-secondary: #7a8691; --accent-secondary-hover: #909ca7;
+            --border-primary: #444; --border-secondary: #333; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+            --color-info: #36c4d9; --color-warning: #ffd04a; --color-danger: #bb2d3b; --color-success: #28a745;
+            --color-danger-hover-bg: #a52834;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-family-main); background-color: var(--bg-primary); color: var(--text-primary); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        a { color: var(--accent-primary); text-decoration: none; } a:hover { text-decoration: underline; }
+        .app-container { display: flex; flex-direction: column; flex-grow: 1; }
+        .app-body { display: flex; flex-grow: 1; }
+        
+        .sidebar { width: var(--sidebar-width); background-color: var(--bg-secondary); border-right: 1px solid var(--border-secondary); display: flex; flex-direction: column; padding-top: 15px; flex-shrink: 0; transition: width 0.3s ease; position: sticky; top: var(--header-height); height: calc(100vh - var(--header-height)); }
+        
+        /* Collapsed state */
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        .sidebar.collapsed .section-title,
+        .sidebar.collapsed li a span,
+        .sidebar.collapsed .sidebar-disclaimer {
+            display: none;
+        }
+        .sidebar.collapsed li a {
+            justify-content: center;
+        }
+        .sidebar.collapsed li a i.fa-fw {
+            margin-right: 0;
+            font-size: 1.2em;
+        }
+        .sidebar.collapsed .sidebar-header {
+            justify-content: center;
+        }
+        
+        /* Sidebar header with toggle button */
+        .sidebar-header {
+            display: flex;
+            justify-content: flex-end;
+            padding: 0 15px 10px;
+            border-bottom: 1px solid var(--border-secondary);
+            margin-bottom: 15px;
+        }
+        
+        /* Sidebar header with toggle button */
+        .sidebar-header {
+            display: flex;
+            justify-content: flex-end;
+            padding: 15px 15px 10px 15px;
+            border-bottom: 1px solid var(--border-secondary);
+            margin-bottom: 15px;
+            background-color: var(--bg-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        #sidebar-toggle {
+            background: none;
+            border: none;
+            color: var(--accent-primary);
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        
+        #sidebar-toggle:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--accent-primary-hover);
+        }
+        
+        /* Collapsed state - center the toggle button */
+        body.amc-collapsed .sidebar-header {
+            justify-content: center;
+        }
+        .sidebar.collapsed { width: 70px; } .sidebar.collapsed .section-title, .sidebar.collapsed li a span, .sidebar.collapsed .sidebar-disclaimer { display: none; } .sidebar.collapsed li a { justify-content: center; } .sidebar.collapsed li a i.fa-fw { margin-right: 0; font-size: 1.2em; } .sidebar.collapsed .sidebar-header { justify-content: center; }
+        .sidebar-header { display: flex; justify-content: flex-end; padding: 0 15px 10px; border-bottom: 1px solid var(--border-secondary); margin-bottom: 15px; }
+        #sidebar-toggle { background: none; border: none; color: var(--accent-primary) !important; font-size: 1.2em; cursor: pointer; padding: 5px; }
+        .sidebar nav { flex-grow: 1; } .sidebar ul { list-style: none; padding:0; } .sidebar .sidebar-section { margin-bottom: 20px; padding: 0 10px; }
+        .sidebar .section-title { font-size: 0.7em; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; display: block; margin-bottom: 8px; padding: 0 10px; }
+        .sidebar li a { display: flex; align-items: center; padding: 10px 15px; color: var(--text-primary); border-radius: 5px; margin-bottom: 3px; font-size: 0.95em; text-decoration: none; white-space: nowrap; overflow: hidden; } .sidebar li a i.fa-fw { width: 1.5em; margin-right: 10px; text-align: center; color: var(--text-secondary); }
+        .sidebar li a:hover { background-color: var(--bg-tertiary); } .sidebar li.active a { background-color: var(--accent-primary); color: #fff; } .sidebar li.active a i { color: #fff;}
+        .sidebar-disclaimer { padding: 15px; font-size: 0.8em; color: var(--text-secondary); border-top: 1px solid var(--border-secondary); margin-top: auto; }
+        
+        .main-content {
+            flex-grow: 1;
+            padding: 25px 30px;
+            background-color: var(--bg-primary);
+            overflow-y: auto;
+            transition: width 0.3s ease;
+        }
+        .sidebar.collapsed + .main-content {
+            width: calc(100% - 70px);
+        }
+        .content-header { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border-primary); }
+        .content-header h1 { font-size: 1.8em; font-weight: 600; color: var(--text-headings); margin-bottom: 5px; display: flex; align-items: center; gap: 10px;}
+        .content-header h1 i { color: var(--accent-primary); margin-right: 0; }
+        .content-header p { color: var(--text-secondary); font-size: 1em; }
+        
+        .btn { padding: 8px 16px; font-size: 0.9em; border: 1px solid transparent; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; font-weight: 500; transition: all 0.2s ease; text-decoration: none;} .btn i { margin-right: 6px; }
+        .btn-primary { background-color: var(--accent-primary); color: #fff; } .btn-primary:hover { background-color: var(--accent-primary-hover); }
+        .btn-secondary { background-color: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-secondary); } .btn-secondary:hover { background-color: var(--bg-tertiary); }
+        .btn-danger { background-color: var(--color-danger); color: #fff; border-color: var(--color-danger); }
+        .btn-danger:hover { background-color: var(--color-danger-hover-bg, #c9302c); border-color: #b02a37; }
+        
+        .card { background-color: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-primary); margin-bottom: 25px; }
+        .card-header, .card-footer { padding: 15px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-primary); display: flex; justify-content: space-between; align-items: center; } 
+        .card-header h2 { font-size: 1.1em; font-weight: 500; margin:0;}
+        .card-header span, .card-footer span#paginationSummary { font-weight: 500; font-size: 0.9em; color: var(--text-secondary); }
+        .card-footer { border-top: 1px solid var(--border-primary); border-bottom: none; }
+        body.dark-mode .card-header, body.dark-mode .card-footer { background-color: var(--bg-secondary); border-color: var(--border-primary); }
+        .card-body.no-padding { padding: 0; }
+        
+        .table { width: 100%; border-collapse: collapse; }
+        .table thead th { font-weight: 600; text-align: left; color: var(--text-secondary); background-color: transparent; border-bottom: 2px solid var(--border-primary); text-transform: uppercase; font-size: 0.8em; }
+        .table th, .table td { padding: 10px 16px; vertical-align: middle; border-top: 1px solid var(--border-secondary); white-space: nowrap; }
+        .table td { border-left: 1px solid var(--border-secondary); }
+        .table th:first-child, .table td:first-child { border-left: none; }
+        .table tbody tr:hover { background-color: var(--bg-tertiary); }
+        
+        .table .teaser-cell { width: 90px; padding: 6px 16px; }
+        .table .teaser-cell img { width: 100%; height: 40px; object-fit: cover; border-radius: 4px; background-color: var(--bg-tertiary); }
+        .table .teaser-cell .no-teaser-placeholder { display: flex; align-items: center; justify-content: center; width:100%; height:40px; font-size: 1.5em; color: var(--text-secondary); background-color: var(--bg-tertiary); border-radius:4px; }
+        .table .title-cell { font-weight: 500; max-width: 35ch; overflow: hidden; text-overflow: ellipsis; }
+        .table .created-by-cell { max-width: 20ch; overflow: hidden; text-overflow: ellipsis; }
+        .table .status-cell { width: 120px; }
+        .table .date-column { width: 200px; }
+        .table .actions-cell { width: 140px; text-align: right; }
+        
+        .action-button-group { display: flex; gap: 6px; justify-content:flex-end; }
+        .action-button { width: 32px; height: 32px; border-radius: 5px; border: none; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 0.9em; cursor: pointer; transition: filter 0.2s ease; }
+        .action-button:hover { filter: brightness(1.15); }
+        .action-button:disabled { background-color: #e9ecef !important; color: #6c757d !important; cursor: not-allowed; filter: none; }
+        body.dark-mode .action-button:disabled { background-color: #3a3a3a !important; color: #6c757d !important; }
+        .action-button-view { background-color: var(--accent-secondary); }
+        .action-button-edit { background-color: var(--accent-primary); }
+        .action-button-delete { background-color: var(--color-danger); }
+        
+        .status-badge { padding: 0.25em 0.6em; font-size: 0.8em; font-weight: 600; border-radius: 1rem; }
+        .status-draft { background-color: var(--color-warning); color: #000; }
+        .status-active { background-color: var(--color-success); color: #fff; }
+        .status-archived { background-color: var(--accent-secondary); color: #fff; }
+        
+        .pagination-controls { display: flex; align-items: center; gap: 15px; }
+        .pagination-controls .btn-sm { padding: 5px 10px; background-color: var(--bg-secondary); border: 1px solid var(--border-primary); color: var(--text-primary); }
+        .pagination-controls .btn-sm:not(:disabled):hover { background-color: var(--accent-primary); color: #fff; border-color: var(--accent-primary); }
+        .pagination-controls .btn-sm i { margin: 0; }
+        
+        .app-footer { text-align: center; padding: 15px 25px; font-size: 0.85em; background-color: var(--header-bg); color: var(--header-link); border-top: 1px solid var(--border-primary); }
+        .app-footer nav { margin-bottom: 8px; } .app-footer a { color: var(--header-link); margin: 0 8px;}
+
+        .confirm-modal-backdrop, .detail-modal-backdrop { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1050; display:none; align-items:center; justify-content:center; opacity:0; transition:opacity .3s ease; }
+        .confirm-modal-backdrop.open, .detail-modal-backdrop.open { display:flex; opacity:1; }
+        .confirm-modal, .detail-modal { background:var(--bg-secondary); border-radius:8px; width:90%; transform:scale(.95); transition:transform .3s ease; border: 1px solid var(--border-primary); }
+        .confirm-modal-backdrop.open .confirm-modal, .detail-modal-backdrop.open .detail-modal { transform: scale(1); }
+        .detail-modal { max-width: 650px; display: flex; flex-direction: column; max-height: 85vh; }
+        .confirm-modal { max-width: 450px; text-align: center; }
+        .detail-modal-header, .confirm-modal-header { padding: 15px 20px; border-bottom: 1px solid var(--border-primary); display: flex; justify-content: space-between; align-items: center;}
+        .detail-modal-footer, .confirm-modal-footer { padding: 15px 20px; border-top: 1px solid var(--border-primary); display: flex; justify-content: flex-end; gap: 10px;}
+        .detail-modal-header h3, .confirm-modal-header h3 { margin: 0; font-size: 1.2em; }
+        .detail-modal-close-btn, .confirm-modal-close-btn { background:none; border:none; font-size:1.7em; cursor:pointer; }
+        .detail-modal-body { padding: 20px; overflow-y: auto; text-align: left; }
+        .confirm-modal-body { padding: 25px 20px; } .confirm-modal-body p { margin: 0; }
+        .detail-modal-body .detail-item { margin-bottom: 12px; } .detail-modal-body .detail-item strong { min-width: 150px; color: var(--text-secondary); display: inline-block; }
+        .detail-modal-body .detail-teaser-img { max-width: 100%; display: block; margin: 10px auto 20px auto; border-radius: 4px; }
+        body.dark-mode .detail-modal-body .detail-item strong { color: var(--text-secondary); }
+
+        /* Sidebar Base */
+        .sidebar {
+          width: 250px;
+          height: 100vh;
+          position: fixed;
+          top: 0;
+          left: 0;
+          background: #fff;
+          border-right: 1px solid #e0e0e0;
+          display: flex;
+          flex-direction: column;
+          transition: width 0.3s ease;
+          overflow: hidden;
+          z-index: 1000;
+        }
+
+        /* Collapsed */
+        .sidebar.collapsed {
+          width: 80px;
+        }
+
+        /* Sidebar Top */
+        .sidebar-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1rem;
+          border-bottom: 1px solid #e0e0e0;
+        }
+
+        .sidebar-brand .brand-text {
+          font-size: 1.2rem;
+          font-weight: 600;
+          white-space: nowrap;
+          transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .brand-text {
+          opacity: 0;
+        }
+
+        /* Toggle Button */
+        .sidebar-toggle {
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          cursor: pointer;
+        }
+
+        /* Sidebar Menu */
+        .sidebar-menu {
+          flex: 1;
+          overflow-y: auto;
+          padding: 1rem 0;
+        }
+
+        .sidebar-menu::-webkit-scrollbar {
+          width: 6px;
+        }
+        .sidebar-menu::-webkit-scrollbar-thumb {
+          background: #ccc;
+          border-radius: 3px;
+        }
+
+        /* Sidebar Links */
+        .sidebar-link {
+          display: flex;
+          align-items: center;
+          padding: 0.75rem 1rem;
+          font-size: 0.95rem;
+          color: #333;
+          text-decoration: none;
+          transition: background 0.2s;
+        }
+
+        .sidebar-link:hover {
+          background: #f5f5f5;
+        }
+
+        .sidebar-link .icon {
+          margin-right: 1rem;
+          font-size: 1.3rem;
+          min-width: 24px;
+          text-align: center;
+        }
+
+        .sidebar.collapsed .sidebar-link .icon {
+          margin-right: 0;
+        }
+
+        .sidebar.collapsed .sidebar-link span {
+          display: none;
+        }
+
+        /* Main Content Adjust */
+        .main-content {
+          margin-left: 250px;
+          transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed ~ .main-content {
+          margin-left: 80px;
+        }
+
+/* === AMC Radar History HOTFIX (non-destructive) ========================= */
+/* 1) Kill the accidental header we injected in this page only */
+.amc-header-wrap{ display:none !important; }
+
+/* 2) Neutralize the generic sidebar skin so it can't override AMC */
+.sidebar, .sidebar-top, .sidebar-brand, .sidebar-menu,
+.sidebar .sidebar-link, .sidebar-toggle { all: unset; display: initial; }
+
+/* 3) Canonical AMC sidebar (driven by #sidebar that sidebar-builder.js fills) */
+:root{
+  --amc-header-h: 60px;         /* match the real header height on this page */
+  --amc-sidebar-expanded: 264px;
+  --amc-sidebar-collapsed: 72px;
+}
+
+/* page-wide width var + push the app container, not the header */
+body{ --amc-sidebar-w: var(--amc-sidebar-expanded); }
+body.amc-collapsed{ --amc-sidebar-w: var(--amc-sidebar-collapsed); }
+
+/* Restore AMC sidebar functionality but match automediacenter.html positioning */
+.app-container{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
+
+/* main content positioning - remove extra margin since app-container handles it */
+.main-content {
+  margin-left: 0;
+  padding: 25px 30px;
+  background-color: var(--bg-primary);
+  overflow-y: auto;
+}
+
+/* actual sidebar shell used by the role builder */
+#sidebar{
+  position: fixed; left: 0; top: var(--header-height); bottom: 0;
+  width: var(--amc-sidebar-w);
+  background: #fff; border-right: 1px solid #E5E7EB;
+  overflow: hidden auto; z-index: 950; transition: width .18s ease;
+}
+body.dark-mode #sidebar{
+  background: var(--bg-secondary);
+  border-right-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+/* sections + links that the builder emits */
+#sidebar .sidebar-section{ padding: 14px 10px; }
+#sidebar .sidebar-section-header{
+  margin: 8px 12px; font: 700 12px/1 Inter, ui-sans-serif, system-ui;
+  color: var(--text-secondary); text-transform:uppercase; letter-spacing:.4px;
+}
+#sidebar .sidebar-list{ list-style:none; margin:0; padding:4px; }
+#sidebar .sidebar-item{ margin:2px 6px; }
+#sidebar .sidebar-link{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:10px; text-decoration:none;
+  color: var(--text-primary); font:600 14px/1.2 Inter, ui-sans-serif, system-ui;
+}
+#sidebar .sidebar-link:hover{ background: var(--bg-tertiary); }
+body.dark-mode #sidebar .sidebar-link:hover{ background: var(--bg-tertiary); }
+#sidebar .sidebar-link.active{ background:rgba(11,116,255,.10); color:#0b74ff; }
+
+/* icon/label wrappers (we add them in JS below) */
+#sidebar .i{ width:22px; text-align:center; font-size:18px; line-height:1; }
+#sidebar .t{ white-space:nowrap; }
+
+/* collapsed: hide headings + labels, keep icons only */
+body.amc-collapsed #sidebar .sidebar-section-header{ display:none; }
+body.amc-collapsed #sidebar .t{ display:none; }
+body.amc-collapsed #sidebar .sidebar-link{ justify-content:center; gap:0; }
+
+/* 4) In-sidebar hamburger (sticky) */
+#amcSideHead{ position: sticky; top: 8px; z-index: 5; padding: 6px 8px; }
+#amcSidebarToggle{
+  width:40px; height:40px; border-radius:10px; cursor:pointer;
+  border:1px solid rgba(0,0,0,.06); background:#fff; display:grid; place-items:center;
+}
+#amcSidebarToggle:hover{ background:#f8fafc; }
+body.dark-mode #amcSidebarToggle{ background:#1e1e1e; border-color:rgba(255,255,255,.08); }
+body.dark-mode #amcSidebarToggle:hover{ background:#2c2c2c; }
+body.dark-mode #amcSidebarToggle .bar,
+body.dark-mode #amcSidebarToggle .bar::before,
+body.dark-mode #amcSidebarToggle .bar::after{ background:#e5e7eb; }
+#amcSidebarToggle .box{ width:20px; height:14px; position:relative; }
+#amcSidebarToggle .bar, #amcSidebarToggle .bar::before, #amcSidebarToggle .bar::after{
+  content:""; position:absolute; left:0; width:20px; height:2px; border-radius:2px; background:#0b0c10;
+  transition: transform .18s ease, opacity .18s ease;
+}
+#amcSidebarToggle .bar{ top:6px; }
+#amcSidebarToggle .bar::before{ top:-6px; }
+#amcSidebarToggle .bar::after{ top:6px; }
+body.amc-collapsed #amcSidebarToggle .bar{ transform: rotate(45deg); }
+body.amc-collapsed #amcSidebarToggle .bar::before{ transform: translateY(6px) rotate(90deg); }
+body.amc-collapsed #amcSidebarToggle .bar::after{ transform: translateY(-6px) rotate(90deg); }
+    </style>
+</head>
+<body>
+    <!-- Header at the very top, spanning full width -->
+    <header class="app-header">
+        <div class="logo"><h1>AutoMediaCenter</h1></div>
+        <div class="user-actions-group">
+            <div class="amc-header-right">
+                <button class="amc-menu-dots" title="More options">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div id="amc-avatar-container"></div>
+                <div class="cart-indicator" id="cart-indicator" title="View Cart (0 items)">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge">0</span>
+                </div>
+                <div class="notification-indicator" id="notification-indicator" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">0</span>
+                </div>
+            </div>
+            <button class="btn btn-icon" id="darkModeToggleHeader" title="Toggle Dark Mode" onclick="togglePageTheme()"><i class="fas fa-moon"></i></button>
+        </div>
+    </header>
+
+    <div class="amc-app">
+        <!-- Enterprise Sidebar -->
+        <aside id="sidebar" class="amc-sidebar">
+            <!-- Content will be dynamically generated by components/sidebar.js -->
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="amc-content">
+            <div class="main-content">
+            <main>
+                <div class="content-header">
+                    <h1><i class="fas fa-satellite-dish"></i> Manage AutoMediaRadar</h1>
+                    <p>Review, edit or delete your existing Radar alerts.</p>
+                </div>
+                
+                <div class="controls-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <div style="flex-grow: 1;"></div>
+                    <a href="AssetDBmenu1.6.html?formType=radar" class="btn btn-primary"><i class="fas fa-plus"></i> Create New Alert</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Your Alerts</h2>
+                        <span id="totalItemsInfo"></span>
+                    </div>
+                    <div class="card-body no-padding">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="teaser-cell">Teaser</th>
+                                        <th class="title-cell">Title</th>
+                                        <th class="status-cell">Status</th>
+                                        <th class="date-column">Alert Date</th>
+                                        <th class="date-column">Created On</th>
+                                        <th class="created-by-cell">Created By</th>
+                                        <th class="actions-cell">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="alertsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span id="paginationSummary"></span>
+                        <div class="pagination-controls">
+                            <button class="btn btn-sm" id="prevPageButton" disabled><i class="fas fa-chevron-left"></i></button>
+                            <span id="pageInfo"></span>
+                            <button class="btn btn-sm" id="nextPageButton" disabled><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="app-footer">
+                 <nav><a href="#">About Us</a> | <a href="#">Help Center</a> | <a href="#">Terms</a> | <a href="#">Privacy</a></nav>
+                 <p>© <span id="currentYearText">2025</span> AutoMediaCenter. All Rights Reserved.</p>
+             </footer>
+        </main>
+    </div>
+    
+    <div class="detail-modal-backdrop" id="viewDetailModal">
+        <div class="detail-modal">
+            <div class="detail-modal-header">
+                <h3 id="viewDetailModalTitle">Alert Details</h3>
+                <button class="detail-modal-close-btn" aria-label="Close modal">×</button>
+            </div>
+            <div class="detail-modal-body" id="viewDetailModalBody"><p style="text-align:center;">Loading details...</p></div>
+            <div class="detail-modal-footer"><button class="btn btn-secondary detail-modal-close-btn">Close</button></div>
+        </div>
+    </div>
+
+    <div class="confirm-modal-backdrop" id="deleteConfirmModalBackdrop">
+        <div class="confirm-modal">
+            <div class="confirm-modal-header"><h3 id="deleteConfirmModalTitle">Confirm Deletion</h3></div>
+            <div class="confirm-modal-body"><p id="deleteConfirmModalText">Are you sure?</p></div>
+            <div class="confirm-modal-footer">
+                <button class="btn btn-secondary" id="deleteConfirmCancel">Cancel</button>
+                <button class="btn btn-danger" id="deleteConfirmButton">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Global theme toggle function for header button
+    function togglePageTheme() {
+        const currentTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        // Apply theme to body
+        if (newTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+        
+        // Update button icon
+        const btn = document.getElementById('darkModeToggleHeader');
+        const icon = btn?.querySelector('i');
+        if (icon) {
+            if (newTheme === 'dark') {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+        
+        localStorage.setItem('theme', newTheme);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Authentication is handled server-side via adminRoutes.js middleware
+        // Client-side authentication removed to prevent conflicts with localStorage tokens
+        let token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        let userString = localStorage.getItem('user') || localStorage.getItem('currentUser');
+        let user = null;
+        
+        if (userString) {
+            try {
+                user = JSON.parse(userString);
+            } catch (e) {
+                console.error("Error parsing user from localStorage", e);
+                user = { email: 'User', role: 'client_admin' }; // Fallback for display
+            }
+        }
+        
+        // Fallback user object for display purposes
+        if (!user) {
+            user = { email: 'User', role: 'client_admin' };
+        }
+
+        const ui = {
+            tableBody: document.getElementById('alertsTableBody'),
+            prevPageBtn: document.getElementById('prevPageButton'),
+            nextPageBtn: document.getElementById('nextPageButton'),
+            pageInfo: document.getElementById('pageInfo'),
+            totalItemsInfo: document.getElementById('totalItemsInfo'),
+            paginationSummary: document.getElementById('paginationSummary'),
+            deleteConfirmModal: document.getElementById('deleteConfirmModalBackdrop'),
+            deleteConfirmText: document.getElementById('deleteConfirmModalText'),
+            deleteConfirmBtn: document.getElementById('deleteConfirmButton'),
+            deleteCancelBtn: document.getElementById('deleteConfirmCancel'),
+            viewDetailModal: document.getElementById('viewDetailModal'),
+            viewDetailModalTitle: document.getElementById('viewDetailModalTitle'),
+            viewDetailModalBody: document.getElementById('viewDetailModalBody'),
+            sidebar: document.getElementById('sidebar'), 
+            sidebarToggle: document.getElementById('sidebar-toggle'),
+            userEmailDisplay: document.getElementById('user-email-display'),
+            logoutLink: document.querySelector('.logout-link'),
+            darkModeToggle: document.getElementById('darkModeToggleHeader'),
+            currentYearText: document.getElementById('currentYearText'),
+        };
+
+        let currentPage = 1;
+
+        // Initialize sidebar collapse state from localStorage
+        const initializeSidebarState = () => {
+            try {
+                const saved = localStorage.getItem('amc_sidebar_collapsed');
+                if (saved === 'true') {
+                    document.body.classList.add('amc-collapsed');
+                } else {
+                    document.body.classList.remove('amc-collapsed');
+                }
+            } catch(e) {}
+        };
+
+        const setupUI = () => {
+            // Initialize sidebar state first
+            initializeSidebarState();
+            if (ui.userEmailDisplay) ui.userEmailDisplay.textContent = user.email || 'User';
+            if (ui.logoutLink) ui.logoutLink.addEventListener('click', e => {
+                e.preventDefault();
+                // Clear both old and new authentication systems
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('currentUser');
+                window.location.href='AssetDBmenu1.6.html';
+            });
+            // Sidebar collapse functionality
+            if (ui.sidebarToggle) ui.sidebarToggle.addEventListener('click', () => {
+                document.body.classList.toggle('amc-collapsed');
+                // Store the state in localStorage
+                const isCollapsed = document.body.classList.contains('amc-collapsed');
+                try {
+                    localStorage.setItem('amc_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+                } catch(e) {}
+            });
+            if (ui.currentYearText) ui.currentYearText.textContent = new Date().getFullYear();
+            
+            const applyTheme = (theme) => {
+                document.body.classList.toggle('dark-mode', theme === 'dark');
+                if(ui.darkModeToggle) ui.darkModeToggle.querySelector('i').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            };
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme);
+            if(ui.darkModeToggle) {
+                ui.darkModeToggle.addEventListener('click', () => {
+                    const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+                    applyTheme(newTheme);
+                    localStorage.setItem('theme', newTheme);
+                });
+            }
+
+            ui.viewDetailModal.querySelectorAll('.detail-modal-close-btn').forEach(btn => btn.addEventListener('click', () => ui.viewDetailModal.classList.remove('open')));
+            if(ui.deleteCancelBtn) ui.deleteCancelBtn.addEventListener('click', () => ui.deleteConfirmModal.classList.remove('open'));
+        };
+
+        const fetchAndRenderAlerts = async (page = 1) => {
+            ui.tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin fa-fw"></i> Loading...</td></tr>`;
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/radar/all-alerts?page=${page}&limit=10`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || `Server Error: ${response.status}`);
+                
+                renderTable(result.data.alerts);
+                updatePagination(result.data);
+            } catch (error) {
+                ui.tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--color-danger);">${error.message}</td></tr>`;
+            }
+        };
+
+        const renderTable = (alerts) => {
+            ui.tableBody.innerHTML = '';
+            if (!alerts || !alerts.length) {
+                ui.tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">No alerts found.</td></tr>`;
+                return;
+            }
+            alerts.forEach(alert => {
+                const statusText = alert.computedStatus || 'Unknown';
+                const statusClass = statusText.toLowerCase();
+                const sanitizedTitle = (alert.title || 'this alert').replace(/"/g, '"');
+                
+                const alertDate = alert.eventDateTime ? new Date(alert.eventDateTime).toLocaleString('en-GB', {day: 'numeric', month: 'short', year: 'numeric', hour:'2-digit', minute: '2-digit'}) : '—';
+                const createdDate = alert.createdAt ? new Date(alert.createdAt).toLocaleString('en-GB', {day: 'numeric', month: 'short', year: 'numeric', hour:'2-digit', minute: '2-digit'}) : '—';
+                const createdBy = alert.user?.email || 'N/A';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="teaser-cell">${alert.teaserImagePath ? `<img src="http://localhost:5000${alert.teaserImagePath}" alt="Teaser">` : '<div class="no-teaser-placeholder"><i class="far fa-image"></i></div>'}</td>
+                    <td class="title-cell" title="${alert.title || ''}">${alert.title || 'N/A'}</td>
+                    <td class="status-cell"><span class="status-badge status-${statusClass}">${statusText}</span></td>
+                    <td class="date-column">${alertDate}</td>
+                    <td class="date-column">${createdDate}</td>
+                    <td class="created-by-cell" title="${createdBy}">${createdBy}</td>
+                    <td class="actions-cell">
+                        <div class="action-button-group">
+                            <button class="action-button action-button-view btn-view" data-uuid="${alert.uuid}" title="View"><i class="fas fa-eye"></i></button>
+                            <button class="action-button action-button-edit btn-edit" data-uuid="${alert.uuid}" title="Edit" ${statusText === 'Archived' ? 'disabled' : ''}><i class="fas fa-edit"></i></button>
+                            <button class="action-button action-button-delete btn-delete" data-uuid="${alert.uuid}" data-title="${sanitizedTitle}" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                ui.tableBody.appendChild(tr);
+            });
+        };
+
+        const openViewModal = async (uuid) => {
+            ui.viewDetailModal.classList.add('open');
+            ui.viewDetailModalBody.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+            try {
+                // To view details, we can use the same /foredit endpoint for active alerts.
+                // A dedicated detail endpoint might be better, but this works.
+                // For archived items, we will need a new backend route.
+                let res = await fetch(`http://localhost:5000/api/v1/radar/alerts/foredit/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                
+                let alertData;
+                if (res.status === 404) {
+                    res = await fetch(`http://localhost:5000/api/v1/radar/history/by-uuid/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (!res.ok) throw new Error('Alert not found in active or archived records.');
+                }
+                
+                if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+
+                const result = await res.json();
+                if (!result.success) throw new Error(result.error);
+                alertData = result.data;
+                
+                ui.viewDetailModalTitle.textContent = alertData.title;
+                
+                let tagsHtml = 'N/A';
+                if (alertData.tags && alertData.tags.length > 0) {
+                   tagsHtml = Array.isArray(alertData.tags) ? alertData.tags.join(', ') : alertData.tags;
+                }
+                const alertDateForModal = alertData.eventDateTime || alertData.originalEventDateTime;
+
+                ui.viewDetailModalBody.innerHTML = `
+                    ${alertData.teaserImagePath ? `<img src="http://localhost:5000${alertData.teaserImagePath}" alt="Teaser" class="detail-teaser-img">` : ''}
+                    <div class="detail-item"><strong>Brand:</strong> ${alertData.brand || 'N/A'}</div>
+                    <div class="detail-item"><strong>Region:</strong> ${alertData.region || 'N/A'}</div>
+                    <div class="detail-item"><strong>Alert Date:</strong> ${new Date(alertDateForModal).toLocaleString('en-GB')}</div>
+                    <div class="detail-item"><strong>Description:</strong><p style="white-space:pre-wrap; margin-top:5px;">${alertData.description || 'N/A'}</p></div>
+                    <div class="detail-item"><strong>Tags:</strong> ${tagsHtml}</div>
+                `;
+            } catch (error) { 
+                ui.viewDetailModalBody.innerHTML = `<p style="color:var(--color-danger); text-align:center;">${error.message}</p>`;
+            }
+        };
+
+        const openDeleteConfirmModal = (uuid, title) => {
+            ui.deleteConfirmText.innerHTML = `Are you sure you want to permanently delete the alert:<br><strong>"${title}"</strong>?<br><br>This action cannot be undone.`;
+            ui.deleteConfirmModal.classList.add('open');
+            ui.deleteConfirmBtn.onclick = async () => {
+                try {
+                    const res = await fetch(`http://localhost:5000/api/v1/radar/alerts/${uuid}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }});
+                    const result = await res.json();
+                    if (!result.success) throw new Error(result.error);
+                    ui.deleteConfirmModal.classList.remove('open');
+                    fetchAndRenderAlerts(currentPage);
+                } catch (err) { alert(`Error: ${err.message}`); }
+            };
+        };
+
+        ui.tableBody.addEventListener('click', e => {
+            const button = e.target.closest('button.action-button');
+            if (!button || button.disabled) return;
+            const uuid = button.dataset.uuid;
+            if (button.classList.contains('btn-edit')) {
+                window.location.href = `AssetDBmenu1.6.html?formType=radar&editAlertUUID=${uuid}`;
+            }
+            if (button.classList.contains('btn-delete')) {
+                openDeleteConfirmModal(uuid, button.dataset.title);
+            }
+            if (button.classList.contains('btn-view')) {
+                openViewModal(uuid);
+            }
+        });
+        
+        if (ui.deleteCancelBtn) ui.deleteCancelBtn.addEventListener('click', () => ui.deleteConfirmModal.classList.remove('open'));
+        if (ui.prevPageBtn) ui.prevPageBtn.addEventListener('click', () => { if(currentPage > 1) fetchAndRenderAlerts(--currentPage) });
+        if (ui.nextPageBtn) ui.nextPageBtn.addEventListener('click', (e) => {
+            const totalPages = parseInt(e.currentTarget.dataset.totalPages, 10);
+            if(currentPage < totalPages) fetchAndRenderAlerts(++currentPage);
+        });
+
+        const updatePagination = (data) => {
+            const { currentPage, totalPages, totalItems } = data;
+            if(ui.pageInfo) ui.pageInfo.textContent = `Page ${currentPage} of ${totalPages || 1}`;
+            if(ui.totalItemsInfo) ui.totalItemsInfo.textContent = `Total Alerts: ${totalItems || 0}`;
+            const startItem = totalItems > 0 ? (currentPage - 1) * 10 + 1 : 0;
+            const endItem = Math.min(startItem + 9, totalItems);
+            if(ui.paginationSummary) ui.paginationSummary.textContent = totalItems > 0 ? `Showing ${startItem}-${endItem} of ${totalItems}` : '';
+            if(ui.prevPageBtn) ui.prevPageBtn.disabled = currentPage <= 1;
+            if(ui.nextPageBtn) {
+                ui.nextPageBtn.disabled = currentPage >= totalPages;
+                ui.nextPageBtn.dataset.totalPages = totalPages;
+            }
+        };
+
+        setupUI();
+        fetchAndRenderAlerts(1);
+        
+        // Add hamburger button after sidebar is built - this ensures it won't be overwritten
+        setTimeout(() => {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && !document.getElementById('sidebar-toggle')) {
+                // Create header section with hamburger button
+                const header = document.createElement('div');
+                header.className = 'sidebar-header';
+                header.innerHTML = '<button id="sidebar-toggle" title="Toggle Sidebar" aria-label="Toggle navigation"><i class="fas fa-bars"></i></button>';
+                
+                // Insert at the very beginning of sidebar
+                sidebar.insertBefore(header, sidebar.firstChild);
+                
+                // Add click handler for the toggle functionality
+                const toggleBtn = document.getElementById('sidebar-toggle');
+                if (toggleBtn) {
+                    toggleBtn.addEventListener('click', () => {
+                        document.body.classList.toggle('amc-collapsed');
+                        const isCollapsed = document.body.classList.contains('amc-collapsed');
+                        try {
+                            localStorage.setItem('amc_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+                        } catch(e) {}
+                    });
+                }
+            }
+        }, 200); // Wait for sidebar-builder.js to finish
+    });
+</script>
+
+<script>
+(function(){
+  // ---- Helpers
+  const $ = sel => document.querySelector(sel);
+  const on = (el, evt, fn) => el && el.addEventListener(evt, fn);
+
+  // Read user from localStorage (both keys supported)
+  function getUser(){
+    try{
+      return JSON.parse(localStorage.getItem('user') || localStorage.getItem('currentUser') || 'null');
+    }catch(e){ return null; }
+  }
+
+  // Role → halo color
+  const roleColors = {
+    media_user:"#3B82F6",
+    client_user:"#10B981",
+    client_admin:"#F59E0B",
+    platform_admin:"#EF4444"
+  };
+
+  // Set halo + email + role pill
+  function hydrateAccount(){
+    const user = getUser();
+    const emailEl = $('#amcEmail');
+    const dotEl = $('#amcRoleDot');
+    const roleTxt = $('#amcRoleText');
+    const halo = $('#amcHalo');
+
+    let role = 'media_user';
+    if (user && user.role) role = user.role;
+
+    if (emailEl) emailEl.textContent = (user && (user.email || user.username)) || 'user@example.com';
+    if (dotEl)  dotEl.style.background = roleColors[role] || '#9CA3AF';
+    if (roleTxt) roleTxt.textContent = role.replace('_',' ');
+
+    // halo color + optional pulse once per login
+    if (halo){
+      halo.style.setProperty('--halo', roleColors[role] || '#9CA3AF');
+      if (!sessionStorage.getItem('amcHaloPulsed')){
+        halo.classList.add('pulse-once');
+        setTimeout(()=> halo.classList.remove('pulse-once'), 900);
+        sessionStorage.setItem('amcHaloPulsed','1');
+      }
+    }
+  }
+
+  // Dropdown toggles (close on outside click / ESC)
+  function popToggle(btnSel, popSel){
+    const btn = $(btnSel), pop = $(popSel);
+    if (!btn || !pop) return;
+    on(btn, 'click', (e)=>{
+      e.stopPropagation();
+      const open = pop.classList.contains('open');
+      closeAllPops();
+      if (!open) { pop.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+    });
+  }
+  function closeAllPops(){
+    document.querySelectorAll('.amc-pop.open').forEach(p=>p.classList.remove('open'));
+    ['avatarButton','moreButton'].forEach(id=>{ const b = document.getElementById(id); if (b) b.setAttribute('aria-expanded','false'); });
+  }
+  on(document, 'click', (e)=> { if (!e.target.closest('.amc-pop') && !e.target.closest('.amc-icon-btn')) closeAllPops(); });
+  on(document, 'keydown', (e)=> { if (e.key==='Escape') closeAllPops(); });
+
+  // Theme toggle (top-level)
+  function applyTheme(mode){  // 'light' | 'dark' | 'auto'
+    if (mode === 'auto'){
+      document.body.classList.remove('theme-dark');
+      localStorage.setItem('amc_theme','auto');
+      return;
+    }
+    if (mode === 'dark'){
+      document.body.classList.add('theme-dark');
+      localStorage.setItem('amc_theme','dark');
+    } else {
+      document.body.classList.remove('theme-dark');
+      localStorage.setItem('amc_theme','light');
+    }
+  }
+  // initial theme
+  (function(){
+    const saved = localStorage.getItem('amc_theme') || 'auto';
+    if (saved === 'dark') document.body.classList.add('theme-dark');
+  })();
+
+  // header theme button
+  on($('#themeToggle'), 'click', ()=>{
+    const isDark = document.body.classList.contains('theme-dark');
+    applyTheme(isDark ? 'light' : 'dark');
+  });
+
+  // account menu appearance chips
+  document.querySelectorAll('.amc-chip[data-appearance]').forEach(chip=>{
+    on(chip,'click', ()=>{
+      const mode = chip.getAttribute('data-appearance');
+      // update pressed states
+      document.querySelectorAll('.amc-chip[data-appearance]').forEach(c=>c.setAttribute('aria-pressed','false'));
+      chip.setAttribute('aria-pressed','true');
+      applyTheme(mode);
+    });
+  });
+
+  // bind pops
+  popToggle('#avatarButton','#accountMenu');
+  popToggle('#moreButton','#moreMenu');
+
+  // sign-out (placeholder – wire to real logout)
+  on($('#amcSignOut'), 'click', ()=>{
+    localStorage.removeItem('user');
+    localStorage.removeItem('currentUser');
+    // redirect can be adapted:
+    window.location.href = 'landing-page-twitter-style.html';
+  });
+
+  // Provide email/role/halo on load
+  hydrateAccount();
+
+  // If your page scripts update badges, leave IDs intact:
+  //   #cartCount, #notificationCount
+  // For demo: show if >0
+  function setBadge(id, num){
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (num > 0){ el.textContent = num; el.style.display='flex'; }
+    else { el.style.display='none'; }
+  }
+  // (your real code should manage these)
+  // setBadge('cartCount', 3);
+  // setBadge('notificationCount', 1);
+})();
+</script>
+
+<script>
+  // AMC Sidebar 2.0 bootstrap
+  (function(){
+    const lsKey = 'amc_sidebar_collapsed';
+
+    function applyInitialState(){
+      // Remembered state wins; on very small screens we visually collapse via CSS, but keep the stored preference intact
+      try{
+        const saved = localStorage.getItem(lsKey);
+        if (saved === 'true') document.body.classList.add('amc-collapsed');
+        else document.body.classList.remove('amc-collapsed');
+      }catch(_){}
+    }
+
+    function toggleSidebar(){
+      const collapsed = document.body.classList.toggle('amc-collapsed');
+      try{ localStorage.setItem(lsKey, collapsed ? 'true' : 'false'); }catch(_){}
+      // Improve accessibility
+      const btn = document.getElementById('amcSidebarToggle');
+      if (btn) btn.setAttribute('aria-expanded', (!collapsed).toString());
+    }
+
+    function wireHamburger(){
+      const btn = document.getElementById('amcSidebarToggle');
+      if (!btn){
+        console.warn('[AMC Sidebar] #amcSidebarToggle not found — add the button to your header.');
+        return;
+      }
+      btn.addEventListener('click', toggleSidebar);
+      // reflect initial state
+      btn.setAttribute('aria-expanded', (!document.body.classList.contains('amc-collapsed')).toString());
+    }
+
+    // Highlight active link after builder runs (simple heuristic)
+    function highlightActive(){
+      const sidebar = document.getElementById('sidebar');
+      if (!sidebar) return;
+      const links = sidebar.querySelectorAll('.sidebar-link[href]');
+      const here = location.pathname.split('/').pop() || location.pathname;
+      links.forEach(a=>{
+        const target = a.getAttribute('href') || '';
+        if (here.endsWith(target)) a.classList.add('active');
+      });
+    }
+
+    // Init sequence
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1) apply remembered collapse state
+      applyInitialState();
+
+      // 2) wire hamburger
+      wireHamburger();
+
+      // 3) run highlight after a tick (ensure builder finished)
+      setTimeout(highlightActive, 60);
+    });
+  })();
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const sidebar = document.getElementById("sidebar");
+  const toggleBtn = document.getElementById("sidebarToggle");
+
+  toggleBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("collapsed");
+    document.querySelector(".main-content").classList.toggle("collapsed");
+  });
+});
+</script>
+
+<script>
+/* === AMC Radar History HOTFIX JS ====================================== */
+// 1) Make sure a #sidebar container exists
+let sidebar = document.getElementById('sidebar');
+if (!sidebar) {
+  sidebar = document.createElement('aside');
+  sidebar.id = 'sidebar';
+  document.body.prepend(sidebar);
+}
+
+// 2) Add a sticky in-sidebar hamburger (not in the header)
+const head = document.createElement('div');
+head.id = 'amcSideHead';
+head.innerHTML = `
+  <button id="amcSidebarToggle" aria-label="Toggle navigation" aria-expanded="true">
+    <span class="box"><span class="bar"></span></span>
+  </button>
+`;
+sidebar.prepend(head);
+
+// 3) Collapse state: restore + toggle
+const KEY = 'amcSidebarCollapsed';
+if (localStorage.getItem(KEY) === 'true') document.body.classList.add('amc-collapsed');
+document.getElementById('amcSidebarToggle').addEventListener('click', () => {
+  document.body.classList.toggle('amc-collapsed');
+  localStorage.setItem(KEY, document.body.classList.contains('amc-collapsed'));
+});
+
+// 4) Post-process links built by sidebar-builder.js so we can hide labels on collapse
+//    (wrap into <span class="i">icon</span><span class="t">label</span>)
+function wrapIconsAndLabels(){
+  document.querySelectorAll('#sidebar .sidebar-link').forEach(a => {
+    // Skip if already wrapped
+    if (a.querySelector('.i')) return;
+
+    // Check if this link has FontAwesome icons (contains <i> tag)
+    const hasFA = a.querySelector('i.fas');
+    if (hasFA) {
+      // For FontAwesome icons, wrap the <i> element and the text separately
+      const iconElement = a.querySelector('i');
+      const textContent = a.textContent.trim();
+      
+      a.innerHTML = '';
+      a.insertAdjacentHTML('afterbegin', `<span class="i" aria-hidden="true">${iconElement.outerHTML}</span>`);
+      a.insertAdjacentHTML('beforeend', `<span class="t">${textContent}</span>`);
+    } else {
+      // For emoji icons, use the original logic
+      const text = a.textContent.trim();  // current "icon + label"
+      // crude split: first "word"/emoji becomes icon, remainder label
+      const parts = text.split(/\s+/);
+      const icon = parts.shift() || '';
+      const label = parts.join(' ');
+      a.textContent = '';
+      a.insertAdjacentHTML('afterbegin', `<span class="i" aria-hidden="true">${icon}</span>`);
+      a.insertAdjacentHTML('beforeend', `<span class="t">${label}</span>`);
+    }
+  });
+}
+
+// run once after role menu is built
+document.addEventListener('DOMContentLoaded', () => {
+  // If your page builds the sidebar late, delay a tick:
+  setTimeout(wrapIconsAndLabels, 0);
+});
+
+// Header functionality from automediacenter.html
+(function(){
+  // ---- Helpers
+  const $ = sel => document.querySelector(sel);
+  const on = (el, evt, fn) => el && el.addEventListener(evt, fn);
+
+  // Read user from localStorage (both keys supported)
+  function getUser(){
+    try{
+      return JSON.parse(localStorage.getItem('user') || localStorage.getItem('currentUser') || 'null');
+    }catch(e){ return null; }
+  }
+
+  // Set cart and notification indicators
+  function updateCartIndicator(count = 0) {
+    const cartIndicator = $('#cart-indicator');
+    const cartBadge = cartIndicator?.querySelector('.cart-badge');
+    if (cartBadge) cartBadge.textContent = count;
+    if (cartIndicator) {
+      cartIndicator.title = `View Cart (${count} item${count !== 1 ? 's' : ''})`;
+      if (count > 0) {
+        cartIndicator.classList.add('has-items');
+      } else {
+        cartIndicator.classList.remove('has-items');
+      }
+    }
+  }
+
+  function updateNotificationIndicator(count = 0) {
+    const notificationIndicator = $('#notification-indicator');
+    const notificationBadge = notificationIndicator?.querySelector('.notification-badge');
+    if (notificationBadge) notificationBadge.textContent = count;
+    if (notificationIndicator) {
+      if (count > 0) {
+        notificationIndicator.classList.add('has-new');
+      } else {
+        notificationIndicator.classList.remove('has-new');
+      }
+    }
+  }
+
+  // Theme toggle functionality
+  function applyTheme(theme) {
+    const icon = $('#darkModeToggleHeader')?.querySelector('i');
+    if (theme === 'dark') {
+      document.body.classList.add('dark-mode');
+      if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+    } else {
+      document.body.classList.remove('dark-mode');
+      if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+    }
+  }
+
+  // Initialize header functionality
+  function initializeHeader() {
+    const user = getUser();
+    
+    // Set up theme toggle
+    const savedTheme = localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    applyTheme(savedTheme);
+    
+    const darkModeToggle = $('#darkModeToggleHeader');
+    if (darkModeToggle) {
+      darkModeToggle.addEventListener('click', () => {
+        const currentTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+      });
+    }
+
+    // Initialize indicators
+    updateCartIndicator(0);
+    updateNotificationIndicator(0);
+
+    // Set up cart click handler (placeholder)
+    const cartIndicator = $('#cart-indicator');
+    if (cartIndicator) {
+      cartIndicator.addEventListener('click', () => {
+        console.log('Cart clicked - implement cart modal');
+      });
+    }
+
+    // Set up notification click handler (placeholder)
+    const notificationIndicator = $('#notification-indicator');
+    if (notificationIndicator) {
+      notificationIndicator.addEventListener('click', () => {
+        console.log('Notifications clicked - implement notifications');
+      });
+    }
+
+    // Set up more menu click handler (placeholder)
+    const moreButton = $('.amc-menu-dots');
+    if (moreButton) {
+      moreButton.addEventListener('click', () => {
+        console.log('More menu clicked - implement more options');
+      });
+    }
+
+    // Set up avatar container click handler (placeholder)
+    const avatarContainer = $('#amc-avatar-container');
+    if (avatarContainer) {
+      avatarContainer.addEventListener('click', () => {
+        console.log('Avatar clicked - implement user menu');
+      });
+    }
+  }
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', initializeHeader);
+})();
+</script>
+
+<!-- Premium Avatar System -->
+<script defer src="amc-avatar-system.js"></script>
+</body>
+</html>

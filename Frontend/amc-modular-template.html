@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMC Modular Template - Complete Enterprise System</title>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- AMC Role System - MUST be loaded first for proper role detection -->
+    <script src="components/amc-role.js"></script>
+    
+    <!-- MODULAR CSS - Header and Sidebar ONLY -->
+    <link rel="stylesheet" href="css/amc-header-only.css">
+    <link rel="stylesheet" href="css/amc-sidebar-only.css">
+    
+    <!-- Avatar system CSS (if using avatar system) -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+    <style>
+        /* ============================================================
+           DEMO PAGE STYLES - Your existing content styles go here
+           The modular system ONLY adds header/sidebar - no interference
+           ============================================================ */
+        
+        /* CSS Variables for theming */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-headings: #343a40;
+            --border-primary: #dee2e6;
+            --border-secondary: #e9ecef;
+            --accent-primary: #0d6efd;
+            --accent-secondary: #6c757d;
+        }
+        
+        /* Dark mode variables */
+        body.dark-mode {
+            --bg-primary: #121212;
+            --bg-secondary: #1f2937;
+            --bg-tertiary: #374151;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --text-headings: #f9fafb;
+            --border-primary: #374151;
+            --border-secondary: #4b5563;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #9ca3af;
+        }
+        
+        /* Demo content styles - completely independent */
+        .demo-content {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: calc(100vh - 64px);
+            transition: all 0.3s ease;
+        }
+        
+        /* Optional: Use utility class for sidebar offset */
+        .demo-content.with-sidebar {
+            margin-left: 280px;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body.sidebar-collapsed .demo-content.with-sidebar,
+        body.amc-collapsed .demo-content.with-sidebar {
+            margin-left: 64px;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        .demo-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-headings);
+            margin-bottom: 16px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        
+        .demo-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        
+        .demo-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-primary);
+        }
+        
+        body.dark-mode .demo-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .demo-card h3 {
+            color: var(--text-headings);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .demo-card h3 i {
+            color: var(--accent-primary);
+            font-size: 1.1rem;
+        }
+        
+        .demo-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        
+        .demo-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .demo-features li {
+            color: var(--text-primary);
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .demo-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .demo-features li i {
+            color: #10b981;
+            font-size: 14px;
+            width: 16px;
+        }
+        
+        .demo-controls {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .demo-controls h3 {
+            color: var(--text-headings);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .demo-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .demo-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .demo-btn:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+        
+        .demo-btn.active {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+        
+        .demo-status {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .demo-content.with-sidebar {
+                margin-left: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .demo-container {
+                padding: 24px 16px;
+            }
+            
+            .demo-title {
+                font-size: 2rem;
+            }
+            
+            .demo-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- MODULAR HEADER - Will be replaced by JavaScript -->
+    <amc-header></amc-header>
+    
+    <!-- MODULAR SIDEBAR - Will be populated by JavaScript -->
+    <aside id="sidebar" class="amc-sidebar"></aside>
+    
+    <!-- YOUR EXISTING CONTENT - Completely untouched by modular system -->
+    <main class="demo-content with-sidebar">
+        <div class="demo-container">
+            <header class="demo-header">
+                <h1 class="demo-title">AMC Modular System Demo</h1>
+                <p class="demo-subtitle">
+                    Complete enterprise header and sidebar system with zero interference to your existing content layouts.
+                    This demonstrates all functionality from the original components.
+                </p>
+            </header>
+            
+            <!-- Interactive Controls -->
+            <div class="demo-controls">
+                <h3><i class="fas fa-sliders-h"></i> Interactive Controls</h3>
+                <div class="demo-buttons">
+                    <button class="demo-btn" onclick="toggleTheme()">
+                        <i class="fas fa-moon"></i> Toggle Dark Mode
+                    </button>
+                    <button class="demo-btn" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i> Toggle Sidebar
+                    </button>
+                    <button class="demo-btn" onclick="setCartCount()">
+                        <i class="fas fa-briefcase"></i> Set Cart (5)
+                    </button>
+                    <button class="demo-btn" onclick="setNotifications()">
+                        <i class="fas fa-bell"></i> Set Notifications (12)
+                    </button>
+                    <button class="demo-btn" onclick="changeRole()">
+                        <i class="fas fa-user-cog"></i> Change Role
+                    </button>
+                </div>
+                <div class="demo-status" id="statusLog">
+                    System initialized. Try the controls above to test functionality.
+                </div>
+            </div>
+            
+            <!-- Feature Showcase -->
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3><i class="fas fa-header"></i> Enterprise Header</h3>
+                    <p>Complete header system with all original functionality:</p>
+                    <ul class="demo-features">
+                        <li><i class="fas fa-check"></i> Global search with scoped results</li>
+                        <li><i class="fas fa-check"></i> Notification & cart badges</li>
+                        <li><i class="fas fa-check"></i> Tools dropdown with unit converter</li>
+                        <li><i class="fas fa-check"></i> Avatar system integration</li>
+                        <li><i class="fas fa-check"></i> Responsive tooltip system</li>
+                        <li><i class="fas fa-check"></i> Glass morphism design</li>
+                    </ul>
+                </div>
+                
+                <div class="demo-card">
+                    <h3><i class="fas fa-bars"></i> Enterprise Sidebar</h3>
+                    <p>Full-featured sidebar with role-based access:</p>
+                    <ul class="demo-features">
+                        <li><i class="fas fa-check"></i> Role-based menu rendering</li>
+                        <li><i class="fas fa-check"></i> Collapsible sections with state</li>
+                        <li><i class="fas fa-check"></i> Colored section indicators</li>
+                        <li><i class="fas fa-check"></i> Tooltip system when collapsed</li>
+                        <li><i class="fas fa-check"></i> Smooth animations</li>
+                        <li><i class="fas fa-check"></i> Keyboard shortcuts (Ctrl+B)</li>
+                    </ul>
+                </div>
+                
+                <div class="demo-card">
+                    <h3><i class="fas fa-shield-alt"></i> Zero Interference</h3>
+                    <p>Your existing layouts remain completely untouched:</p>
+                    <ul class="demo-features">
+                        <li><i class="fas fa-check"></i> No main content CSS interference</li>
+                        <li><i class="fas fa-check"></i> Optional utility classes only</li>
+                        <li><i class="fas fa-check"></i> Existing grids work perfectly</li>
+                        <li><i class="fas fa-check"></i> No forced positioning</li>
+                        <li><i class="fas fa-check"></i> Easy rollback capability</li>
+                        <li><i class="fas fa-check"></i> Backward compatibility</li>
+                    </ul>
+                </div>
+                
+                <div class="demo-card">
+                    <h3><i class="fas fa-cogs"></i> Advanced Features</h3>
+                    <p>Enterprise-grade functionality included:</p>
+                    <ul class="demo-features">
+                        <li><i class="fas fa-check"></i> Unit converter modal system</li>
+                        <li><i class="fas fa-check"></i> Theme management</li>
+                        <li><i class="fas fa-check"></i> Analytics event tracking</li>
+                        <li><i class="fas fa-check"></i> Local storage state management</li>
+                        <li><i class="fas fa-check"></i> Accessibility support</li>
+                        <li><i class="fas fa-check"></i> Mobile responsive design</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Integration Example -->
+            <div class="demo-card">
+                <h3><i class="fas fa-code"></i> Integration Example</h3>
+                <p>Add to any existing page with just 3 lines:</p>
+                <pre style="background: var(--bg-tertiary); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; color: var(--text-primary);">
+&lt;link rel="stylesheet" href="css/amc-header-only.css"&gt;
+&lt;link rel="stylesheet" href="css/amc-sidebar-only.css"&gt;
+&lt;script src="components/amc-header-minimal.js"&gt;&lt;/script&gt;
+&lt;script src="components/amc-sidebar-minimal.js"&gt;&lt;/script&gt;
+
+&lt;!-- In your HTML body --&gt;
+&lt;amc-header&gt;&lt;/amc-header&gt;
+&lt;aside id="sidebar" class="amc-sidebar"&gt;&lt;/aside&gt;</pre>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Role compatibility bridge (from amc-system-check3.html) -->
+    <script>
+        // AMC role compatibility bridge for legacy readers (avatar/sidebar):
+        (function () {
+            // Prefer AMC.role (from amc-role.js), else look at the common override, else fall back
+            const resolvedRole =
+                (window.AMC && AMC.role) ||
+                sessionStorage.getItem("amcRoleOverride") ||
+                localStorage.getItem("amc-role") ||
+                "client_user";
+
+            // Gather whichever user blob we already have and normalize it
+            const raw =
+                localStorage.getItem("user") ||
+                localStorage.getItem("currentUser") ||
+                localStorage.getItem("amcUser") ||
+                localStorage.getItem("amc_current_user");
+
+            let u = {};
+            try { u = raw ? JSON.parse(raw) : {}; } catch(e) { u = {}; }
+            // write a plain 'role' field the avatar script actually reads
+            u.role = resolvedRole;
+
+            // Mirror to both keys the avatar looks up today
+            localStorage.setItem("user", JSON.stringify(u));
+            localStorage.setItem("currentUser", JSON.stringify(u));
+        })();
+    </script>
+    
+    <!-- MODULAR JAVASCRIPT - Header and Sidebar components -->
+    <script src="components/amc-header-minimal.js"></script>
+    <script src="components/amc-sidebar-minimal.js"></script>
+    
+    <!-- Optional: Avatar system (if you want avatar functionality) -->
+    <script src="amc-avatar-system.js"></script>
+    
+    <!-- Demo functionality -->
+    <script>
+        // Status logging
+        function logStatus(message) {
+            const log = document.getElementById('statusLog');
+            const timestamp = new Date().toLocaleTimeString();
+            log.innerHTML += `\n[${timestamp}] ${message}`;
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        // Demo controls
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            logStatus(`Theme changed to: ${isDark ? 'Dark' : 'Light'} mode`);
+            
+            // Trigger theme change event for components
+            window.dispatchEvent(new CustomEvent('themeChanged'));
+        }
+        
+        function toggleSidebar() {
+            if (window.amcSidebar) {
+                window.amcSidebar.toggle();
+                const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+                logStatus(`Sidebar ${isCollapsed ? 'collapsed' : 'expanded'}`);
+            }
+        }
+        
+        function setCartCount() {
+            if (window.amcSetCartCount) {
+                window.amcSetCartCount(5);
+                logStatus('Cart count set to 5 items');
+            }
+        }
+        
+        function setNotifications() {
+            if (window.amcSetNotifCount) {
+                window.amcSetNotifCount(12);
+                logStatus('Notification count set to 12');
+            }
+        }
+        
+        let currentRole = 'client_user';
+        const roles = ['media_user', 'client_user', 'client_admin', 'platform_admin'];
+        
+        function changeRole() {
+            const currentIndex = roles.indexOf(currentRole);
+            const nextIndex = (currentIndex + 1) % roles.length;
+            currentRole = roles[nextIndex];
+            
+            if (window.amcSidebar) {
+                window.amcSidebar.setUserRole(currentRole);
+                logStatus(`Role changed to: ${currentRole}`);
+            }
+        }
+        
+        // Listen for component events
+        window.addEventListener('amcHeaderReady', () => {
+            logStatus('✅ Header component ready');
+        });
+        
+        window.addEventListener('amcSidebarReady', () => {
+            logStatus('✅ Sidebar component ready');
+        });
+        
+        window.addEventListener('amcGlobalSearch', (e) => {
+            logStatus(`🔍 Search: "${e.detail.query}" in ${e.detail.scope}`);
+        });
+        
+        window.addEventListener('sectionToggled', (e) => {
+            logStatus(`📁 Section "${e.detail.section}" ${e.detail.isCollapsed ? 'collapsed' : 'expanded'}`);
+        });
+        
+        // Initialize demo
+        document.addEventListener('DOMContentLoaded', () => {
+            logStatus('🚀 AMC Modular System Demo initialized');
+            logStatus('Try the interactive controls above!');
+            
+            // Set initial test data
+            setTimeout(() => {
+                if (window.amcSetCartCount) window.amcSetCartCount(1);
+                if (window.amcSetNotifCount) window.amcSetNotifCount(3);
+                logStatus('📊 Initial badge counts set');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

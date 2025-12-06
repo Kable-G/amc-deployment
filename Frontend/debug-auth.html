@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Authentication</title>
+</head>
+<body>
+    <h1>Authentication Debug</h1>
+    <div id="debug-info"></div>
+    <button onclick="testAPI()">Test API Call</button>
+    <div id="api-result"></div>
+
+    <script>
+        // Check what's in localStorage
+        const authToken = localStorage.getItem('authToken');
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+        const currentUser = localStorage.getItem('currentUser');
+
+        document.getElementById('debug-info').innerHTML = `
+            <h3>LocalStorage Contents:</h3>
+            <p><strong>authToken:</strong> ${authToken ? authToken.substring(0, 50) + '...' : 'null'}</p>
+            <p><strong>token:</strong> ${token ? token.substring(0, 50) + '...' : 'null'}</p>
+            <p><strong>user:</strong> ${user}</p>
+            <p><strong>currentUser:</strong> ${currentUser}</p>
+        `;
+
+        async function testAPI() {
+            const resultDiv = document.getElementById('api-result');
+            const tokenToUse = authToken || token;
+            
+            console.log('Using token:', tokenToUse ? tokenToUse.substring(0, 50) + '...' : 'null');
+            
+            if (!tokenToUse) {
+                resultDiv.innerHTML = '<p style="color: red;">No token found in localStorage!</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/companies/invite', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${tokenToUse}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        companyName: 'Debug Test Company',
+                        contactEmail: 'debug@test.com',
+                        contactPerson: 'Debug User'
+                    })
+                });
+
+                const result = await response.text();
+                resultDiv.innerHTML = `
+                    <h3>API Response:</h3>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Response:</strong> ${result}</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

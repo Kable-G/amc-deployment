@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Authentication Tokens</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .btn:hover {
+            background-color: #c82333;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Clear Authentication Tokens</h1>
+        <p>This will clear all stored authentication tokens and user data from your browser's localStorage.</p>
+        
+        <div id="currentTokens" class="status info">
+            <h3>Current Stored Data:</h3>
+            <div id="tokenList"></div>
+        </div>
+        
+        <button class="btn" onclick="clearTokens()">Clear All Auth Tokens</button>
+        <button class="btn btn-success" onclick="goToLogin()">Go to Login Page</button>
+        
+        <div id="status" class="status"></div>
+        
+        <hr style="margin: 30px 0;">
+        <h3>Manual Instructions:</h3>
+        <ol style="text-align: left;">
+            <li>Open Developer Tools (F12)</li>
+            <li>Go to Application/Storage tab</li>
+            <li>Find "Local Storage" → "http://127.0.0.1:5500"</li>
+            <li>Delete these keys: <code>token</code>, <code>authToken</code>, <code>user</code>, <code>currentUser</code></li>
+            <li>Refresh the page and try logging in again</li>
+        </ol>
+    </div>
+
+    <script>
+        function displayCurrentTokens() {
+            const tokenList = document.getElementById('tokenList');
+            const tokens = [];
+            
+            // Check for various token keys
+            const tokenKeys = ['token', 'authToken', 'user', 'currentUser', 'theme', 'amc_sidebar_collapsed'];
+            
+            tokenKeys.forEach(key => {
+                const value = localStorage.getItem(key);
+                if (value) {
+                    tokens.push(`<strong>${key}:</strong> ${value.length > 50 ? value.substring(0, 50) + '...' : value}`);
+                }
+            });
+            
+            if (tokens.length > 0) {
+                tokenList.innerHTML = tokens.join('<br>');
+                document.getElementById('currentTokens').style.display = 'block';
+            } else {
+                tokenList.innerHTML = 'No authentication tokens found.';
+                document.getElementById('currentTokens').style.display = 'block';
+            }
+        }
+        
+        function clearTokens() {
+            const keysToRemove = ['token', 'authToken', 'user', 'currentUser'];
+            let removedCount = 0;
+            
+            keysToRemove.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    removedCount++;
+                }
+            });
+            
+            const status = document.getElementById('status');
+            status.className = 'status success';
+            status.style.display = 'block';
+            status.innerHTML = `✅ Successfully cleared ${removedCount} authentication tokens.<br>You can now try logging in again.`;
+            
+            // Refresh the current tokens display
+            displayCurrentTokens();
+        }
+        
+        function goToLogin() {
+            window.location.href = 'login.html';
+        }
+        
+        // Display current tokens on page load
+        displayCurrentTokens();
+    </script>
+</body>
+</html>

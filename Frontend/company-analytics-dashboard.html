@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Analytics - AutoMediaCenter</title>
+    <link rel="stylesheet" href="css/sidebar.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #06b6d4;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--gray-800);
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            background: var(--gray-50);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--gray-600);
+            font-size: 1.1rem;
+        }
+
+        .time-range-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .time-range-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--gray-300);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .time-range-btn:hover {
+            background: var(--gray-50);
+        }
+
+        .time-range-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .analytics-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .card-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .metric-change.positive {
+            color: var(--success-color);
+        }
+
+        .metric-change.negative {
+            color: var(--danger-color);
+        }
+
+        .metric-change.neutral {
+            color: var(--gray-500);
+        }
+
+        .chart-container {
+            height: 200px;
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        .activity-log {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+        }
+
+        .activity-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: between;
+        }
+
+        .activity-filters {
+            display: flex;
+            gap: 1rem;
+            margin-left: auto;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-meta {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        .activity-time {
+            font-size: 0.875rem;
+            color: var(--gray-400);
+            white-space: nowrap;
+        }
+
+        .security-alert {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .security-alert.high {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .security-alert.medium {
+            background: #fffbeb;
+            border-color: #fed7aa;
+        }
+
+        .security-alert.low {
+            background: #f0f9ff;
+            border-color: #bae6fd;
+        }
+
+        .alert-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .alert-description {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 1rem;
+            color: #dc2626;
+            text-align: center;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--gray-300);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: var(--gray-50);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination button.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .time-range-selector {
+                flex-wrap: wrap;
+            }
+
+            .activity-filters {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">📊</span>
+                    <span class="logo-text">AutoMediaCenter</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="client-admin-dashboard.html" class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="company-analytics-dashboard.html" class="nav-item active">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">Analytics</span>
+                </a>
+                <a href="company-settings.html" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">Settings</span>
+                </a>
+                <a href="#" class="nav-item" onclick="logout()">
+                    <span class="nav-icon">🚪</span>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <div class="header">
+                <h1>Company Analytics</h1>
+                <p>Monitor your company's activity, security, and performance metrics</p>
+            </div>
+
+            <!-- Time Range Selector -->
+            <div class="time-range-selector">
+                <button class="time-range-btn" data-range="7d">7 Days</button>
+                <button class="time-range-btn active" data-range="30d">30 Days</button>
+                <button class="time-range-btn" data-range="90d">90 Days</button>
+                <button class="time-range-btn" data-range="1y">1 Year</button>
+            </div>
+
+            <!-- Security Alerts -->
+            <div id="security-alerts"></div>
+
+            <!-- Analytics Overview -->
+            <div class="analytics-grid" id="analytics-overview">
+                <div class="loading">Loading analytics...</div>
+            </div>
+
+            <!-- Activity Log -->
+            <div class="activity-log">
+                <div class="activity-header">
+                    <h3 class="card-title">Recent Activity</h3>
+                    <div class="activity-filters">
+                        <select class="filter-select" id="action-filter">
+                            <option value="">All Actions</option>
+                            <option value="user">User Actions</option>
+                            <option value="invite">Invitations</option>
+                            <option value="security">Security Events</option>
+                            <option value="company">Company Changes</option>
+                        </select>
+                        <select class="filter-select" id="severity-filter">
+                            <option value="">All Severity</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="activity-list" id="activity-list">
+                    <div class="loading">Loading activity...</div>
+                </div>
+                <div class="pagination" id="activity-pagination" style="display: none;">
+                    <button id="prev-page">Previous</button>
+                    <span id="page-info">Page 1 of 1</span>
+                    <button id="next-page">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class CompanyAnalyticsDashboard {
+            constructor() {
+                this.currentTimeRange = '30d';
+                this.currentPage = 1;
+                this.currentFilters = {
+                    action: '',
+                    severity: ''
+                };
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.loadAnalytics();
+                this.loadActivityLog();
+                this.loadSecurityAlerts();
+            }
+
+            setupEventListeners() {
+                // Time range selector
+                document.querySelectorAll('.time-range-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelector('.time-range-btn.active').classList.remove('active');
+                        e.target.classList.add('active');
+                        this.currentTimeRange = e.target.dataset.range;
+                        this.loadAnalytics();
+                        this.loadSecurityAlerts();
+                    });
+                });
+
+                // Activity filters
+                document.getElementById('action-filter').addEventListener('change', (e) => {
+                    this.currentFilters.action = e.target.value;
+                    this.currentPage = 1;
+                    this.loadActivityLog();
+                });
+
+                document.getElementById('severity-filter').addEventListener('change', (e) => {
+                    this.currentFilters.severity = e.target.value;
+                    this.currentPage = 1;
+                    this.loadActivityLog();
+                });
+
+                // Pagination
+                document.getElementById('prev-page').addEventListener('click', () => {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                        this.loadActivityLog();
+                    }
+                });
+
+                document.getElementById('next-page').addEventListener('click', () => {
+                    this.currentPage++;
+                    this.loadActivityLog();
+                });
+            }
+
+            async loadAnalytics() {
+                try {
+                    const token = localStorage.getItem('authToken');
+                    const response = await fetch(`/api/v1/audit/company/analytics?timeRange=${this.currentTimeRange}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to load analytics');
+                    }
+
+                    const data = await response.json();
+                    this.renderAnalytics(data.data);
+                } catch (error) {
+                    console.error('Error loading analytics:', error);
+                    document.getElementById('analytics-overview').innerHTML = 
+                        '<div class="error">Failed to load analytics data</div>';
+                }
+            }
+
+            renderAnalytics(data) {
+                const overview = data.overview;
+                const users = data.users;
+                const security = data.security;
+
+                const html = `
+                    <div class="analytics-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Total Activity</h3>
+                            <div class="card-icon" style="background: #dbeafe; color: #2563eb;">📊</div>
+                        </div>
+                        <div class="metric-value">${overview.totalEvents.toLocaleString()}</div>
+                        <div class="metric-change ${overview.eventsTrend >= 0 ? 'positive' : 'negative'}">
+                            ${overview.eventsTrend >= 0 ? '↗' : '↘'} ${Math.abs(overview.eventsTrend)}% vs previous period
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Active Users</h3>
+                            <div class="card-icon" style="background: #dcfce7; color: #16a34a;">👥</div>
+                        </div>
+                        <div class="metric-value">${users.activeUsers}</div>
+                        <div class="metric-change ${users.userGrowth >= 0 ? 'positive' : 'negative'}">
+                            ${users.userGrowth >= 0 ? '↗' : '↘'} ${Math.abs(users.userGrowth)}% user growth
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Security Events</h3>
+                            <div class="card-icon" style="background: ${security.totalEvents > 10 ? '#fef2f2' : '#f0f9ff'}; color: ${security.totalEvents > 10 ? '#dc2626' : '#0284c7'};">🔒</div>
+                        </div>
+                        <div class="metric-value">${security.totalEvents}</div>
+                        <div class="metric-change ${security.riskLevel === 'high' ? 'negative' : security.riskLevel === 'medium' ? 'neutral' : 'positive'}">
+                            Risk Level: ${security.riskLevel.toUpperCase()}
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Invitations</h3>
+                            <div class="card-icon" style="background: #fef3c7; color: #d97706;">✉️</div>
+                        </div>
+                        <div class="metric-value">${data.invitations?.sent || 0}</div>
+                        <div class="metric-change neutral">
+                            ${data.invitations?.accepted || 0} accepted, ${data.invitations?.pending || 0} pending
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('analytics-overview').innerHTML = html;
+            }
+
+            async loadActivityLog() {
+                try {
+                    const token = localStorage.getItem('authToken');
+                    const params = new URLSearchParams({
+                        page: this.currentPage,
+                        limit: 20,
+                        ...this.currentFilters
+                    });
+
+                    const response = await fetch(`/api/v1/audit/company/activity-log?${params}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to load activity log');
+                    }
+
+                    const data = await response.json();
+                    this.renderActivityLog(data.data.events);
+                    this.renderPagination(data.data.pagination);
+                } catch (error) {
+                    console.error('Error loading activity log:', error);
+                    document.getElementById('activity-list').innerHTML = 
+                        '<div class="error">Failed to load activity log</div>';
+                }
+            }
+
+            renderActivityLog(events) {
+                if (!events || events.length === 0) {
+                    document.getElementById('activity-list').innerHTML = 
+                        '<div class="loading">No activity found</div>';
+                    return;
+                }
+
+                const html = events.map(event => {
+                    const icon = this.getActivityIcon(event.action);
+                    const iconColor = this.getActivityIconColor(event.action);
+                    const timeAgo = this.formatTimeAgo(new Date(event.createdAt));
+
+                    return `
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: ${iconColor.bg}; color: ${iconColor.text};">
+                                ${icon}
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">${this.formatActivityTitle(event)}</div>
+                                <div class="activity-meta">
+                                    ${event.user ? `${event.user.name} (${event.user.email})` : event.emailSnapshot || 'System'} 
+                                    ${event.ip ? `• ${event.ip}` : ''}
+                                </div>
+                            </div>
+                            <div class="activity-time">${timeAgo}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('activity-list').innerHTML = html;
+            }
+
+            renderPagination(pagination) {
+                const prevBtn = document.getElementById('prev-page');
+                const nextBtn = document.getElementById('next-page');
+                const pageInfo = document.getElementById('page-info');
+
+                prevBtn.disabled = pagination.page <= 1;
+                nextBtn.disabled = pagination.page >= pagination.pages;
+                pageInfo.textContent = `Page ${pagination.page} of ${pagination.pages}`;
+
+                document.getElementById('activity-pagination').style.display = 'flex';
+            }
+
+            async loadSecurityAlerts() {
+                try {
+                    const token = localStorage.getItem('authToken');
+                    const response = await fetch(`/api/v1/audit/company/security-events?timeRange=${this.currentTimeRange}&severity=high`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to load security alerts');
+                    }
+
+                    const data = await response.json();
+                    this.renderSecurityAlerts(data.data.events);
+                } catch (error) {
+                    console.error('Error loading security alerts:', error);
+                }
+            }
+
+            renderSecurityAlerts(events) {
+                const highSeverityEvents = events.filter(event => event.severity === 'high');
+                
+                if (highSeverityEvents.length === 0) {
+                    document.getElementById('security-alerts').innerHTML = '';
+                    return;
+                }
+
+                const html = highSeverityEvents.slice(0, 3).map(event => `
+                    <div class="security-alert high">
+                        <div class="alert-header">
+                            <span>🚨</span>
+                            <span class="alert-title">Security Alert</span>
+                        </div>
+                        <div class="alert-description">
+                            ${this.formatSecurityAlert(event)}
+                        </div>
+                    </div>
+                `).join('');
+
+                document.getElementById('security-alerts').innerHTML = html;
+            }
+
+            getActivityIcon(action) {
+                if (action.startsWith('user.')) return '👤';
+                if (action.startsWith('invite.')) return '✉️';
+                if (action.startsWith('security.')) return '🔒';
+                if (action.startsWith('company.')) return '🏢';
+                if (action.startsWith('upload.')) return '📁';
+                return '📋';
+            }
+
+            getActivityIconColor(action) {
+                if (action.startsWith('security.')) {
+                    return { bg: '#fef2f2', text: '#dc2626' };
+                }
+                if (action.startsWith('user.')) {
+                    return { bg: '#dcfce7', text: '#16a34a' };
+                }
+                if (action.startsWith('invite.')) {
+                    return { bg: '#fef3c7', text: '#d97706' };
+                }
+                return { bg: '#dbeafe', text: '#2563eb' };
+            }
+
+            formatActivityTitle(event) {
+                const action = event.action;
+                const user = event.user?.name || event.emailSnapshot || 'System';
+                
+                switch (action) {
+                    case 'user.invited':
+                        return `User invitation sent to ${event.metadata?.email || 'unknown'}`;
+                    case 'user.login':
+                        return `${user} logged in`;
+                    case 'user.role_changed':
+                        return `${user}'s role changed to ${event.metadata?.newRole || 'unknown'}`;
+                    case 'security.suspicious_activity_detected':
+                        return `Suspicious activity detected from ${event.ip}`;
+                    case 'company.settings_updated':
+                        return `Company settings updated by ${user}`;
+                    default:
+                        return action.replace(/\./g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                }
+            }
+
+            formatSecurityAlert(event) {
+                switch (event.action) {
+                    case 'security.suspicious_activity_detected':
+                        return `Suspicious activity detected from IP ${event.ip}. Multiple failed login attempts or unusual access patterns.`;
+                    case 'security.multiple_failures':
+                        return `Multiple authentication failures detected from ${event.ip}. Account may be under attack.`;
+                    default:
+                        return `Security event: ${event.action}`;
+                }
+            }
+
+            formatTimeAgo(date) {
+                const now = new Date();
+                const diff = now - date;
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+                const days = Math.floor(diff / 86400000);
+
+                if (minutes < 1) return 'Just now';
+                if (minutes < 60) return `${minutes}m ago`;
+                if (hours < 24) return `${hours}h ago`;
+                return `${days}d ago`;
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            new CompanyAnalyticsDashboard();
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userRole');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

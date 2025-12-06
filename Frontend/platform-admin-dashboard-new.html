@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Platform Admin Dashboard</title>
+    
+    <!-- Enterprise Sidebar System -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <script src="components/sidebar.js"></script>
+    
+    <script type="module">
+      import { protectPage } from "./auth.js";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        protectPage("platform_admin");  // 🔒 SECURITY: Require platform_admin role
+      });
+    </script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+    <style>
+        :root {
+            --amc-body-bg-light: #f8fafc;
+            --amc-surface-bg-light: #ffffff;
+            --amc-table-bg-light: #fcfcfd;
+            --amc-header-bg-light: #f3f4f6;
+            --text-headings: #111827;
+            --text-primary: #374151;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --accent-primary: #0d6efd;
+            --accent-primary-hover: #0b5ed7;
+            --accent-action-positive: #28a745;
+            --accent-action-danger: #dc3545;
+            --border-primary: #e5e7eb;
+            --border-secondary: #d1d5db;
+            --shadow-primary: rgba(0, 0, 0, 0.08);
+            --header-height: 61px;
+            --sidebar-width: 260px;
+        }
+
+        body.dark-mode {
+            --amc-body-bg-light: #121212;
+            --amc-surface-bg-light: #1a1c1e;
+            --text-headings: #f8f9fa;
+            --text-primary: #e0e0e0;
+            --text-secondary: #adb5bd;
+            --accent-primary: #3f91ff;
+            --border-primary: #3a3a3a;
+            --shadow-primary: rgba(0, 0, 0, 0.25);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--amc-body-bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+            border-bottom: 1px solid #e5e7eb;
+            color: #1f2937;
+            padding: 10px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10000;
+            height: var(--header-height);
+        }
+
+        .app-header .logo h1 {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .amc-header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Dark mode header */
+        body.dark-mode .app-header {
+            background: linear-gradient(180deg, #1e2327 0%, #181b1f 100%);
+            border-bottom: 1px solid #3a3a3a;
+            color: #f0f0f0;
+        }
+
+        body.dark-mode .app-header .logo h1 {
+            color: #f0f0f0;
+        }
+
+        /* Sidebar */
+        .amc-sidebar {
+            position: fixed;
+            left: 0;
+            top: var(--header-height);
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: linear-gradient(to bottom, #f3f4f6, #e5e7eb);
+            border-right: 1px solid #d1d5db;
+            overflow: visible auto;
+            z-index: 950;
+            transition: width 0.18s ease;
+            padding-top: 8px;
+            box-shadow: inset -1px 0 0 rgba(0,0,0,0.05), 2px 0 8px rgba(0,0,0,0.06);
+        }
+
+        body.dark-mode .amc-sidebar {
+            background: #1a1c1e;
+            border-right-color: var(--border-primary);
+            color: var(--text-primary);
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            max-width: 1500px;
+            margin-right: auto;
+            padding: 2rem;
+            background-color: var(--amc-body-bg-light);
+            overflow-y: auto;
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        body.dark-mode .main-content {
+            background-color: var(--amc-body-bg-light);
+        }
+
+        /* Content header */
+        .content-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .content-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-headings);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-header h1 i {
+            color: var(--accent-primary);
+        }
+
+        .content-header p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-width: 720px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--amc-surface-bg-light);
+            border: 1px solid var(--border-primary);
+            box-shadow: var(--shadow-primary);
+            border-radius: 8px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+
+        body.dark-mode .card {
+            background: var(--amc-surface-bg-light);
+            border: 1px solid var(--border-primary);
+        }
+
+        .card-header {
+            border-bottom: 1px solid var(--border-primary);
+            padding: 1rem 1.5rem;
+            background: #f9fafb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        body.dark-mode .card-header {
+            background: var(--amc-surface-bg-light);
+            border-color: var(--border-primary);
+        }
+
+        .card-header h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin: 0;
+            color: var(--text-headings);
+        }
+
+        .card-body {
+            background: #ffffff;
+            padding: 1.5rem;
+        }
+
+        body.dark-mode .card-body {
+            background: var(--amc-surface-bg-light);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.01em;
+            transition: all 0.2s ease;
+            min-height: 44px;
+        }
+
+        .btn i {
+            font-size: 0.9em;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #0056d3 100%);
+            color: #ffffff !important;
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #0a66d1;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(11,116,255,0.3);
+        }
+
+        .btn-primary:hover i {
+            transform: scale(1.1);
+        }
+
+        .btn-secondary {
+            background-color: var(--amc-surface-bg-light);
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border-secondary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f3f4f6;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-action-danger) 0%, #c82333 100%);
+            color: #ffffff !important;
+            border: 1px solid var(--accent-action-danger);
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c82333 0%, #b21e2f 100%);
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--amc-surface-bg-light);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-primary);
+            border: 1px solid var(--border-primary);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .stat-icon.companies { background: var(--accent-primary); }
+        .stat-icon.users { background: var(--accent-action-positive); }
+        .stat-icon.pending { background: #ffc107; }
+        .stat-icon.revenue { background: var(--accent-action-danger); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive { color: var(--accent-action-positive); }
+
+        /* Table */
+        .table-container {
+            background: var(--amc-table-bg-light);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-primary);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+            background: var(--amc-table-bg-light);
+        }
+
+        .table thead th {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            background: var(--amc-header-bg-light);
+            padding: 14px 20px 16px 20px;
+            text-align: left;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .table td {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            padding: 14px 20px;
+            border-left: 1px solid var(--border-secondary);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:nth-child(odd) {
+            background: #ffffff !important;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background: #f9fafb !important;
+        }
+
+        .table tbody tr:hover {
+            background: #f1f5f9 !important;
+            cursor: pointer;
+            box-shadow: inset 2px 0 0 var(--accent-primary);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Status badges */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-action-positive);
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .status-badge.suspended {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent-action-danger);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--amc-surface-bg-light);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            padding: 0.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-radius: 0.25rem;
+        }
+
+        .modal-close:hover {
+            background: #f3f4f6;
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-primary);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-primary);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            background: var(--amc-surface-bg-light);
+            color: var(--text-primary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.success {
+            background: var(--accent-action-positive);
+        }
+
+        .notification.error {
+            background: var(--accent-action-danger);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Dark mode toggle */
+        .btn-icon {
+            background: transparent;
+            border: none;
+            padding: 5px 8px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .btn-icon i {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+        }
+
+        .btn-icon:hover i {
+            color: var(--text-primary);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Enterprise Sidebar -->
+    <div id="sidebar" class="amc-sidebar">
+        <!-- Sidebar content will be populated by sidebar-builder.js -->
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <h1><i class="fas fa-cogs"></i> AutoMediaCenter</h1>
+            </div>
+            <div class="amc-header-right">
+                <!-- Avatar System Integration -->
+                <div id="amc-avatar-container"></div>
+                
+                <!-- Dark Mode Toggle -->
+                <button class="btn-icon" id="darkModeToggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Content Header -->
+            <div class="content-header">
+                <h1><i class="fas fa-shield-alt"></i> Platform Admin Dashboard</h1>
+                <p>Manage enterprise clients, monitor system health, and oversee platform operations. Complete control center for AutoMediaCenter platform administration.</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon companies">
+                            <i class="fas fa-building"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalCompanies">0</div>
+                    <div class="stat-label">Total Companies</div>
+                    <div class="stat-change positive" id="companiesChange">+0 this month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon users">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-change positive" id="usersChange">+0 this month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="pendingCompanies">0</div>
+                    <div class="stat-label">Pending Approvals</div>
+                    <div class="stat-change" id="pendingChange">0 awaiting review</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon revenue">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="monthlyRevenue">$0</div>
+                    <div class="stat-label">Monthly Revenue</div>
+                    <div class="stat-change positive" id="revenueChange">+0% vs last month</div>
+                </div>
+            </div>
+
+            <!-- Company Management Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-building"></i> Company Management</h2>
+                    <button class="btn btn-primary" onclick="showCreateCompanyModal()">
+                        <i class="fas fa-plus"></i> Create Company
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Companies Table -->
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Company</th>
+                                    <th>Contact Email</th>
+                                    <th>Status</th>
+                                    <th>Plan</th>
+                                    <th>Users</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="companiesTableBody">
+                                <!-- Companies will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Company Modal -->
+    <div class="modal-overlay" id="createCompanyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Company</h3>
+                <button class="modal-close" onclick="hideCreateCompanyModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createCompanyForm">
+                    <div class="form-group">
+                        <label class="form-label">Company Name *</label>
+                        <input type="text" class="form-input" id="companyName" required placeholder="Acme Corporation">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Person *</label>
+                        <input type="text" class="form-input" id="contactPerson" required placeholder="Jane Smith">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Email *</label>
+                        <input type="email" class="form-input" id="contactEmail" required placeholder="jane@acme.com">
+                        <small style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+                            This person will receive the invitation and become the Client Admin
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Plan Type *</label>
+                        <select class="form-input" id="plan" required>
+                            <option value="free">Free (5 users, 100MB uploads)</option>
+                            <option value="pro">Pro (25 users, 1GB uploads)</option>
+                            <option value="enterprise" selected>Enterprise (Unlimited users, 10GB uploads)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideCreateCompanyModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="createCompany()" id="createCompanyBtn">
+                    <i class="fas fa-paper-plane"></i> Create & Send Invitation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Avatar System -->
+    <script src="amc-avatar-system.js"></script>
+
+    <script>
+        // Global state
+        let companies = [];
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize avatar system
+            if (typeof initializeAvatarSystem === 'function') {
+                initializeAvatarSystem();
+            }
+
+            // Initialize dark mode toggle
+            initializeDarkMode();
+
+            // Load initial data
+            await loadDashboardData();
+            await loadCompanies();
+        });
+
+        // Dark mode functionality
+        function initializeDarkMode() {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+
+            darkModeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('darkMode', isDark);
+                darkModeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+        }
+
+        // Load dashboard statistics
+        async function loadDashboardData() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                const response = await fetch('/api/v1/audit/platform/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const stats = await response.json();
+                    updateDashboardStats(stats);
+                } else {
+                    console.error('Failed to load dashboard stats');
+                    // Set default stats
+                    updateDashboardStats({
+                        totalCompanies: 0,
+                        totalUsers: 0,
+                        pendingCompanies: 0,
+                        monthlyRevenue: 0
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                // Set default stats on error
+                updateDashboardStats({
+                    totalCompanies: 0,
+                    totalUsers: 0,
+                    pendingCompanies: 0,
+                    monthlyRevenue: 0
+                });
+            }
+        }
+
+        // Update dashboard statistics
+        function updateDashboardStats(stats) {
+            document.getElementById('totalCompanies').textContent = stats.totalCompanies || 0;
+            document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+            document.getElementById('pendingCompanies').textContent = stats.pendingCompanies || 0;
+            document.getElementById('monthlyRevenue').textContent = `$${(stats.monthlyRevenue || 0).toLocaleString()}`;
+
+            // Update change indicators
+            document.getElementById('companiesChange').textContent = `+${stats.companiesChange || 0} this month`;
+            document.getElementById('usersChange').textContent = `+${stats.usersChange || 0} this month`;
+            document.getElementById('pendingChange').textContent = `${stats.pendingCompanies || 0} awaiting review`;
+            document.getElementById('revenueChange').textContent = `+${stats.revenueChange || 0}% vs last month`;
+        }
+
+        // Load companies
+        async function loadCompanies() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');

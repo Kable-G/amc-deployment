@@ -1,0 +1,418 @@
+/**
+ * Integrated Welcome Modal Styles
+ * Matches landing-page-twitter-style.html design system
+ * Enterprise-grade styling with backdrop blur effects
+ */
+
+/* Modal Backdrop */
+.integrated-welcome-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.integrated-welcome-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Modal Container */
+.integrated-welcome-modal {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow: hidden;
+    transform: scale(0.95) translateY(20px);
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.integrated-welcome-backdrop.show .integrated-welcome-modal {
+    transform: scale(1) translateY(0);
+}
+
+/* Modal Header */
+.welcome-modal-header {
+    text-align: center;
+    padding: 40px 30px 30px;
+    background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
+    color: white;
+    position: relative;
+}
+
+.welcome-modal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+.welcome-icon {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 16px;
+}
+
+.welcome-icon i {
+    font-size: 48px;
+    color: #4caf50;
+    background: rgba(255, 255, 255, 0.15);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.welcome-modal-header h2 {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.welcome-subtitle {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-size: 16px;
+    opacity: 0.9;
+    font-weight: 400;
+}
+
+/* Modal Body */
+.welcome-modal-body {
+    padding: 30px;
+}
+
+/* User Info Card */
+.user-info-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid #e9ecef;
+    position: relative;
+    overflow: hidden;
+}
+
+.user-info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--role-color, #1a73e8);
+}
+
+/* Role-specific styling */
+.role-media-user {
+    --role-color: #2196f3;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3f9ff 100%);
+    border-color: #bbdefb;
+}
+
+.role-client-user {
+    --role-color: #4caf50;
+    background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
+    border-color: #c8e6c9;
+}
+
+.role-client-admin {
+    --role-color: #ff9800;
+    background: linear-gradient(135deg, #fff3e0 0%, #fef7ed 100%);
+    border-color: #ffcc02;
+}
+
+.role-platform-admin {
+    --role-color: #f44336;
+    background: linear-gradient(135deg, #ffebee 0%, #fef5f5 100%);
+    border-color: #ffcdd2;
+}
+
+.user-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--role-color, #1a73e8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-details h3 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    word-break: break-word;
+}
+
+.role-badge {
+    display: inline-block;
+    background: var(--role-color, #1a73e8);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.role-description {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+/* Permissions Section */
+.permissions-section {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.permissions-section h4 {
+    margin: 0 0 16px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.permissions-section h4 i {
+    color: #1a73e8;
+    font-size: 14px;
+}
+
+.permissions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.permissions-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 14px;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.permissions-list li:last-child {
+    border-bottom: none;
+}
+
+.permissions-list li i {
+    color: #10b981;
+    font-size: 12px;
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* Modal Footer */
+.welcome-modal-footer {
+    padding: 24px 30px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.btn-primary {
+    background: #1a73e8;
+    color: white;
+    box-shadow: 0 2px 4px rgba(26, 115, 232, 0.2);
+}
+
+.btn-primary:hover {
+    background: #1557b0;
+    box-shadow: 0 4px 8px rgba(26, 115, 232, 0.3);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #ffffff;
+    color: #5f6368;
+    border: 1px solid #dadce0;
+}
+
+.btn-secondary:hover {
+    background: #f8f9fa;
+    border-color: #bdc1c6;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+    .integrated-welcome-backdrop {
+        padding: 16px;
+    }
+    
+    .integrated-welcome-modal {
+        max-width: 100%;
+        border-radius: 12px;
+    }
+    
+    .welcome-modal-header {
+        padding: 32px 24px 24px;
+    }
+    
+    .welcome-modal-header h2 {
+        font-size: 24px;
+    }
+    
+    .welcome-modal-body {
+        padding: 24px;
+    }
+    
+    .user-info-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .welcome-modal-footer {
+        padding: 20px 24px;
+        flex-direction: column;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .integrated-welcome-modal {
+        background: #1f2937;
+        color: #f9fafb;
+    }
+    
+    .user-info-card {
+        background: #374151;
+        border-color: #4b5563;
+    }
+    
+    .user-details h3 {
+        color: #f9fafb;
+    }
+    
+    .role-description {
+        color: #d1d5db;
+    }
+    
+    .permissions-section {
+        background: #374151;
+        border-color: #4b5563;
+    }
+    
+    .permissions-section h4 {
+        color: #f9fafb;
+    }
+    
+    .permissions-list li {
+        color: #e5e7eb;
+        border-color: #4b5563;
+    }
+    
+    .welcome-modal-footer {
+        background: #374151;
+        border-color: #4b5563;
+    }
+    
+    .btn-secondary {
+        background: #4b5563;
+        color: #d1d5db;
+        border-color: #6b7280;
+    }
+    
+    .btn-secondary:hover {
+        background: #6b7280;
+    }
+}
+
+/* Animation keyframes */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.integrated-welcome-backdrop.show .user-info-card {
+    animation: fadeInUp 0.4s ease 0.1s both;
+}
+
+.integrated-welcome-backdrop.show .permissions-section {
+    animation: fadeInUp 0.4s ease 0.2s both;
+}

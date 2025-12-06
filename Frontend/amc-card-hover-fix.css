@@ -1,0 +1,136 @@
+/* ============================================================
+   AutoMediaCenter – Card Hover Fix (Simplified, Stable)
+   - Restores original card hover behaviour (including title area)
+   - Improves overlay response on image area
+   - Avoids global pointer-events hacks
+   ============================================================ */
+
+/* 1. RESTORE ORIGINAL CARD HOVER BEHAVIOUR
+   (This brings .media-card back to the clean, stable state
+    defined in automediacenter-CLEAN-GLOBALSHELL.html) */
+
+.media-card {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 3px 7px var(--shadow-primary);
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, border-color 0.15s ease-out;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid var(--border-secondary);
+    will-change: transform, box-shadow;
+    contain: layout style;
+    transform: translateZ(0); /* Force hardware acceleration */
+}
+
+.media-card:hover {
+    transform: translateY(-4px) translateZ(0);
+    border-color: var(--accent-primary);
+    box-shadow: 0 8px 20px rgba(13, 110, 253, 0.15);
+}
+
+/* 2. ENSURE IMAGE FIELD IS A RELIABLE ANCHOR FOR THE OVERLAY */
+
+.media-card .card-image-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    contain: layout style;
+}
+
+/* 3. BASE OVERLAY LAYER – COVERS THE IMAGE AREA CLEANLY */
+
+.card-image-hover-buttons-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--overlay-bg);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+
+    z-index: 2;
+    will-change: opacity;
+
+    /* Slightly smoother transition */
+    transition: opacity 0.2s ease-out, visibility 0s linear 0.2s;
+}
+
+/* 4. SHOW OVERLAY ON CARD OR IMAGE HOVER
+   - This makes the overlay more forgiving around the edges
+   - But keeps the hover logic simple and predictable */
+
+.media-card:hover .card-image-field .card-image-hover-buttons-overlay,
+.media-card .card-image-field:hover .card-image-hover-buttons-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.2s ease-out, visibility 0s linear 0s;
+}
+
+/* 5. IMAGES / VIDEO PLACEHOLDERS SHOULDN'T EAT MOUSE EVENTS */
+
+.media-card .card-image-field img,
+.media-card .card-image-field .placeholder-icon,
+.media-card .card-image-field .video-placeholder-enhanced {
+    position: relative;
+    z-index: 1;
+    pointer-events: none; /* Let hover flow to the card/overlay */
+}
+
+/* 6. BUTTONS INSIDE THE OVERLAY MUST BE FULLY CLICKABLE */
+
+.media-card .card-image-field .card-image-hover-buttons-overlay .btn {
+    position: relative;
+    z-index: 3;
+    pointer-events: auto;
+
+    min-width: 160px;
+    padding: 10px 20px;
+    font-size: 0.95em;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-width: 1px;
+    border-style: solid;
+    cursor: pointer;
+}
+
+/* Keep brand band, meta and content behaving normally */
+
+.media-card .brand-band,
+.media-card .card-content-body,
+.media-card .card-content-body h3,
+.media-card .card-content-body h3 a,
+.card-bottom-meta {
+    position: relative;
+    z-index: 1;
+    pointer-events: auto;
+}
+
+/* 7. VIDEO PLACEHOLDER SAFETY */
+
+.video-placeholder-enhanced {
+    pointer-events: none;
+}
+
+/* 8. OPTIONAL: WEBKIT RENDERING SAFETY FOR OVERLAY ONLY */
+
+@supports (-webkit-appearance: none) {
+    .card-image-hover-buttons-overlay {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+}

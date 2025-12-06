@@ -1,0 +1,98 @@
+{
+  "name": "AutoMediaCenter - AI-Powered Timezone Converter Pro",
+  "short_name": "Timezone Pro",
+  "description": "Industry-leading timezone converter with AI assistant, voice commands, and smart meeting scheduler for media professionals",
+  "start_url": "./timezoneconverter.html",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#0d6efd",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "lang": "en",
+  "categories": ["productivity", "business", "utilities"],
+  "icons": [
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAASwCAYAAAD8wUzgAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "1200x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "AI-Powered Timezone Converter with Smart Features"
+    }
+  ],
+  "features": [
+    "AI Assistant with natural language processing",
+    "Voice commands using Web Speech API",
+    "Automatic location detection",
+    "Smart meeting scheduler",
+    "Offline support with service worker",
+    "Real-time timezone synchronization",
+    "Premium micro-interactions",
+    "Dark/light mode support"
+  ],
+  "related_applications": [
+    {
+      "platform": "web",
+      "url": "./currencyconverter.html",
+      "id": "currency-converter"
+    },
+    {
+      "platform": "web", 
+      "url": "./unitconverter.html",
+      "id": "unit-converter"
+    }
+  ],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "AI Assistant",
+      "short_name": "AI",
+      "description": "Ask natural language timezone questions",
+      "url": "./timezoneconverter.html?feature=ai",
+      "icons": [
+        {
+          "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+          "sizes": "32x32"
+        }
+      ]
+    },
+    {
+      "name": "Meeting Scheduler",
+      "short_name": "Meetings",
+      "description": "Find optimal meeting times across timezones",
+      "url": "./timezoneconverter.html?feature=meetings",
+      "icons": [
+        {
+          "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+          "sizes": "32x32"
+        }
+      ]
+    }
+  ]
+}

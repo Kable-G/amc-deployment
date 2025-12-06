@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Portal - AutoMediaCenter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-primary: #ff6b35;
+            --accent-secondary: #00d4ff;
+            --border-primary: #333333;
+            --shadow-primary: rgba(255, 107, 53, 0.2);
+            --font-family-main: 'Poppins', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: var(--font-family-main); 
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary); 
+            line-height: 1.6; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .portal-icon {
+            font-size: 4rem;
+            color: var(--accent-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .portal-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .portal-description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--accent-secondary), #42a5ff);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent-secondary);
+            color: var(--accent-secondary);
+        }
+
+        .btn-outline:hover {
+            background: var(--accent-secondary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--accent-primary);
+        }
+
+        .features {
+            text-align: left;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            border: 1px solid var(--border-primary);
+        }
+
+        .features h4 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .features ul {
+            list-style: none;
+        }
+
+        .features li {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .features li::before {
+            content: '✓';
+            color: var(--accent-secondary);
+            font-weight: bold;
+        }
+
+        .company-examples {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--border-primary);
+        }
+
+        .company-examples h4 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .company-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .company-item {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-primary);
+            text-align: center;
+        }
+
+        .company-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .company-brands {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        Back to Home
+    </a>
+
+    <div class="container">
+        <div class="logo">AutoMediaCenter</div>
+        
+        <div class="portal-icon">
+            <i class="fas fa-building"></i>
+        </div>
+        
+        <h1 class="portal-title">Company Portal</h1>
+        
+        <p class="portal-description">
+            Manage your automotive brand's press presence and distribute news to thousands of journalists worldwide. Perfect for multi-brand automotive groups.
+        </p>
+
+        <div class="features">
+            <h4>Enterprise Features:</h4>
+            <ul>
+                <li>Multi-brand account management</li>
+                <li>Team collaboration tools</li>
+                <li>Advanced analytics and reach metrics</li>
+                <li>Embargo and scheduling controls</li>
+                <li>Content approval workflows</li>
+                <li>Brand-specific user permissions</li>
+                <li>Global distribution network</li>
+                <li>Media asset management</li>
+            </ul>
+        </div>
+
+        <div class="company-examples">
+            <h4>Trusted by Leading Automotive Groups:</h4>
+            <div class="company-grid">
+                <div class="company-item">
+                    <div class="company-name">BMW Group</div>
+                    <div class="company-brands">BMW • BMW M • MINI • Rolls-Royce</div>
+                </div>
+                <div class="company-item">
+                    <div class="company-name">Mercedes-Benz Group</div>
+                    <div class="company-brands">Mercedes-Benz • AMG • Maybach</div>
+                </div>
+                <div class="company-item">
+                    <div class="company-name">Volkswagen Group</div>
+                    <div class="company-brands">VW • Audi • Porsche • Bentley</div>
+                </div>
+                <div class="company-item">
+                    <div class="company-name">Stellantis</div>
+                    <div class="company-brands">Jeep • Ram • Fiat • Alfa Romeo</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <a href="register.html?type=company" class="btn btn-primary">
+                <i class="fas fa-briefcase"></i>
+                Setup Company Account
+            </a>
+            <a href="login.html?portal=company" class="btn btn-outline">
+                <i class="fas fa-sign-in-alt"></i>
+                Company Sign In
+            </a>
+        </div>
+
+        <p style="margin-top: 2rem; color: var(--text-secondary); font-size: 0.9rem;">
+            For journalists and media professionals, 
+            <a href="press-access.html" style="color: var(--accent-primary);">visit our Press Portal</a>
+        </p>
+    </div>
+
+    <script>
+        // Track company portal access
+        fetch('/api/v1/users/track-activity', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                eventType: 'company_portal_access',
+                eventData: {
+                    referrer: document.referrer,
+                    userAgent: navigator.userAgent
+                },
+                pageUrl: window.location.href,
+                timestamp: Date.now(),
+                sessionId: sessionStorage.getItem('sessionId') || 'anonymous'
+            })
+        }).catch(err => console.log('Analytics tracking failed:', err));
+    </script>
+</body>
+</html>

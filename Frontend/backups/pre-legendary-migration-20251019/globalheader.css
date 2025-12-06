@@ -1,0 +1,475 @@
+/**
+ * AutoMediaCenter Global Header Styles
+ * Complete header styling with dark mode, responsive design, and all components
+ */
+
+:root {
+  /* Header dimensions */
+  --header-height: 72px;
+  --header-padding: 24px;
+  
+  /* Colors - Light mode */
+  --header-bg: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+  --header-border: #e5e7eb;
+  --header-text: #111827;
+  --header-text-secondary: #6b7280;
+  --header-icon: #9ca3af;
+  --header-icon-hover: #111827;
+  
+  /* Brand colors */
+  --brand-primary: #0d6efd;
+  --brand-accent: #ffc107;
+  
+  /* Interactive elements */
+  --btn-hover-bg: rgba(0, 0, 0, 0.05);
+  --modal-bg: #ffffff;
+  --modal-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  
+  /* Badge colors */
+  --badge-bg: #dc2626;
+  --badge-text: #ffffff;
+  --notification-active: #10b981;
+  --cart-active: #f59e0b;
+}
+
+/* Dark mode variables */
+body.dark-mode {
+  --header-bg: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+  --header-border: #374151;
+  --header-text: #f9fafb;
+  --header-text-secondary: #d1d5db;
+  --header-icon: #9ca3af;
+  --header-icon-hover: #f9fafb;
+  --btn-hover-bg: rgba(255, 255, 255, 0.1);
+  --modal-bg: #1f2937;
+  --modal-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* ---- Main Header ---- */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--header-padding);
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+/* ---- Header Layout ---- */
+.amc-header-left {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.amc-header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.amc-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 0 0 auto;
+}
+
+/* ---- Logo ---- */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--header-text);
+  font-weight: 700;
+  font-size: 1.25rem;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+.logo i {
+  color: var(--brand-primary);
+  font-size: 1.5rem;
+}
+
+.logo-text {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* ---- Search Container ---- */
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.header-search {
+  width: 100%;
+  padding: 8px 16px 8px 40px;
+  border: 1px solid var(--header-border);
+  border-radius: 8px;
+  background: var(--modal-bg);
+  color: var(--header-text);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.header-search:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
+.search-container i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--header-icon);
+  pointer-events: none;
+}
+
+/* ---- Header Buttons ---- */
+.btn-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--header-icon);
+}
+
+.btn-icon:hover {
+  background: var(--btn-hover-bg);
+  color: var(--header-icon-hover);
+  transform: translateY(-1px);
+}
+
+.btn-icon:active {
+  transform: translateY(0);
+}
+
+.btn-icon i {
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
+}
+
+/* ---- Notification Indicator ---- */
+.notification-indicator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--header-icon);
+}
+
+.notification-indicator:hover {
+  background: var(--btn-hover-bg);
+  color: var(--header-icon-hover);
+}
+
+.notification-indicator.has-new {
+  color: var(--notification-active);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9px;
+  padding: 0 4px;
+  transform: scale(1);
+  transition: transform 0.2s ease;
+}
+
+/* ---- Cart Indicator ---- */
+.cart-indicator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--header-icon);
+}
+
+.cart-indicator:hover {
+  background: var(--btn-hover-bg);
+  color: var(--header-icon-hover);
+}
+
+.cart-indicator.has-items {
+  color: var(--cart-active);
+}
+
+.cart-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  background: var(--cart-active);
+  color: var(--badge-text);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9px;
+  padding: 0 4px;
+  transform: scale(0);
+  transition: transform 0.2s ease;
+}
+
+.cart-indicator.has-items .cart-badge {
+  transform: scale(1);
+}
+
+/* ---- Avatar Button ---- */
+.amc-avatar-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: visible;
+}
+
+.amc-avatar-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid var(--amc-avatar-ring-color, var(--brand-primary));
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.amc-avatar-btn:hover .amc-avatar-ring {
+  inset: -4px;
+  border-width: 3px;
+}
+
+/* ---- Avatar Modal ---- */
+.avatar-modal {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: var(--modal-bg);
+  border: 1px solid var(--header-border);
+  border-radius: 12px;
+  box-shadow: var(--modal-shadow);
+  overflow: hidden;
+  z-index: 1001;
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.avatar-modal:not([hidden]) {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.avatar-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--btn-hover-bg);
+  border-bottom: 1px solid var(--header-border);
+}
+
+.avatar-modal-header .amc-avatar-ring {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--amc-avatar-ring-color, var(--brand-primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--modal-bg);
+  flex-shrink: 0;
+}
+
+.avatar-modal-header .amc-avatar-ring i {
+  color: var(--header-icon);
+  font-size: 1rem;
+}
+
+.avatar-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.avatar-email {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--header-text);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar-role {
+  font-size: 12px;
+  color: var(--header-text-secondary);
+  text-transform: capitalize;
+}
+
+.avatar-modal-body {
+  padding: 8px;
+}
+
+.modal-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--header-text);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-btn:hover {
+  background: var(--btn-hover-bg);
+}
+
+.modal-btn i {
+  width: 16px;
+  color: var(--header-icon);
+  font-size: 14px;
+}
+
+.modal-btn.logout-btn {
+  color: var(--badge-bg);
+}
+
+.modal-btn.logout-btn i {
+  color: var(--badge-bg);
+}
+
+.modal-divider {
+  margin: 8px 0;
+  border: none;
+  border-top: 1px solid var(--header-border);
+}
+
+/* ---- Responsive Design ---- */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 16px;
+  }
+  
+  .amc-header-right {
+    gap: 12px;
+  }
+  
+  .logo-text {
+    display: none;
+  }
+  
+  .search-container {
+    display: none;
+  }
+  
+  .avatar-modal {
+    right: -8px;
+    width: 260px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: 0 12px;
+  }
+  
+  .amc-header-right {
+    gap: 8px;
+  }
+  
+  .btn-icon,
+  .notification-indicator,
+  .cart-indicator {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ---- Animation Keyframes ---- */
+@keyframes badge-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.notification-badge.animate,
+.cart-badge.animate {
+  animation: badge-bounce 0.3s ease;
+}
+
+/* ---- Focus States for Accessibility ---- */
+.btn-icon:focus,
+.notification-indicator:focus,
+.cart-indicator:focus {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.modal-btn:focus {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: -2px;
+}
+
+/* ---- Print Styles ---- */
+@media print {
+  .app-header {
+    display: none;
+  }
+}

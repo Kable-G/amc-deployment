@@ -1,0 +1,1229 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>AutoMediaCenter - Latest Releases (Modular Test)</title>
+    
+    <!-- MODULAR SYSTEM INTEGRATION -->
+    <link rel="stylesheet" href="css/amc-header-only.css">
+    <link rel="stylesheet" href="css/amc-sidebar-only.css">
+    <script src="components/amc-role.js"></script>
+    <script src="components/amc-header-minimal.js"></script>
+    <script src="components/amc-sidebar-minimal.js"></script>
+    
+    <script type="module">
+      import { protectPage } from "./auth.js";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        protectPage();       // ✅ Checks login and role properly
+        // Modular components auto-initialize
+      });
+    </script>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet"/>
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    <style>
+            :root {
+                /* ── LAYERED BACKGROUND ARCHITECTURE (Light Mode Premium) ─────── */
+                --amc-body-bg-light: #f8fafc;         /* soft neutral layer */
+                --amc-surface-bg-light: #ffffff;      /* cards / containers */
+                --amc-table-bg-light: #fcfcfd;        /* table wrapper */
+                --amc-header-bg-light: #f3f4f6;       /* table header background */
+                --amc-sidebar-bg-light: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* sidebar gradient */
+                
+                /* Legacy variables (maintained for compatibility) */
+                --bg-primary: var(--amc-body-bg-light);
+                --bg-secondary: var(--amc-surface-bg-light);
+                --bg-tertiary: #e9ecef;
+                
+                /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────────── */
+                --text-headings: #111827;    /* headers: strong */
+                --text-primary: #374151;     /* body text: medium */
+                --text-secondary: #6b7280;   /* metadata: subtle */
+                --text-muted: #9ca3af;       /* ultra-subtle */
+                
+                --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7;
+                
+                --accent-secondary-default: #6c757d;
+                --accent-secondary-default-hover: #5a6268;
+    
+                --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
+                
+                --border-primary: #e5e7eb; --border-secondary: #d1d5db; --border-color-light: #e9ecef;
+                --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+                --icon-available: var(--accent-primary); --icon-unavailable: #ced4da;
+                --shadow-primary: rgba(0, 0, 0, 0.08); --shadow-hover: rgba(0, 0, 0, 0.15);
+                --overlay-bg: rgba(0, 0, 0, 0.65);
+                --tag-bg: var(--bg-tertiary); --tag-text: var(--text-secondary);
+                --color-info: #17a2b8;
+                --color-warning: #ffc107;
+                --brand-band-light-bg: #212529; --brand-band-light-text: #f8f9fa;
+                --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+                --bg-image-placeholder: #e9ecef;
+                --font-family-main: 'Poppins', sans-serif;
+                --sidebar-width: 260px;
+                --header-height: 61px;
+                --footer-height: 60px;
+                --accent-primary-rgb: 13, 110, 253;
+                --accent-secondary-default-rgb: 108, 117, 125;
+                --highlight-color-rgb: 255, 193, 7;
+                --notification-error: #dc3545;
+                --accent-action-positive: #28a745;
+                --accent-action-positive-hover: #218838;
+                --accent-action-positive-rgb: 40, 167, 69;
+                --accent-action-danger: #dc3545;
+                --accent-action-danger-hover: #c82333;
+                --selection-dot-color: var(--accent-primary); /* Blue for selection */
+                
+                /* ENTERPRISE TYPOGRAPHY SYSTEM */
+                --font-display: 2rem;      /* Page titles (h1) */
+                --font-heading: 1.4rem;    /* Section headers */
+                --font-subheading: 1.1rem; /* Card headers */
+                --font-body: 0.95rem;      /* Body text */
+                --font-muted: 0.85rem;     /* Metadata / labels */
+            }
+
+        body.dark-mode {
+            --bg-primary: #121212; --bg-secondary: #1e1e1e; --bg-tertiary: #2c2c2c;
+            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff; 
+            
+            --accent-secondary-default: #6c757d; 
+            --accent-secondary-default-hover: #545b62;
+            
+            --border-primary: #3a3a3a; --border-secondary: #444; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+            --icon-available: var(--accent-primary); --icon-unavailable: #555;
+            --shadow-primary: rgba(0, 0, 0, 0.25); --shadow-hover: rgba(0, 0, 0, 0.35);
+            --overlay-bg: rgba(0, 0, 0, 0.75); 
+            --tag-bg: #4a4a4a; --tag-text: var(--text-primary);
+            --brand-band-light-bg: #f8f9fa; --brand-band-light-text: #212529; 
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa; 
+            --color-info: #36c4d9; 
+            --color-warning: #ffd04a; 
+            --bg-image-placeholder: #2c2c2c; 
+            --accent-primary-rgb: 63, 145, 255; 
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --accent-action-positive: #20c997;
+            --accent-action-positive-hover: #1ba984;
+            --accent-action-positive-rgb: 32, 201, 151;
+            --accent-action-danger: #e74c3c;
+            --accent-action-danger-hover: #d63031;
+            --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--amc-body-bg-light); /* soft neutral layer */
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Light mode layered background system */
+        body:not(.dark-mode) {
+            background: var(--amc-body-bg-light);
+        }
+        
+        /* DARK MODE BODY BACKGROUND */
+        body.dark-mode {
+            background: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        a { color: var(--accent-primary); text-decoration: none; } 
+        a:hover { color: var(--accent-primary-hover); text-decoration: underline; }
+
+        /* ========================================
+           MAIN CONTENT AREA - NO INTERFERENCE
+           ======================================== */
+        .main-content {
+            margin-left: 0; /* Modular sidebar handles its own offset */
+            max-width: none; /* Remove max-width constraint for full width */
+            margin: 0 auto;
+            padding: 0.5rem 2rem 2rem 2rem; /* Further reduced top padding to move content higher */
+            background-color: var(--bg-primary);
+            overflow-y: auto;
+            min-height: calc(100vh - 64px); /* Account for modular header height */
+        }
+
+        /* DARK MODE MAIN CONTENT */
+        body.dark-mode .main-content {
+            background-color: var(--bg-primary) !important;
+        }
+
+        .content-header {
+            margin-bottom: 8px; /* Further reduced to move content higher */
+            padding-bottom: 8px; /* Reduced padding */
+            border-bottom: 1px solid var(--border-primary);
+            margin-top: -8px; /* Negative margin to pull content higher */
+        }
+        .content-header h1 {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: var(--text-headings);
+            margin-bottom: 3px; /* Reduced margin */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 0; /* Ensure no top margin */
+        }
+        .content-header h1 i { color: var(--accent-primary); margin-right: 0; }
+        .content-header p { color: var(--text-secondary); font-size: 1em; margin-top: 0; margin-bottom: 0; }
+
+        .controls-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; } .search-bar { display: flex; flex-grow: 1; max-width: 450px; }
+        .search-bar input[type="search"] { width: 100%; padding: 10px 15px; border: 1px solid var(--border-secondary); border-radius: 5px 0 0 5px; font-size: 1em; outline: none; background-color: var(--bg-secondary); color: var(--text-primary); font-family: inherit;}
+        .search-bar input[type="search"]:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 0.25rem rgba(var(--accent-primary-rgb), 0.25); } 
+        .search-bar button.search-submit-btn { border-radius: 0 5px 5px 0; border-left: none; background-color: var(--accent-secondary-default); color: #fff; border-color: var(--accent-secondary-default);}
+        .search-bar button.search-submit-btn:hover { background-color: var(--accent-secondary-default-hover); border-color: var(--accent-secondary-default-hover); }
+
+        .filter-controls { display: flex; gap: 10px; align-items: center; }
+        .btn { padding: 10px 18px; font-size: 0.95em; border: 1px solid transparent; border-radius: 5px; cursor: pointer; transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease; display: inline-flex; align-items: center; justify-content: center; font-weight: 500; text-decoration: none; white-space: nowrap; line-height: 1.4;} .btn i { margin-right: 6px; } 
+        .btn-primary { background-color: var(--accent-primary); color: #fff; border-color: var(--accent-primary);} .btn-primary:hover { background-color: var(--accent-primary-hover); border-color: var(--accent-primary-hover); box-shadow: 0 2px 5px rgba(var(--accent-primary-rgb), 0.3); text-decoration: none; color: #fff; } 
+        .btn-secondary { background-color: var(--accent-secondary); color: #212529; border-color: var(--accent-secondary);} 
+        .btn-secondary:hover { background-color: var(--accent-secondary-hover); border-color: var(--accent-secondary-hover); box-shadow: 0 2px 5px rgba(var(--accent-secondary-rgb),0.3); text-decoration: none; color: #212529; } 
+        body.dark-mode .btn-secondary { color: var(--text-headings); } 
+        body.dark-mode .btn-secondary:hover { color: var(--text-headings); }
+
+        .btn-light { background-color: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-secondary); } .btn-light:hover { background-color: var(--border-secondary); border-color: var(--border-primary); } .btn-icon { padding: 8px 10px; }
+        .btn-small { padding: 6px 12px; font-size: 0.85em; }
+
+        .amc-card-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5 cards when sidebar expanded */
+            gap: 20px;
+            margin-bottom: 30px;
+            min-height: 0; /* Allow grid to shrink */
+        }
+        
+        /* When sidebar is collapsed, show 6 cards across */
+        body.amc-sidebar-collapsed .amc-card-grid {
+            grid-template-columns: repeat(6, 1fr); /* 6 cards when sidebar collapsed */
+        }
+        
+        /* FIXED: Allow cards to render in last position */
+        .amc-card-grid .media-card:last-child {
+            grid-column: auto; /* Don't force specific column */
+        }
+        
+        /* Ensure proper grid flow for all cards */
+        .amc-card-grid .media-card {
+            grid-column: auto; /* Let grid auto-place cards */
+            min-width: 0; /* Prevent overflow */
+        }
+        
+        /* Responsive fallback for smaller screens */
+        @media (max-width: 1400px) {
+            .amc-card-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            body.amc-sidebar-collapsed .amc-card-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .amc-card-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            body.amc-sidebar-collapsed .amc-card-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .media-card { 
+            background-color: var(--bg-secondary); 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 3px 7px var(--shadow-primary); 
+            transition: box-shadow 0.2s ease-out, transform 0.2s ease-out, border-color 0.2s ease-out; 
+            display: flex; flex-direction: column; 
+            position: relative; 
+            border: 1px solid var(--border-secondary); 
+        }
+        .media-card:hover { 
+            transform: translateY(-6px); 
+            border-color: rgba(var(--accent-primary-rgb), 0.5);
+            box-shadow: 0 12px 28px rgba(var(--accent-primary-rgb), 0.2), 0 0 0 1.5px rgba(var(--accent-primary-rgb), 0.25);
+        }
+        .media-card .card-image-field {
+            height: 180px; 
+            background-color: var(--bg-image-placeholder); 
+            position: relative; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .media-card .card-image-field img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+        }
+        .media-card .card-image-field .placeholder-icon {
+            font-size: 3.5em;
+            color: var(--text-secondary);
+            opacity: 0.4;
+        }
+        
+        .video-placeholder-enhanced {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #0056b3 100%);
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .video-placeholder-enhanced::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+            z-index: 1;
+        }
+        
+        .video-placeholder-enhanced i {
+            font-size: 3.5em;
+            margin-bottom: 8px;
+            z-index: 2;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+        
+        .video-placeholder-enhanced span {
+            font-size: 0.9em;
+            font-weight: 600;
+            z-index: 2;
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .video-placeholder-enhanced:hover {
+            background: linear-gradient(135deg, #0056b3 0%, var(--accent-primary) 100%);
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(var(--accent-primary-rgb), 0.3);
+        }
+        
+        .video-placeholder-enhanced:hover i {
+            transform: scale(1.1);
+            animation: none;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .media-card .brand-band {
+            padding: 8px 15px; 
+            font-size: 0.9em;
+            font-weight: 600;
+            text-align: left;
+            background-color: var(--brand-band-light-bg);
+            color: var(--brand-band-light-text);
+            border-bottom: 1px solid var(--border-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        body.dark-mode .media-card .brand-band {
+            background-color: var(--brand-band-dark-bg);
+            color: var(--brand-band-dark-text);
+            border-bottom-color: var(--border-secondary);
+        }
+
+        .media-card .card-content-body {
+            padding: 15px; 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .media-card .card-content-body h3 { 
+            font-size: 1.1em; 
+            font-weight: 600; 
+            color: var(--text-headings); 
+            line-height: 1.45; 
+            margin: 0 0 12px 0; 
+            display: -webkit-box; -webkit-line-clamp: 3; 
+            -webkit-box-orient: vertical; 
+            overflow: hidden; text-overflow: ellipsis; 
+            min-height: calc(1.45em * 3); 
+        }
+        .media-card .card-content-body h3 a { color: inherit; display: block; } 
+        .media-card .card-content-body h3 a:hover { text-decoration: underline; color: var(--accent-primary);}
+
+        .card-bottom-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end; 
+            margin-top: auto; 
+            padding-top: 12px; 
+            border-top: 1px solid var(--border-secondary);
+        }
+        .media-card .card-assets { 
+            display: flex; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+        }
+        .media-card .asset-icon { 
+            font-size: 0.95em; 
+            display: inline-flex; 
+            align-items: center; 
+            transition: color 0.2s ease; 
+            color: var(--icon-unavailable);
+        }
+        .media-card .asset-icon.available { 
+            color: var(--icon-available); 
+        }
+        .media-card .asset-icon i { 
+            width: 1.1em; 
+            text-align: center; 
+            margin-right: 4px; 
+            font-size: 1.1em; 
+        }
+        .media-card .asset-icon .asset-count-badge { 
+            font-size: 0.85em; 
+            font-weight: 500; 
+            color: var(--text-secondary); 
+        }
+        body.dark-mode .media-card .asset-icon .asset-count-badge {
+            color: var(--text-primary);
+        }
+        .media-card .release-date-time-footer {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            text-align: right;
+            line-height: 1.35;
+        }
+        .media-card .release-date-time-footer i {
+            margin-right: 3px;
+            color: var(--icon-available); /* Make calendar icon blue like other asset icons */
+            font-size: 1.1em; /* Match size of other asset icons */
+            opacity: 1; /* Remove opacity to match other asset icons */
+        }
+        .media-card .release-date-time-footer .date-part,
+        .media-card .release-date-time-footer .time-part {
+            display: block;
+        }
+       
+        .media-card .card-image-field .card-image-hover-buttons-overlay { 
+            position: absolute; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: var(--overlay-bg); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.25s ease-out; 
+            gap: 12px; 
+            z-index: 2; 
+        }
+        .media-card:hover .card-image-field .card-image-hover-buttons-overlay { 
+            opacity: 1; 
+            pointer-events: auto; 
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn { 
+            min-width: 160px; 
+            padding: 10px 20px; 
+            font-size: 0.95em; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border-width: 1px;
+            border-style: solid;
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn-primary { /* Quick View */
+             border-color: var(--accent-primary);
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn-primary:hover {
+            border-color: var(--accent-primary-hover);
+        }
+        /* Styling for Add to Cart button on card hover */
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn.add-to-cart-btn {
+            background-color: var(--accent-secondary-default); 
+            border-color: var(--accent-secondary-default);
+            color: #fff; 
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn.add-to-cart-btn:hover {
+            background-color: var(--accent-secondary-default-hover); 
+            border-color: var(--accent-secondary-default-hover);
+            color: #fff;
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn.add-to-cart-btn.in-cart-style {
+            background-color: var(--accent-action-positive);
+            border-color: var(--accent-action-positive);
+            color: #fff;
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn.add-to-cart-btn.in-cart-style:hover {
+            background-color: var(--accent-action-positive-hover);
+            border-color: var(--accent-action-positive-hover);
+        }
+
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn-light { /* Download All */
+            border-color: var(--border-secondary);
+        }
+        body.dark-mode .media-card .card-image-field .card-image-hover-buttons-overlay .btn-light {
+             border-color: var(--border-secondary);
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn-light:hover {
+             border-color: var(--border-primary);
+        }
+        
+        .pagination { text-align: center; margin-top: 30px; padding-bottom: 15px; font-size: 0.9em; color: var(--text-secondary); } 
+        .pagination button { background-color: var(--bg-secondary); border: 1px solid var(--border-secondary); color: var(--accent-primary); padding: 6px 12px; margin: 0 3px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s, color 0.2s; } 
+        .pagination button:hover { background-color: var(--bg-tertiary); } 
+        .pagination button.current { background-color: var(--accent-primary); color: #fff; border-color: var(--accent-primary); font-weight: bold; cursor: default; } 
+        .pagination button:disabled { background-color: var(--bg-tertiary); color: var(--text-secondary); cursor: not-allowed; opacity: 0.6;}
+
+        /* General Modal Styles (Ensure these are effective) */
+        .amc-modal-backdrop { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.75); /* Or your theme variable */
+            z-index: 1060; /* High z-index */
+            display: none; /* Initially hidden */
+            align-items: center; justify-content: center;
+            padding: 20px; /* Padding for the backdrop itself */
+            backdrop-filter: blur(4px);
+            opacity: 0; 
+            transition: opacity 0.3s ease;
+        }
+        .amc-modal-backdrop.open { 
+            display: flex !important; /* Ensure display is flex when open */
+            opacity: 1; 
+        }
+        .amc-modal-backdrop .amc-modal-content { /* Applied to #cartModalContent and #imageGalleryModal .amc-modal-content etc. */
+            background-color: var(--bg-secondary); 
+            color: var(--text-primary);
+            border-radius: 8px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            width: 90%; /* Default width */
+            margin: 0 auto; 
+            display: flex; flex-direction: column;
+            max-height: 90vh; /* Default max height */
+            opacity: 0; 
+            transform: scale(0.95); 
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .amc-modal-backdrop.open .amc-modal-content { 
+            opacity: 1; 
+            transform: scale(1); 
+        }
+        .amc-modal-backdrop .amc-modal-header { /* Applied to #cartModalContent .amc-modal-header etc. */
+            display: flex; align-items: center;
+            padding: 15px 20px; /* Consistent padding */
+            border-bottom: 1px solid var(--border-secondary);
+            flex-shrink: 0;
+        }
+        .amc-modal-backdrop .amc-modal-header h3 {
+            font-size: 1.2em; /* Consistent font size */
+            margin: 0; 
+            color: var(--text-headings);
+            flex-grow: 1;
+        }
+        .amc-modal-backdrop .amc-modal-header .close-btn {
+            background: none; border: none; 
+            font-size: 1.8em; /* Consistent size */
+            color: var(--text-secondary); 
+            cursor: pointer; 
+            padding: 0 5px; line-height: 1;
+        }
+        .amc-modal-backdrop .amc-modal-header .close-btn:hover { color: var(--text-primary); }
+        .amc-modal-backdrop .amc-modal-body {
+            flex-grow: 1;
+            overflow-y: auto; /* Enable scrolling for content */
+            padding: 20px; /* Default padding, can be overridden */
+        }
+        .amc-modal-backdrop .amc-modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-secondary);
+            flex-shrink: 0;
+            background-color: var(--bg-secondary); /* Ensure footer bg matches content */
+            text-align: right; /* Align buttons to the right by default */
+        }
+
+        .filter-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 1050; backdrop-filter: blur(3px); }
+        .filter-modal-content { position: absolute; top: 64px; right: 0; width: 450px; max-width: 90%; height: calc(100% - 64px); background-color: var(--bg-secondary); border-left: 1px solid var(--border-primary); box-shadow: -5px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.3s ease-out; }
+        .filter-modal.open .filter-modal-content { transform: translateX(0); }
+        .filter-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border-secondary); flex-shrink: 0; } .filter-modal-header h3 { font-size: 1.2em; margin: 0; color: var(--text-headings); }
+        .filter-modal-header .close-btn { background: none; border: none; font-size: 1.5em; color: var(--text-secondary); cursor: pointer; padding: 5px; line-height: 1; } .filter-modal-header .close-btn:hover { color: var(--text-primary); }
+        .filter-modal-body { padding: 20px; overflow-y: auto; flex-grow: 1; }
+        .filter-group { margin-bottom: 25px; } .filter-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9em; color: var(--text-headings); }
+        .filter-group input[type="text"], .filter-group input[type="date"], .filter-group select { width: 100%; padding: 8px 12px; border: 1px solid var(--border-secondary); border-radius: 4px; background-color: var(--bg-primary); color: var(--text-primary); font-size: 0.95em; }
+        .filter-group .date-range-inputs { display: flex; gap: 10px; }
+        .filter-group .checkbox-group label { display: block; font-weight: normal; margin-bottom: 5px; font-size: 0.95em; color: var(--text-primary); } .filter-group .checkbox-group input[type="checkbox"] { margin-right: 8px; }
+        .filter-group select[multiple] { min-height: 100px; }
+        .filter-modal-footer { padding: 15px 20px; border-top: 1px solid var(--border-secondary); display: flex; justify-content: flex-end; gap: 10px; background-color: var(--bg-secondary); flex-shrink: 0; } .filter-modal-footer .btn { width: auto; }
+
+        /* Quick View Modal Styles */
+        .amc-quick-view-modal-backdrop {
+            /* Uses .amc-modal-backdrop general styles */
+        }
+        .amc-quick-view-modal-backdrop .amc-quick-view-modal { /* Specifics for quick view content */
+            /* Inherits .amc-modal-content but can override width/max-height */
+            max-width: 1200px;
+        }
+        
+        .amc-quick-view-header {
+            /* Uses .amc-modal-header base */
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .amc-quick-view-top-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .amc-quick-view-header h3#amcQuickViewTitle {
+            /* Inherits general h3 but allow wrapping */
+            margin: 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 70%;
+            align-self: flex-start;
+        }
+        .amc-quick-view-meta {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .amc-quick-view-meta #amcQuickViewReleaseTime {
+            font-weight: 500;
+        }
+        
+        .amc-quick-view-body { /* Uses .amc-modal-body base */
+            display: flex; /* Override for quick view layout */
+            gap: 30px;
+        }
+        .amc-quick-view-col-media { flex: 1; min-width: 0; }
+        .amc-quick-view-col-details { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        
+        .amc-quick-view-col-media h4, .amc-quick-view-col-details h4 {
+            font-size: 1.1em; margin-bottom: 15px; color: var(--text-headings);
+            padding-bottom: 5px; border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        #amcQuickViewMediaPreviewArea {
+            width: 100%; aspect-ratio: 16 / 9;
+            background-color: var(--bg-tertiary);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-secondary); font-size: 1em;
+            overflow: hidden; border: 1px solid var(--border-secondary);
+        }
+        #amcQuickViewMediaPreviewArea img, #amcQuickViewMediaPreviewArea video {
+            width: 100%; height: 100%; object-fit: contain;
+        }
+        
+        #amcQuickViewSummaryArea {
+            font-size: 0.95em; max-height: 200px; overflow-y: auto;
+            margin-bottom: 20px; padding-right: 10px;
+            border-bottom: 1px solid var(--border-secondary); padding-bottom: 15px;
+        }
+        #amcQuickViewSummaryArea p { margin-bottom: 1em;}
+        
+        #amcQuickViewAssetListArea {
+            max-height: 250px; overflow-y: auto;
+            margin-bottom: 25px; padding-right: 10px;
+        }
+        .amc-quick-view-asset-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 0; border-bottom: 1px solid var(--border-secondary);
+            font-size: 0.9em;
+        }
+         .amc-quick-view-asset-item:last-child { border-bottom: none; }
+        .amc-quick-view-asset-item i.fa-fw {
+            color: var(--accent-primary); font-size: 1.2em;
+            flex-shrink: 0;
+        }
+        .amc-quick-view-asset-item .asset-name {
+            flex-grow: 1;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+            margin-right: 15px;
+        }
+        .amc-quick-view-asset-item .asset-details {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+        .amc-quick-view-asset-item .asset-actions {
+            flex-shrink: 0;
+        }
+        .amc-quick-view-asset-item .asset-actions .btn-small {
+            width: auto; padding: 4px 8px; font-size: 0.8em;
+        }
+        .amc-quick-view-asset-item .asset-actions .download-asset-btn i {
+            color: var(--accent-primary);
+        }
+        
+        #amcQuickViewActionsArea {
+            margin-top: auto; padding-top: 20px;
+            border-top: 1px solid var(--border-secondary);
+        }
+        #amcQuickViewActionsArea .btn { width: 100%; margin-bottom: 10px; }
+        #amcQuickViewActionsArea .btn:last-child { margin-bottom: 0; }
+        #amcQuickViewActionsArea .btn.qv-add-cart-btn {
+            background-color: var(--accent-secondary-default); /* Default grey */
+            border-color: var(--accent-secondary-default);
+            color: #fff;
+        }
+        #amcQuickViewActionsArea .btn.qv-add-cart-btn:hover {
+            background-color: var(--accent-secondary-default-hover);
+            border-color: var(--accent-secondary-default-hover);
+        }
+        #amcQuickViewActionsArea .btn.qv-add-cart-btn.in-cart-style {
+            background-color: var(--accent-action-positive);
+            border-color: var(--accent-action-positive);
+        }
+         #amcQuickViewActionsArea .btn.qv-add-cart-btn.in-cart-style:hover {
+            background-color: var(--accent-action-positive-hover);
+            border-color: var(--accent-action-positive-hover);
+        }
+
+        /* Cart Modal Specific Styles */
+        #cartModalBackdrop .amc-modal-content { /* Specifics for cart content */
+            max-width: 700px;
+        }
+        #cartModalBody { /* Overrides default .amc-modal-body padding */
+            padding: 0;
+            min-height: 200px;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        .cart-select-all-bar {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--border-secondary);
+            font-size: 0.9em;
+        }
+        .cart-select-all-bar input[type="checkbox"] {
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .cart-select-all-bar label {
+            cursor: pointer;
+            user-select: none;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        #cartItemsList .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px 12px 20px; /* Adjusted padding to accommodate selector */
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        #cartItemsList .cart-item:last-child {
+            border-bottom: none;
+        }
+        .cart-item-selector {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-secondary);
+            border-radius: 50%;
+            margin-right: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+            flex-shrink: 0;
+        }
+        .cart-item-selector.selected {
+            background-color: var(--selection-dot-color);
+            border-color: var(--selection-dot-color);
+        }
+        .cart-item-selector.selected::after { /* Inner dot */
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--bg-secondary); /* Or white if you prefer more contrast */
+            border-radius: 50%;
+        }
+
+        #cartItemsList .cart-item-thumbnail {
+            width: 70px;
+            height: 50px;
+            background-color: var(--bg-tertiary);
+            border-radius: 4px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        #cartItemsList .cart-item-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #cartItemsList .cart-item-thumbnail .placeholder-icon {
+            font-size: 1.5em;
+            color: var(--text-secondary);
+        }
+        #cartItemsList .cart-item-info {
+            flex-grow: 1;
+            min-width: 0; /* Allow text to truncate */
+        }
+        #cartItemsList .cart-item-info .item-title {
+            font-weight: 600;
+            color: var(--text-headings);
+            font-size: 1em;
+            margin-bottom: 2px;
+            display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
+        }
+         #cartItemsList .cart-item-info .item-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+        #cartItemsList .cart-item-info .item-title a:hover {
+            color: var(--accent-primary);
+            text-decoration: underline;
+        }
+        #cartItemsList .cart-item-info .item-brand {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+        #cartItemsList .cart-item-remove-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 8px;
+            margin-left: 10px; /* Reduced margin slightly */
+            transition: color 0.2s ease;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        #cartItemsList .cart-item-remove-btn:hover {
+            color: var(--accent-action-danger);
+        }
+        .empty-cart-message {
+            text-align:center; padding: 40px 20px; color: var(--text-secondary); font-size: 1.1em;
+        }
+        #cartModalFooter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #cartModalFooter .cart-summary {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            flex-shrink: 0; /* Prevent shrinking if buttons take up space */
+        }
+        #cartModalFooter .cart-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller modal widths */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) { .main-content { padding: 20px; } }
+        @media (max-width: 768px) {
+            .main-content { width: 100% !important; height: auto; padding: 20px; overflow-y: visible;}
+            /* Responsive image scaling for tablets */
+            .media-card .card-image-field { height: 160px; }
+        }
+        @media (max-width: 550px) {
+            .main-content { padding: 15px;}
+            .controls-section { flex-direction: column; align-items: stretch;}
+            .search-bar { max-width: none; }
+        }
+        @media (max-width: 480px) {
+            /* Responsive image scaling for mobile */
+            .media-card .card-image-field { height: 140px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- MODULAR HEADER (Auto-initialized) -->
+    <!-- Header will be injected here by amc-header-minimal.js -->
+    
+    <!-- MODULAR SIDEBAR (Auto-initialized) -->
+    <!-- Sidebar will be injected here by amc-sidebar-minimal.js -->
+
+    <!-- MAIN CONTENT AREA - ZERO INTERFERENCE -->
+    <div class="main-content">
+        <div class="content-header">
+            <h1><i class="fas fa-film"></i> Latest Releases</h1>
+            <p>Browse and manage your media collection with advanced filtering and search capabilities.</p>
+        </div>
+
+        <div class="controls-section">
+            <div class="search-bar">
+                <input type="search" id="searchInput" placeholder="Search releases..." />
+                <button type="button" class="btn search-submit-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div class="filter-controls">
+                <button type="button" class="btn btn-light" id="filterBtn">
+                    <i class="fas fa-filter"></i> Filters
+                </button>
+                <button type="button" class="btn btn-light" id="sortBtn">
+                    <i class="fas fa-sort"></i> Sort
+                </button>
+            </div>
+        </div>
+
+        <!-- MEDIA CARDS GRID - RESPONSIVE 5/6 COLUMN LAYOUT -->
+        <div class="amc-card-grid" id="mediaGrid">
+            <!-- Sample Media Cards -->
+            <div class="media-card">
+                <div class="card-image-field">
+                    <div class="video-placeholder-enhanced">
+                        <i class="fas fa-play-circle"></i>
+                        <span>Video Preview</span>
+                    </div>
+                    <div class="card-image-hover-buttons-overlay">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-eye"></i> Quick View
+                        </button>
+                        <button class="btn add-to-cart-btn">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                        <button class="btn btn-light">
+                            <i class="fas fa-download"></i> Download All
+                        </button>
+                    </div>
+                </div>
+                <div class="brand-band">Sample Brand</div>
+                <div class="card-content-body">
+                    <h3><a href="#">Sample Media Release Title</a></h3>
+                    <div class="card-bottom-meta">
+                        <div class="card-assets">
+                            <span class="asset-icon available">
+                                <i class="fas fa-image"></i>
+                                <span class="asset-count-badge">12</span>
+                            </span>
+                            <span class="asset-icon available">
+                                <i class="fas fa-video"></i>
+                                <span class="asset-count-badge">3</span>
+                            </span>
+                            <span class="asset-icon">
+                                <i class="fas fa-file-pdf"></i>
+                                <span class="asset-count-badge">0</span>
+                            </span>
+                        </div>
+                        <div class="release-date-time-footer">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="date-part">Oct 31, 2025</span>
+                            <span class="time-part">14:30</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Duplicate cards for grid demonstration -->
+            <div class="media-card">
+                <div class="card-image-field">
+                    <div class="placeholder-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <div class="card-image-hover-buttons-overlay">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-eye"></i> Quick View
+                        </button>
+                        <button class="btn add-to-cart-btn in-cart-style">
+                            <i class="fas fa-check"></i> In Cart
+                        </button>
+                        <button class="btn btn-light">
+                            <i class="fas fa-download"></i> Download All
+                        </button>
+                    </div>
+                </div>
+                <div class="brand-band">Another Brand</div>
+                <div class="card-content-body">
+                    <h3><a href="#">Another Sample Release with Longer Title</a></h3>
+                    <div class="card-bottom-meta">
+                        <div class="card-assets">
+                            <span class="asset-icon available">
+                                <i class="fas fa-image"></i>
+                                <span class="asset-count-badge">8</span>
+                            </span>
+                            <span class="asset-icon">
+                                <i class="fas fa-video"></i>
+                                <span class="asset-count-badge">0</span>
+                            </span>
+                            <span class="asset-icon available">
+                                <i class="fas fa-file-pdf"></i>
+                                <span class="asset-count-badge">2</span>
+                            </span>
+                        </div>
+                        <div class="release-date-time-footer">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="date-part">Oct 30, 2025</span>
+                            <span class="time-part">09:15</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add more sample cards to demonstrate grid layout -->
+            <div class="media-card">
+                <div class="card-image-field">
+                    <div class="placeholder-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                </div>
+                <div class="brand-band">Third Brand</div>
+                <div class="card-content-body">
+                    <h3><a href="#">Third Sample Release</a></h3>
+                    <div class="card-bottom-meta">
+                        <div class="card-assets">
+                            <span class="asset-icon available">
+                                <i class="fas fa-image"></i>
+                                <span class="asset-count-badge">15</span>
+                            </span>
+                        </div>
+                        <div class="release-date-time-footer">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="date-part">Oct 29, 2025</span>
+                            <span class="time-part">16:45</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="media-card">
+                <div class="card-image-field">
+                    <div class="placeholder-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                </div>
+                <div class="brand-band">Fourth Brand</div>
+                <div class="card-content-body">
+                    <h3><a href="#">Fourth Sample Release</a></h3>
+                    <div class="card-bottom-meta">
+                        <div class="card-assets">
+                            <span class="asset-icon available">
+                                <i class="fas fa-image"></i>
+                                <span class="asset-count-badge">6</span>
+                            </span>
+                            <span class="asset-icon available">
+                                <i class="fas fa-video"></i>
+                                <span class="asset-count-badge">1</span>
+                            </span>
+                        </div>
+                        <div class="release-date-time-footer">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="date-part">Oct 28, 2025</span>
+                            <span class="time-part">11:20</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="media-card">
+                <div class="card-image-field">
+                    <div class="placeholder-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                </div>
+                <div class="brand-band">Fifth Brand</div>
+                <div class="card-content-body">
+                    <h3><a href="#">Fifth Sample Release</a></h3>
+                    <div class="card-bottom-meta">
+                        <div class="card-assets">
+                            <span class="asset-icon available">
+                                <i class="fas fa-image"></i>
+                                <span class="asset-count-badge">20</span>
+                            </span>
+                        </div>
+                        <div class="release-date-time-footer">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="date-part">Oct 27, 2025</span>
+                            <span class="time-part">13:10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="media-card">
+                <div class="card-image-field">
+                    <div class="placeholder-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                </div>
+                <div class="brand-band">Sixth Brand</div>
+                <div class="card-content-body">
+                    <h3><a href="#">Sixth Sample Release - Testing Grid Layout</a></h3>
+                    <div class="card-bottom-meta">
+                        <div class="card-assets">
+                            <span class="asset-icon available">
+                                <i class="fas fa-image"></i>
+                                <span class="asset-count-badge">9</span>
+                            </span>
+                            <span class="asset-icon available">
+                                <i class="fas fa-video"></i>
+                                <span class="asset-count-badge">2</span>
+                            </span>
+                            <span class="asset-icon available">
+                                <i class="fas fa-file-pdf"></i>
+                                <span class="asset-count-badge">1</span>
+                            </span>
+                        </div>
+                        <div class="release-date-time-footer">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span class="date-part">Oct 26, 2025</span>
+                            <span class="time-part">08:30</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination">
+            <button disabled>← Previous</button>
+            <button class="current">1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>Next →</button>
+            <span style="margin-left: 20px; color: var(--text-secondary);">
+                Showing 1-6 of 18 releases
+            </span>
+        </div>
+    </div>
+
+    <!-- MODALS (Sample structure for testing) -->
+    <div id="cartModalBackdrop" class="amc-modal-backdrop">
+        <div class="amc-modal-content">
+            <div class="amc-modal-header">
+                <h3>Shopping Cart</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="amc-modal-body" id="cartModalBody">
+                <div class="empty-cart-message">
+                    <i class="fas fa-shopping-cart" style="font-size: 2em; margin-bottom: 10px; opacity: 0.5;"></i>
+                    <p>Your cart is empty</p>
+                </div>
+            </div>
+            <div class="amc-modal-footer" id="cartModalFooter">
+                <div class="cart-summary">0 items selected</div>
+                <div class="cart-actions">
+                    <button class="btn btn-light">Clear All</button>
+                    <button class="btn btn-primary">Download Selected</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT FOR TESTING FUNCTIONALITY -->
+    <script>
+        // Test the modular system integration
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 AutoMediaCenter Modular Test - Page Loaded');
+            
+            // Test cart modal functionality
+            const cartModal = document.getElementById('cartModalBackdrop');
+            const closeBtn = cartModal.querySelector('.close-btn');
+            
+            // Add click handlers for testing
+            document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('🛒 Add to cart clicked');
+                    
+                    // Toggle cart style
+                    if (this.classList.contains('in-cart-style')) {
+                        this.classList.remove('in-cart-style');
+                        this.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
+                    } else {
+                        this.classList.add('in-cart-style');
+                        this.innerHTML = '<i class="fas fa-check"></i> In Cart';
+                    }
+                });
+            });
+            
+            // Test quick view functionality
+            document.querySelectorAll('.btn-primary').forEach(btn => {
+                if (btn.textContent.includes('Quick View')) {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        console.log('👁️ Quick view clicked');
+                        alert('Quick View functionality would open here');
+                    });
+                }
+            });
+            
+            // Test filter functionality
+            const filterBtn = document.getElementById('filterBtn');
+            if (filterBtn) {
+                filterBtn.addEventListener('click', function() {
+                    console.log('🔍 Filter clicked');
+                    alert('Filter modal would open here');
+                });
+            }
+            
+            // Test search functionality
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    console.log('🔍 Search:', this.value);
+                });
+            }
+            
+            // Close modal functionality
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    cartModal.classList.remove('open');
+                });
+            }
+            
+            // Test sidebar collapse detection
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        const isCollapsed = document.body.classList.contains('amc-sidebar-collapsed');
+                        console.log('📱 Sidebar state changed:', isCollapsed ? 'collapsed' : 'expanded');
+                        console.log('📊 Grid should show:', isCollapsed ? '6 columns' : '5 columns');
+                    }
+                });
+            });
+            
+            observer.observe(document.body, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+            
+            console.log('✅ Test functionality initialized');
+        });
+    </script>
+</body>
+</html>

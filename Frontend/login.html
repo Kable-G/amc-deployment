@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-headings: #343a40;
+            --accent-primary: #0d6efd;
+            --accent-primary-hover: #0b5ed7;
+            --accent-success: #28a745;
+            --accent-danger: #dc3545;
+            --border-primary: #dee2e6;
+            --border-secondary: #e0e0e0;
+            --shadow-primary: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.12);
+            --font-family-main: 'Poppins', sans-serif;
+        }
+
+        body.dark-mode {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2c2c2c;
+            --text-primary: #e0e0e0;
+            --text-secondary: #adb5bd;
+            --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff;
+            --accent-primary-hover: #5fa0ff;
+            --border-primary: #3a3a3a;
+            --border-secondary: #444;
+            --shadow-primary: rgba(0, 0, 0, 0.25);
+            --shadow-hover: rgba(0, 0, 0, 0.35);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: var(--font-family-main); 
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-tertiary) 100%);
+            color: var(--text-primary); 
+            line-height: 1.6; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .login-container {
+            background-color: var(--bg-secondary);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px var(--shadow-primary);
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--border-secondary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-success));
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: var(--text-headings);
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+        }
+
+        .oauth-section {
+            margin-bottom: 30px;
+        }
+
+        .oauth-section h3 {
+            text-align: center;
+            color: var(--text-headings);
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .oauth-buttons {
+            display: grid;
+            gap: 12px;
+        }
+
+        .oauth-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border: 2px solid var(--border-primary);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .oauth-btn i {
+            margin-right: 12px;
+            font-size: 1.2em;
+        }
+
+        .oauth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-hover);
+            text-decoration: none;
+        }
+
+        .oauth-btn-google {
+            background-color: #fff;
+            color: #757575;
+            border-color: #dadce0;
+        }
+
+        .oauth-btn-google:hover {
+            background-color: #f8f9fa;
+            color: #3c4043;
+        }
+
+        .oauth-btn-microsoft {
+            background-color: #0078d4;
+            color: white;
+            border-color: #0078d4;
+        }
+
+        .oauth-btn-microsoft:hover {
+            background-color: #106ebe;
+            color: white;
+        }
+
+        .oauth-btn-linkedin {
+            background-color: #0077b5;
+            color: white;
+            border-color: #0077b5;
+        }
+
+        .oauth-btn-linkedin:hover {
+            background-color: #005885;
+            color: white;
+        }
+
+        .oauth-btn-github {
+            background-color: #24292e;
+            color: white;
+            border-color: #24292e;
+        }
+
+        .oauth-btn-github:hover {
+            background-color: #1a1e22;
+            color: white;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--border-primary);
+        }
+
+        .divider span {
+            padding: 0 20px;
+            background-color: var(--bg-secondary);
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.95em;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-primary);
+            border-radius: 8px;
+            font-size: 0.95em;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .form-check input {
+            margin-right: 8px;
+            transform: scale(1.1);
+        }
+
+        .form-check label {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .error-message {
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 1px solid var(--accent-danger);
+            color: var(--accent-danger);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .success-message {
+            background-color: rgba(40, 167, 69, 0.1);
+            border: 1px solid var(--accent-success);
+            color: var(--accent-success);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-primary);
+        }
+
+        .register-link a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: 2px solid var(--border-primary);
+            color: var(--text-secondary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading .btn {
+            position: relative;
+        }
+
+        .loading .btn::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .privacy-notice {
+            background-color: var(--bg-tertiary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .privacy-notice a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        .privacy-notice a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 576px) {
+            .login-container {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+            
+            .login-header h1 {
+                font-size: 1.8em;
+            }
+            
+            .oauth-buttons {
+                gap: 10px;
+            }
+            
+            .oauth-btn {
+                padding: 10px 16px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="login-container">
+        <div class="login-header">
+            <h1><i class="fas fa-shield-alt"></i> AutoMediaCenter</h1>
+            <p>Sign in to access your media hub</p>
+        </div>
+
+        <div id="error-message" class="error-message"></div>
+        <div id="success-message" class="success-message"></div>
+
+        <!-- OAuth Section -->
+        <div class="oauth-section">
+            <h3>Continue with your account</h3>
+            <div class="oauth-buttons">
+                <a href="/api/v1/oauth/google" class="oauth-btn oauth-btn-google" id="google-login">
+                    <i class="fab fa-google"></i>
+                    Continue with Google
+                </a>
+                <a href="/api/v1/oauth/microsoft" class="oauth-btn oauth-btn-microsoft" id="microsoft-login">
+                    <i class="fab fa-microsoft"></i>
+                    Continue with Microsoft
+                </a>
+                <a href="/api/v1/oauth/linkedin" class="oauth-btn oauth-btn-linkedin" id="linkedin-login">
+                    <i class="fab fa-linkedin"></i>
+                    Continue with LinkedIn
+                </a>
+                <a href="/api/v1/oauth/github" class="oauth-btn oauth-btn-github" id="github-login">
+                    <i class="fab fa-github"></i>
+                    Continue with GitHub
+                </a>
+            </div>
+        </div>
+
+        <div class="divider">
+            <span>or sign in with email</span>
+        </div>
+
+        <!-- Email/Password Login Form -->
+        <form id="login-form" class="form-section">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="form-control" required 
+                       placeholder="Enter your email address">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" required 
+                       placeholder="Enter your password">
+            </div>
+            
+            <div class="form-check">
+                <input type="checkbox" id="remember-me" name="rememberMe">
+                <label for="remember-me">Keep me signed in for 30 days</label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fas fa-sign-in-alt"></i>
+                Sign In
+            </button>
+        </form>
+
+        <div class="register-link">
+            <p>Don't have an account? <a href="register.html">Create one here</a></p>
+            <p><a href="forgot-password.html">Forgot your password?</a></p>
+        </div>
+
+        <div class="privacy-notice">
+            <i class="fas fa-info-circle"></i>
+            By signing in, you agree to our <a href="privacy-policy.html">Privacy Policy</a> and 
+            <a href="terms-of-service.html">Terms of Service</a>. We collect usage data to improve 
+            your experience and provide personalized content.
+        </div>
+    </div>
+
+    <script>
+        // Analytics and tracking
+        let sessionStartTime = Date.now();
+        let analyticsData = {
+            pageViews: [],
+            interactions: [],
+            formData: {},
+            errors: []
+        };
+
+        // Track page load
+        window.addEventListener('load', () => {
+            trackEvent('page_load', {
+                page: 'login',
+                loadTime: Date.now() - sessionStartTime,
+                referrer: document.referrer,
+                userAgent: navigator.userAgent,
+                screenResolution: `${screen.width}x${screen.height}`,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                language: navigator.language
+            });
+        });
+
+        // Dark mode functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+
+        function applyTheme(theme) {
+            const icon = darkModeToggle.querySelector('i');
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                icon.className = 'fas fa-sun';
+                darkModeToggle.title = "Switch to Light Mode";
+            } else {
+                body.classList.remove('dark-mode');
+                icon.className = 'fas fa-moon';
+                darkModeToggle.title = "Switch to Dark Mode";
+            }
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 
+            (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(savedTheme);
+
+        darkModeToggle.addEventListener('click', () => {
+            const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            trackEvent('theme_change', { from: currentTheme, to: newTheme });
+        });
+
+        // Form handling
+        const loginForm = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+
+        // Track form interactions
+        const formInputs = loginForm.querySelectorAll('input');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                trackEvent('form_field_focus', { field: input.name });
+            });
+            
+            input.addEventListener('blur', () => {
+                trackEvent('form_field_blur', { 
+                    field: input.name, 
+                    hasValue: !!input.value,
+                    valueLength: input.value.length 
+                });
+            });
+            
+            input.addEventListener('input', () => {
+                analyticsData.formData[input.name] = {
+                    hasValue: !!input.value,
+                    length: input.value.length,
+                    lastModified: Date.now()
+                };
+            });
+        });
+
+        // Handle form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(loginForm);
+            const loginData = Object.fromEntries(formData.entries());
+            
+            trackEvent('login_attempt', { 
+                method: 'email',
+                rememberMe: !!loginData.rememberMe 
+            });
+
+            showLoading(true);
+            hideMessages();
+
+            try {
+                const response = await fetch('/api/v1/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Page-Title': document.title,
+                        'Screen-Resolution': `${screen.width}x${screen.height}`,
+                        'Timezone': Intl.DateTimeFormat().resolvedOptions().timeZone
+                    },
+                    body: JSON.stringify(loginData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Store authentication data
+                    localStorage.setItem('token', result.token);
+                    localStorage.setItem('user', JSON.stringify(result.user));
+                    
+                    trackEvent('login_success', { 
+                        method: 'email',
+                        userLevel: result.user.level,
+                        userRole: result.user.role 
+                    });
+
+                    showSuccess('Login successful! Redirecting...');
+                    
+                    // Redirect based on user level
+                    setTimeout(() => {
+                        if (result.user.level >= 2) {
+                            window.location.href = 'AssetDBmenu1.6.html';
+                        } else {
+                            window.location.href = 'automediacenter.html';
+                        }
+                    }, 1500);
+
+                } else {
+                    trackEvent('login_error', { 
+                        method: 'email',
+                        error: result.error 
+                    });
+                    showError(result.error || 'Login failed. Please try again.');
+                }
+
+            } catch (error) {
+                console.error('Login error:', error);
+                trackEvent('login_error', { 
+                    method: 'email',
+                    error: 'Network error' 
+                });
+                showError('Network error. Please check your connection and try again.');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // OAuth button tracking
+        document.querySelectorAll('.oauth-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const provider = btn.id.replace('-login', '');
+                trackEvent('oauth_attempt', { provider: provider });
+                
+                // Add analytics parameters to OAuth URLs
+                const url = new URL(btn.href, window.location.origin);
+                url.searchParams.set('analytics_session', generateSessionId());
+                url.searchParams.set('referrer', window.location.href);
+                btn.href = url.toString();
+            });
+        });
+
+        // Utility functions
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+
+        function hideMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+
+        function showLoading(loading) {
+            const container = document.querySelector('.login-container');
+            if (loading) {
+                container.classList.add('loading');
+            } else {
+                container.classList.remove('loading');
+            }
+        }
+
+        function trackEvent(eventType, data) {
+            analyticsData.interactions.push({
+                type: eventType,
+                data: data,
+                timestamp: Date.now(),
+                url: window.location.href
+            });
+
+            // Send to analytics endpoint (if user is logged in)
+            const token = localStorage.getItem('token');
+            if (token && eventType !== 'page_load') {
+                fetch('/api/v1/users/track-activity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        eventType: eventType,
+                        eventData: data,
+                        pageUrl: window.location.href,
+                        timestamp: Date.now()
+                    })
+                }).catch(err => console.log('Analytics tracking failed:', err));
+            }
+        }
+
+        function generateSessionId() {
+            return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Handle URL parameters (errors, success messages)
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        const success = urlParams.get('success');
+
+        if (error) {
+            const errorMessages = {
+                'oauth_failed': 'OAuth authentication failed. Please try again.',
+                'no_email': 'No email address received from OAuth provider.',
+                'google_failed': 'Google authentication failed.',
+                'microsoft_failed': 'Microsoft authentication failed.',
+                'linkedin_failed': 'LinkedIn authentication failed.',
+                'github_failed': 'GitHub authentication failed.',
+                'server_error': 'Server error occurred. Please try again later.'
+            };
+            showError(errorMessages[error] || 'Authentication failed. Please try again.');
+            trackEvent('oauth_error', { error: error });
+        }
+
+        if (success) {
+            showSuccess('Authentication successful! Redirecting...');
+        }
+
+        // Track time on page
+        window.addEventListener('beforeunload', () => {
+            const timeOnPage = Date.now() - sessionStartTime;
+            trackEvent('page_unload', { 
+                timeOnPage: timeOnPage,
+                interactions: analyticsData.interactions.length 
+            });
+        });
+
+        // Track scroll depth
+        let maxScrollDepth = 0;
+        window.addEventListener('scroll', () => {
+            const scrollDepth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+            if (scrollDepth > maxScrollDepth) {
+                maxScrollDepth = scrollDepth;
+            }
+        });
+
+        // Send final analytics on page unload
+        window.addEventListener('beforeunload', () => {
+            trackEvent('session_end', {
+                maxScrollDepth: maxScrollDepth,
+                totalInteractions: analyticsData.interactions.length,
+                sessionDuration: Date.now() - sessionStartTime
+            });
+        });
+    </script>
+</body>
+</html>

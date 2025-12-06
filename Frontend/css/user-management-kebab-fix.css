@@ -1,0 +1,277 @@
+/**
+ * USER MANAGEMENT KEBAB MENU FIX
+ * Comprehensive solution for kebab menu visibility issues
+ * 
+ * PROBLEM: Kebab menus are trapped inside table rows due to:
+ * 1. Table row overflow restrictions
+ * 2. Hover effects creating new stacking contexts
+ * 3. Table cell boundaries clipping absolute positioned elements
+ */
+
+/* ============================================================
+   CRITICAL FIX #1: REMOVE ALL OVERFLOW RESTRICTIONS
+   ============================================================ */
+
+/* Target the user-management page specifically */
+.user-management,
+.user-management .amc-page,
+.user-management .amc-page__container,
+.user-management .amc-page__body,
+.user-management .amc-card,
+.user-management .card,
+.user-management .card-body,
+.user-management .table-wrapper,
+.user-management .amc-table,
+.user-management .users-table,
+.user-management .users-table thead,
+.user-management .users-table tbody,
+.user-management .users-table tfoot,
+.user-management .users-table tr,
+.user-management .users-table th,
+.user-management .users-table td {
+    overflow: visible !important;
+}
+
+/* Target any dynamically added overflow styles */
+.user-management [style*="overflow"] {
+    overflow: visible !important;
+}
+
+/* ============================================================
+   CRITICAL FIX #2: PROPER KEBAB MENU POSITIONING
+   ============================================================ */
+
+/* Ensure the actions cell is the positioning context */
+.user-management .cell--actions {
+    position: relative !important;
+    overflow: visible !important;
+    z-index: 1 !important;
+}
+
+/* Kebab wrapper needs proper positioning */
+.user-management .kebab-wrap {
+    position: relative !important;
+    display: inline-block !important;
+    z-index: 10 !important;
+}
+
+/* Kebab button styling */
+.user-management .kebab-btn {
+    position: relative !important;
+    z-index: 11 !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 8px !important;
+    cursor: pointer !important;
+    border-radius: 4px !important;
+    color: var(--text-secondary) !important;
+    transition: all 0.2s ease !important;
+}
+
+.user-management .kebab-btn:hover {
+    background: var(--bg-tertiary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* CRITICAL: Kebab menu must escape all boundaries */
+.user-management .kebab-menu {
+    position: absolute !important;
+    top: calc(100% + 4px) !important;
+    right: 0 !important;
+    min-width: 160px !important;
+    
+    /* Extremely high z-index to ensure visibility */
+    z-index: 99999 !important;
+    
+    /* Proper background and border */
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-primary) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+    padding: 4px !important;
+    
+    /* Prevent any parent from cutting off */
+    transform: translateZ(0) !important;
+    will-change: transform !important;
+}
+
+/* Dark mode kebab menu styling */
+body.dark-mode .user-management .kebab-menu {
+    background: #2d2d2d !important;
+    border-color: #404040 !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Light mode kebab menu styling */
+body:not(.dark-mode) .user-management .kebab-menu {
+    background: #ffffff !important;
+    border-color: #dee2e6 !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ============================================================
+   CRITICAL FIX #3: STACKING CONTEXT MANAGEMENT
+   ============================================================ */
+
+/* When a row is hovered, boost kebab z-index even higher */
+.user-management tbody tr:hover .kebab-wrap {
+    z-index: 100 !important;
+}
+
+.user-management tbody tr:hover .kebab-btn {
+    z-index: 101 !important;
+}
+
+.user-management tbody tr:hover .kebab-menu {
+    z-index: 100000 !important;
+}
+
+/* Ensure row hover doesn't create isolation */
+.user-management tbody tr {
+    position: relative !important;
+    overflow: visible !important;
+    /* Remove isolation property if it exists */
+    isolation: auto !important;
+}
+
+/* Row hover effect - preserve but don't trap children */
+.user-management tbody tr:hover {
+    background: rgba(var(--accent-primary-rgb), 0.06) !important;
+    overflow: visible !important;
+    isolation: auto !important;
+}
+
+/* Dark mode row hover */
+body.dark-mode .user-management tbody tr:hover {
+    background: rgba(var(--accent-primary-rgb), 0.08) !important;
+}
+
+/* ============================================================
+   CRITICAL FIX #4: KEBAB MENU ITEM STYLING
+   ============================================================ */
+
+.user-management .kebab-item {
+    display: block !important;
+    width: 100% !important;
+    text-align: left !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-primary) !important;
+    padding: 8px 12px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+}
+
+.user-management .kebab-item:hover {
+    background: var(--bg-tertiary) !important;
+}
+
+/* Action-specific colors */
+.user-management .kebab-item[data-action="view"] {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+}
+
+.user-management .kebab-item[data-action="edit"] {
+    background: rgba(59, 130, 246, 0.1) !important;
+    color: #3b82f6 !important;
+}
+
+.user-management .kebab-item[data-action="suspend"] {
+    background: rgba(245, 158, 11, 0.1) !important;
+    color: #f59e0b !important;
+}
+
+.user-management .kebab-item[data-action="activate"] {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+}
+
+.user-management .kebab-item[data-action="delete"] {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+}
+
+/* Hover states with full color */
+.user-management .kebab-item[data-action="view"]:hover {
+    background: #10b981 !important;
+    color: #fff !important;
+}
+
+.user-management .kebab-item[data-action="edit"]:hover {
+    background: #3b82f6 !important;
+    color: #fff !important;
+}
+
+.user-management .kebab-item[data-action="suspend"]:hover {
+    background: #f59e0b !important;
+    color: #fff !important;
+}
+
+.user-management .kebab-item[data-action="activate"]:hover {
+    background: #10b981 !important;
+    color: #fff !important;
+}
+
+.user-management .kebab-item[data-action="delete"]:hover {
+    background: #ef4444 !important;
+    color: #fff !important;
+}
+
+/* ============================================================
+   ADDITIONAL FIX: ENSURE GLOBAL SHELL DOESN'T INTERFERE
+   ============================================================ */
+
+/* Override any global table overflow settings */
+.amc-page .amc-table tbody tr,
+.amc-page .users-table tbody tr {
+    overflow: visible !important;
+}
+
+/* Ensure no parent containers have transform that creates new stacking context */
+.user-management * {
+    /* Remove any 3D transforms that might create stacking contexts */
+    transform: none !important;
+}
+
+/* Exception: Keep the kebab menu transform for GPU acceleration */
+.user-management .kebab-menu {
+    transform: translateZ(0) !important;
+}
+
+/* ============================================================
+   DEBUG HELPER (Remove in production if needed)
+   ============================================================ */
+
+/* Uncomment to visualize the kebab menu boundaries
+.user-management .kebab-menu {
+    border: 2px solid red !important;
+    box-shadow: 0 0 0 2px yellow inset !important;
+}
+*/
+
+/* ============================================================
+   RESPONSIVE CONSIDERATIONS
+   ============================================================ */
+
+@media (max-width: 768px) {
+    /* On mobile, ensure kebab menu doesn't overflow viewport */
+    .user-management .kebab-menu {
+        max-width: 200px !important;
+        right: -10px !important;
+    }
+}
+
+/* ============================================================
+   PRINT MODE FIX
+   ============================================================ */
+
+@media print {
+    /* Hide kebab menus when printing */
+    .user-management .kebab-wrap {
+        display: none !important;
+    }
+}

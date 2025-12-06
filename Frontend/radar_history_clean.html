@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="module">
+      import { protectPage } from "./auth.js";
+      protectPage("client_user");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Manage Radar Alerts</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- ✅ GLOBAL CSS - REPLACES ALL OLD STYLES -->
+    <link rel="stylesheet" href="css/amc-globalshell.css">
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    <!-- Page-specific styles -->
+    <style>
+    /* —— MINIMAL PAGE-SPECIFIC STYLES - GLOBAL SHELL HANDLES LAYOUT —— */
+
+    .app-footer {
+        flex-shrink: 0;
+        margin-top: auto;
+        background: var(--header-bg);
+        color: var(--header-link);
+        text-align: center;
+        padding: 15px 25px;
+        font-size: 0.85em;
+        border-top: 1px solid var(--border-primary);
+    }
+    
+    .app-footer nav a {
+        color: var(--header-link);
+        margin: 0 8px;
+        text-decoration: none;
+    }
+    
+    .app-footer nav a:hover {
+        color: var(--header-text);
+    }
+    
+    /* ============================================
+       MODAL Z-INDEX FIXES
+       ============================================ */
+    .detail-modal-backdrop,
+    .confirm-modal-backdrop {
+        z-index: 10050 !important;
+        position: fixed !important;
+        inset: 0 !important;
+    }
+    
+    .detail-modal,
+    .confirm-modal {
+        z-index: 10051 !important;
+    }
+    
+    /* ============================================
+       FILTER CONTROLS
+       ============================================ */
+    .filter-controls {
+        margin-bottom: 25px;
+        padding: 15px;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        display: flex;
+        gap: 15px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    
+    .filter-controls .form-group {
+        margin-bottom: 0;
+        flex: 1 1 180px;
+    }
+    
+    .filter-controls label {
+        font-size: 0.85em;
+        margin-bottom: 0.3rem;
+        display: block;
+        color: var(--text-secondary);
+    }
+    
+    .filter-controls .form-control {
+        width: 100%;
+        padding: .5rem .75rem;
+        font-size: 0.9em;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: .25rem;
+    }
+    
+    .filter-controls .btn-stack {
+        display: flex;
+        gap: 10px;
+        align-self: flex-end;
+        margin-top: 1.2em;
+    }
+    
+    /* ============================================
+       BUTTONS
+       ============================================ */
+    .btn {
+        padding: 10px 18px;
+        font-size: 0.95em;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+    }
+    
+    .btn i { margin-right: 6px; }
+    
+    .btn-primary {
+        background-color: var(--accent-primary);
+        color: #fff;
+    }
+    
+    .btn-secondary {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+    }
+    
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+    }
+    
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.85em;
+    }
+    
+    /* ============================================
+       MINIMAL PAGE-SPECIFIC OVERRIDES
+       Global shell handles table styling
+       ============================================ */
+    
+    /* Kebab menu specific styles */
+    .kebab-float{
+      position: fixed;
+      min-width: 176px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-primary, #e5e7eb);
+      box-shadow: 0 18px 48px var(--shadow-primary, rgba(0,0,0,.25));
+      border-radius: 12px;
+      padding: 6px;
+      pointer-events: auto;
+    }
+
+    .kebab-item{
+      display:block; width:100%; text-align:left;
+      background: transparent; border: none;
+      color: var(--text-primary);
+      padding: 9px 12px; border-radius: 8px; cursor: pointer;
+    }
+
+    .kebab-item[data-action="view"]   { background: rgba(16,185,129,.30); }
+    .kebab-item[data-action="edit"]   { background: rgba(59,130,246,.30); }
+    .kebab-item[data-action="delete"] { background: rgba(239,68,68,.30);  }
+
+    .kebab-item[data-action="view"]:hover   { background:#10b981; color:#fff; }
+    .kebab-item[data-action="edit"]:hover   { background:#3b82f6; color:#fff; }
+    .kebab-item[data-action="delete"]:hover { background:#ef4444; color:#fff; }
+
+    .kebab-item + .kebab-item { margin-top: 6px; }
+    
+    /* ============================================
+       CARDS
+       ============================================ */
+    .card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        margin-bottom: 25px;
+    }
+    
+    .card-header {
+        padding: 15px 20px;
+        background: var(--bg-tertiary);
+        border-bottom: 1px solid var(--border-primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-header h2 {
+        font-size: 1.1em;
+        margin: 0;
+    }
+    
+    .card-body {
+        padding: 20px;
+    }
+    
+    .card-body.no-padding {
+        padding: 0;
+    }
+    
+    .card-footer {
+        padding: 15px 20px;
+        background: var(--bg-tertiary);
+        border-top: 1px solid var(--border-primary);
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .card:last-of-type {
+        margin-bottom: 40px;
+    }
+    
+    /* ============================================
+       PAGINATION
+       ============================================ */
+    .pagination-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    /* ============================================
+       MODALS
+       ============================================ */
+    .detail-modal-backdrop,
+    .confirm-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .detail-modal-backdrop.open,
+    .confirm-modal-backdrop.open {
+        display: flex;
+        opacity: 1;
+    }
+    
+    .detail-modal,
+    .confirm-modal {
+        background: var(--bg-secondary);
+        border-radius: 8px;
+        border: 1px solid var(--border-primary);
+        transform: scale(0.95);
+        transition: transform 0.3s;
+    }
+    
+    .detail-modal-backdrop.open .detail-modal,
+    .confirm-modal-backdrop.open .confirm-modal {
+        transform: scale(1);
+    }
+    
+    .detail-modal {
+        max-width: 1200px;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .confirm-modal {
+        max-width: 450px;
+    }
+    
+    .detail-modal-header,
+    .confirm-modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-primary);
+        background: var(--bg-tertiary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .detail-modal-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
+    
+    .confirm-modal-body {
+        padding: 25px 20px;
+        text-align: center;
+    }
+    
+    .detail-modal-footer,
+    .confirm-modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid var(--border-primary);
+        background: var(--bg-tertiary);
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    
+    .detail-modal-close-btn,
+    .confirm-modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 1.7em;
+        cursor: pointer;
+        color: var(--text-secondary);
+    }
+    
+    /* ============================================
+       QUICK VIEW MODAL
+       ============================================ */
+    .amc-quick-view-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .amc-quick-view-top-line {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+    
+    .amc-quick-view-body {
+        display: flex;
+        gap: 30px;
+    }
+    
+    .amc-quick-view-col-media,
+    .amc-quick-view-col-details {
+        flex: 1;
+    }
+    
+    .amc-quick-view-col-media h4,
+    .amc-quick-view-col-details h4 {
+        margin-bottom: 15px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--border-primary);
+    }
+    
+    .amc-quick-view-asset-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border-secondary);
+        font-size: 0.9em;
+    }
+    
+    .amc-quick-view-asset-item .asset-name {
+        flex-grow: 1;
+        font-weight: 500;
+    }
+    
+    .amc-quick-view-asset-item .asset-details {
+        font-size: 0.85em;
+        color: var(--text-secondary);
+    }
+    
+    .amc-quick-view-asset-item img.thumb {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    /* Global shell system handles all table styling */
+    
+    /* Compact controls bar (borrowed from Radar page) */
+    .controls-section{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:16px; padding:12px 0;
+    }
+    .controls-left{ display:flex; gap:12px; align-items:center; }
+    .controls-right .btn{
+      font-size:.95rem; padding:0 18px; font-weight:500;
+      height:38px; display:inline-flex; align-items:center; justify-content:center;
+      box-sizing:border-box; border-radius:8px; text-decoration:none; border:none; cursor:pointer;
+    }
+    .btn-primary{ background:var(--accent-primary); color:white; }
+    .btn-primary:hover{ background:var(--accent-hover,#0056b3); }
+    .btn i{ margin-right:0.5rem; }
+
+    /* Search */
+    .search-container{ position:relative; display:flex; align-items:center; }
+    .search-input{
+      padding:10px 16px 10px 40px;
+      border:1px solid var(--border-primary);
+      border-radius:8px; font-size:.95rem;
+      background:var(--bg-primary); color:var(--text-primary);
+      width:300px; transition:border-color .2s ease, box-shadow .2s ease;
+      height:38px; box-sizing:border-box; line-height:1.5;
+    }
+    .search-input:focus{
+      outline:none; border-color:var(--accent-primary);
+      box-shadow:0 0 0 3px rgba(13,110,253,.1);
+    }
+    .search-input::placeholder{
+      color:var(--text-secondary);
+    }
+    .search-icon{
+      position:absolute; left:12px; top:50%; transform:translateY(-50%);
+      color:var(--text-secondary); pointer-events:none; font-size:0.875rem; z-index:1;
+    }
+
+    /* Divider under the controls row */
+    .section-divider{ height:1px; background:#e5e7eb; margin:16px 0; }
+
+    /* Dark-mode harmonisation */
+    body.dark-mode .search-input{
+      background:var(--bg-secondary); border-color:var(--border-primary); color:var(--text-primary);
+    }
+    body.dark-mode .search-input:focus{
+      border-color:var(--accent-primary); box-shadow:0 0 0 3px rgba(63,145,255,.1);
+    }
+    body.dark-mode .section-divider{ background:var(--border-secondary) !important; opacity:.3; }
+    
+    /* ——— Manage Radar Alerts: dark-mode polish for card + table ——— */
+    .manage-radar-alerts .amc-card { border-radius: 10px; }
+    
+    /* Global shell system handles all layout - no overrides needed */
+    
+    /* ============================================
+       STATUS PILLS (matching manage_releases.html)
+       ============================================ */
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .2px;
+        white-space: nowrap;
+        height: 24px;
+        text-align: center;
+        border: 1px solid transparent;
+    }
+    
+    .status--published {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: #16a34a;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .status--draft {
+        background-color: rgba(251, 191, 36, 0.1);
+        color: #d97706;
+        border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+    
+    .status--pending {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: #2563eb;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    
+    .status--active {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: #16a34a;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .status--archived {
+        background-color: rgba(147, 51, 234, 0.1);
+        color: #9333ea;
+        border: 1px solid rgba(147, 51, 234, 0.2);
+    }
+    
+    .status--rejected {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .status--unknown {
+        background-color: rgba(107, 114, 128, 0.1);
+        color: #6b7280;
+        border: 1px solid rgba(107, 114, 128, 0.2);
+    }
+    
+    /* Dark mode status pills */
+    body.dark-mode .status--published {
+        background-color: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+    }
+    
+    body.dark-mode .status--active {
+        background-color: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+    }
+    
+    body.dark-mode .status--draft {
+        background-color: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+    }
+    
+    body.dark-mode .status--pending {
+        background-color: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+    }
+    
+    body.dark-mode .status--archived {
+        background-color: rgba(147, 51, 234, 0.15);
+        color: #a855f7;
+    }
+    
+    body.dark-mode .status--rejected {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+    }
+    
+    body.dark-mode .status--unknown {
+        background-color: rgba(107, 114, 128, 0.15);
+        color: #9ca3af;
+    }
+    
+    /* ============================================
+       EMAIL STYLING (matching manage_releases.html)
+       ============================================ */
+    /* Light mode email styling - multiple selectors to ensure coverage */
+    .amc-table .col-uploader,
+    .amc-table td.col-uploader,
+    .releases-table .col-uploader,
+    .releases-table td.col-uploader,
+    .amc-table tbody td.col-uploader,
+    .releases-table tbody td.col-uploader,
+    td.col-uploader,
+    .col-uploader {
+        color: #2563eb !important;
+        font-weight: 500;
+    }
+    
+    /* Dark mode email styling */
+    body.dark-mode .amc-table .col-uploader,
+    body.dark-mode .amc-table td.col-uploader,
+    body.dark-mode .releases-table .col-uploader,
+    body.dark-mode .releases-table td.col-uploader,
+    body.dark-mode .amc-table tbody td.col-uploader,
+    body.dark-mode .releases-table tbody td.col-uploader,
+    body.dark-mode td.col-uploader,
+    body.dark-mode .col-uploader {
+        color: #60a5fa !important;
+    }
+    
+    /* Additional specific targeting for email text */
+    .amc-table tbody tr td:nth-child(5),
+    .releases-table tbody tr td:nth-child(5) {
+        color: #2563eb !important;
+        font-weight: 500;
+    }
+    
+    body.dark-mode .amc-table tbody tr td:nth-child(5),
+    body.dark-mode .releases-table tbody tr td:nth-child(5) {
+        color: #60a5fa !important;
+    }
+    
+    /* ============================================
+       DARK MODE TABLE FIXES - CONSOLIDATED
+       ============================================ */
+    /* Remove conflicting table styling and let global shell handle it */
+    .manage-radar-alerts .amc-table {
+        border-collapse: collapse;
+    }
+    
+    /* Only minimal dark mode overrides needed */
+    body.dark-mode .manage-radar-alerts .amc-table thead th {
+        background: var(--bg-secondary) !important;
+        background-image: none !important;
+        border-bottom-color: var(--border-primary) !important;
+        color: var(--text-primary) !important;
+    }
+    
+    body.dark-mode .manage-radar-alerts .amc-table th,
+    body.dark-mode .manage-radar-alerts .amc-table td {
+        border-color: var(--border-primary) !important;
+    }
+    
+    body.dark-mode .manage-radar-alerts .amc-card {
+        background: var(--bg-secondary) !important;
+        border-color: var(--border-primary) !important;
+    }
+</style>
+</head>
+<body>
+    <!-- AMC Header Component -->
+    <amc-header></amc-header>
+
+    <div class="amc-app">
+        <!-- Enterprise Sidebar -->
+        <aside id="sidebar" class="amc-sidebar">
+            <!-- Content will be dynamically generated by components/sidebar.js -->
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="amc-page manage-releases" role="main">
+            <div class="amc-page__container">
+                <header class="amc-page__header">
+                    <h1 class="amc-page__title"><i class="fas fa-satellite-dish"></i> Manage Media Alert Uploads</h1>
+                    <p class="amc-page__sub">View, edit or delete your media alerts uploaded to AutoMediaCenter</p>
+                </header>
+
+                <div class="amc-page__tools">
+                  <div class="controls-section">
+                    <div class="controls-left">
+                      <div class="search-container">
+                        <!-- keep the historical id to avoid breaking existing JS -->
+                        <input type="text" id="filterSearch" placeholder="Search alerts..." class="search-input" />
+                        <i class="fas fa-search search-icon"></i>
+                      </div>
+                    </div>
+                    <div class="controls-right">
+                      <!-- point this to your Radar uploader -->
+                      <a href="AssetDBmenu1.6.html?formType=radar" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Upload New Alert
+                      </a>
+                    </div>
+                  </div>
+                  <div class="section-divider"></div>
+                  
+                  <!-- Hidden compatibility elements for existing JavaScript -->
+                  <div style="display: none;">
+                    <input type="text" id="filterBrand" value="">
+                    <select id="filterStatus"><option value="" selected></option></select>
+                    <button id="applyFilters"></button>
+                    <button id="clearFilters"></button>
+                  </div>
+                </div>
+
+                <div class="amc-page__body">
+                    <div class="amc-card" style="margin-top:12px;">
+                        <div class="card-header">
+                            <h2>Your Radar Alerts</h2>
+                            <div class="table-head-meta">Total Alerts: <span id="totalAlerts">0</span></div>
+                        </div>
+                        <table class="amc-table table-lined releases-table">
+                            <colgroup>
+                                <col style="width:96px;">   <!-- teaser -->
+                                <col>                        <!-- title (flex / gets the remainder) -->
+                                <col style="width:15%;">     <!-- company -->
+                                <col style="width:8%;">      <!-- status -->
+                                <col style="width:16%;">     <!-- uploaded by -->
+                                <col style="width:12%;">     <!-- alert date -->
+                                <col style="width:12%;">     <!-- last updated -->
+                                <col style="width:80px;">    <!-- actions -->
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="cell--teaser">Teaser</th>
+                                    <th>Title</th>
+                                    <th>Company</th>
+                                    <th style="text-align: center;">Status</th>
+                                    <th>Uploaded By</th>
+                                    <th>Alert Date &amp; Time</th>
+                                    <th>Last Updated</th>
+                                    <th class="cell--actions" style="text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                                <tbody id="alertsTableBody"></tbody>
+                            </table>
+                        <div class="card-footer">
+                            <span id="paginationSummary"></span>
+                            <div class="pagination-controls">
+                                <button class="btn btn-secondary btn-sm" id="prevPageButton" disabled><i class="fas fa-chevron-left"></i></button>
+                                <span id="pageInfo">Page 1 of 1</span>
+                                <button class="btn btn-secondary btn-sm" id="nextPageButton" disabled><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <nav>
+            <a href="#">About Us</a> |
+            <a href="#">Help Center</a> |
+            <a href="#">Terms of Service</a> |
+            <a href="#">Privacy Policy</a>
+        </nav>
+        <p>© <span id="currentYearText"></span> AutoMediaCenter. All rights reserved.</p>
+    </footer>
+    
+    <div class="detail-modal-backdrop" id="assetDetailModalBackdrop">
+        <div class="detail-modal">
+            <div class="detail-modal-header amc-quick-view-header">
+                <div class="amc-quick-view-top-line">
+                    <div class="amc-quick-view-meta">
+                        <span id="assetDetailModalClient"></span> | <span id="assetDetailModalDateTime"></span>
+                    </div>
+                    <button class="detail-modal-close-btn" aria-label="Close">×</button>
+                </div>
+                <h3 id="assetDetailModalTitle">Alert Details</h3>
+            </div>
+            <div class="detail-modal-body amc-quick-view-body" style="display: flex; gap: 30px; padding: 20px;">
+                <div class="amc-quick-view-col-media">
+                    <h4>Media Preview</h4>
+                    <div id="assetDetailModalMediaPreview" style="width: 100%; aspect-ratio: 16 / 9; background-color: var(--bg-tertiary); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 1em; overflow: hidden; border: 1px solid var(--border-secondary);">
+                        <span>Loading preview...</span>
+                    </div>
+                </div>
+                <div class="amc-quick-view-col-details">
+                    <h4>Alert Information</h4>
+                    <div id="amcQuickViewSummaryArea">
+                        <div style="margin-bottom: 15px;">
+                            <strong>Created on:</strong> <span id="assetDetailModalUploadDate"></span><br>
+                            <strong>Alert date/time:</strong> <span id="assetDetailModalPubDate"></span>
+                        </div>
+                    </div>
+                    <h4>Alert Details</h4>
+                    <div id="amcQuickViewAssetListArea" style="max-height: 300px; overflow-y: auto;">
+                        <p style="text-align:center;">Loading details...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="confirm-modal-backdrop" id="deleteConfirmModalBackdrop">
+        <div class="confirm-modal">
+            <div class="confirm-modal-header"><h3 id="deleteConfirmModalTitle">Confirm Deletion</h3></div>
+            <div class="confirm-modal-body"><p id="deleteConfirmModalText">Are you sure?</p></div>
+            <div class="confirm-modal-footer">
+                <button class="btn btn-secondary" id="deleteConfirmCancel">Cancel</button>
+                <button class="btn btn-danger" id="deleteConfirmButton">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// DEBUG FUNCTION - TEMPORARY
+function debugLayout() {
+    const sidebar = document.querySelector('.amc-sidebar');
+    const page = document.querySelector('.amc-page');
+    const body = document.body;
+    
+    console.log('=== LAYOUT DEBUG ===');
+    console.log('Body classes:', body.className);
+    console.log('Sidebar width:', window.getComputedStyle(sidebar).width);
+    console.log('Page margin-left:', window.getComputedStyle(page).marginLeft);
+    console.log('Page width:', window.getComputedStyle(page).width);
+    console.log('CSS Variables:');
+    console.log('  --amc-sidebar-w:', getComputedStyle(document.documentElement).getPropertyValue('--amc-sidebar-w'));
+    console.log('  --amc-sidebar-w-collapsed:', getComputedStyle(document.documentElement).getPropertyValue('--amc-sidebar-w-collapsed'));
+    console.log('Expected behavior:');
+    console.log('  - Sidebar expanded: 272px, Page should have margin-left: 272px');
+    console.log('  - Sidebar collapsed: 72px, Page should have margin-left: 72px');
+    console.log('====================');
+}
+
+// Make debug function globally available
+window.debugLayout = debugLayout;
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Initial debug
+    setTimeout(debugLayout, 1000);
+    
+    // Debug on sidebar toggle - we'll add this after we find the toggle
+    // Authentication is handled server-side via adminRoutes.js middleware
+    // Client-side authentication removed to prevent conflicts with localStorage tokens
+    let token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    let userString = localStorage.getItem('user') || localStorage.getItem('currentUser');
+    let user = null;
+    
+    console.log('🔍 DEBUG: Token found:', token ? 'Present' : 'Missing');
+    console.log('🔍 DEBUG: User string found:', userString ? 'Present' : 'Missing');
+    
+    if (userString) {
+        try {
+            user = JSON.parse(userString);
+            console.log('🔍 DEBUG: Parsed user:', user);
+        } catch (e) {
+            console.error("Error parsing user from localStorage", e);
+            user = { email: 'User', role: 'client_admin' }; // Fallback for display
+        }
+    }
+    
+    // Fallback user object for display purposes
+    if (!user) {
+        user = { email: 'User', role: 'client_admin' };
+    }
+    
+    // Check if we have authentication - if not, redirect to login
+    if (!token) {
+        console.error('🚨 No authentication token found - redirecting to login');
+        alert('Please log in to access this page');
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    // --- UI Elements ---
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const userEmailDisplay = document.getElementById('user-email-display');
+    const darkModeToggleBtnHeader = document.getElementById('darkModeToggleHeader');
+    const alertsTableBody = document.getElementById('alertsTableBody');
+    const prevPageButton = document.getElementById('prevPageButton');
+    const nextPageButton = document.getElementById('nextPageButton');
+    const pageInfo = document.getElementById('pageInfo');
+    const totalAlerts = document.getElementById('totalAlerts');
+    const paginationSummary = document.getElementById('paginationSummary');
+    const applyFiltersButton = document.getElementById('applyFilters');
+    const clearFiltersButton = document.getElementById('clearFilters');
+    const filterSearchInput = document.getElementById('filterSearch');
+    const filterBrandInput = document.getElementById('filterBrand');
+    const filterStatusInput = document.getElementById('filterStatus');
+    const assetDetailModalBackdrop = document.getElementById('assetDetailModalBackdrop');
+    const assetDetailModalTitle = document.getElementById('assetDetailModalTitle');
+    const assetDetailModalClient = document.getElementById('assetDetailModalClient');
+    const assetDetailModalDateTime = document.getElementById('assetDetailModalDateTime');
+    const assetDetailModalUploadDate = document.getElementById('assetDetailModalUploadDate');
+    const assetDetailModalPubDate = document.getElementById('assetDetailModalPubDate');
+    const assetDetailModalMediaPreview = document.getElementById('assetDetailModalMediaPreview');
+    const amcQuickViewAssetListArea = document.getElementById('amcQuickViewAssetListArea');
+    const deleteConfirmModalBackdrop = document.getElementById('deleteConfirmModalBackdrop');
+    const deleteConfirmModalText = document.getElementById('deleteConfirmModalText');
+    const deleteConfirmButton = document.getElementById('deleteConfirmButton');
+    
+    // --- State ---
+    let currentPage = 1; let totalPages = 1; let totalItems = 0; const limitPerPage = 10;
+    
+    // --- UI Functions ---
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            console.log('🔧 Sidebar toggle clicked, collapsed:', sidebar.classList.contains('collapsed'));
+        });
+    }
+    const applyTheme = (theme) => {
+        document.body.classList.toggle('dark-mode', theme === 'dark');
+        // NEW: also drive the attribute the CSS looks at
+        document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
+    };
+    if (darkModeToggleBtnHeader) { darkModeToggleBtnHeader.addEventListener('click', () => { const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark'; applyTheme(newTheme); localStorage.setItem('theme', newTheme); }); }
+    
+    // On load
+    applyTheme(localStorage.getItem('theme') || 'light');
+    document.getElementById('currentYearText').textContent = new Date().getFullYear();
+    
+    // Fix user email display - element might not exist
+    if (userEmailDisplay) {
+        userEmailDisplay.textContent = user.email;
+    }
+    
+    // Fix logout link - element might not exist
+    const logoutLink = document.querySelector('.logout-link');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+    }
+    
+    // --- Main Fetch Function ---
+    async function fetchRadarAlerts(page = 1, search = '', brand = '', status = '') {
+        console.log('🔍 DEBUG: fetchRadarAlerts called with:', { page, search, brand, status });
+        console.log('🔍 DEBUG: Token being used:', token ? 'Present' : 'Missing');
+        
+        alertsTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">Loading... <i class="fas fa-spinner fa-spin"></i></td></tr>`;
+        let queryParams = `?page=${page}&limit=${limitPerPage}&title=${encodeURIComponent(search)}&brand=${encodeURIComponent(brand)}&status=${encodeURIComponent(status)}`;
+        const apiUrl = `http://localhost:5000/api/v1/radar/all-alerts${queryParams}`;
+        
+        console.log('🔍 DEBUG: Making request to:', apiUrl);
+        console.log('🔍 DEBUG: Request headers:', { 'Authorization': `Bearer ${token ? token.substring(0, 20) + '...' : 'MISSING'}` });
+        
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            console.log('🔍 DEBUG: Response status:', response.status);
+            console.log('🔍 DEBUG: Response ok:', response.ok);
+            
+            const result = await response.json();
+            console.log('🔍 DEBUG: Response data:', result);
+            
+            if (!response.ok) {
+                console.error('🚨 API Error:', result);
+                throw new Error(result.error || `HTTP ${response.status}: Failed to fetch data`);
+            }
+            
+            console.log('✅ SUCCESS: Alerts fetched:', result.data.alerts.length);
+            renderRadarAlertsTable(result.data.alerts);
+            currentPage = result.data.currentPage;
+            totalPages = result.data.totalPages;
+            totalItems = result.data.totalAlerts || result.data.alerts.length || 0;
+            if (totalAlerts) {
+                totalAlerts.textContent = totalItems;
+            }
+            updatePaginationControls();
+        } catch (error) {
+            console.error('🚨 FETCH ERROR:', error);
+            alertsTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--color-danger); padding:20px;">Error: ${error.message}<br><small>Check browser console for details</small></td></tr>`;
+        }
+    }
+
+    // --- Table Rendering ---
+    function renderRadarAlertsTable(alerts) {
+        console.log('🔍 DEBUG: renderRadarAlertsTable called with:', alerts);
+        const tableBody = document.getElementById('alertsTableBody');
+        console.log('🔍 DEBUG: Table body element:', tableBody);
+        
+        if (!tableBody) {
+            console.error('🚨 ERROR: Table body element not found!');
+            return;
+        }
+        
+        // Apply client-side filtering if search term exists
+        const searchTerm = filterSearchInput.value.trim().toLowerCase();
+        let filteredAlerts = alerts;
+        
+        if (searchTerm) {
+            console.log('🔍 DEBUG: Applying client-side filter for:', searchTerm);
+            filteredAlerts = alerts.filter(alert => {
+                // All searchable fields from the table
+                const title = (alert.title || '').toLowerCase();
+                const company = getCompanyName(alert).toLowerCase();
+                const brand = (alert.brand || '').toLowerCase();
+                const description = (alert.description || '').toLowerCase();
+                const status = (alert.computedStatus || alert.status || '').toLowerCase();
+                const uploaderEmail = (alert.user?.email || '').toLowerCase();
+                const region = (alert.region || '').toLowerCase();
+                const tags = Array.isArray(alert.tags) ? alert.tags.join(' ').toLowerCase() : (alert.tags || '').toLowerCase();
+                
+                // Modern 2025 search - check each field individually for partial matches
+                const titleMatch = title.includes(searchTerm);
+                const companyMatch = company.includes(searchTerm);
+                const brandMatch = brand.includes(searchTerm);
+                const descriptionMatch = description.includes(searchTerm);
+                const statusMatch = status.includes(searchTerm);
+                const uploaderMatch = uploaderEmail.includes(searchTerm);
+                const regionMatch = region.includes(searchTerm);
+                const tagsMatch = tags.includes(searchTerm);
+                
+                const matches = titleMatch || companyMatch || brandMatch || descriptionMatch ||
+                               statusMatch || uploaderMatch || regionMatch || tagsMatch;
+                
+                if (matches) {
+                    console.log('🔍 DEBUG: Match found in alert:', alert.title);
+                    console.log('  - Title match:', titleMatch, '(', title, ')');
+                    console.log('  - Company match:', companyMatch, '(', company, ')');
+                    console.log('  - Brand match:', brandMatch, '(', brand, ')');
+                    console.log('  - Description match:', descriptionMatch);
+                    console.log('  - Status match:', statusMatch, '(', status, ')');
+                    console.log('  - Uploader match:', uploaderMatch, '(', uploaderEmail, ')');
+                    console.log('  - Region match:', regionMatch, '(', region, ')');
+                    console.log('  - Tags match:', tagsMatch, '(', tags, ')');
+                }
+                
+                return matches;
+            });
+            console.log('🔍 DEBUG: Filtered from', alerts.length, 'to', filteredAlerts.length, 'alerts');
+        }
+        
+        tableBody.innerHTML = '';
+        if (!filteredAlerts || filteredAlerts.length === 0) {
+            console.log('🔍 DEBUG: No alerts to display after filtering');
+            tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">No alerts found matching your criteria.</td></tr>`;
+            return;
+        }
+        
+        console.log('🔍 DEBUG: Rendering', filteredAlerts.length, 'alerts');
+        filteredAlerts.forEach((alert, index) => {
+            console.log(`🔍 DEBUG: Processing alert ${index + 1}:`, alert);
+            const sanitizedTitle = (alert.title || 'this alert').replace(/"/g, '"');
+            const teaserHtml = alert.teaserImagePath ?
+                `<span class="thumb"><img src="http://localhost:5000${alert.teaserImagePath}" alt=""></span>` :
+                `<span class="thumb"><i class="far fa-image"></i></span>`;
+            
+            const alertDate = alert.eventDateTime ? new Date(alert.eventDateTime).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '') : '--/--/---- --:--';
+            const createdDate = alert.createdAt ? new Date(alert.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '') : '--/--/---- --:--';
+
+            // Determine actual status
+            let displayStatus = alert.computedStatus || alert.status || 'Unknown';
+            let statusClass = displayStatus.toLowerCase();
+            
+            // Get uploader email with fallback
+            const uploaderEmail = alert.user?.email || 'Unknown';
+            
+            // Get company name using helper function
+            const companyName = getCompanyName(alert);
+            
+            const row = `<tr data-id="${alert.uuid}">
+                <td class="cell--teaser">${teaserHtml}</td>
+                <td class="col-title"><span class="truncate">${alert.title || 'N/A'}</span></td>
+                <td class="col-company"><span class="truncate">${companyName}</span></td>
+                <td class="col-status" style="text-align: center;"><span class="status-pill status--${statusClass}">${displayStatus}</span></td>
+                <td class="col-uploader">${uploaderEmail}</td>
+                <td class="col-release">${alertDate}</td>
+                <td class="col-updated">${createdDate}</td>
+                <td class="col-actions" style="text-align: center;">
+                    <div class="kebab-wrap">
+                        <button class="kebab-btn" aria-haspopup="true" aria-expanded="false" aria-controls="menu-${alert.uuid}">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div id="menu-${alert.uuid}" class="kebab-menu" role="menu" hidden>
+                            <button type="button" class="kebab-item" data-action="view" data-uuid="${alert.uuid}" data-title="${sanitizedTitle}">View</button>
+                            <button type="button" class="kebab-item" data-action="edit" data-uuid="${alert.uuid}" data-title="${sanitizedTitle}">Edit</button>
+                            <button type="button" class="kebab-item" data-action="delete" data-uuid="${alert.uuid}" data-title="${sanitizedTitle}">Delete</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
+            console.log(`🔍 DEBUG: Generated row HTML for alert ${index + 1}:`, row);
+            tableBody.insertAdjacentHTML('beforeend', row);
+        });
+        console.log('🔍 DEBUG: Final table body HTML:', tableBody.innerHTML);
+    }
+
+    // Helper function to get company name consistently
+    function getCompanyName(alert) {
+        // First try: Get from alert's clientId (Client model - has clientName field)
+        if (alert.clientId?.clientName) {
+            return alert.clientId.clientName;
+        }
+        // Fallback: Get from user's clientId (Company model - has name field)
+        else if (alert.user?.clientId?.name) {
+            return alert.user.clientId.name;
+        }
+        return 'N/A';
+    }
+
+    // --- Actions ---
+    async function deleteAlert(uuid) {
+        try {
+            const response = await fetch(`http://localhost:5000/api/v1/radar/alerts/${uuid}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error);
+            alert(result.message);
+            fetchRadarAlerts(currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value);
+        } catch (error) {
+            alert(`Error: ${error.message}`);
+        }
+    }
+
+    async function openAssetDetailModal(uuid) {
+        // Update loading states for new structure
+        assetDetailModalMediaPreview.innerHTML = '<span><i class="fas fa-spinner fa-spin"></i> Loading Preview...</span>';
+        amcQuickViewAssetListArea.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading details...</p>';
+        assetDetailModalBackdrop.classList.add('open');
+        try {
+            let res = await fetch(`http://localhost:5000/api/v1/radar/alerts/foredit/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            
+            let alertData;
+            if (res.status === 404) {
+                res = await fetch(`http://localhost:5000/api/v1/radar/history/by-uuid/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!res.ok) throw new Error('Alert not found in active or archived records.');
+            }
+            
+            if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+
+            const result = await res.json();
+            if (!result.success) throw new Error(result.error);
+            alertData = result.data;
+            
+            // Update header information
+            assetDetailModalTitle.textContent = alertData.title;
+            
+            // Set client and date info
+            const clientName = alertData.clientId?.clientName || alertData.user?.clientId?.name || 'Unknown Client';
+            const alertDate = alertData.eventDateTime || alertData.originalEventDateTime;
+            assetDetailModalClient.textContent = clientName;
+            assetDetailModalDateTime.textContent = alertDate ? new Date(alertDate).toLocaleString('en-GB') : 'Unknown Date';
+            assetDetailModalUploadDate.textContent = alertData.createdAt ? new Date(alertData.createdAt).toLocaleString('en-GB') : 'Unknown';
+            assetDetailModalPubDate.textContent = alertDate ? new Date(alertDate).toLocaleString('en-GB') : 'Unknown';
+            
+            // Set media preview
+            if (alertData.teaserImagePath) {
+                assetDetailModalMediaPreview.innerHTML = `<img src="http://localhost:5000${alertData.teaserImagePath}" alt="Alert Preview" style="width: 100%; height: 100%; object-fit: cover;">`;
+            } else {
+                assetDetailModalMediaPreview.innerHTML = '<i class="far fa-image" style="font-size: 3em; color: var(--text-secondary);"></i>';
+            }
+            
+            let tagsHtml = 'N/A';
+            if (alertData.tags && alertData.tags.length > 0) {
+               tagsHtml = Array.isArray(alertData.tags) ? alertData.tags.join(', ') : alertData.tags;
+            }
+
+            amcQuickViewAssetListArea.innerHTML = `
+                <div class="detail-item"><strong>Brand:</strong> ${alertData.brand || 'N/A'}</div>
+                <div class="detail-item"><strong>Region:</strong> ${alertData.region || 'N/A'}</div>
+                <div class="detail-item"><strong>Status:</strong> ${alertData.computedStatus || alertData.status || 'Unknown'}</div>
+                <div class="detail-item"><strong>Description:</strong><p style="white-space:pre-wrap; margin-top:5px;">${alertData.description || 'N/A'}</p></div>
+                <div class="detail-item"><strong>Tags:</strong> ${tagsHtml}</div>
+            `;
+        } catch (error) {
+            assetDetailModalTitle.textContent = 'Error';
+            amcQuickViewAssetListArea.innerHTML = `<p style="color:var(--color-danger); text-align:center;">Could not load alert details: ${error.message}</p>`;
+        }
+    }
+
+    function updatePaginationControls(noData = false) {
+        if (noData || totalItems === 0) {
+            if (pageInfo) pageInfo.textContent = 'Page 0 of 0';
+            if (paginationSummary) paginationSummary.textContent = 'Showing 0-0 of 0';
+            if (prevPageButton) prevPageButton.disabled = true;
+            if (nextPageButton) nextPageButton.disabled = true;
+            return;
+        }
+        if (pageInfo) pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        const startItem = (currentPage - 1) * limitPerPage + 1;
+        const endItem = Math.min(currentPage * limitPerPage, totalItems);
+        if (paginationSummary) paginationSummary.textContent = `Showing ${startItem}-${endItem} of ${totalItems}`;
+        if (prevPageButton) prevPageButton.disabled = currentPage <= 1;
+        if (nextPageButton) nextPageButton.disabled = currentPage >= totalPages;
+    }
+
+    // --- KEBAB MENU FUNCTIONALITY (PORTAL APPROACH) ---
+    const portal = document.getElementById('kebab-portal');
+
+    function closeAllKebabs(){
+        portal.innerHTML = ''; // remove any floating menu
+        document.querySelectorAll('.kebab-btn[aria-expanded="true"]')
+            .forEach(b => b.setAttribute('aria-expanded','false'));
+    }
+
+    // Open: build a floating copy in the portal and place it by the button
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.kebab-btn');
+        if (!btn) return;
+
+        const cell = btn.closest('.action-cell') || btn.parentElement;
+        const inlineMenu = cell?.querySelector('.kebab-menu');
+        if (!inlineMenu) return;
+
+        // get viewport coords for the button
+        const r = btn.getBoundingClientRect();
+        closeAllKebabs();
+
+        // clone the inline menu into the portal
+        const float = inlineMenu.cloneNode(true);
+        float.classList.remove('kebab-menu');
+        float.classList.add('kebab-float');
+        float.hidden = false;
+
+        // place it (default: right side)
+        let left = r.right + 8;
+        let top  = r.top + r.height + 6;
+
+        // if too close to the right edge, flip to the left
+        const w = 200; // approx, will reflow below
+        if (left + w > window.innerWidth - 8) left = r.left - w - 8;
+
+        float.style.left = left + 'px';
+        float.style.top  = top  + 'px';
+
+        // carry data-* on buttons
+        float.querySelectorAll('.kebab-item').forEach((b,i)=>{
+            const src = inlineMenu.querySelectorAll('.kebab-item')[i];
+            if (src) [...src.attributes].forEach(a => {
+                if (a.name.startsWith('data-')) b.setAttribute(a.name, a.value);
+            });
+        });
+
+        portal.appendChild(float);
+        btn.setAttribute('aria-expanded','true');
+        e.stopPropagation();
+    });
+
+    // Action handlers (View/Edit/Delete)
+    document.addEventListener('click', (e) => {
+        const item = e.target.closest('#kebab-portal .kebab-item');
+        if (!item) return;
+        const uuid  = item.dataset.uuid;
+        const title = item.dataset.title || 'this alert';
+        const act   = item.dataset.action;
+
+        if (act === 'view') {
+            if (typeof openAssetDetailModal === 'function') openAssetDetailModal(uuid);
+        } else if (act === 'edit') {
+            location.href = `AssetDBmenu1.6.html?formType=radar&editAlertUUID=${uuid}`;
+        } else if (act === 'delete') {
+            deleteConfirmModalText.innerHTML = `Are you sure you want to permanently delete the alert:<br><strong>"${title}"</strong>?<br><br>This action cannot be undone.`;
+            deleteConfirmModalBackdrop.classList.add('open');
+            deleteConfirmButton.onclick = () => {
+                deleteConfirmModalBackdrop.classList.remove('open');
+                deleteAlert(uuid);
+            };
+        }
+        closeAllKebabs();
+    });
+
+    // close on outside click / ESC / resize / scroll
+    document.addEventListener('click', (e)=>{
+        if (!e.target.closest('#kebab-portal') && !e.target.closest('.kebab-btn')) closeAllKebabs();
+    });
+    document.addEventListener('keydown', e=>{ if (e.key==='Escape') closeAllKebabs(); });
+    window.addEventListener('resize', closeAllKebabs);
+    window.addEventListener('scroll', closeAllKebabs, true);
+    
+    [...document.querySelectorAll('.detail-modal-close-btn')].forEach(btn => btn.addEventListener('click', () => assetDetailModalBackdrop.classList.remove('open')));
+    assetDetailModalBackdrop.addEventListener('click', e => { if (e.target === assetDetailModalBackdrop) assetDetailModalBackdrop.classList.remove('open'); });
+    document.getElementById('deleteConfirmCancel').addEventListener('click', () => deleteConfirmModalBackdrop.classList.remove('open'));
+
+    applyFiltersButton.addEventListener('click', () => {
+        currentPage = 1;
+        fetchRadarAlerts(currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value);
+    });
+    clearFiltersButton.addEventListener('click', () => {
+        filterSearchInput.value = ''; filterBrandInput.value = ''; filterStatusInput.value = '';
+        currentPage = 1; fetchRadarAlerts(currentPage);
+    });
+    
+    prevPageButton.addEventListener('click', () => { if (currentPage > 1) fetchRadarAlerts(--currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value); });
+    nextPageButton.addEventListener('click', () => { if (currentPage < totalPages) fetchRadarAlerts(++currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value); });
+    
+    // --- Initial Load ---
+    console.log('🔍 DEBUG: Starting initial load...');
+    
+    // Add a small delay to ensure DOM is fully ready
+    setTimeout(() => {
+        console.log('🔍 DEBUG: Calling fetchRadarAlerts...');
+        fetchRadarAlerts();
+    }, 200);
+});
+</script>
+    <!-- ✅ ADD COMPONENT SCRIPTS -->
+    <script src="components/amc-header.js"></script>
+    <script src="components/sidebar.js"></script>
+    
+    <!-- Premium Avatar System -->
+    <script defer src="amc-avatar-system.js"></script>
+    
+    <!-- Kebab menu portal -->
+    <div id="kebab-portal" style="position:fixed; inset:0; pointer-events:none; z-index:1000;"></div>
+    
+<script>
+  // Enhanced search functionality - wait for DOM and use existing button handlers
+  document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('filterSearch');
+    const applyBtn = document.getElementById('applyFilters');
+    
+    if(!input) {
+      console.error('🚨 Search input not found!');
+      return;
+    }
+
+    console.log('🔍 DEBUG: Search input found, setting up event listeners');
+
+    // Real-time search function that uses existing apply button logic
+    const performSearch = () => {
+      console.log('🔍 DEBUG: performSearch called, input value:', input.value);
+      
+      // Trigger the existing apply filters button which calls fetchRadarAlerts
+      if (applyBtn) {
+        console.log('🔍 DEBUG: Clicking apply filters button');
+        applyBtn.click();
+      } else {
+        console.error('🚨 Apply filters button not found!');
+      }
+    };
+
+    // Add event listeners for real-time search
+    input.addEventListener('input', () => {
+      console.log('🔍 DEBUG: Input event triggered');
+      performSearch();
+    });
+    
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        console.log('🔍 DEBUG: Enter key pressed');
+        performSearch();
+      }
+    });
+
+    // ESC clears the field & filters
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        console.log('🔍 DEBUG: Escape key pressed');
+        input.value = '';
+        performSearch();
+      }
+    });
+
+    console.log('🔍 DEBUG: Search event listeners set up successfully');
+  });
+</script>
+
+</body>
+</html>

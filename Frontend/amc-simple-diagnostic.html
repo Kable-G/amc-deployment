@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple AMC Backend Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .test-btn { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        .test-btn:hover { background: #0056b3; }
+        .result { background: #f8f9fa; border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 4px; white-space: pre-wrap; font-family: monospace; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Simple AMC Backend Test</h1>
+        <p>Testing basic connectivity to your backend on port 5000</p>
+        
+        <h3>Basic Tests</h3>
+        <button class="test-btn" onclick="testRoot()">Test Root (/)</button>
+        <button class="test-btn" onclick="testApi()">Test /api</button>
+        <button class="test-btn" onclick="testHealth()">Test /health</button>
+        <button class="test-btn" onclick="testStatus()">Test /status</button>
+        
+        <h3>Release Endpoints</h3>
+        <button class="test-btn" onclick="testReleases1()">Test /api/releases</button>
+        <button class="test-btn" onclick="testReleases2()">Test /api/v1/releases</button>
+        <button class="test-btn" onclick="testReleases3()">Test /api/center/releases</button>
+        <button class="test-btn" onclick="testReleases4()">Test /api/v1/center/releases</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000';
+        
+        function showResult(message, type = '') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = message;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        async function testEndpoint(path, description) {
+            const url = `${API_BASE}${path}`;
+            showResult(`Testing ${description}: ${url}`);
+            
+            try {
+                const response = await fetch(url);
+                const status = response.status;
+                const statusText = response.statusText;
+                
+                let responseText = '';
+                try {
+                    const text = await response.text();
+                    responseText = text.substring(0, 500); // First 500 chars
+                } catch (e) {
+                    responseText = 'Could not read response body';
+                }
+                
+                const result = `✅ ${description} Response:
+Status: ${status} ${statusText}
+Response: ${responseText}
+---`;
+                
+                showResult(result, status === 200 ? 'success' : 'error');
+                
+            } catch (error) {
+                showResult(`❌ ${description} Error: ${error.message}`, 'error');
+            }
+        }
+        
+        function testRoot() { testEndpoint('/', 'Root Endpoint'); }
+        function testApi() { testEndpoint('/api', 'API Base'); }
+        function testHealth() { testEndpoint('/health', 'Health Check'); }
+        function testStatus() { testEndpoint('/status', 'Status Check'); }
+        function testReleases1() { testEndpoint('/api/releases', 'Releases v1'); }
+        function testReleases2() { testEndpoint('/api/v1/releases', 'Releases v2'); }
+        function testReleases3() { testEndpoint('/api/center/releases', 'Center Releases v1'); }
+        function testReleases4() { testEndpoint('/api/v1/center/releases', 'Center Releases v2'); }
+        
+        // Auto-test root on load
+        window.addEventListener('load', () => {
+            setTimeout(() => testRoot(), 500);
+        });
+    </script>
+</body>
+</html>

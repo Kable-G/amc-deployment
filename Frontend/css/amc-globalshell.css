@@ -1,0 +1,3684 @@
+/* === AMC layout tokens used by shell + page layout === */
+:root{
+  --amc-header-height: 64px;      /* header height */
+  --amc-sidebar-expanded: 260px;  /* expanded sidebar width */
+  --amc-sidebar-collapsed: 56px;  /* collapsed sidebar width */
+}
+
+/**
+ * AMC Global Shell CSS - Comprehensive Layout System
+ * Contains ALL legendary styles that are proven to work:
+ * - Global content offset enforcement (CRITICAL FIX)
+ * - 40px uniform icons with 4px spacing (Issue #1 Fix)
+ * - Glass morphism search bar with focus expansion (Issue #2 Fix)
+ * - Smart badge animations with spring physics (Issue #3 Fix)
+ * - Enterprise sidebar with colored sections
+ * - Premium light/dark mode system
+ * - Collapsible sections with elegant bars
+ * - Tools dropdown styling
+ * - Unified tooltip system
+ */
+
+/* ============================================================
+   GLOBAL SHELL LAYOUT VARIABLES - AUTHORITATIVE SOURCE
+   These variables control ALL page layouts automatically
+   ============================================================ */
+
+/* ========== GLOBAL SHELL LAYOUT VARS ========== */
+:root{
+  --amc-header-h: 64px;
+  --amc-sidebar-w: 272px;
+  --amc-sidebar-w-collapsed: 72px;
+  
+  /* Legacy compatibility */
+  --amc-sidebar-w-expanded: 272px;
+  --amc-page-xgap: 24px;
+  --amc-page-gutter-x: 24px;
+  --amc-page-gutter-y: 20px;
+}
+
+/* ========== DEBUG STYLES REMOVED ========== */
+
+:root {
+    /* card + table styling helpers */
+    --amc-card-radius: 10px;
+    --amc-card-shadow: 0 4px 18px rgba(0,0,0,.10);
+    --amc-row-stripe: rgba(255,255,255,.04);       /* dark mode */
+    --amc-row-stripe-light: rgba(0,0,0,.03);       /* light mode */
+    
+    /* LEGACY: Keep for compatibility */
+    --amc-header-height: 64px; /* Keep for compatibility */
+    --amc-sidebar-expanded: 272px;
+    --amc-sidebar-collapsed: 72px;
+    --amc-sidebar-w-collapsed: 72px;
+    --amc-content-padding: 2rem;
+    
+    /* Page Rail System Variables */
+    --amc-rail-max: 1200px;   /* max readable width for pages with forms/tables */
+    --amc-rail-gx: 24px;      /* horizontal gutter inside the page */
+    --amc-rail-gy: 16px;      /* vertical gap above page header */
+    /* ── LAYERED BACKGROUND ARCHITECTURE (Light Mode Premium) ─────── */
+    --amc-body-bg-light: #f8fafc;         /* soft neutral layer */
+    --amc-surface-bg-light: #ffffff;      /* cards / containers */
+    --amc-table-bg-light: #fcfcfd;        /* table wrapper */
+    --amc-header-bg-light: #f3f4f6;       /* table header background */
+    --amc-sidebar-bg-light: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* sidebar gradient */
+    
+    /* Legacy variables (maintained for compatibility) */
+    --bg-primary: var(--amc-body-bg-light);
+    --bg-secondary: var(--amc-surface-bg-light);
+    --bg-tertiary: #e9ecef;
+    
+    /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────────── */
+    --text-headings: #111827;    /* headers: strong */
+    --text-primary: #374151;     /* body text: medium */
+    --text-secondary: #6b7280;   /* metadata: subtle */
+    --text-muted: #9ca3af;       /* ultra-subtle */
+    
+    --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7;
+    
+    --accent-secondary-default: #6c757d;
+    --accent-secondary-default-hover: #5a6268;
+
+    --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
+    
+    --border-primary: #e5e7eb; --border-secondary: #d1d5db; --border-color-light: #e9ecef;
+    --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+    --icon-available: var(--accent-primary); --icon-unavailable: #ced4da;
+    --shadow-primary: rgba(0, 0, 0, 0.08); --shadow-hover: rgba(0, 0, 0, 0.15);
+    --overlay-bg: rgba(0, 0, 0, 0.65);
+    --tag-bg: var(--bg-tertiary); --tag-text: var(--text-secondary);
+    --color-info: #17a2b8;
+    --color-warning: #ffc107;
+    --brand-band-light-bg: #212529; --brand-band-light-text: #f8f9fa;
+    --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+    --bg-image-placeholder: #e9ecef;
+    --font-family-main: 'Poppins', sans-serif;
+    --sidebar-width: var(--amc-sidebar-expanded);
+    --header-height: 64px; /* Updated for premium header */
+    --footer-height: 60px;
+    --accent-primary-rgb: 13, 110, 253;
+    --accent-secondary-default-rgb: 108, 117, 125;
+    --highlight-color-rgb: 255, 193, 7;
+    --notification-error: #dc3545;
+    --accent-action-positive: #28a745;
+    --accent-action-positive-hover: #218838;
+    --accent-action-positive-rgb: 40, 167, 69;
+    --accent-action-danger: #dc3545;
+    --accent-action-danger-hover: #c82333;
+    --selection-dot-color: var(--accent-primary); /* Blue for selection */
+    
+    /* ENTERPRISE TYPOGRAPHY SYSTEM */
+    --font-display: 2rem;      /* Page titles (h1) */
+    --font-heading: 1.4rem;    /* Section headers */
+    --font-subheading: 1.1rem; /* Card headers */
+    --font-body: 0.95rem;      /* Body text */
+    --font-muted: 0.85rem;     /* Metadata / labels */
+
+    /* SIDEBAR VARIABLES */
+    --amc-header-h: 64px;
+    --amc-sidebar-expanded: 272px;
+    --amc-sidebar-collapsed: 72px;
+
+    /* colors (light) */
+    --amc-bg: #ffffff;
+    --amc-line: #E5E7EB;
+    --amc-text: #0f172a;
+    --amc-muted:#64748b;
+
+    /* colors (dark) */
+    --amc-bg-dark: #0f1115;
+    --amc-line-dark: rgba(255,255,255,.12);
+    --amc-text-dark:#e5e7eb;
+    --amc-muted-dark:#94a3b8;
+}
+
+/* Body theme hook (already used by your JS) */
+html[data-theme="dark"] body { background: var(--bg-primary); }
+
+body.dark-mode {
+    --bg-primary: #121212; --bg-secondary: #1a1c1e; --bg-tertiary: #2a2d30;
+    --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+    --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff;
+    
+    --accent-secondary-default: #6c757d;
+    --accent-secondary-default-hover: #545b62;
+    
+    --border-primary: rgba(255,255,255,0.12); --border-secondary: rgba(255,255,255,0.08); --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+    --icon-available: var(--accent-primary); --icon-unavailable: #555;
+    --shadow-primary: rgba(0, 0, 0, 0.25); --shadow-hover: rgba(0, 0, 0, 0.35);
+    --overlay-bg: rgba(0, 0, 0, 0.75);
+    --tag-bg: #4a4a4a; --tag-text: var(--text-primary);
+    --brand-band-light-bg: #f8f9fa; --brand-band-light-text: #212529;
+    --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+    --color-info: #36c4d9;
+    --color-warning: #ffd04a;
+    --bg-image-placeholder: #2c2c2c;
+    --accent-primary-rgb: 63, 145, 255;
+    --accent-secondary-default-rgb: 108, 117, 125;
+    --accent-action-positive: #20c997;
+    --accent-action-positive-hover: #1ba984;
+    --accent-action-positive-rgb: 32, 201, 151;
+    --accent-action-danger: #e74c3c;
+    --accent-action-danger-hover: #d63031;
+    --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
+    --sidebar-bg: #1a1c1e;
+
+    /* AVATAR DARK MODE SUPPORT - Enable role-based rings in dark mode */
+    --bg-secondary-dark: #1a1c1e;
+    --text-primary-dark: #e2e8f0;
+    --border-primary-dark: #374151;
+    --bg-tertiary-dark: #2a2d30;
+    --text-headings-dark: #f8f9fa;
+    --text-secondary-dark: #9ca3af;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* 🚀 INDUSTRY-BUSTING: Global Motion Baseline */
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: background, color, transform, box-shadow;
+}
+
+/* 🎯 TYPOGRAPHY UPGRADE: Variable font smoothing for retina displays */
+html {
+    font-smooth: always;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--amc-body-bg-light); /* soft neutral layer */
+    color: var(--text-primary);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Body layout variables (expanded by default) */
+    --amc-sidebar-w: 272px;
+}
+
+/* Light mode layered background system */
+body:not(.dark-mode) {
+    background: var(--amc-body-bg-light);
+}
+
+/* DARK MODE BODY BACKGROUND */
+body.dark-mode {
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* When collapsed (remembered in localStorage) */
+body.amc-collapsed {
+    --amc-sidebar-w: var(--amc-sidebar-collapsed);
+}
+
+/* When the sidebar is collapsed, sidebar.js adds this class to <body> */
+body.sidebar-collapsed{
+  --amc-sidebar-w: var(--amc-sidebar-w-collapsed);
+}
+
+/* =========================
+   Global Page Rail (content frame)
+   ========================= */
+
+/* ========== APP LAYOUT ========== */
+.amc-app{
+  display: block; /* sidebar is fixed; main will gain left margin */
+}
+
+/* Sidebar is fixed under the header */
+.amc-sidebar{
+  position: fixed;
+  top: var(--amc-header-h);
+  left: 0;
+  height: calc(100vh - var(--amc-header-h));
+  width: var(--amc-sidebar-w);
+  transition: width .25s ease;
+  overflow: auto;
+  will-change: width;
+  z-index: 100; /* below header, above content */
+}
+
+/* When body has collapsed class, sidebar gets smaller */
+body.sidebar-collapsed .amc-sidebar,
+body.amc-collapsed .amc-sidebar{
+  width: var(--amc-sidebar-w-collapsed);
+}
+
+/* The main page is ALWAYS offset from the left by the current sidebar width */
+.amc-page{
+  /* critical line that prevents "under the sidebar" slide */
+  margin-left: var(--amc-sidebar-w);
+  padding: 24px;
+  padding-top: calc(var(--amc-header-h) + 16px); /* uniform heading spacing */
+  min-height: calc(100vh - var(--amc-header-h));
+  transition: margin-left .25s ease;
+}
+
+/* When body has collapsed class, page gets smaller margin (more space) */
+body.sidebar-collapsed .amc-page,
+body.amc-collapsed .amc-page{
+  margin-left: var(--amc-sidebar-w-collapsed);
+}
+
+/* Content row that holds filters + table card */
+.amc-content{
+  max-width: calc(100vw - var(--amc-sidebar-w) - (var(--amc-page-gutter-x) * 2));
+  margin: 0 auto;
+  transition: max-width .25s ease;
+}
+
+/* Keep header spacing consistent with the AutoMediaCenter page */
+.amc-page .page-header {
+  margin: 8px 0 16px;   /* was too tight to the top bar */
+}
+.amc-page .page-title{
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0 0 6px 0;
+}
+.amc-page .page-subtitle{
+  font-size: 13px;
+  opacity: .8;
+  margin: 0;
+}
+
+/* Generic card (used for filter bar + table container) */
+.amc-card{
+  background: var(--amc-card-bg, rgba(20,22,25,.8));
+  border-radius: var(--amc-card-radius);
+  box-shadow: var(--amc-card-shadow);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+/* Light mode card styling */
+body:not(.dark-mode) .amc-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Legacy aliases for backward compatibility */
+.amc-content,
+.main-content {
+  padding: 24px 32px;
+  padding-top: calc(24px + var(--amc-header-h));
+  margin-left: var(--amc-sidebar-w);
+  transition: margin-left .2s ease;
+}
+
+/* Collapsed sidebar state */
+.sidebar--collapsed .amc-page,
+body.sidebar-collapsed .amc-page {
+  margin-left: var(--amc-sidebar-w-collapsed);
+}
+
+/* Tables used on list pages */
+.amc-page .table-responsive {
+  overflow-x: auto;
+}
+
+.amc-page .mr-table,
+.amc-page .releases-table {
+  width: 100%;
+  table-layout: fixed;          /* makes colgroup widths stick */
+  border-collapse: collapse;
+}
+
+/* Center "sheet" for form/table pages (like AutoMediaCenter top area) */
+.amc-page__container{
+  max-width: var(--amc-rail-max);
+  margin: 0 auto;
+}
+
+/* ==========================================================
+   Wide-page override for data-heavy or table views
+   ========================================================== */
+
+/* Default rail keeps text pages centered */
+.amc-page__container {
+  max-width: var(--amc-rail-max, 1200px);
+  margin: 0 auto;
+}
+
+/* Opt-in classes unlock full width for tables/dashboards */
+.amc-page.wide .amc-page__container,
+.amc-page.manage-releases .amc-page__container,
+.amc-page.analytics .amc-page__container {
+  max-width: none;
+}
+
+/* Ensure table wrappers use full rail width */
+.amc-page__body .card,
+.amc-page__body .card-body,
+.amc-page__body .table-responsive {
+  width: 100%;
+  max-width: none;
+}
+
+/* ============================================================
+   UNIFIED PAGE HEADER SYSTEM - MATCHES AUTOMEDIARADAR STYLING
+   Creates consistent header styling across all pages
+   ============================================================ */
+
+.amc-page__header,
+.content-header {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-primary);
+  margin-top: -8px; /* Pull content higher */
+}
+
+.amc-page__title,
+.content-header h1 {
+  font-size: 1.8em;
+  font-weight: 600;
+  color: var(--text-headings);
+  margin-bottom: 3px;
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.2;
+}
+
+.amc-page__title i,
+.content-header h1 i {
+  color: var(--accent-primary);
+  margin-right: 0;
+}
+
+.amc-page__sub,
+.content-header p {
+  font-size: var(--font-body);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 720px;
+  margin: 0;
+}
+
+/* Dark mode support for unified headers */
+body.dark-mode .amc-page__header,
+body.dark-mode .content-header {
+  background: var(--bg-primary) !important;
+  border-bottom-color: var(--border-primary) !important;
+}
+
+body.dark-mode .amc-page__title,
+body.dark-mode .content-header h1 {
+  color: var(--text-headings) !important;
+}
+
+body.dark-mode .amc-page__sub,
+body.dark-mode .content-header p {
+  color: var(--text-secondary) !important;
+}
+
+/* Tools row (filters) spacing - TIGHTER for stealth appearance */
+.amc-page__tools{
+  margin: -4px 0 8px; /* Negative top margin pulls search bar closer to header */
+}
+
+/* Bring table content closer to search bar */
+.amc-page__body {
+  margin-top: -8px; /* Pull table closer to search controls */
+}
+
+/* Adjust card spacing for tighter layout */
+.amc-page__body .amc-card {
+  margin-top: 4px !important; /* Override any existing margin-top */
+}
+
+/* Optional: widen title when sidebar is collapsed */
+body:not(.amc-collapsed) .mr-title a{ max-width: 34ch; }
+body.amc-collapsed       .mr-title a{ max-width: 46ch; }
+
+/* ============================================================
+   GLOBAL CONTENT OFFSET ENFORCEMENT - CRITICAL FIX
+   This makes content automatically respect header/sidebar
+   ============================================================ */
+
+/* AUTHORITATIVE: All content containers get proper offsets */
+.amc-content,
+.main-content,
+#manage-releases-page,
+.page-content,
+.content-wrapper {
+    margin-left: var(--amc-sidebar-w) !important;
+    margin-top: var(--amc-header-height) !important;
+    padding: var(--amc-content-padding) !important;
+    transition: margin-left 0.18s ease !important;
+    min-height: calc(100vh - var(--amc-header-height)) !important;
+    box-sizing: border-box !important;
+}
+
+/* FORCE: Override any page-specific positioning */
+body:not(.no-shell) .amc-content,
+body:not(.no-shell) .main-content,
+body:not(.no-shell) #manage-releases-page {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+}
+
+/* Ensure H1 headings don't get hidden under fixed header */
+.amc-content h1:first-child,
+.main-content h1:first-child,
+#manage-releases-page h1:first-child {
+    margin-top: 0 !important;
+    padding-top: 1rem !important;
+}
+
+a { 
+    color: var(--accent-primary); 
+    text-decoration: none; 
+} 
+
+a:hover { 
+    color: var(--accent-primary-hover); 
+    text-decoration: underline; 
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-left: var(--amc-sidebar-w);
+    transition: margin-left .18s ease;
+}
+
+/* AMC App Container */
+.amc-app {
+    display: flex;
+    flex-grow: 1;
+}
+
+/* AMC Content Container */
+.amc-content {
+    flex: 1;
+    margin-left: var(--amc-sidebar-w);
+    transition: margin-left .18s ease;
+    padding-top: 0; /* Header padding already applied to body */
+}
+
+.app-body { 
+    display: flex; 
+    flex-grow: 1; 
+    transition: margin-left 0.3s ease; 
+}
+
+/* ============ INDUSTRY-LEADING HEADER SYSTEM ============ */
+
+.app-header {
+    /* Premium glass morphism */
+    backdrop-filter: blur(24px) saturate(180%);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 255, 255, 0.92) 100%
+    );
+    
+    /* Precise positioning */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--amc-header-height); /* Taller for premium feel */
+    z-index: 10000;
+    
+    /* Enterprise elevation */
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.04),
+        0 1px 2px rgba(0, 0, 0, 0.02),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.8);
+    
+    /* Perfect layout */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px 0 32px;
+    
+    /* Smooth transitions */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark mode header */
+body.dark-mode .app-header {
+    background: linear-gradient(
+        180deg,
+        rgba(17, 24, 39, 0.95) 0%,
+        rgba(17, 24, 39, 0.92) 100%
+    );
+    border-bottom-color: rgba(55, 65, 81, 0.6);
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ============ LOGO: BRAND IDENTITY ============ */
+
+.app-header .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    position: relative;
+}
+
+.app-header .logo h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin: 0;
+    color: #0f172a; /* Normal dark color in light mode */
+    
+    /* Premium font stack */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    
+    /* Smooth transition */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-header .logo:hover h1 {
+    /* Keep same text color but add blue glow/hue around letters */
+    color: #0f172a;
+    text-shadow:
+        0 0 10px rgba(37, 99, 235, 0.4),
+        0 0 20px rgba(37, 99, 235, 0.2),
+        0 0 30px rgba(37, 99, 235, 0.1);
+    transform: translateX(2px);
+}
+
+/* Dark mode: White text with blue glow on hover */
+body.dark-mode .app-header .logo h1 {
+    color: #f8fafc; /* Normal white color in dark mode */
+}
+
+body.dark-mode .app-header .logo:hover h1 {
+    /* Keep white text but add blue glow */
+    color: #f8fafc;
+    text-shadow:
+        0 0 10px rgba(96, 165, 250, 0.5),
+        0 0 20px rgba(96, 165, 250, 0.3),
+        0 0 30px rgba(96, 165, 250, 0.1);
+}
+
+.app-header .user-actions-group { 
+    display: flex; 
+    align-items: center; 
+    gap: 20px;
+}
+
+.app-header .user-info { 
+    font-size: 0.9em; 
+} 
+
+.app-header .user-info span { 
+    opacity: 0.8; 
+}
+
+.app-header .logout-link { 
+    color: var(--header-link); 
+    text-decoration: none; 
+    font-size: 0.9em;
+}
+
+.app-header .logout-link:hover { 
+    color: var(--header-text); 
+} 
+
+.app-header .logout-link i { 
+    margin-right: 5px; 
+}
+
+/* ============ LEGENDARY HEADER ICONS - ISSUE #1 FIX ============ */
+
+.amc-header-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important; /* Tight professional spacing - Linear/Stripe standard */
+}
+
+/* LEGENDARY: Uniform 40px icon system - EXACT VERCEL/LINEAR STANDARD */
+.cart-indicator,
+.notification-indicator,
+.tools-toggle-btn {
+    width: 40px !important;
+    height: 40px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative;
+    border-radius: 8px;
+    cursor: pointer;
+    
+    /* Clean default state */
+    background: transparent;
+    color: #64748b;
+    border: none;
+    outline: none;
+    
+    /* Smooth transitions - ENHANCED */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* LEGENDARY: Uniform hover feedback with lift + shadow - VERCEL STANDARD */
+.cart-indicator:hover,
+.notification-indicator:hover,
+.tools-toggle-btn:hover {
+    background: rgba(241, 245, 249, 0.8);
+    color: #0f172a;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* LEGENDARY: Click feedback - LINEAR STANDARD */
+.cart-indicator:active,
+.notification-indicator:active,
+.tools-toggle-btn:active {
+    transform: translateY(-1px) scale(0.96);
+}
+
+/* Icon sizing */
+.cart-indicator i,
+.notification-indicator i,
+.tools-toggle-btn i {
+    font-size: 18px;
+}
+
+/* LEGENDARY: Smart badge system - ISSUE #3 FIX */
+.cart-badge,
+.notification-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background: #2563eb;
+    color: #ffffff;
+    border-radius: 10px;
+    border: 2px solid #ffffff;
+    
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    
+    /* LEGENDARY: Hidden by default, spring physics entrance */
+    transform: scale(0);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity: 0;
+}
+
+/* LEGENDARY: Badge appears with spring + pulse animation */
+.cart-indicator.has-items .cart-badge,
+.notification-indicator.has-new .notification-badge {
+    transform: scale(1);
+    opacity: 1;
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+/* LEGENDARY: Pulse animation with expanding ring */
+@keyframes badgePulse {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+    50% {
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3),
+                    0 0 0 6px rgba(37, 99, 235, 0);
+    }
+}
+
+/* LEGENDARY: Notification badge - red variant */
+.notification-badge {
+    background: #dc2626;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+.notification-indicator.has-new .notification-badge {
+    animation: badgePulseRed 2s ease-in-out infinite;
+}
+
+/* LEGENDARY: Red pulse animation */
+@keyframes badgePulseRed {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    }
+    50% {
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3),
+                    0 0 0 6px rgba(220, 38, 38, 0);
+    }
+}
+
+/* LEGENDARY: Badge entrance animation on state change */
+.cart-indicator:not(.has-items) .cart-badge,
+.notification-indicator:not(.has-new) .notification-badge {
+    transform: scale(0);
+    opacity: 0;
+    animation: none;
+}
+
+/* LEGENDARY: Smooth badge count updates */
+.cart-badge,
+.notification-badge {
+    transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        opacity 0.3s ease,
+        background-color 0.2s ease;
+}
+
+/* Active states */
+.cart-indicator.has-items {
+    color: #f59e0b;
+}
+
+.notification-indicator.has-new {
+    color: #dc2626;
+}
+
+/* ============ THREE-DOT MENU: GREEN ACCENT BUTTON ============ */
+
+.amc-menu-dots {
+    width: 32px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
+    
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #059669; /* Always green - consistent with color scheme */
+    cursor: pointer;
+    
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.amc-menu-dots:hover {
+    background: rgba(5, 150, 105, 0.08); /* Green tint */
+    color: #047857; /* Darker green on hover */
+    box-shadow: 0 0 12px rgba(5, 150, 105, 0.4); /* Green glow */
+}
+
+.amc-menu-dots i {
+    font-size: 16px;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .cart-indicator:hover,
+body.dark-mode .notification-indicator:hover,
+body.dark-mode .tools-toggle-btn:hover {
+    background: rgba(51, 65, 85, 0.8);
+    color: #f1f5f9;
+}
+
+/* Dark mode: Green menu dots */
+body.dark-mode .amc-menu-dots {
+    color: #059669; /* Keep same green in dark mode */
+}
+
+body.dark-mode .amc-menu-dots:hover {
+    background: rgba(5, 150, 105, 0.12); /* Green tint for dark mode */
+    color: #10b981; /* Brighter green on hover in dark mode */
+    box-shadow: 0 0 16px rgba(5, 150, 105, 0.5); /* Stronger green glow for dark mode */
+}
+
+body.dark-mode .cart-badge,
+body.dark-mode .notification-badge {
+    border-color: #111827;
+}
+
+/* ============ UNIFIED HEADER ICON GLOW SYSTEM ============ */
+
+/* 🔔 NOTIFICATION BELL: Red glow when there are notifications */
+.notification-indicator.has-new > i.fa-bell {
+    color: #dc2626 !important; /* Red color */
+    animation: pulseNotificationIcon 1.5s infinite;
+}
+
+.notification-indicator.has-new:hover {
+    box-shadow: 0 0 12px rgba(220, 38, 38, 0.4) !important; /* Red glow */
+    background: rgba(220, 38, 38, 0.08) !important; /* Red tint */
+}
+
+@keyframes pulseNotificationIcon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* 🔧 TOOLS WRENCH: Blue glow on hover (always, no state needed) */
+.tools-toggle-btn:hover {
+    color: #2563eb !important; /* Blue color */
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.4) !important; /* Blue glow */
+    background: rgba(37, 99, 235, 0.08) !important; /* Blue tint */
+}
+
+.tools-toggle-btn:hover i {
+    animation: pulseToolsIcon 1.5s infinite;
+}
+
+@keyframes pulseToolsIcon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* 💼 BRIEFCASE CART: Yellow glow (existing - kept for reference) */
+.cart-indicator.has-items > i.fa-briefcase {
+    color: var(--highlight-color) !important;
+    animation: pulseBriefcaseIcon 1.5s infinite;
+}
+
+.cart-indicator.has-items:hover {
+    box-shadow: 0 0 12px rgba(var(--highlight-color-rgb), 0.4) !important;
+    background: rgba(var(--highlight-color-rgb), 0.08) !important;
+}
+
+@keyframes pulseBriefcaseIcon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* ============ DARK MODE ADJUSTMENTS ============ */
+
+/* Dark mode: Keep the same glow colors but adjust intensity */
+body.dark-mode .notification-indicator.has-new:hover {
+    box-shadow: 0 0 16px rgba(220, 38, 38, 0.5) !important;
+    background: rgba(220, 38, 38, 0.12) !important;
+}
+
+body.dark-mode .tools-toggle-btn:hover {
+    box-shadow: 0 0 16px rgba(37, 99, 235, 0.5) !important;
+    background: rgba(37, 99, 235, 0.12) !important;
+}
+
+body.dark-mode .cart-indicator.has-items:hover {
+    box-shadow: 0 0 16px rgba(var(--highlight-color-rgb), 0.5) !important;
+    background: rgba(var(--highlight-color-rgb), 0.12) !important;
+}
+
+/* ============ AVATAR: PREMIUM PROFILE INDICATOR ============ */
+
+.amc-avatar-container {
+    width: 40px !important;
+    height: 40px !important;
+    margin-left: 8px;
+    cursor: pointer;
+    
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.amc-avatar-container:hover {
+    transform: translateY(-1px) scale(1.05);
+}
+
+.amc-avatar-container:active {
+    transform: scale(0.98);
+}
+
+.amc-avatar-ring {
+    width: 40px !important;
+    height: 40px !important;
+    border-width: 2.5px !important;
+    
+    /* Enhanced shadow */
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        0 0 0 3px rgba(255, 255, 255, 0.8);
+}
+
+body.dark-mode .amc-avatar-ring {
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        0 0 0 3px rgba(17, 24, 39, 0.8);
+}
+
+/* 🌙 THEME TOGGLE ICON: Visual cue of intelligence */
+.theme-toggle-btn i {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 🌙 THEME ICON ROTATION: Smooth transition between sun/moon */
+body.dark-mode .theme-toggle-btn i {
+    transform: rotate(180deg);
+}
+
+/* 👤 AVATAR SIZE: Slightly larger to match icon system */
+.amc-avatar-container {
+    width: 36px !important; /* ENHANCED: UP from 32px */
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.amc-avatar-ring {
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    border-radius: 50% !important;
+    border-width: 2px !important;
+}
+
+.amc-avatar-ring img,
+.amc-avatar-ring i {
+    width: 30px !important; /* Scaled proportionally */
+    height: 30px !important;
+    font-size: 16px !important; /* Scaled proportionally */
+    object-fit: cover !important;
+    border-radius: 50% !important;
+}
+
+/* 🎯 HEADER ICON ALIGNMENT: Ensure all icons align properly */
+.amc-header-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+    height: 100% !important;
+}
+
+.amc-header-right > * {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.btn-icon { 
+    background:transparent; 
+    border:none; 
+    padding:5px 8px; 
+    margin-left:10px; 
+    cursor:pointer; 
+}
+
+.btn-icon i { 
+    color:var(--header-link); 
+    font-size:1.1em; 
+}
+
+.btn-icon:hover i { 
+    color: var(--header-text); 
+}
+
+/* ============================================================
+   ENTERPRISE SEARCH BAR - Refined & Professional
+   ============================================================ */
+
+.global-search {
+    flex: 0 1 420px; /* Slightly smaller default */
+    max-width: 420px;
+    margin: 0 auto;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Expansion on focus - smoother */
+.global-search:focus-within {
+    flex: 0 1 520px !important;
+    max-width: 520px !important;
+}
+
+/* MAIN CONTAINER: Clean enterprise styling */
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 38px !important; /* Slightly smaller */
+    
+    /* Clean white background */
+    background: #ffffff !important;
+    
+    /* Single clean border */
+    border: 1px solid #d1d5db !important;
+    
+    /* FORCE rounded corners on ALL sides */
+    border-radius: 8px !important;
+    -webkit-border-radius: 8px !important;
+    -moz-border-radius: 8px !important;
+    
+    /* Subtle shadow */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    
+    /* Smooth transition */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    
+    /* Remove backdrop blur - cleaner */
+    backdrop-filter: none !important;
+    
+    /* Ensure no child elements break the border-radius */
+    overflow: hidden !important;
+}
+
+/* HOVER STATE: Subtle feedback */
+.search-container:hover {
+    border-color: #9ca3af !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* FOCUS STATE: Clean blue accent - ONLY AROUND OUTSIDE */
+.search-container:focus-within {
+    border-color: #2563eb !important;
+    background: #ffffff !important;
+    
+    /* Single clean focus ring - ONLY OUTSIDE */
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.1),
+        0 2px 8px rgba(0, 0, 0, 0.08) !important;
+    
+    /* No outline */
+    outline: none !important;
+}
+
+/* SEARCH ICON: Refined positioning */
+.search-icon {
+    position: absolute;
+    left: 12px;
+    color: #9ca3af;
+    font-size: 15px;
+    pointer-events: none;
+    transition: color 0.2s ease;
+    z-index: 1;
+}
+
+.search-container:focus-within .search-icon {
+    color: #2563eb;
+}
+
+/* SEARCH INPUT: Clean and minimal */
+.search-input {
+    flex: 1;
+    height: 100%;
+    padding: 0 12px 0 38px; /* Space for icon */
+    border: none !important; /* Remove inner border */
+    background: transparent !important;
+    font-size: 14px;
+    font-weight: 400;
+    color: #1f2937;
+    outline: none !important; /* Remove focus outline */
+    
+    /* Premium font */
+    font-family: 'Inter', -apple-system, sans-serif;
+    
+    /* Match parent border-radius */
+    border-radius: 8px 0 0 8px !important; /* Left side rounded */
+}
+
+/* Placeholder styling */
+.search-input::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+/* Remove browser default focus styles */
+.search-input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* SCOPE DROPDOWN: Integrated design */
+.search-scope {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    border-left: 1px solid #e5e7eb; /* Subtle divider */
+    
+    /* Match parent border-radius */
+    border-radius: 0 8px 8px 0 !important; /* Right side rounded */
+}
+
+.scope-selector {
+    height: 100%;
+    padding: 0 12px;
+    border: none !important; /* Remove border */
+    background: transparent !important;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    outline: none !important; /* Remove focus outline */
+    
+    /* Premium font */
+    font-family: 'Inter', -apple-system, sans-serif;
+    
+    transition: color 0.2s ease;
+    
+    /* Remove default appearance */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    
+    /* Custom dropdown arrow via background */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L2 4h8z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 4px center !important;
+    padding-right: 24px !important;
+    
+    /* Match parent border-radius */
+    border-radius: 0 8px 8px 0 !important; /* Right side rounded */
+}
+
+.scope-selector:hover {
+    color: #1f2937;
+}
+
+.scope-selector:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    color: #1f2937;
+}
+
+/* Remove focus ring from dropdown */
+.scope-selector:focus-visible {
+    outline: none !important;
+}
+
+/* ============================================================
+   DARK MODE: Enterprise Dark Styling
+   ============================================================ */
+
+body.dark-mode .search-container {
+    background: #1f2937 !important;
+    border-color: #374151 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+body.dark-mode .search-container:hover {
+    border-color: #4b5563 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .search-container:focus-within {
+    border-color: #3b82f6 !important;
+    background: #1f2937 !important;
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.15),
+        0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .search-icon {
+    color: #6b7280;
+}
+
+body.dark-mode .search-container:focus-within .search-icon {
+    color: #3b82f6;
+}
+
+body.dark-mode .search-input {
+    color: #f3f4f6;
+}
+
+body.dark-mode .search-input::placeholder {
+    color: #6b7280;
+}
+
+body.dark-mode .search-scope {
+    border-left-color: #374151;
+    border-radius: 0 8px 8px 0 !important;
+}
+
+body.dark-mode .scope-selector {
+    color: #9ca3af;
+    /* Dark mode dropdown arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 8L2 4h8z'/%3E%3C/svg%3E") !important;
+    border-radius: 0 8px 8px 0 !important;
+}
+
+body.dark-mode .scope-selector:hover {
+    color: #f3f4f6;
+}
+
+/* ============================================================
+   RESPONSIVE: Mobile optimization
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .app-header {
+        height: 56px;
+        padding: 0 16px;
+    }
+    
+    .global-search {
+        display: none; /* Hide on mobile */
+    }
+    
+    .amc-header-right {
+        gap: 2px;
+    }
+    
+    .cart-indicator,
+    .notification-indicator,
+    .tools-toggle-btn {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .amc-avatar-container {
+        width: 36px !important;
+        height: 36px !important;
+    }
+    
+    .amc-avatar-ring {
+        width: 36px !important;
+        height: 36px !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    .global-search {
+        flex: 0 1 320px;
+        max-width: 320px;
+    }
+    
+    .global-search:focus-within {
+        flex: 0 1 400px !important;
+        max-width: 400px !important;
+    }
+}
+
+/* ============================================================
+   KEYBOARD SHORTCUT HINT REMOVED - CLEANER SEARCH BAR
+   ============================================================ */
+
+/* Keyboard shortcut hint removed for cleaner appearance */
+
+/* ============ TOOLS DROPDOWN SYSTEM ============ */
+
+/* Tools Container */
+.tools-dropdown-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Tools Toggle Button */
+.tools-toggle-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    color: var(--header-link);
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Match header icon system */
+    min-width: 40px;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+    font-size: 18px;
+}
+
+.tools-toggle-btn:hover {
+    color: var(--header-text);
+    background: rgba(var(--accent-primary-rgb), 0.04); /* ENTERPRISE: Match ultra-subtle standard */
+    transform: translateY(-1px);
+    /* Remove box-shadow for cleaner enterprise look */
+}
+
+.tools-toggle-btn:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* Tools Dropdown Menu */
+.tools-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 320px;
+    background: #ffffff;
+    border: 1px solid var(--border-primary);
+    border-radius: 12px;
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.15),
+        0 4px 12px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10001;
+    overflow: hidden;
+}
+
+.tools-dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Tools Dropdown Header */
+.tools-dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    border-bottom: 1px solid var(--border-primary);
+    color: var(--text-headings);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.tools-dropdown-header i {
+    color: var(--accent-primary);
+    font-size: 16px;
+}
+
+/* Tools List */
+.tools-dropdown-list {
+    padding: 8px;
+}
+
+/* Individual Tool Item */
+.tool-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.tool-item:hover {
+    background: rgba(var(--accent-primary-rgb), 0.08);
+    transform: translateX(4px);
+    text-decoration: none;
+}
+
+.tool-item i {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.1) 0%, rgba(var(--accent-primary-rgb), 0.05) 100%);
+    border-radius: 8px;
+    color: var(--accent-primary);
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.tool-item:hover i {
+    background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.15) 0%, rgba(var(--accent-primary-rgb), 0.1) 100%);
+    transform: scale(1.1);
+}
+
+/* Tool Info */
+.tool-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tool-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-headings);
+}
+
+.tool-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Active state */
+.tool-item:active {
+    transform: translateX(4px) scale(0.98);
+}
+
+/* ============ DARK MODE: TOOLS DROPDOWN ============ */
+
+body.dark-mode .tools-dropdown-menu {
+    background: #1f2937;
+    border-color: var(--border-primary);
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.4),
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .tools-dropdown-header {
+    background: linear-gradient(135deg, #1a1c1e 0%, #111827 100%);
+    border-bottom-color: var(--border-primary);
+    color: var(--text-headings);
+}
+
+body.dark-mode .tool-item {
+    color: var(--text-primary);
+}
+
+body.dark-mode .tool-item:hover {
+    background: rgba(var(--accent-primary-rgb), 0.1);
+}
+
+body.dark-mode .tool-name {
+    color: var(--text-headings);
+}
+
+body.dark-mode .tool-desc {
+    color: var(--text-secondary);
+}
+
+/* ============ SIDEBAR SYSTEM ============ */
+
+/* Sidebar (fixed, left) */
+.amc-sidebar{
+    position: fixed;
+    top: var(--amc-header-h);
+    left:0;
+    bottom:0;
+    width: var(--amc-sidebar-w);
+    background: var(--amc-bg);
+    border-right: 1px solid var(--amc-line);
+    overflow: visible auto; /* FIXED: changed from hidden to visible for tooltips */
+    transition: width .18s ease;
+    z-index: 900;
+}
+
+/* Dark mode support - FIXED: Use dark-mode class */
+body.dark-mode .amc-sidebar{
+    background: var(--sidebar-bg);
+    border-right-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Apply dark mode class to avatar system */
+body.dark-mode .avatar-modal {
+    background: var(--bg-secondary-dark, #2c2c2c);
+    color: var(--text-primary-dark, #e2e8f0);
+    border-color: var(--border-primary-dark, #374151);
+}
+
+body.dark-mode .avatar-modal-header {
+    background: linear-gradient(135deg, var(--bg-secondary-dark, #2c2c2c) 0%, var(--bg-tertiary-dark, #374151) 100%);
+    border-color: var(--border-primary-dark, #374151);
+}
+
+body.dark-mode .avatar-email {
+    color: var(--text-headings-dark, #f8f9fa);
+}
+
+body.dark-mode .avatar-role {
+    color: var(--text-secondary-dark, #9ca3af);
+}
+
+body.dark-mode .modal-btn {
+    color: var(--text-primary-dark, #e2e8f0);
+}
+
+body.dark-mode .modal-btn:hover {
+    background: var(--bg-tertiary-dark, #374151);
+    color: var(--accent-primary, #3b82f6);
+}
+
+body.dark-mode .modal-divider {
+    border-color: var(--border-primary-dark, #374151);
+}
+
+/* Ensure avatar ring colors work in dark mode */
+body.dark-mode .amc-avatar-ring {
+    background: var(--bg-secondary, #1a1c1e);
+    border-color: var(--avatar-ring, #3B82F6);
+}
+
+/* Main content shifts to the right of the sidebar */
+.amc-main{
+    margin-left: var(--amc-sidebar-w);
+    margin-top: var(--amc-header-h); /* Push content below fixed header */
+    transition: margin-left .18s ease;
+}
+
+/* ENTERPRISE LAYOUT RHYTHM & ALIGNMENT */
+.main-content {
+    margin-left: 0;
+    max-width: 1500px; /* Increased from 1400px to accommodate wider table */
+    margin: 0 auto;
+    padding: 2rem; /* Enhanced padding for better content breathing room */
+    background-color: var(--bg-primary);
+    overflow-y: auto;
+    min-height: calc(100vh - var(--header-height) - var(--footer-height)); /* Ensure full height usage */
+}
+
+/* DARK MODE MAIN CONTENT */
+body.dark-mode .main-content {
+    background-color: var(--bg-primary) !important;
+}
+
+/* ENTERPRISE SIDEBAR SHELL - PREMIUM LIGHT MODE ELEVATION */
+#sidebar{
+    position: fixed !important;
+    left: 0 !important;
+    top: var(--amc-header-h, 64px) !important;
+    bottom: 0 !important;
+    width: var(--amc-sidebar-w) !important;
+    background: linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f8f9fb 30%,
+        #f1f5f9 100%
+    ) !important;
+    border-right: 1px solid #d1d5db !important;
+    
+    /* NEW: Make sidebar a flex column with scrollable content */
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: visible !important; /* let tooltips/flyouts render outside */
+    
+    z-index: 950 !important;
+    transition: width 0.18s ease, background 0.2s ease, box-shadow 0.2s ease !important;
+    padding-top: 0px !important; /* FORCE: No top padding */
+    margin-top: 0px !important; /* FORCE: No top margin */
+    box-shadow: inset -1px 0 0 rgba(0,0,0,0.05), 2px 0 8px rgba(0,0,0,0.06) !important;
+}
+
+/* Keep the top bar visible; let the content scroll beneath it */
+#sidebar .sidebar-header{
+    flex: 0 0 auto !important; /* NEW */
+    position: sticky !important; /* NEW */
+    top: 0 !important; /* NEW */
+    z-index: 1 !important; /* NEW */
+    background: inherit !important; /* match sidebar background */
+}
+
+/* This becomes the scroll container */
+#sidebar .sidebar-content{
+    flex: 1 1 auto !important; /* NEW - fill remaining height */
+    min-height: 0 !important; /* NEW - allow flex child to shrink */
+    overflow-y: auto !important; /* NEW - vertical scroll */
+    overflow-x: visible !important; /* keep tooltips visible */
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 16px !important; /* breathing room for last items */
+    scrollbar-gutter: stable both-edges;
+}
+
+/* Optional: spacing for last item */
+#sidebar .sidebar-content .sidebar-section:last-child {
+    margin-bottom: 8px !important;
+}
+
+/* FORCE: Override any custom element positioning */
+amc-sidebar,
+amc-sidebar #sidebar {
+    position: fixed !important;
+    left: 0 !important;
+    top: var(--amc-header-height) !important;
+    bottom: 0 !important;
+    margin: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* 🌟 GLOW MARKER: 2px cyan vertical line that follows cursor */
+#sidebar::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: var(--glow-y, -20px);
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(180deg, transparent 0%, #06b6d4 50%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), top 0.1s ease-out;
+    pointer-events: none;
+    z-index: 10;
+}
+
+#sidebar:hover::before {
+    opacity: 0.8;
+}
+
+/* 🌙 DARK MODE: Gradient-layered depth map (Anthracite → Carbon → Jet) */
+body.dark-mode #sidebar{
+    background: linear-gradient(180deg, #1f2937 0%, #1a1c1e 70%, #111827 100%);
+    border-right-color: var(--border-primary);
+    color: var(--text-primary);
+    box-shadow: inset -1px 0 0 rgba(255,255,255,0.03);
+}
+
+body.dark-mode #sidebar::before {
+    background: linear-gradient(180deg, transparent 0%, #3f91ff 50%, transparent 100%);
+}
+
+/* ENTERPRISE SIDEBAR SECTIONS - TIGHTER RHYTHM */
+#sidebar .sidebar-section{
+    padding: 6px 10px; /* much tighter internal spacing */
+    margin-bottom: 4px; /* very tight spacing between sections */
+}
+
+/* ENTERPRISE SECTION HEADERS - ENHANCED VISIBILITY */
+#sidebar .sidebar-section-header{
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    color: #4b5563; /* ENHANCED: Stronger grey for better hierarchy */
+    padding: 6px 12px;
+    margin-top: 0px; /* consistent 4px spacing like hamburger to Core */
+    margin-bottom: 4px; /* tighter below for better rhythm */
+    margin-left: 12px;
+    margin-right: 12px;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.08); /* darker tone for better definition in light mode */
+    border-left: 2px solid #f97316; /* orange accent strip */
+    border-radius: 4px;
+    padding-left: 10px; /* adjust for thinner accent bar */
+}
+
+/* Pull first section closer to top - ENTERPRISE SPACING */
+#sidebar .sidebar-section:first-child .sidebar-section-header {
+    margin-top: 4px; /* pull 'Core' closer to top */
+}
+
+/* Dark mode refined headers - enhanced visibility */
+body.dark-mode #sidebar .sidebar-section-header {
+    background: rgba(255, 255, 255, 0.05); /* subtle translucent bar for dark mode */
+    color: #9ca3af; /* keep lighter grey for dark mode contrast */
+    border-left-color: #fb923c; /* lighter orange for dark mode visibility */
+}
+
+/* 🎨 CONTEXTUAL THEMES: Section headers with color-coded gradients - ENHANCED */
+#sidebar .sidebar-section:nth-child(1) .sidebar-section-header {
+    border-left-color: #1d4ed8; /* ENHANCED: Richer blue (+15% saturation) */
+    border-left-width: 3px; /* Slightly thicker for more impact */
+    background: linear-gradient(90deg, rgba(29, 78, 216, 0.14) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+#sidebar .sidebar-section:nth-child(2) .sidebar-section-header {
+    border-left-color: #047857; /* ENHANCED: Deeper green (+12% depth) */
+    border-left-width: 3px;
+    background: linear-gradient(90deg, rgba(4, 120, 87, 0.14) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+#sidebar .sidebar-section:nth-child(3) .sidebar-section-header {
+    border-left-color: #c2410c; /* ENHANCED: Warmer orange (+20% richness) */
+    border-left-width: 3px;
+    background: linear-gradient(90deg, rgba(194, 65, 12, 0.14) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+#sidebar .sidebar-section:nth-child(4) .sidebar-section-header {
+    border-left-color: #b91c1c; /* ENHANCED: Stronger red (+15% intensity) */
+    border-left-width: 3px;
+    background: linear-gradient(90deg, rgba(185, 28, 28, 0.14) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+/* 🌙 DARK MODE CONTEXTUAL THEMES */
+body.dark-mode #sidebar .sidebar-section:nth-child(1) .sidebar-section-header {
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, rgba(255,255,255,0.05) 100%);
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(2) .sidebar-section-header {
+    background: linear-gradient(90deg, rgba(5, 150, 105, 0.15) 0%, rgba(255,255,255,0.05) 100%);
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(3) .sidebar-section-header {
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.15) 0%, rgba(255,255,255,0.05) 100%);
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(4) .sidebar-section-header {
+    background: linear-gradient(90deg, rgba(220, 38, 38, 0.15) 0%, rgba(255,255,255,0.05) 100%);
+}
+
+#sidebar .sidebar-list{
+    list-style:none;
+    margin:0;
+    padding:4px;
+}
+
+#sidebar .sidebar-item{
+    margin:2px 6px;
+}
+
+#sidebar .sidebar-link{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:10px;
+    text-decoration:none;
+    color: var(--text-primary);
+    font:600 14px/1.2 Inter, ui-sans-serif, system-ui;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* 🌟 HOVER LIFT: Fluid and tactile like Proton/Notion */
+#sidebar .sidebar-link:hover{
+    background: #d1d5db;
+    transform: translateY(-2px) translateX(2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+body.dark-mode #sidebar .sidebar-link:hover{
+    background: var(--bg-tertiary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* 🔥 ACTIVE STATE ANIMATION: Blue vertical glow bar */
+#sidebar .sidebar-link.active{
+    background: rgba(11,116,255,0.08);
+    color: #0b74ff;
+    padding-left: 11px;
+    position: relative;
+}
+
+#sidebar .sidebar-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, transparent 0%, #0b74ff 20%, #0b74ff 80%, transparent 100%);
+    transform: scaleY(0);
+    transform-origin: center;
+    animation: activeGlow 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes activeGlow {
+    0% { transform: scaleY(0); opacity: 0; }
+    100% { transform: scaleY(1); opacity: 1; }
+}
+
+/* icon/label wrappers (we add them in JS below) */
+#sidebar .i{
+    width:22px;
+    text-align:center;
+    font-size:18px;
+    line-height:1;
+}
+
+#sidebar .t{
+    white-space:nowrap;
+}
+
+/* collapsed: hide headings + labels, keep icons only */
+body.amc-collapsed #sidebar .sidebar-section-header{
+    display:none;
+}
+
+body.amc-collapsed #sidebar .t{
+    display:none;
+}
+
+body.amc-collapsed #sidebar .sidebar-link{
+    justify-content:center;
+    gap:0;
+}
+
+/* --- Minimalist hamburger toggle --- */
+.sidebar-header {
+    height: 28px; /* tighter */
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+#sidebarToggle {
+    all: unset;
+    position: relative;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 6px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover state */
+#sidebarToggle:hover {
+    background: rgba(148, 163, 184, 0.12);
+}
+
+/* Hamburger bars - refined and smaller */
+#sidebarToggle .hamburger {
+    position: relative;
+    width: 16px !important; /* REDUCED from 18px */
+    height: 1.5px !important; /* THINNER from 2px */
+    background: #64748b;
+    border-radius: 1px;
+    transition: background 0.2s ease;
+}
+
+#sidebarToggle .hamburger::before,
+#sidebarToggle .hamburger::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 16px !important; /* REDUCED from 18px */
+    height: 1.5px !important; /* THINNER from 2px */
+    background: inherit;
+    border-radius: 1px;
+    transition: background 0.2s ease;
+}
+
+#sidebarToggle .hamburger::before {
+    top: -5px; /* Adjusted for thinner bars */
+}
+
+#sidebarToggle .hamburger::after {
+    top: 5px; /* Adjusted for thinner bars */
+}
+
+/* Hover color - blue accent */
+#sidebarToggle:hover .hamburger,
+#sidebarToggle:hover .hamburger::before,
+#sidebarToggle:hover .hamburger::after {
+    background: #2563eb;
+}
+
+/* Dark mode */
+body.dark-mode #sidebarToggle .hamburger {
+    background: #94a3b8;
+}
+
+body.dark-mode #sidebarToggle:hover {
+    background: rgba(148, 163, 184, 0.15);
+}
+
+body.dark-mode #sidebarToggle:hover .hamburger,
+body.dark-mode #sidebarToggle:hover .hamburger::before,
+body.dark-mode #sidebarToggle:hover .hamburger::after {
+    background: #60a5fa;
+}
+
+/* 🔧 SIMPLE WORKING TOOLTIP - NO CONFLICTS */
+
+button#sidebarToggle {
+    position: relative !important;
+}
+
+/* Old CSS tooltip system removed - now using JavaScript tooltip system */
+
+/* ============ LEGENDARY TOOLTIP SYSTEM - ONLY FOR FUNCTIONAL ICONS ============ */
+
+/* STEP 1: Only show custom tooltips for the 3 main functional icons */
+.cart-indicator,
+.notification-indicator,
+.tools-toggle-btn {
+    position: relative;
+}
+
+/* STEP 2: Custom tooltips that match sidebar styling exactly */
+.cart-indicator[data-tooltip]:hover::after,
+.notification-indicator[data-tooltip]:hover::after,
+.tools-toggle-btn[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    
+    /* Position below icon */
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    
+    /* EXACT MATCH: Sidebar tooltip styling */
+    background: #ffffff;
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 1;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* STEP 3: Dark mode tooltips */
+body.dark-mode .cart-indicator[data-tooltip]:hover::after,
+body.dark-mode .notification-indicator[data-tooltip]:hover::after,
+body.dark-mode .tools-toggle-btn[data-tooltip]:hover::after {
+    background: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* ============ ENHANCED TOOLS ICON VISIBILITY ============ */
+
+/* Light mode: Blue default color - always blue like hover state */
+.tools-toggle-btn {
+    color: #2563eb !important; /* Always blue - same as hover */
+}
+
+.tools-toggle-btn:hover {
+    color: #2563eb !important; /* Blue color for unified system */
+    background: rgba(37, 99, 235, 0.08) !important; /* Blue tint */
+    transform: translateY(-1px) !important;
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.4) !important; /* Blue glow */
+}
+
+/* Dark mode: Blue default color - always blue like hover state */
+body.dark-mode .tools-toggle-btn {
+    color: #2563eb !important; /* Always blue - same as hover */
+}
+
+body.dark-mode .tools-toggle-btn:hover {
+    color: #2563eb !important; /* Keep blue for consistency */
+    background: rgba(37, 99, 235, 0.12) !important; /* Blue tint for dark mode */
+    box-shadow: 0 0 16px rgba(37, 99, 235, 0.5) !important; /* Stronger blue glow for dark mode */
+}
+
+/* ENHANCED: Tools icon size and glow effect */
+.tools-toggle-btn i {
+    font-size: 18px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tools-toggle-btn:hover i {
+    transform: scale(1.1);
+    filter:
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))
+        drop-shadow(0 0 8px rgba(37, 99, 235, 0.2));
+}
+
+body.dark-mode .tools-toggle-btn:hover i {
+    filter:
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))
+        drop-shadow(0 0 8px rgba(96, 165, 250, 0.3));
+}
+
+/* ============ CARD SYSTEM ============ */
+
+.card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+    padding: 1.5rem 2rem 1rem;
+    border-bottom: 1px solid var(--border-primary);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(var(--accent-primary-rgb), 0.02) 100%);
+}
+
+.card-header h2,
+.card-header h3 {
+    margin: 0 0 0.5rem;
+    color: var(--text-headings);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-header span {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.content-header {
+    margin-bottom: 2rem;
+}
+
+.content-header h1 {
+    color: var(--text-headings);
+    font-size: var(--font-display);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.content-header p {
+    color: var(--text-secondary);
+    font-size: var(--font-body);
+}
+
+/* Dark mode cards */
+body.dark-mode .card {
+    background: var(--bg-secondary);
+    border-color: var(--border-primary);
+}
+
+body.dark-mode .card-header {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(var(--accent-primary-rgb), 0.05) 100%);
+    border-bottom-color: var(--border-primary);
+}
+
+/* ============ MISSING STYLES FROM test_globalshell.html ============ */
+
+/* ENTERPRISE SIDEBAR SHELL - PREMIUM LIGHT MODE ELEVATION */
+#sidebar{
+    position: fixed !important;
+    left: 0 !important;
+    top: var(--amc-header-height) !important; /* FORCE: Exact pixel value to sit flush with header */
+    bottom: 0 !important;
+    width: var(--amc-sidebar-w) !important;
+    background: linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f8f9fb 30%,
+        #f1f5f9 100%
+    ) !important;
+    border-right: 1px solid #d1d5db !important;
+    overflow: visible auto !important;
+    z-index: 950 !important;
+    transition: width 0.18s ease, background 0.2s ease, box-shadow 0.2s ease !important;
+    padding-top: 0px !important; /* FORCE: No top padding */
+    margin-top: 0px !important; /* FORCE: No top margin */
+    box-shadow: inset -1px 0 0 rgba(0,0,0,0.05), 2px 0 8px rgba(0,0,0,0.06) !important;
+}
+
+/* 🌙 DARK MODE: Gradient-layered depth map (Anthracite → Carbon → Jet) */
+body.dark-mode #sidebar{
+    background: linear-gradient(180deg, #1f2937 0%, #1a1c1e 70%, #111827 100%) !important;
+    border-right-color: var(--border-primary) !important;
+    color: var(--text-primary) !important;
+    box-shadow: inset -1px 0 0 rgba(255,255,255,0.03) !important;
+}
+
+/* ENTERPRISE SIDEBAR SECTIONS - TIGHTER RHYTHM */
+#sidebar .sidebar-section{
+    padding: 6px 10px; /* much tighter internal spacing */
+    margin-bottom: 4px; /* very tight spacing between sections */
+}
+
+/* ENTERPRISE SECTION HEADERS - ENHANCED VISIBILITY */
+#sidebar .sidebar-section-header{
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    color: #4b5563; /* ENHANCED: Stronger grey for better hierarchy */
+    padding: 6px 12px;
+    margin-top: 0px; /* consistent 4px spacing like hamburger to Core */
+    margin-bottom: 4px; /* tighter below for better rhythm */
+    margin-left: 12px;
+    margin-right: 12px;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.08); /* darker tone for better definition in light mode */
+    border-left: 2px solid #f97316; /* orange accent strip */
+    border-radius: 4px;
+    padding-left: 10px; /* adjust for thinner accent bar */
+}
+
+/* Pull first section closer to top - ENTERPRISE SPACING */
+#sidebar .sidebar-section:first-child .sidebar-section-header {
+    margin-top: 4px; /* pull 'Core' closer to top */
+}
+
+/* Dark mode refined headers - enhanced visibility */
+body.dark-mode #sidebar .sidebar-section-header {
+    background: rgba(255, 255, 255, 0.05); /* subtle translucent bar for dark mode */
+    color: #9ca3af; /* keep lighter grey for dark mode contrast */
+    border-left-color: #fb923c; /* lighter orange for dark mode visibility */
+}
+
+/* 🎨 CONTEXTUAL THEMES: Section headers with color-coded gradients - ENHANCED */
+#sidebar .sidebar-section:nth-child(1) .sidebar-section-header {
+    border-left-color: #1d4ed8; /* ENHANCED: Richer blue (+15% saturation) */
+    border-left-width: 3px; /* Slightly thicker for more impact */
+    background: linear-gradient(90deg, rgba(29, 78, 216, 0.14) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+#sidebar .sidebar-section:nth-child(2) .sidebar-section-header {
+    border-left-color: #047857; /* ENHANCED: Deeper green (+12% depth) */
+    border-left-width: 3px;
+    background: linear-gradient(90deg, rgba(4, 120, 87, 0.14) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+#sidebar .sidebar-section:nth-child(3) .sidebar-section-header {
+    border-left-color: #c2410c; /* ENHANCED: Warmer orange (+20% richness) */
+    border-left-width: 3px;
+    background: linear-gradient(90deg, rgba(194, 65, 12, 0.14) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+#sidebar .sidebar-section:nth-child(4) .sidebar-section-header {
+    border-left-color: #b91c1c; /* ENHANCED: Stronger red (+15% intensity) */
+    border-left-width: 3px;
+    background: linear-gradient(90deg, rgba(185, 28, 28, 0.14) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+/* 🌙 DARK MODE CONTEXTUAL THEMES */
+body.dark-mode #sidebar .sidebar-section:nth-child(1) .sidebar-section-header {
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, rgba(255,255,255,0.05) 100%);
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(2) .sidebar-section-header {
+    background: linear-gradient(90deg, rgba(5, 150, 105, 0.15) 0%, rgba(255,255,255,0.05) 100%);
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(3) .sidebar-section-header {
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.15) 0%, rgba(255,255,255,0.05) 100%);
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(4) .sidebar-section-header {
+    background: linear-gradient(90deg, rgba(220, 38, 38, 0.15) 0%, rgba(255,255,255,0.05) 100%);
+}
+
+#sidebar .sidebar-list{ list-style:none; margin:0; padding:4px; }
+#sidebar .sidebar-item{ margin:2px 6px; }
+#sidebar .sidebar-link{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:10px; text-decoration:none;
+    color: var(--text-primary); font:600 14px/1.2 Inter, ui-sans-serif, system-ui;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* 🌟 HOVER LIFT: Fluid and tactile like Proton/Notion */
+#sidebar .sidebar-link:hover{
+    background: #d1d5db;
+    transform: translateY(-2px) translateX(2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+body.dark-mode #sidebar .sidebar-link:hover{
+    background: var(--bg-tertiary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* 🔥 ACTIVE STATE ANIMATION: Blue vertical glow bar */
+#sidebar .sidebar-link.active{
+    background: rgba(11,116,255,0.08);
+    color: #0b74ff;
+    padding-left: 11px;
+    position: relative;
+}
+
+#sidebar .sidebar-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, transparent 0%, #0b74ff 20%, #0b74ff 80%, transparent 100%);
+    transform: scaleY(0);
+    transform-origin: center;
+    animation: activeGlow 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes activeGlow {
+    0% { transform: scaleY(0); opacity: 0; }
+    100% { transform: scaleY(1); opacity: 1; }
+}
+
+/* icon/label wrappers (we add them in JS below) */
+#sidebar .i{ width:22px; text-align:center; font-size:18px; line-height:1; }
+#sidebar .t{ white-space:nowrap; }
+
+/* collapsed: hide headings + labels, keep icons only */
+body.amc-collapsed #sidebar .sidebar-section-header{ display:none; }
+body.amc-collapsed #sidebar .t{ display:none; }
+body.amc-collapsed #sidebar .sidebar-link{ justify-content:center; gap:0; }
+
+/* COLLAPSED SIDEBAR: ELEGANT COLORED SECTION BARS */
+.collapsed-section-bar {
+    display: none;
+    width: var(--amc-sidebar-collapsed);
+    height: 20px;
+    margin: 4px auto;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(90deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.04) 100%);
+    border-left-width: 3px;
+    border-left-style: solid;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        0 1px 3px rgba(0,0,0,0.08);
+    position: relative;
+    z-index: 1000;
+}
+
+/* Show bars only when sidebar is collapsed */
+body.amc-collapsed .collapsed-section-bar,
+body.sidebar-collapsed .collapsed-section-bar {
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-bottom: 4px !important;
+}
+
+/* Section-specific colors */
+.collapsed-section-bar[data-section="core"] {
+    border-left-color: #1d4ed8 !important;
+    background: linear-gradient(90deg, rgba(29, 78, 216, 0.14) 0%, rgba(0,0,0,0.08) 100%) !important;
+}
+
+.collapsed-section-bar[data-section="management"] {
+    border-left-color: #047857 !important;
+    background: linear-gradient(90deg, rgba(4, 120, 87, 0.14) 0%, rgba(0,0,0,0.08) 100%) !important;
+}
+
+.collapsed-section-bar[data-section="analytics"] {
+    border-left-color: #c2410c !important;
+    background: linear-gradient(90deg, rgba(194, 65, 12, 0.14) 0%, rgba(0,0,0,0.08) 100%) !important;
+}
+
+.collapsed-section-bar[data-section="admin"] {
+    border-left-color: #b91c1c !important;
+    background: linear-gradient(90deg, rgba(185, 28, 28, 0.14) 0%, rgba(0,0,0,0.08) 100%) !important;
+}
+
+/* Hover effects */
+.collapsed-section-bar:hover {
+    transform: translateX(2px);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.15),
+        0 2px 6px rgba(0,0,0,0.12) !important;
+}
+
+/* Dark mode collapsed bars */
+body.dark-mode .collapsed-section-bar {
+    background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 1px 3px rgba(0,0,0,0.15) !important;
+}
+
+body.dark-mode .collapsed-section-bar[data-section="core"] {
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, rgba(255,255,255,0.05) 100%) !important;
+}
+
+body.dark-mode .collapsed-section-bar[data-section="management"] {
+    background: linear-gradient(90deg, rgba(5, 150, 105, 0.15) 0%, rgba(255,255,255,0.05) 100%) !important;
+}
+
+body.dark-mode .collapsed-section-bar[data-section="analytics"] {
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.15) 0%, rgba(255,255,255,0.05) 100%) !important;
+}
+
+body.dark-mode .collapsed-section-bar[data-section="admin"] {
+    background: linear-gradient(90deg, rgba(220, 38, 38, 0.15) 0%, rgba(255,255,255,0.05) 100%) !important;
+}
+
+/* Section toggle chevron styling */
+.section-toggle {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hide section content when individually collapsed */
+.sidebar-section-header.collapsed + .sidebar-list {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    overflow: hidden;
+}
+
+/* CHEVRON COLORS - PURE CSS */
+/* Light Mode Chevron Colors - Rich, saturated colors */
+#sidebar .sidebar-section:nth-child(1) .section-toggle {
+    color: #1d4ed8; /* Rich blue */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+#sidebar .sidebar-section:nth-child(2) .section-toggle {
+    color: #047857; /* Deep green */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+#sidebar .sidebar-section:nth-child(3) .section-toggle {
+    color: #c2410c; /* Warm orange */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+#sidebar .sidebar-section:nth-child(4) .section-toggle {
+    color: #b91c1c; /* Strong red */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Dark Mode Chevron Colors - ENHANCED LUMINOSITY */
+body.dark-mode #sidebar .sidebar-section:nth-child(1) .section-toggle {
+    color: #60a5fa !important; /* ENHANCED: Brighter blue */
+    text-shadow: 0 0 8px rgba(96, 165, 250, 0.4); /* Subtle glow */
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(2) .section-toggle {
+    color: #34d399 !important; /* ENHANCED: Brighter green */
+    text-shadow: 0 0 8px rgba(52, 211, 153, 0.4); /* Subtle glow */
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(3) .section-toggle {
+    color: #fb923c !important; /* ENHANCED: Brighter orange */
+    text-shadow: 0 0 8px rgba(251, 146, 60, 0.4); /* Subtle glow */
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(4) .section-toggle {
+    color: #f87171 !important; /* ENHANCED: Brighter red */
+    text-shadow: 0 0 8px rgba(248, 113, 113, 0.4); /* Subtle glow */
+}
+
+/* ============================================================
+   COLLAPSED SIDEBAR: FINAL FIXES - ADD AT END OF FILE
+   ============================================================ */
+
+/* FIX 1: Progressive Offsets - Stagger the bars vertically */
+body.amc-collapsed #sidebar .sidebar-section:nth-child(1) .collapsed-section-bar,
+body.sidebar-collapsed #sidebar .sidebar-section:nth-child(1) .collapsed-section-bar {
+    margin-top: 4px !important;
+}
+
+body.amc-collapsed #sidebar .sidebar-section:nth-child(2) .collapsed-section-bar,
+body.sidebar-collapsed #sidebar .sidebar-section:nth-child(2) .collapsed-section-bar {
+    margin-top: 18px !important;
+}
+
+body.amc-collapsed #sidebar .sidebar-section:nth-child(3) .collapsed-section-bar,
+body.sidebar-collapsed #sidebar .sidebar-section:nth-child(3) .collapsed-section-bar {
+    margin-top: 20px !important;
+}
+
+body.amc-collapsed #sidebar .sidebar-section:nth-child(4) .collapsed-section-bar,
+body.sidebar-collapsed #sidebar .sidebar-section:nth-child(4) .collapsed-section-bar {
+    margin-top: 22px !important;
+}
+
+/* FIX 2: Hide Menu Items When Sidebar Collapsed */
+body.amc-collapsed #sidebar .sidebar-section .sidebar-list,
+body.sidebar-collapsed #sidebar .sidebar-section .sidebar-list {
+    display: none !important;
+}
+
+/* Show items only when section is expanded in collapsed sidebar */
+body.amc-collapsed #sidebar .sidebar-section:not(.collapsed) .sidebar-list,
+body.sidebar-collapsed #sidebar .sidebar-section:not(.collapsed) .sidebar-list {
+    display: block !important;
+}
+
+/* FIX 3: Perfect Icon Centering */
+body.amc-collapsed .sidebar-link,
+body.sidebar-collapsed .sidebar-link {
+    justify-content: center !important;
+    padding: 12px 0 !important;
+    position: relative;
+}
+
+body.amc-collapsed .sidebar-icon,
+body.sidebar-collapsed .sidebar-icon {
+    margin: 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: static !important; /* Override any absolute positioning */
+    transform: none !important; /* Override any transforms */
+}
+
+body.amc-collapsed .sidebar-text,
+body.sidebar-collapsed .sidebar-text {
+    display: none !important;
+}
+
+body.amc-collapsed .sidebar-badge,
+body.sidebar-collapsed .sidebar-badge {
+    display: none !important;
+}
+
+/* FIX 4: Enhanced Right-Edge Colored Indicators */
+body.amc-collapsed #sidebar .collapsed-section-bar::after,
+body.sidebar-collapsed #sidebar .collapsed-section-bar::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 2px;
+    bottom: 2px;
+    width: 2px;
+    border-radius: 0 4px 4px 0;
+    opacity: 0.8;
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="core"]::after,
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="core"]::after {
+    background: #2563eb;
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="management"]::after,
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="management"]::after {
+    background: #059669;
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="analytics"]::after,
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="analytics"]::after {
+    background: #ea580c;
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="admin"]::after,
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="admin"]::after {
+    background: #dc2626;
+}
+
+/* FIX 5: Premium Light Mode - VIVID COLORS */
+body:not(.dark-mode) #sidebar .collapsed-section-bar[data-section="core"] {
+    border-left-color: #2563eb !important;
+    background: linear-gradient(
+        90deg,
+        rgba(37, 99, 235, 0.18) 0%,
+        rgba(37, 99, 235, 0.08) 100%
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 2px 4px rgba(37, 99, 235, 0.15),
+        0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body:not(.dark-mode) #sidebar .collapsed-section-bar[data-section="management"] {
+    border-left-color: #059669 !important;
+    background: linear-gradient(
+        90deg,
+        rgba(5, 150, 105, 0.18) 0%,
+        rgba(5, 150, 105, 0.08) 100%
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 2px 4px rgba(5, 150, 105, 0.15),
+        0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body:not(.dark-mode) #sidebar .collapsed-section-bar[data-section="analytics"] {
+    border-left-color: #ea580c !important;
+    background: linear-gradient(
+        90deg,
+        rgba(234, 88, 12, 0.18) 0%,
+        rgba(234, 88, 12, 0.08) 100%
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 2px 4px rgba(234, 88, 12, 0.15),
+        0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body:not(.dark-mode) #sidebar .collapsed-section-bar[data-section="admin"] {
+    border-left-color: #dc2626 !important;
+    background: linear-gradient(
+        90deg,
+        rgba(220, 38, 38, 0.18) 0%,
+        rgba(220, 38, 38, 0.08) 100%
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 2px 4px rgba(220, 38, 38, 0.15),
+        0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ============================================================
+   COLLAPSED SIDEBAR: REMOVE SECTION HEADER BARS COMPLETELY
+   ============================================================ */
+
+/* CRITICAL: Completely hide the section header elements when collapsed */
+body.amc-collapsed #sidebar .sidebar-section-header,
+body.sidebar-collapsed #sidebar .sidebar-section-header {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+    line-height: 0 !important;
+}
+
+/* Ensure section containers don't show any background */
+body.amc-collapsed #sidebar .sidebar-section,
+body.sidebar-collapsed #sidebar .sidebar-section {
+    background: transparent !important;
+}
+
+/* Remove any borders or backgrounds from sections */
+body.amc-collapsed #sidebar .sidebar-section-header::before,
+body.sidebar-collapsed #sidebar .sidebar-section-header::before,
+body.amc-collapsed #sidebar .sidebar-section-header::after,
+body.sidebar-collapsed #sidebar .sidebar-section-header::after {
+    display: none !important;
+}
+
+/* NUCLEAR OPTION: Force remove all section header visibility */
+body.amc-collapsed #sidebar .sidebar-section > *:not(.collapsed-section-bar):not(.sidebar-list),
+body.sidebar-collapsed #sidebar .sidebar-section > *:not(.collapsed-section-bar):not(.sidebar-list) {
+    display: none !important;
+}
+
+/* OR target by class specifically */
+body.amc-collapsed #sidebar h4,
+body.sidebar-collapsed #sidebar h4,
+body.amc-collapsed #sidebar .sidebar-section-header,
+body.sidebar-collapsed #sidebar .sidebar-section-header {
+    display: none !important;
+}
+
+/* ============================================================
+   SIDEBAR SCROLLBAR - Thin & Elegant (Webkit Browsers)
+   ============================================================ */
+
+/* Thin scrollbar for sidebar content */
+#sidebar .sidebar-content::-webkit-scrollbar {
+    width: 6px; /* Thin width */
+}
+
+/* Scrollbar track (background) */
+#sidebar .sidebar-content::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+}
+
+/* Scrollbar thumb (the draggable part) */
+#sidebar .sidebar-content::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.3); /* Light grey, semi-transparent */
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+/* Scrollbar thumb on hover */
+#sidebar .sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.6); /* Darker on hover */
+}
+
+/* Scrollbar thumb when actively dragging */
+#sidebar .sidebar-content::-webkit-scrollbar-thumb:active {
+    background: rgba(148, 163, 184, 0.8); /* Even darker when dragging */
+}
+
+/* Dark mode scrollbar */
+body.dark-mode #sidebar .sidebar-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+body.dark-mode #sidebar .sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+body.dark-mode #sidebar .sidebar-content::-webkit-scrollbar-thumb:active {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+/* Hide scrollbar when not hovering (ultra-minimal) - OPTIONAL */
+#sidebar .sidebar-content::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+#sidebar:hover .sidebar-content::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.3);
+}
+
+#sidebar:hover .sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.6);
+}
+
+/* ============================================================
+   LEGENDARY LIGHT MODE - PREMIUM DEPTH & SATURATION
+   Enterprise standards with vivid colors and layered depth
+   ============================================================ */
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 1: SIDEBAR PREMIUM LIGHT MODE
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* 🎨 SIDEBAR: Rich gradient with depth layers */
+body:not(.dark-mode) #sidebar {
+    background: linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f8f9fb 30%,
+        #f1f5f9 100%
+    ) !important;
+    border-right: 1px solid #cbd5e1 !important; /* STRONGER border */
+    box-shadow:
+        inset -1px 0 0 rgba(255, 255, 255, 0.8),
+        2px 0 12px rgba(0, 0, 0, 0.08) !important; /* DEEPER shadow */
+}
+
+/* 🎨 SECTION HEADERS: VIVID COLOR BARS */
+
+/* Core (Blue) - ENHANCED SATURATION */
+body:not(.dark-mode) #sidebar .sidebar-section:nth-child(1) .sidebar-section-header {
+    border-left-color: #2563eb !important; /* BRIGHTER +20% */
+    background: linear-gradient(
+        90deg,
+        rgba(37, 99, 235, 0.16) 0%, /* INCREASED from 0.14 */
+        rgba(37, 99, 235, 0.06) 100%
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        0 1px 2px rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Management (Green) - ENHANCED SATURATION */
+body:not(.dark-mode) #sidebar .sidebar-section:nth-child(2) .sidebar-section-header {
+    border-left-color: #059669 !important; /* BRIGHTER +20% */
+    background: linear-gradient(
+        90deg,
+        rgba(5, 150, 105, 0.16) 0%, /* INCREASED from 0.14 */
+        rgba(5, 150, 105, 0.06) 100%
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        0 1px 2px rgba(5, 150, 105, 0.1) !important;
+}
+
+/* Analytics (Orange) - ENHANCED SATURATION */
+body:not(.dark-mode) #sidebar .sidebar-section:nth-child(3) .sidebar-section-header {
+    border-left-color: #ea580c !important; /* BRIGHTER +20% */
+    background: linear-gradient(
+        90deg,
+        rgba(234, 88, 12, 0.16) 0%, /* INCREASED from 0.14 */
+        rgba(234, 88, 12, 0.06) 100%
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        0 1px 2px rgba(234, 88, 12, 0.1) !important;
+}
+
+/* Admin (Red) - ENHANCED SATURATION */
+body:not(.dark-mode) #sidebar .sidebar-section:nth-child(4) .sidebar-section-header {
+    border-left-color: #dc2626 !important; /* BRIGHTER +20% */
+    background: linear-gradient(
+        90deg,
+        rgba(220, 38, 38, 0.16) 0%, /* INCREASED from 0.14 */
+        rgba(220, 38, 38, 0.06) 100%
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        0 1px 2px rgba(220, 38, 38, 0.1) !important;
+}
+
+/* 🎨 COLLAPSED BARS: VIVID COLORS - MATCH SECTION HEADERS */
+
+/* Core (Blue) */
+body:not(.dark-mode) #sidebar .collapsed-section-bar[data-section="core"] {
+    border-left-color: #2563eb !important;
+    background: linear-gradient(
+        90deg,
+        rgba(37, 99, 235, 0.22) 0%, /* BOOSTED from 0.18 */
+        rgba(37, 99, 235, 0.10) 100%
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        0 2px 6px rgba(37, 99, 235, 0.2), /* DEEPER shadow */
+        0 1px 2px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Management (Green) */
+body:not(.dark-mode) #sidebar .collapsed-section-bar[data-section="management"] {
+    border-left-color: #059669 !important;
+    background: linear-gradient(
+        90deg,
+        rgba(5, 150, 105, 0.22) 0%, /* BOOSTED from 0.18 */
+        rgba(5, 150, 105, 0.10) 100%
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        0 2px 6px rgba(5, 150, 105, 0.2), /* DEEPER shadow */
+        0 1px 2px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Analytics (Orange) */
+body:not(.dark-mode) #sidebar .collapsed-section-bar[data-section="analytics"] {
+    border-left-color: #ea580c !important;
+    background: linear-gradient(
+        90deg,
+        rgba(234, 88, 12, 0.22) 0%, /* BOOSTED from 0.18 */
+        rgba(234, 88, 12, 0.10) 100%
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        0 2px 6px rgba(234, 88, 12, 0.2), /* DEEPER shadow */
+        0 1px 2px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Admin (Red) */
+body:not(.dark-mode) #sidebar .collapsed-section-bar[data-section="admin"] {
+    border-left-color: #dc2626 !important;
+    background: linear-gradient(
+        90deg,
+        rgba(220, 38, 38, 0.22) 0%, /* BOOSTED from 0.18 */
+        rgba(220, 38, 38, 0.10) 100%
+    ) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        0 2px 6px rgba(220, 38, 38, 0.2), /* DEEPER shadow */
+        0 1px 2px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 2: HEADER PREMIUM ELEVATION
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* 🎨 HEADER: Premium glass with stronger depth */
+body:not(.dark-mode) .app-header {
+    backdrop-filter: blur(24px) saturate(200%) !important; /* INCREASED saturation */
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.98) 0%, /* MORE opaque */
+        rgba(255, 255, 255, 0.95) 100%
+    ) !important;
+    border-bottom: 1px solid rgba(203, 213, 225, 0.8) !important; /* STRONGER border */
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.06), /* DEEPER shadow */
+        0 1px 3px rgba(0, 0, 0, 0.04),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+/* 🎨 SEARCH BAR: Enhanced depth */
+body:not(.dark-mode) .search-container {
+    background: rgba(255, 255, 255, 0.95) !important; /* MORE opaque */
+    border: 1.5px solid rgba(203, 213, 225, 0.9) !important; /* STRONGER border */
+    box-shadow:
+        inset 0 1px 3px rgba(0, 0, 0, 0.04), /* DEEPER inset */
+        0 2px 6px rgba(0, 0, 0, 0.06) !important; /* DEEPER shadow */
+}
+
+body:not(.dark-mode) .search-container:hover {
+    border-color: rgba(148, 163, 184, 0.9) !important;
+    box-shadow:
+        inset 0 1px 3px rgba(0, 0, 0, 0.04),
+        0 3px 8px rgba(0, 0, 0, 0.08) !important; /* ENHANCED hover depth */
+}
+
+body:not(.dark-mode) .search-container:focus-within {
+    border-color: #2563eb !important;
+    background: #ffffff !important;
+    box-shadow:
+        0 0 0 4px rgba(37, 99, 235, 0.12), /* STRONGER focus ring */
+        0 4px 12px rgba(0, 0, 0, 0.1) !important; /* DEEPER shadow */
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 3: SIDEBAR LINKS - PREMIUM HOVER STATES
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* 🎨 LINK HOVER: Enhanced depth with shadow */
+body:not(.dark-mode) #sidebar .sidebar-link:hover {
+    background: rgba(226, 232, 240, 0.8) !important; /* RICHER grey */
+    transform: translateY(-2px) translateX(3px); /* ENHANCED lift */
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.1), /* DEEPER shadow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important; /* Inner highlight */
+}
+
+/* 🎨 ACTIVE LINK: Richer blue with glow */
+body:not(.dark-mode) #sidebar .sidebar-link.active {
+    background: rgba(37, 99, 235, 0.12) !important; /* RICHER blue */
+    color: #1d4ed8 !important; /* DARKER blue text */
+    box-shadow:
+        0 2px 8px rgba(37, 99, 235, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+/* 🎨 ACTIVE BAR: Enhanced glow gradient */
+body:not(.dark-mode) #sidebar .sidebar-link.active::before {
+    background: linear-gradient(
+        180deg,
+        transparent 0%,
+        #2563eb 15%, /* STRONGER blue */
+        #2563eb 85%,
+        transparent 100%
+    ) !important;
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.4) !important; /* Added glow */
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 4: FORM FIELDS - ENTERPRISE DEPTH
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* 🎨 INPUT FIELDS: Layered depth system */
+body:not(.dark-mode) input[type="text"],
+body:not(.dark-mode) input[type="email"],
+body:not(.dark-mode) input[type="password"],
+body:not(.dark-mode) input[type="search"],
+body:not(.dark-mode) input[type="number"],
+body:not(.dark-mode) input[type="tel"],
+body:not(.dark-mode) input[type="url"],
+body:not(.dark-mode) textarea,
+body:not(.dark-mode) select {
+    background: #ffffff !important;
+    border: 1.5px solid #d1d5db !important; /* STRONGER border */
+    box-shadow:
+        inset 0 1px 3px rgba(0, 0, 0, 0.05), /* DEEPER inset */
+        0 1px 2px rgba(0, 0, 0, 0.03) !important; /* Outer shadow */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover state */
+body:not(.dark-mode) input[type="text"]:hover,
+body:not(.dark-mode) input[type="email"]:hover,
+body:not(.dark-mode) input[type="password"]:hover,
+body:not(.dark-mode) input[type="search"]:hover,
+body:not(.dark-mode) input[type="number"]:hover,
+body:not(.dark-mode) input[type="tel"]:hover,
+body:not(.dark-mode) input[type="url"]:hover,
+body:not(.dark-mode) textarea:hover,
+body:not(.dark-mode) select:hover {
+    border-color: #9ca3af !important;
+    box-shadow:
+        inset 0 1px 3px rgba(0, 0, 0, 0.05),
+        0 2px 4px rgba(0, 0, 0, 0.05) !important; /* DEEPER hover shadow */
+}
+
+/* Focus state */
+body:not(.dark-mode) input[type="text"]:focus,
+body:not(.dark-mode) input[type="email"]:focus,
+body:not(.dark-mode) input[type="password"]:focus,
+body:not(.dark-mode) input[type="search"]:focus,
+body:not(.dark-mode) input[type="number"]:focus,
+body:not(.dark-mode) input[type="tel"]:focus,
+body:not(.dark-mode) input[type="url"]:focus,
+body:not(.dark-mode) textarea:focus,
+body:not(.dark-mode) select:focus {
+    outline: none !important;
+    border-color: #2563eb !important;
+    box-shadow:
+        0 0 0 4px rgba(37, 99, 235, 0.12), /* STRONGER focus ring */
+        inset 0 1px 3px rgba(0, 0, 0, 0.05),
+        0 4px 8px rgba(0, 0, 0, 0.08) !important; /* DEEPER focus shadow */
+}
+
+/* 🎨 BUTTONS: Premium depth and elevation */
+body:not(.dark-mode) button,
+body:not(.dark-mode) .btn {
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.08), /* DEEPER shadow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.5) !important; /* Inner highlight */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body:not(.dark-mode) button:hover,
+body:not(.dark-mode) .btn:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.12), /* DEEPER hover shadow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+body:not(.dark-mode) button:active,
+body:not(.dark-mode) .btn:active {
+    transform: translateY(0px);
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.08),
+        inset 0 1px 2px rgba(0, 0, 0, 0.1) !important; /* Pressed effect */
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 5: CARDS & CONTAINERS - ENTERPRISE DEPTH
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* 🎨 CARDS: Layered depth with premium shadows */
+body:not(.dark-mode) .card {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.06), /* DEEPER shadow */
+        0 1px 3px rgba(0, 0, 0, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important; /* Inner highlight */
+}
+
+body:not(.dark-mode) .card:hover {
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.1), /* MUCH DEEPER hover shadow */
+        0 4px 12px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+    transform: translateY(-2px);
+}
+
+/* 🎨 MAIN CONTENT: Subtle depth */
+body:not(.dark-mode) .main-content {
+    background: rgba(248, 250, 252, 0.6) !important; /* SUBTLE tint */
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 6: SCROLLBAR - PREMIUM STYLING
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* 🎨 SCROLLBAR: Enhanced visibility with depth */
+body:not(.dark-mode) #sidebar .sidebar-content::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.35) !important; /* MORE visible */
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1) !important; /* Inner depth */
+}
+
+body:not(.dark-mode) #sidebar .sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.65) !important; /* MUCH darker on hover */
+    box-shadow:
+        inset 0 0 2px rgba(0, 0, 0, 0.15),
+        0 0 4px rgba(0, 0, 0, 0.1) !important; /* Added glow */
+}
+
+body:not(.dark-mode) #sidebar .sidebar-content::-webkit-scrollbar-track {
+    background: rgba(241, 245, 249, 0.5) !important; /* SUBTLE track */
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION 7: CHEVRON COLORS - ENHANCED VISIBILITY
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* 🎨 CHEVRONS: Rich saturated colors matching headers */
+body:not(.dark-mode) #sidebar .sidebar-section:nth-child(1) .section-toggle {
+    color: #2563eb !important; /* Bright blue */
+}
+
+body:not(.dark-mode) #sidebar .sidebar-section:nth-child(2) .section-toggle {
+    color: #059669 !important; /* Bright green */
+}
+
+body:not(.dark-mode) #sidebar .sidebar-section:nth-child(3) .section-toggle {
+    color: #ea580c !important; /* Bright orange */
+}
+
+body:not(.dark-mode) #sidebar .sidebar-section:nth-child(4) .section-toggle {
+    color: #dc2626 !important; /* Bright red */
+}
+
+/* ============================================================
+   UNIFIED SECTION HEADERS & BARS - SAME HEIGHT + CHEVRONS
+   ============================================================ */
+
+/* FORCE: Section headers same height in both states */
+#sidebar .sidebar-section-header {
+    min-height: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 12px !important;
+}
+
+/* FORCE: Collapsed bars same height as headers */
+body.amc-collapsed #sidebar .collapsed-section-bar,
+body.sidebar-collapsed #sidebar .collapsed-section-bar {
+    height: 40px !important; /* MATCH header height */
+    min-height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 8px 0 12px !important; /* Space for chevron */
+}
+
+/* REMOVE: Delete colored right edge */
+body.amc-collapsed #sidebar .collapsed-section-bar::after,
+body.sidebar-collapsed #sidebar .collapsed-section-bar::after {
+    display: none !important; /* Remove the colored edge */
+}
+
+/* ADD: Colored chevron on right side of collapsed bars */
+body.amc-collapsed #sidebar .collapsed-section-bar::before,
+body.sidebar-collapsed #sidebar .collapsed-section-bar::before {
+    content: '\203A' !important; /* Right chevron (›) */
+    font-size: 20px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+    margin-left: auto !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Chevron colors matching sections */
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="core"]::before,
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="core"]::before {
+    color: #2563eb !important; /* Blue */
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="management"]::before,
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="management"]::before {
+    color: #059669 !important; /* Green */
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="analytics"]::before,
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="analytics"]::before {
+    color: #ea580c !important; /* Orange */
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="admin"]::before,
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="admin"]::before {
+    color: #dc2626 !important; /* Red */
+}
+
+/* Rotate chevron when section is expanded */
+body.amc-collapsed #sidebar .collapsed-section-bar.expanded::before,
+body.sidebar-collapsed #sidebar .collapsed-section-bar.expanded::before {
+    transform: rotate(90deg) !important; /* Point down when expanded */
+}
+
+/* ── Manage Releases table skin (opt-in) ─────────────────────────── */
+.releases-table {
+  border-collapse: separate;            /* prevent border artifacts */
+  border-spacing: 0;
+  width: 100%;
+  table-layout: fixed;                  /* predictable column widths */
+  background: var(--bg-secondary);
+}
+
+.releases-table thead th {
+  font: 600 12.5px/1.2 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  color: var(--text-secondary);
+  background: var(--table-header-bg, rgba(0,0,0,.04));
+  border-bottom: 1px solid var(--border-primary);
+  padding: 10px 12px;
+  text-align: left;
+  user-select: none;
+}
+
+.releases-table tbody td {
+  font: 500 13px/1.45 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial; /* smaller data font */
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-primary);
+  padding: 12px;
+  vertical-align: middle;
+  position: relative;                   /* keeps internal elements from drawing outside */
+}
+
+/* ============================================================
+   LIGHT MODE TABLE STYLING - CRITICAL FIX
+   ============================================================ */
+
+/* Light mode: White background for table */
+body:not(.dark-mode) .releases-table {
+  background: #ffffff !important;
+  color: #212529 !important;
+}
+
+body:not(.dark-mode) .releases-table thead th {
+  background: #f8f9fa !important;
+  color: #495057 !important;
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+body:not(.dark-mode) .releases-table tbody td {
+  color: #212529 !important;
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+/* Light mode vertical lines */
+body:not(.dark-mode) .releases-table td + td,
+body:not(.dark-mode) .releases-table th + th {
+  border-left: 1px solid #dee2e6 !important;
+}
+
+body:not(.dark-mode) .releases-table th.col-teaser,
+body:not(.dark-mode) .releases-table td.col-teaser {
+  border-right: 1px solid #dee2e6 !important;
+}
+
+/* Zebra rows (light & dark) */
+.releases-table tbody tr:nth-child(even) { background: rgba(0,0,0,0.025); }
+body.dark-mode .releases-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.04); }
+
+/* Light mode zebra rows */
+body:not(.dark-mode) .releases-table tbody tr:nth-child(even) {
+  background: rgba(0,0,0,0.025) !important;
+}
+
+/* ============================================================
+   IMPROVED COLUMN WIDTHS - GIVES TITLE MORE BREATHING ROOM
+   ============================================================ */
+
+/* Teaser — fixed boxy thumb */
+.releases-table td.col-teaser { width: 96px; }
+.releases-table td.cell--teaser img {
+  display:block; width: 68px; height: 42px; object-fit: cover; border-radius: 6px;
+}
+
+/* Force rounded corners with higher specificity */
+table.releases-table td.cell--teaser img,
+table.releases-table td.cell--teaser .thumb img,
+.amc-table td.cell--teaser img,
+.amc-table td.cell--teaser .thumb img {
+  border-radius: 6px !important;
+  overflow: hidden !important;
+}
+
+/* Title and Company truncation */
+.releases-table .truncate {
+  display: block;
+}
+
+/* Company column - slightly reduced from 16% to 15% */
+.releases-table td.col-company { width: 15%; }
+.releases-table td.col-company .truncate { font-weight: 600; }
+
+/* Status column - narrower from 10% to 8% with centered pills */
+.releases-table td.col-status {
+  width: 8%;
+  text-align: center;
+}
+
+/* Uploaded By — reduced from 260px to 16% */
+.releases-table td.col-uploader { width: 16%; }
+.releases-table td.col-uploader a,
+.releases-table td.col-uploader .email {
+  display:block;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  text-decoration:none; border:0 !important;           /* ← kills any underline/border tricks */
+  background:none !important;                           /* ← prevents background underline hacks */
+}
+.releases-table td.col-uploader * { border:0 !important; } /* belt & suspenders */
+
+/* Style uploader emails in blue - using correct class name */
+.releases-table td.cell--uploader,
+.amc-table td.cell--uploader {
+  color: var(--accent-primary) !important;
+  font-weight: 500;
+}
+
+/* Light mode uploader styling - explicit rule */
+body:not(.dark-mode) .releases-table td.cell--uploader,
+body:not(.dark-mode) .amc-table td.cell--uploader {
+  color: var(--accent-primary) !important;
+}
+
+/* Dark mode uploader styling */
+body.dark-mode .releases-table td.cell--uploader,
+body.dark-mode .amc-table td.cell--uploader {
+  color: var(--accent-primary) !important;
+}
+
+/* Date columns - reduced from 170px to 12% each */
+.releases-table td.col-release,
+.releases-table td.col-updated { width: 12%; }
+
+/* Actions (kebab) - increased from 56px to 80px to show "Actions" title */
+.releases-table td.col-actions {
+  width: 80px;
+  text-align: center;
+}
+
+/* Title column gets the remainder (approximately 25% on typical desktop) */
+.releases-table td.col-title {
+  /* No width specified = gets remaining space after other columns */
+  min-width: 200px; /* Ensure minimum readable width */
+}
+
+/* Centered pills, same look as Platform Admin */
+.status-pill {
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width: 92px; height: 28px; padding: 0 10px;
+  border-radius:999px; font: 700 12px/1 Inter, system-ui; letter-spacing:.25px;
+  border:1px solid transparent;
+}
+.status-pill.published { color:#10b981; background:rgba(16,185,129,.12); border-color:rgba(16,185,129,.35); }
+.status-pill.pending   { color:#3b82f6; background:rgba(59,130,246,.12); border-color:rgba(59,130,246,.35); }
+.status-pill.active    { color:#10b981; background:rgba(16,185,129,.12); border-color:rgba(16,185,129,.35); }
+.status-pill.archived  { color:#6b7280; background:rgba(107,114,128,.12); border-color:rgba(107,114,128,.35); }
+.status-pill.deleted   { color:#ef4444; background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.35); }
+body.dark-mode .status-pill.published { background:rgba(16,185,129,.16); border-color:rgba(16,185,129,.45); }
+body.dark-mode .status-pill.pending   { background:rgba(59,130,246,.16); border-color:rgba(59,130,246,.45); }
+body.dark-mode .status-pill.active    { background:rgba(16,185,129,.16); border-color:rgba(16,185,129,.45); }
+body.dark-mode .status-pill.archived  { background:rgba(107,114,128,.16); border-color:rgba(107,114,128,.45); }
+body.dark-mode .status-pill.deleted   { background:rgba(239,68,68,.16); border-color:rgba(239,68,68,.45); }
+
+/* ───────────── Vertical divider lines for AMC tables ───────────── */
+.releases-table td + td,
+.releases-table th + th {
+  border-left: 1px solid var(--border-primary);
+}
+
+/* Remove dark-mode specific override - let global variables handle it */
+
+/* Make sure the last column (Actions) doesn't double up */
+.releases-table td:last-child,
+.releases-table th:last-child {
+  border-right: none;
+}
+
+/* ───────────────────────────────
+   Manage Releases – teaser/title divider + centered kebab
+   ─────────────────────────────── */
+
+/* 1) Stop drawing the generic left border on the Title column boundary */
+.releases-table th.col-title,
+.releases-table td.col-title {
+  border-left: none !important;
+}
+
+/* 2) Draw the divider on the right edge of the Teaser column instead,
+      and add a little padding so the line sits away from the thumbnail. */
+.releases-table th.col-teaser,
+.releases-table td.col-teaser {
+  border-right: 1px solid var(--border-primary) !important;
+  padding-right: 12px;              /* pushes the divider off the image */
+}
+
+/* Remove dark-mode specific override - let global variables handle it */
+
+/* 3) Center the kebab icon in the Actions column */
+.releases-table th.col-actions,
+.releases-table td.col-actions {
+  text-align: center;
+}
+
+.releases-table .kebab-btn {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  padding: 0;
+  margin: 0 auto;                   /* guarantees centering */
+}
+
+/* Hover effect on chevron */
+body.amc-collapsed #sidebar .collapsed-section-bar:hover::before,
+body.sidebar-collapsed #sidebar .collapsed-section-bar:hover::before {
+    transform: scale(1.2) !important;
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar.expanded:hover::before,
+body.sidebar-collapsed #sidebar .collapsed-section-bar.expanded:hover::before {
+    transform: rotate(90deg) scale(1.2) !important;
+}
+
+/* Dark mode chevrons - brighter colors */
+body.dark-mode.amc-collapsed #sidebar .collapsed-section-bar[data-section="core"]::before,
+body.dark-mode.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="core"]::before {
+    color: #60a5fa !important; /* Brighter blue */
+}
+
+body.dark-mode.amc-collapsed #sidebar .collapsed-section-bar[data-section="management"]::before,
+body.dark-mode.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="management"]::before {
+    color: #34d399 !important; /* Brighter green */
+}
+
+body.dark-mode.amc-collapsed #sidebar .collapsed-section-bar[data-section="analytics"]::before,
+body.dark-mode.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="analytics"]::before {
+    color: #fb923c !important; /* Brighter orange */
+}
+
+body.dark-mode.amc-collapsed #sidebar .collapsed-section-bar[data-section="admin"]::before,
+body.dark-mode.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="admin"]::before {
+    color: #f87171 !important; /* Brighter red */
+}
+
+/* ============================================================
+   ACCESSIBILITY: REDUCED MOTION SUPPORT
+   Respects user's OS-level motion preferences
+   Legally important for WCAG 2.1 compliance
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    /* Exception: Keep opacity transitions for accessibility */
+    * {
+        transition-property: opacity !important;
+        transition-duration: 0.15s !important;
+    }
+}
+
+/* ============================================================
+   SIDEBAR HEADER SPACING FIX - Enterprise Standards
+   ============================================================ */
+
+/* Proper spacing for hamburger section */
+.sidebar-header {
+    height: 48px !important; /* INCREASED from 28px */
+    padding: 12px 16px !important; /* Better padding */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    border-bottom: 1px solid var(--border-primary);
+    background: transparent;
+    margin-bottom: 8px !important; /* Space before first section */
+}
+
+/* First section header gets extra top margin */
+#sidebar .sidebar-section:first-child {
+    margin-top: 12px !important; /* INCREASED spacing */
+}
+
+#sidebar .sidebar-section:first-child .sidebar-section-header {
+    margin-top: 0 !important; /* Reset the header's own margin */
+}
+
+/* Collapsed sidebar - adjust spacing */
+body.sidebar-collapsed .sidebar-header,
+body.amc-collapsed .sidebar-header {
+    justify-content: center !important; /* Center hamburger when collapsed */
+    padding: 12px 0 !important;
+}
+
+/* First section in collapsed state needs proper spacing */
+body.sidebar-collapsed #sidebar .sidebar-section:first-child,
+body.amc-collapsed #sidebar .sidebar-section:first-child {
+    margin-top: 16px !important; /* Extra space from hamburger */
+}
+
+/* ---- GLOBAL LAYOUT SAFETY NET ----------------------------------------- */
+/* Make sure these exist and match the real sidebar/header sizes */
+:root{
+  --amc-sidebar-w: 272px;              /* expanded width (match .amc-sidebar) */
+  --amc-sidebar-w-collapsed: 72px;     /* collapsed width (match .amc-sidebar--collapsed) */
+  --amc-header-h: 64px;                 /* header height */
+}
+
+/* Sidebar widths (keep in sync with your sidebar.css) */
+.amc-sidebar{ width: var(--amc-sidebar-w); }
+body.amc-collapsed .amc-sidebar{ width: var(--amc-sidebar-w-collapsed); }
+
+/* Page must live to the right of the sidebar and below the header */
+.amc-page{
+  position: relative;
+  margin-left: var(--amc-sidebar-w);                        /* pushes content off sidebar */
+  width: calc(100vw - var(--amc-sidebar-w));                /* prevents 100vw overlap */
+  padding: 24px;
+  padding-top: calc(var(--amc-header-h) + 24px);            /* clears app header */
+  box-sizing: border-box;
+  min-height: calc(100vh - var(--amc-header-h));
+}
+
+/* When sidebar is collapsed, recalc both offset and width */
+body.amc-collapsed .amc-page{
+  margin-left: var(--amc-sidebar-w-collapsed);
+  width: calc(100vw - var(--amc-sidebar-w-collapsed));
+}
+
+/* Standard page container */
+.amc-page__container{
+  margin: 0 auto;
+  max-width: 1240px;                 /* default page width */
+  width: 100%;
+}
+
+/* Wide pages (tables like Manage Releases / Radar History) */
+.amc-page.manage-releases .amc-page__container,
+.amc-page.radar-history .amc-page__container{
+  max-width: none;                   /* let tables fill the canvas */
+}
+
+/* If any old rules forced content under the sidebar, neutralize them */
+.main-content, .content, .page, .container{
+  max-width: none;
+  width: auto;
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* === Re-usable table skin (use on all data tables) ================ */
+.amc-table{
+  width: 100%;
+  border-collapse: separate;   /* needed so vertical rules sit cleanly */
+  border-spacing: 0;
+  table-layout: fixed;         /* columns don't jump */
+}
+
+.amc-table th,
+.amc-table td{
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  vertical-align: middle;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* NUCLEAR OPTION: Remove ellipsis from teaser column - CORRECT CLASS NAMES */
+table.releases-table td.cell--teaser,
+table.releases-table th.cell--teaser,
+.amc-table td.cell--teaser,
+.amc-table th.cell--teaser {
+  text-overflow: clip !important;
+  overflow: visible !important;
+  white-space: normal !important;
+}
+
+/* Remove ellipsis from ALL content inside teaser cells - CORRECT CLASS NAMES */
+table.releases-table td.cell--teaser *,
+table.releases-table th.cell--teaser *,
+.amc-table td.cell--teaser *,
+.amc-table th.cell--teaser * {
+  text-overflow: clip !important;
+  overflow: visible !important;
+  white-space: normal !important;
+}
+
+/* Vertical column dividers (both themes) */
+.table.table-lined th,
+.table.table-lined td,
+.amc-table th:not(:last-child),
+.amc-table td:not(:last-child) {
+  border-right: 1px solid var(--border-primary);
+}
+
+.table.table-lined th:last-child,
+.table.table-lined td:last-child,
+.amc-table th:last-child,
+.amc-table td:last-child {
+  border-right: none;
+}
+
+/* vertical rules */
+.amc-table th + th,
+.amc-table td + td{
+  border-left: 1px solid var(--border-primary);
+}
+
+/* zebra rows */
+.amc-table tr:nth-child(even) td{
+  background: var(--amc-row-stripe);
+}
+html[data-theme="light"] .amc-table tr:nth-child(even) td{
+  background: var(--amc-row-stripe-light);
+}
+
+/* Teaser column: centered thumbnails with clean separator */
+.amc-table .cell--teaser{
+  width: 88px;                      /* header and body align perfectly */
+  text-align: center;
+}
+.amc-table .cell--teaser .thumb{
+  width: 72px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.amc-table .cell--teaser img{
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+/* Status pill (borrowed from Platform Admin) */
+.status-pill{
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .2px;
+  border: 1px solid transparent;
+}
+.status--published{ color:#0fbf7f; background: rgba(15,191,127,.12); border-color: rgba(15,191,127,.25); }
+.status--pending  { color:#22a6f2; background: rgba(34,166,242,.12); border-color: rgba(34,166,242,.25); }
+.status--deleted  { color:#ff5a67; background: rgba(255,90,103,.12); border-color: rgba(255,90,103,.25); }
+
+/* Actions (kebab) cell – centered icon, menu above other content */
+.amc-table .cell--actions{
+  width: 56px;
+  text-align: center;
+}
+.kebab-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+}
+.kebab-btn:hover{ background: rgba(255,255,255,.08); }
+
+/* Dark mode kebab button */
+body.dark-mode .kebab-btn {
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark-mode .kebab-btn:hover {
+  background: rgba(255,255,255,.08) !important;
+}
+
+/* Light mode kebab button */
+body:not(.dark-mode) .kebab-btn {
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-primary) !important;
+}
+.kebab-menu{ position:absolute; z-index: 20; }
+
+/* Light mode tweaks (if you use a data-theme toggle) */
+html[data-theme="light"] .amc-card{ background:#fff; border-color: rgba(0,0,0,.06); box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+html[data-theme="light"] .amc-table th,
+html[data-theme="light"] .amc-table td{ border-bottom-color: rgba(0,0,0,.06); }
+html[data-theme="light"] .amc-table th + th,
+html[data-theme="light"] .amc-table td + td{ border-left-color: rgba(0,0,0,.06); }
+html[data-theme="light"] .kebab-btn:hover{ background: rgba(0,0,0,.06); }
+
+/* Light mode table borders for body class system */
+body:not(.dark-mode) .amc-table th,
+body:not(.dark-mode) .amc-table td {
+  border-bottom-color: rgba(0,0,0,.06) !important;
+}
+body:not(.dark-mode) .amc-table th + th,
+body:not(.dark-mode) .amc-table td + td {
+  border-left-color: rgba(0,0,0,.06) !important;
+}
+body:not(.dark-mode) .kebab-btn:hover {
+  background: rgba(0,0,0,.06) !important;
+}
+
+/* ============================================================
+   POLISHED TABLE METADATA TYPOGRAPHY
+   Consistent with enterprise design system
+   ============================================================ */
+
+/* Table header metadata (Total Releases: X) */
+.table-head-meta {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+/* Pagination summary (Showing X-Y of Z) */
+#paginationSummary {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+/* Page info (Page X of Y) */
+#pageInfo {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+  margin: 0 12px;
+}
+
+/* Enhanced pagination controls styling */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* Card footer styling for better visual hierarchy */
+.card-footer {
+  padding: 12px 20px;
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* Dark mode support for metadata */
+body.dark-mode .table-head-meta,
+body.dark-mode #paginationSummary {
+  color: var(--text-secondary);
+}
+
+body.dark-mode #pageInfo {
+  color: var(--text-primary);
+}
+
+/* ==== AMC Layout Compatibility Shim • KEEP AT THE BOTTOM ==== */
+
+/* The page layout (amc-main-layout.css) handles header spacing. */
+main.amc-content {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Sidebar offsets expressed via shared tokens */
+main.amc-content {
+  margin-left: var(--amc-sidebar-expanded) !important;
+}
+body.sidebar-collapsed main.amc-content {
+  margin-left: var(--amc-sidebar-collapsed) !important;
+}
+
+/* Unified page header spacing: kill default h1/p margins */
+.amc-page-header { margin: 0 0 var(--amc-pagehead-margin-bottom) !important; }
+.amc-page-title  { margin: 0 !important; }
+.amc-page-subtitle { margin: 0 !important; }

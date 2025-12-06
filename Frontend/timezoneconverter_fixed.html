@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Zone Converter - FIXED Alpha-3 Search</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .search-container { position: relative; width: 400px; margin: 20px 0; }
+        .search-input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        .search-input:focus { outline: none; border-color: #007bff; }
+        .dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid #007bff; border-top: none; border-radius: 0 0 8px 8px; max-height: 300px; overflow-y: auto; z-index: 1000; display: none; }
+        .dropdown.show { display: block; }
+        .dropdown-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .dropdown-item:hover { background: #f8f9fa; }
+        .country-header { background: #007bff; color: white; padding: 8px 12px; font-weight: bold; }
+        .city-item { padding-left: 20px; border-left: 3px solid #007bff; }
+        .city-name { font-weight: bold; }
+        .city-country { font-size: 0.9em; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>Time Zone Converter - FIXED Alpha-3 Search</h1>
+    
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="Type USA, GBR, AUS, or city name..." id="searchInput">
+        <div class="dropdown" id="dropdown"></div>
+    </div>
+    
+    <div id="result"></div>
+
+    <script>
+        // Sample timezone database (simplified for testing)
+        const globalTimezoneDatabase = [
+            // United States cities
+            { name: 'New York', country: 'United States', timezone: 'America/New_York', flag: 'us' },
+            { name: 'Los Angeles', country: 'United States', timezone: 'America/Los_Angeles', flag: 'us' },
+            { name: 'Chicago', country: 'United States', timezone: 'America/Chicago', flag: 'us' },
+            { name: 'Houston', country: 'United States', timezone: 'America/Chicago', flag: 'us' },
+            
+            // United Kingdom cities
+            { name: 'London', country: 'United Kingdom', timezone: 'Europe/London', flag: 'gb' },
+            { name: 'Manchester', country: 'United Kingdom', timezone: 'Europe/London', flag: 'gb' },
+            { name: 'Edinburgh', country: 'United Kingdom', timezone: 'Europe/London', flag: 'gb' },
+            
+            // Australia cities
+            { name: 'Sydney', country: 'Australia', timezone: 'Australia/Sydney', flag: 'au' },
+            { name: 'Melbourne', country: 'Australia', timezone: 'Australia/Melbourne', flag: 'au' },
+            { name: 'Perth', country: 'Australia', timezone: 'Australia/Perth', flag: 'au' },
+            
+            // Germany cities
+            { name: 'Berlin', country: 'Germany', timezone: 'Europe/Berlin', flag: 'de' },
+            { name: 'Munich', country: 'Germany', timezone: 'Europe/Berlin', flag: 'de' },
+            { name: 'Hamburg', country: 'Germany', timezone: 'Europe/Berlin', flag: 'de' },
+            
+            // Other cities for testing
+            { name: 'Paris', country: 'France', timezone: 'Europe/Paris', flag: 'fr' },
+            { name: 'Tokyo', country: 'Japan', timezone: 'Asia/Tokyo', flag: 'jp' },
+            { name: 'Moscow', country: 'Russia', timezone: 'Europe/Moscow', flag: 'ru' },
+            { name: 'Austin', country: 'United States', timezone: 'America/Chicago', flag: 'us' }
+        ];
+
+        // WORKING SMART SEARCH FUNCTION
+        function performSmartSearch(query) {
+            const lowerQuery = query.toLowerCase().trim();
+            console.log('Smart search for:', lowerQuery);
+            
+            // Alpha-3 country code mappings (EXACT matches only)
+            const alpha3Countries = {
+                'usa': 'United States',
+                'gbr': 'United Kingdom', 
+                'aus': 'Australia',
+                'ger': 'Germany',
+                'deu': 'Germany',
+                'fra': 'France',
+                'can': 'Canada',
+                'jpn': 'Japan',
+                'chn': 'China',
+                'ind': 'India',
+                'bra': 'Brazil',
+                'rus': 'Russia'
+            };
+            
+            // Performance: Cache cities by country
+            if (!window.citiesByCountry) {
+                window.citiesByCountry = {};
+                globalTimezoneDatabase.forEach(city => {
+                    if (!window.citiesByCountry[city.country]) {
+                        window.citiesByCountry[city.country] = [];
+                    }
+                    window.citiesByCountry[city.country].push(city);
+                });
+                console.log('Cities grouped by country for performance');
+            }
+            
+            // 1. EXACT Alpha-3 country code match (highest priority)
+            if (alpha3Countries[lowerQuery]) {
+                const countryName = alpha3Countries[lowerQuery];
+                console.log('Alpha-3 match found:', lowerQuery, '→', countryName);
+                
+                const citiesInCountry = window.citiesByCountry[countryName] || [];
+                
+                if (citiesInCountry.length > 0) {
+                    return [{
+                        type: 'country',
+                        country: countryName,
+                        flag: citiesInCountry[0].flag,
+                        cities: citiesInCountry
+                    }];
+                }
+            }
+            
+            // 2. City name prefix matches
+            const cityMatches = globalTimezoneDatabase.filter(city =>
+                city.name.toLowerCase().startsWith(lowerQuery)
+            );
+            
+            // 3. Country name matches
+            const countryNameMatches = [];
+            for (const [code, countryName] of Object.entries(alpha3Countries)) {
+                if (countryName.toLowerCase().includes(lowerQuery)) {
+                    const citiesInCountry = window.citiesByCountry[countryName] || [];
+                    if (citiesInCountry.length > 0) {
+                        countryNameMatches.push({
+                            type: 'country',
+                            country: countryName,
+                            flag: citiesInCountry[0].flag,
+                            cities: citiesInCountry
+                        });
+                    }
+                }
+            }
+            
+            // Combine results
+            const results = cityMatches.concat(countryNameMatches);
+            console.log('Smart search returning:', results.length, 'results');
+            return results;
+        }
+
+        // WORKING DISPLAY FUNCTION
+        function displayResults(results, query) {
+            const dropdown = document.getElementById('dropdown');
+            
+            if (results.length === 0) {
+                dropdown.innerHTML = `
+                    <div class="dropdown-item">
+                        No cities found for "${query}"<br>
+                        <small>Try typing a country name or code (e.g., "USA", "GBR", "AUS")</small>
+                    </div>
+                `;
+                dropdown.classList.add('show');
+                return;
+            }
+            
+            let html = '';
+            
+            results.forEach(result => {
+                if (result.type === 'country') {
+                    // Country result with cities
+                    html += `
+                        <div class="country-header">
+                            🏳️ ${result.country} - Choose a city:
+                        </div>
+                    `;
+                    result.cities.forEach(city => {
+                        html += `
+                            <div class="dropdown-item city-item" onclick="selectCity('${city.name}', '${city.country}', '${city.timezone}')">
+                                <div class="city-name">${city.name}</div>
+                                <div class="city-country">${city.country} • ${city.timezone}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    // Individual city result
+                    html += `
+                        <div class="dropdown-item" onclick="selectCity('${result.name}', '${result.country}', '${result.timezone}')">
+                            <div class="city-name">${result.name}</div>
+                            <div class="city-country">${result.country} • ${result.timezone}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            dropdown.innerHTML = html;
+            dropdown.classList.add('show');
+        }
+
+        // City selection function
+        function selectCity(name, country, timezone) {
+            document.getElementById('result').innerHTML = `
+                <h3>Selected: ${name}, ${country}</h3>
+                <p>Timezone: ${timezone}</p>
+                <p>Current time: ${new Date().toLocaleString('en-US', {timeZone: timezone})}</p>
+            `;
+            document.getElementById('dropdown').classList.remove('show');
+        }
+
+        // Event listeners
+        const searchInput = document.getElementById('searchInput');
+        let searchTimeout;
+
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = e.target.value.trim();
+                if (query.length > 0) {
+                    const results = performSmartSearch(query);
+                    displayResults(results, query);
+                } else {
+                    document.getElementById('dropdown').classList.remove('show');
+                }
+            }, 300);
+        });
+
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                document.getElementById('dropdown').classList.remove('show');
+            }, 200);
+        });
+
+        // Test the search on page load
+        console.log('Page loaded. Test the search by typing:');
+        console.log('- USA (should show only US cities)');
+        console.log('- GBR (should show only UK cities)');
+        console.log('- AUS (should show only Australian cities)');
+        console.log('- Austin (should show Austin, Texas)');
+    </script>
+</body>
+</html>

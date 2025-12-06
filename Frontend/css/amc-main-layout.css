@@ -1,0 +1,214 @@
+/* =========================================================
+   AMC Main Layout • shared page frame and spacing system
+   Place in: Frontend/css/amc-main-layout.css
+   ---------------------------------------------------------
+   Usage on a page:
+     <main class="amc-content amc-layout--mgmt">
+       <div class="amc-page">
+         <header class="amc-page-header">
+           <h1 class="amc-page-title">Title</h1>
+           <p class="amc-page-subtitle">Subtitle</p>
+         </header>
+         ...
+       </div>
+     </main>
+   ========================================================= */
+
+/* ---------- Global layout tokens ---------- */
+:root {
+  /* header + sidebar sizes set by your components */
+  --amc-header-height: 64px;
+  --amc-sidebar-expanded: 260px;
+  --amc-sidebar-collapsed: 56px;
+
+  /* default page paddings (used by base preset) */
+  --amc-page-padding-x: 32px;
+  --amc-page-padding-y: 24px;
+
+  /* default content max width (overridden by presets) */
+  --amc-content-max: 1240px;
+
+  /* default page header typography (overridden by presets) */
+  --amc-title-size: 22px;
+  --amc-title-weight: 700;
+  --amc-subtitle-size: 14px;
+  --amc-subtitle-color: rgba(148,163,184,.95);
+
+  /* default header block spacing */
+  --amc-pagehead-gap: 8px;
+  --amc-pagehead-margin-bottom: 16px;
+}
+
+/* keep body under the fixed header */
+body {
+  padding-top: var(--amc-header-height);
+}
+
+/* ---------- Main content rail (sits beside the sidebar) ---------- */
+.amc-content {
+  min-height: calc(100dvh - var(--amc-header-height));
+  padding: var(--amc-page-padding-y) var(--amc-page-padding-x);
+  margin-left: var(--amc-sidebar-expanded);
+  transition: margin-left 200ms ease, padding 200ms ease;
+}
+
+/* when the sidebar component collapses the shell toggles this class */
+body.sidebar-collapsed .amc-content {
+  margin-left: var(--amc-sidebar-collapsed);
+}
+
+/* center column that matches product pages */
+.amc-page {
+  max-width: var(--amc-content-max);
+  margin-inline: auto;
+}
+
+/* ---------- Unified page header block ---------- */
+.amc-page-header {
+  display: grid;
+  gap: var(--amc-pagehead-gap);
+  margin: 0 0 var(--amc-pagehead-margin-bottom);
+}
+
+.amc-page-title {
+  font-size: var(--amc-title-size);
+  font-weight: var(--amc-title-weight);
+  line-height: 1.35;
+  letter-spacing: .1px;
+  margin: 0;
+}
+
+.amc-page-subtitle {
+  font-size: var(--amc-subtitle-size);
+  color: var(--amc-subtitle-color);
+  line-height: 1.45;
+  margin: 0;
+  max-width: 90ch;
+}
+
+/* =========================================================
+   PRESETS
+   Add one of these classes to <main class="amc-content ...">
+   to snap a page to a known layout rhythm.
+   ========================================================= */
+
+/* ----- Management/Radar preset (matches your Manager & Radar pages) ----- */
+.amc-layout--mgmt {
+  /* gutters & column width tuned to your table/card pages */
+  --amc-page-padding-x: 24px;
+  --amc-page-padding-y: 20px;
+  --amc-content-max: 1160px;
+
+  /* page header typography cadence */
+  --amc-title-size: 20px;
+  --amc-title-weight: 700;
+  --amc-subtitle-size: 13px;
+  --amc-subtitle-color: rgba(99,115,129,.95);
+
+  /* header block spacing */
+  --amc-pagehead-gap: 6px;              /* between title and subtitle */
+  --amc-pagehead-margin-bottom: 14px;   /* space below header block */
+}
+
+/* ----- Wide preset (use when you need a broader canvas) ----- */
+.amc-layout--wide {
+  --amc-page-padding-x: 28px;
+  --amc-page-padding-y: 22px;
+  --amc-content-max: 1320px;
+}
+
+/* ----- Compact preset (use for dense utility pages) ----- */
+.amc-layout--compact {
+  --amc-page-padding-x: 18px;
+  --amc-page-padding-y: 16px;
+  --amc-content-max: 1080px;
+  --amc-title-size: 18px;
+  --amc-subtitle-size: 12px;
+  --amc-pagehead-gap: 4px;
+  --amc-pagehead-margin-bottom: 10px;
+}
+
+/* =========================================================
+   RESPONSIVE TWEAKS
+   ========================================================= */
+@media (max-width: 1024px) {
+  .amc-content { margin-left: var(--amc-sidebar-collapsed); }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --amc-page-padding-x: 16px;
+    --amc-page-padding-y: 16px;
+  }
+  .amc-page-title { line-height: 1.3; }
+}
+
+/* ===== AMC layout: opt-in mgmt preset (supports dash + BEM) ===== */
+
+/* tokens */
+:root{
+  --amc-header-height:64px;
+  --amc-sidebar-expanded:260px;
+  --amc-sidebar-collapsed:56px;
+  --amc-page-padding-x:24px;
+  --amc-page-padding-y:20px;
+}
+
+/* content rail follows sidebar width */
+.amc-content{ min-height:calc(100dvh - var(--amc-header-height)); transition:padding-left .2s ease,padding-right .2s ease; }
+.amc-content.amc-layout--mgmt{
+  padding-left:calc(var(--amc-sidebar-expanded) + var(--amc-page-padding-x));
+  padding-right:var(--amc-page-padding-x);
+}
+body.sidebar-collapsed .amc-content.amc-layout--mgmt{
+  padding-left:calc(var(--amc-sidebar-collapsed) + var(--amc-page-padding-x));
+}
+
+/* center column */
+.amc-content.amc-layout--mgmt .amc-page,
+.amc-content.amc-layout--mgmt .amc-page__body{
+  max-width:1160px;
+  margin-inline:auto;
+}
+
+/* header block (dash + BEM) - CREATE SPACE BELOW HEADER RAIL */
+.amc-content.amc-layout--mgmt .amc-page-header,
+.amc-content.amc-layout--mgmt .amc-page__header{
+  margin-top:16px !important;
+  margin-bottom:8px !important;
+  padding-bottom:8px !important;
+  padding-top:0 !important;
+}
+
+/* title (dash + BEM) - EXACT manage_releases.html values */
+.amc-content.amc-layout--mgmt .amc-page-title,
+.amc-content.amc-layout--mgmt .amc-page__title{
+  font-size:28.8px !important;
+  font-weight:600 !important;
+  margin-top:0 !important;
+  margin-bottom:3px !important;
+  padding:0 !important;
+}
+
+/* subtitle (dash + BEM) - EXACT manage_releases.html values */
+.amc-content.amc-layout--mgmt .amc-page-subtitle,
+.amc-content.amc-layout--mgmt .amc-page__sub{
+  font-size:15.2px !important;
+  margin:0 !important;
+  padding:0 !important;
+  color:rgb(107,114,128) !important;
+  max-width:720px !important;
+}
+
+/* page container overrides */
+.amc-content.amc-layout--mgmt .amc-page{
+  margin-top:0 !important;
+  padding-top:0 !important;
+}
+
+/* small screens */
+@media (max-width:1024px){
+  .amc-content.amc-layout--mgmt{
+    padding-left:calc(var(--amc-sidebar-collapsed) + var(--amc-page-padding-x));
+  }
+}

@@ -1,0 +1,462 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Manage Radar Alerts</title>
+    <script src="simple-auth-protection.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #f8f9fa; --bg-secondary: #ffffff; --bg-tertiary: #f1f3f5;
+            --text-primary: #212529; --text-secondary: #495057; --text-headings: #212529;
+            --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7; --accent-secondary: #6c757d; --accent-secondary-hover: #5c636a;
+            --border-primary: #dee2e6; --border-secondary: #e9ecef; 
+            --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+            --color-info: #17a2b8; --color-warning: #ffc107; --color-danger: #dc3545; --color-success: #198754;
+            --font-family-main: 'Poppins', sans-serif; 
+            --sidebar-width: 260px; --header-height: 61px;
+        }
+
+        body.dark-mode {
+            --bg-primary: #1a1a1a; --bg-secondary: #252526; --bg-tertiary: #3a3a3a;
+            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff; --accent-secondary: #7a8691; --accent-secondary-hover: #909ca7;
+            --border-primary: #444; --border-secondary: #333; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+            --color-info: #36c4d9; --color-warning: #ffd04a; --color-danger: #bb2d3b; --color-success: #28a745;
+            --color-danger-hover-bg: #a52834;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-family-main); background-color: var(--bg-primary); color: var(--text-primary); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        a { color: var(--accent-primary); text-decoration: none; } a:hover { text-decoration: underline; }
+        .app-container { display: flex; flex-direction: column; flex-grow: 1; }
+        .app-body { display: flex; flex-grow: 1; }
+        .app-header { background-color: var(--header-bg); color: var(--header-text); padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-primary); position: sticky; top: 0; z-index: 1020; height: var(--header-height); flex-shrink: 0; }
+        .app-header .logo h1 { font-size: 1.5em; font-weight: bold; margin: 0; }
+        .app-header .user-info { font-size: 0.9em; display: flex; align-items: center; } .app-header .user-info span { margin-right: 15px; } .app-header .logout-link { color: var(--header-link); text-decoration: none; margin-left:15px; }
+        .app-header .btn-icon { background:transparent; border:none; padding:5px 8px; margin-left:10px; cursor:pointer; } .app-header .btn-icon i { color:var(--header-link); font-size:1.1em; }
+        
+        .sidebar { width: var(--sidebar-width); background-color: var(--bg-secondary); border-right: 1px solid var(--border-secondary); display: flex; flex-direction: column; padding-top: 15px; flex-shrink: 0; transition: width 0.3s ease; position: sticky; top: var(--header-height); height: calc(100vh - var(--header-height)); }
+        .sidebar.collapsed { width: 70px; } .sidebar.collapsed .section-title, .sidebar.collapsed li a span, .sidebar.collapsed .sidebar-disclaimer { display: none; } .sidebar.collapsed li a { justify-content: center; } .sidebar.collapsed li a i.fa-fw { margin-right: 0; font-size: 1.2em; } .sidebar.collapsed .sidebar-header { justify-content: center; }
+        .sidebar-header { display: flex; justify-content: flex-end; padding: 0 15px 10px; border-bottom: 1px solid var(--border-secondary); margin-bottom: 15px; }
+        #sidebar-toggle { background: none; border: none; color: var(--text-secondary); font-size: 1.2em; cursor: pointer; padding: 5px; }
+        .sidebar nav { flex-grow: 1; } .sidebar ul { list-style: none; padding:0; } .sidebar .sidebar-section { margin-bottom: 20px; padding: 0 10px; }
+        .sidebar .section-title { font-size: 0.7em; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; display: block; margin-bottom: 8px; padding: 0 10px; }
+        .sidebar li a { display: flex; align-items: center; padding: 10px 15px; color: var(--text-primary); border-radius: 5px; margin-bottom: 3px; font-size: 0.95em; text-decoration: none; white-space: nowrap; overflow: hidden; } .sidebar li a i.fa-fw { width: 1.5em; margin-right: 10px; text-align: center; color: var(--text-secondary); }
+        .sidebar li a:hover { background-color: var(--bg-tertiary); } .sidebar li.active a { background-color: var(--accent-primary); color: #fff; } .sidebar li.active a i { color: #fff;}
+        .sidebar-disclaimer { padding: 15px; font-size: 0.8em; color: var(--text-secondary); border-top: 1px solid var(--border-secondary); margin-top: auto; }
+        
+        .main-content { flex-grow: 1; padding: 25px 30px; background-color: var(--bg-primary); width: calc(100% - var(--sidebar-width)); overflow-y: auto; }
+        .sidebar.collapsed + .main-content { width: calc(100% - 70px); }
+        .content-header { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border-primary); display:flex; justify-content:space-between; align-items:center; } 
+        .content-header h2 { font-size: 1.8em; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; } .content-header h2 i { color: var(--accent-primary); }
+        .content-header p { color: var(--text-secondary); margin:0; }
+        
+        .btn { padding: 8px 16px; font-size: 0.9em; border: 1px solid transparent; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; font-weight: 500; transition: all 0.2s ease; text-decoration: none;} .btn i { margin-right: 6px; }
+        .btn-primary { background-color: var(--accent-primary); color: #fff; } .btn-primary:hover { background-color: var(--accent-primary-hover); }
+        .btn-secondary { background-color: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-secondary); } .btn-secondary:hover { background-color: var(--bg-tertiary); }
+        .btn-danger { background-color: var(--color-danger); color: #fff; border-color: var(--color-danger); }
+        .btn-danger:hover { background-color: var(--color-danger-hover-bg, #c9302c); border-color: #b02a37; }
+        
+        .card { background-color: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-primary); margin-bottom: 25px; }
+        .card-header, .card-footer { padding: 15px 20px; background-color: var(--bg-secondary); border-bottom: 1px solid var(--border-primary); display: flex; justify-content: space-between; align-items: center; } 
+        .card-header h2 { font-size: 1.1em; font-weight: 500; margin:0;}
+        .card-header span, .card-footer span#paginationSummary { font-weight: 500; font-size: 0.9em; color: var(--text-secondary); }
+        .card-footer { border-top: 1px solid var(--border-primary); border-bottom: none; }
+        body.dark-mode .card-header, body.dark-mode .card-footer { background-color: var(--bg-secondary); border-color: var(--border-primary); }
+        .card-body.no-padding { padding: 0; }
+        
+        .table { width: 100%; border-collapse: collapse; }
+        .table thead th { font-weight: 600; text-align: left; color: var(--text-secondary); background-color: transparent; border-bottom: 2px solid var(--border-primary); text-transform: uppercase; font-size: 0.8em; }
+        .table th, .table td { padding: 10px 16px; vertical-align: middle; border-top: 1px solid var(--border-secondary); white-space: nowrap; }
+        .table td { border-left: 1px solid var(--border-secondary); }
+        .table th:first-child, .table td:first-child { border-left: none; }
+        .table tbody tr:hover { background-color: var(--bg-tertiary); }
+        
+        .table .teaser-cell { width: 90px; padding: 6px 16px; }
+        .table .teaser-cell img { width: 100%; height: 40px; object-fit: cover; border-radius: 4px; background-color: var(--bg-tertiary); }
+        .table .teaser-cell .no-teaser-placeholder { display: flex; align-items: center; justify-content: center; width:100%; height:40px; font-size: 1.5em; color: var(--text-secondary); background-color: var(--bg-tertiary); border-radius:4px; }
+        .table .title-cell { font-weight: 500; max-width: 35ch; overflow: hidden; text-overflow: ellipsis; }
+        .table .created-by-cell { max-width: 20ch; overflow: hidden; text-overflow: ellipsis; }
+        .table .status-cell { width: 120px; }
+        .table .date-column { width: 200px; }
+        .table .actions-cell { width: 140px; text-align: right; }
+        
+        .action-button-group { display: flex; gap: 6px; justify-content:flex-end; }
+        .action-button { width: 32px; height: 32px; border-radius: 5px; border: none; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 0.9em; cursor: pointer; transition: filter 0.2s ease; }
+        .action-button:hover { filter: brightness(1.15); }
+        .action-button:disabled { background-color: #e9ecef !important; color: #6c757d !important; cursor: not-allowed; filter: none; }
+        body.dark-mode .action-button:disabled { background-color: #3a3a3a !important; color: #6c757d !important; }
+        .action-button-view { background-color: var(--accent-secondary); }
+        .action-button-edit { background-color: var(--accent-primary); }
+        .action-button-delete { background-color: var(--color-danger); }
+        
+        .status-badge { padding: 0.25em 0.6em; font-size: 0.8em; font-weight: 600; border-radius: 1rem; }
+        .status-draft { background-color: var(--color-warning); color: #000; }
+        .status-active { background-color: var(--color-success); color: #fff; }
+        .status-archived { background-color: var(--accent-secondary); color: #fff; }
+        
+        .pagination-controls { display: flex; align-items: center; gap: 15px; }
+        .pagination-controls .btn-sm { padding: 5px 10px; background-color: var(--bg-secondary); border: 1px solid var(--border-primary); color: var(--text-primary); }
+        .pagination-controls .btn-sm:not(:disabled):hover { background-color: var(--accent-primary); color: #fff; border-color: var(--accent-primary); }
+        .pagination-controls .btn-sm i { margin: 0; }
+        
+        .app-footer { text-align: center; padding: 15px 25px; font-size: 0.85em; background-color: var(--header-bg); color: var(--header-link); border-top: 1px solid var(--border-primary); }
+        .app-footer nav { margin-bottom: 8px; } .app-footer a { color: var(--header-link); margin: 0 8px;}
+
+        .confirm-modal-backdrop, .detail-modal-backdrop { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1050; display:none; align-items:center; justify-content:center; opacity:0; transition:opacity .3s ease; }
+        .confirm-modal-backdrop.open, .detail-modal-backdrop.open { display:flex; opacity:1; }
+        .confirm-modal, .detail-modal { background:var(--bg-secondary); border-radius:8px; width:90%; transform:scale(.95); transition:transform .3s ease; border: 1px solid var(--border-primary); }
+        .confirm-modal-backdrop.open .confirm-modal, .detail-modal-backdrop.open .detail-modal { transform: scale(1); }
+        .detail-modal { max-width: 650px; display: flex; flex-direction: column; max-height: 85vh; }
+        .confirm-modal { max-width: 450px; text-align: center; }
+        .detail-modal-header, .confirm-modal-header { padding: 15px 20px; border-bottom: 1px solid var(--border-primary); display: flex; justify-content: space-between; align-items: center;}
+        .detail-modal-footer, .confirm-modal-footer { padding: 15px 20px; border-top: 1px solid var(--border-primary); display: flex; justify-content: flex-end; gap: 10px;}
+        .detail-modal-header h3, .confirm-modal-header h3 { margin: 0; font-size: 1.2em; }
+        .detail-modal-close-btn, .confirm-modal-close-btn { background:none; border:none; font-size:1.7em; cursor:pointer; }
+        .detail-modal-body { padding: 20px; overflow-y: auto; text-align: left; }
+        .confirm-modal-body { padding: 25px 20px; } .confirm-modal-body p { margin: 0; }
+        .detail-modal-body .detail-item { margin-bottom: 12px; } .detail-modal-body .detail-item strong { min-width: 150px; color: var(--text-secondary); display: inline-block; }
+        .detail-modal-body .detail-teaser-img { max-width: 100%; display: block; margin: 10px auto 20px auto; border-radius: 4px; }
+        body.dark-mode .detail-modal-body .detail-item strong { color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+             <div class="logo"><h1>AutoMediaCenter</h1></div>
+             <div class="user-info">
+                 <span id="user-email-display">Not Logged In</span>
+                 <button class="btn-icon" id="darkModeToggleHeader" title="Toggle Dark Mode"><i class="fas fa-moon"></i></button>
+                 <a href="#" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </header>
+
+        <div class="app-body">
+            <aside class="sidebar" id="sidebar">
+                 <div class="sidebar-header"><button id="sidebar-toggle" title="Toggle Sidebar"><i class="fas fa-bars"></i></button></div>
+                 <nav>
+                    <div class="sidebar-section">
+                        <span class="section-title">Radar</span>
+                         <ul>
+                            <li><a href="newradarfe.html"><i class="fas fa-satellite-dish fa-fw"></i> <span>Live Radar</span></a></li>
+                            <li class="active"><a href="#"><i class="fas fa-list-ul fa-fw"></i> <span>Manage Alerts</span></a></li>
+                            <li><a href="radar_analytics.html"><i class="fas fa-chart-pie fa-fw"></i> <span>Radar Analytics</span></a></li>
+                         </ul>
+                    </div>
+                    <div class="sidebar-section">
+                        <span class="section-title">Other Platforms</span>
+                        <ul>
+                            <li><a href="AssetDBmenu1.6.html"><i class="fas fa-upload fa-fw"></i> <span>Upload Hub</span></a></li>
+                        </ul>
+                    </div>
+                     <div class="sidebar-section">
+                         <span class="section-title">Account</span>
+                         <ul><li><a href="#"><i class="fas fa-user-circle fa-fw"></i> <span>My Account</span></a></li><li><a href="#"><i class="fas fa-life-ring fa-fw"></i> <span>Support</span></a></li></ul>
+                    </div>
+                 </nav>
+                 <div class="sidebar-disclaimer"> Manage and review all of your created Radar announcements. </div>
+            </aside>
+
+            <main class="main-content">
+                <div class="content-header">
+                     <div>
+                        <h2><i class="fas fa-list-ul"></i> Manage AutoMediaRadar Alerts</h2>
+                        <p>Review, edit, or delete your existing Radar alerts.</p>
+                     </div>
+                     <a href="AssetDBmenu1.6.html?formType=radar" class="btn btn-primary"><i class="fas fa-plus"></i> Create New Alert</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Your Alerts</h2>
+                        <span id="totalItemsInfo"></span>
+                    </div>
+                    <div class="card-body no-padding">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="teaser-cell">Teaser</th>
+                                        <th class="title-cell">Title</th>
+                                        <th class="status-cell">Status</th>
+                                        <th class="date-column">Alert Date</th>
+                                        <th class="date-column">Created On</th>
+                                        <th class="created-by-cell">Created By</th>
+                                        <th class="actions-cell">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="alertsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <span id="paginationSummary"></span>
+                        <div class="pagination-controls">
+                            <button class="btn btn-sm" id="prevPageButton" disabled><i class="fas fa-chevron-left"></i></button>
+                            <span id="pageInfo"></span>
+                            <button class="btn btn-sm" id="nextPageButton" disabled><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <footer class="app-footer">
+             <nav><a href="#">About Us</a> | <a href="#">Help Center</a> | <a href="#">Terms</a> | <a href="#">Privacy</a></nav>
+             <p>© <span id="currentYearText">2025</span> AutoMediaCenter. All Rights Reserved.</p>
+         </footer>
+    </div>
+    
+    <div class="detail-modal-backdrop" id="viewDetailModal">
+        <div class="detail-modal">
+            <div class="detail-modal-header">
+                <h3 id="viewDetailModalTitle">Alert Details</h3>
+                <button class="detail-modal-close-btn" aria-label="Close modal">×</button>
+            </div>
+            <div class="detail-modal-body" id="viewDetailModalBody"><p style="text-align:center;">Loading details...</p></div>
+            <div class="detail-modal-footer"><button class="btn btn-secondary detail-modal-close-btn">Close</button></div>
+        </div>
+    </div>
+
+    <div class="confirm-modal-backdrop" id="deleteConfirmModalBackdrop">
+        <div class="confirm-modal">
+            <div class="confirm-modal-header"><h3 id="deleteConfirmModalTitle">Confirm Deletion</h3></div>
+            <div class="confirm-modal-body"><p id="deleteConfirmModalText">Are you sure?</p></div>
+            <div class="confirm-modal-footer">
+                <button class="btn btn-secondary" id="deleteConfirmCancel">Cancel</button>
+                <button class="btn btn-danger" id="deleteConfirmButton">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Authentication is handled server-side via adminRoutes.js middleware
+        // Client-side authentication removed to prevent conflicts with localStorage tokens
+        let token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        let userString = localStorage.getItem('user') || localStorage.getItem('currentUser');
+        let user = null;
+        
+        if (userString) {
+            try {
+                user = JSON.parse(userString);
+            } catch (e) {
+                console.error("Error parsing user from localStorage", e);
+                user = { email: 'User', role: 'client_admin' }; // Fallback for display
+            }
+        }
+        
+        // Fallback user object for display purposes
+        if (!user) {
+            user = { email: 'User', role: 'client_admin' };
+        }
+
+        const ui = {
+            tableBody: document.getElementById('alertsTableBody'),
+            prevPageBtn: document.getElementById('prevPageButton'),
+            nextPageBtn: document.getElementById('nextPageButton'),
+            pageInfo: document.getElementById('pageInfo'),
+            totalItemsInfo: document.getElementById('totalItemsInfo'),
+            paginationSummary: document.getElementById('paginationSummary'),
+            deleteConfirmModal: document.getElementById('deleteConfirmModalBackdrop'),
+            deleteConfirmText: document.getElementById('deleteConfirmModalText'),
+            deleteConfirmBtn: document.getElementById('deleteConfirmButton'),
+            deleteCancelBtn: document.getElementById('deleteConfirmCancel'),
+            viewDetailModal: document.getElementById('viewDetailModal'),
+            viewDetailModalTitle: document.getElementById('viewDetailModalTitle'),
+            viewDetailModalBody: document.getElementById('viewDetailModalBody'),
+            sidebar: document.getElementById('sidebar'), 
+            sidebarToggle: document.getElementById('sidebar-toggle'),
+            userEmailDisplay: document.getElementById('user-email-display'),
+            logoutLink: document.querySelector('.logout-link'),
+            darkModeToggle: document.getElementById('darkModeToggleHeader'),
+            currentYearText: document.getElementById('currentYearText'),
+        };
+
+        let currentPage = 1;
+
+        const setupUI = () => {
+            if (ui.userEmailDisplay) ui.userEmailDisplay.textContent = user.email || 'User';
+            if (ui.logoutLink) ui.logoutLink.addEventListener('click', e => {
+                e.preventDefault();
+                // Clear both old and new authentication systems
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('currentUser');
+                window.location.href='AssetDBmenu1.6.html';
+            });
+            if (ui.sidebarToggle) ui.sidebarToggle.addEventListener('click', () => ui.sidebar.classList.toggle('collapsed'));
+            if (ui.currentYearText) ui.currentYearText.textContent = new Date().getFullYear();
+            
+            const applyTheme = (theme) => {
+                document.body.classList.toggle('dark-mode', theme === 'dark');
+                if(ui.darkModeToggle) ui.darkModeToggle.querySelector('i').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            };
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme);
+            if(ui.darkModeToggle) {
+                ui.darkModeToggle.addEventListener('click', () => {
+                    const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+                    applyTheme(newTheme);
+                    localStorage.setItem('theme', newTheme);
+                });
+            }
+
+            ui.viewDetailModal.querySelectorAll('.detail-modal-close-btn').forEach(btn => btn.addEventListener('click', () => ui.viewDetailModal.classList.remove('open')));
+            if(ui.deleteCancelBtn) ui.deleteCancelBtn.addEventListener('click', () => ui.deleteConfirmModal.classList.remove('open'));
+        };
+
+        const fetchAndRenderAlerts = async (page = 1) => {
+            ui.tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin fa-fw"></i> Loading...</td></tr>`;
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/radar/all-alerts?page=${page}&limit=10`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || `Server Error: ${response.status}`);
+                
+                renderTable(result.data.alerts);
+                updatePagination(result.data);
+            } catch (error) {
+                ui.tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--color-danger);">${error.message}</td></tr>`;
+            }
+        };
+
+        const renderTable = (alerts) => {
+            ui.tableBody.innerHTML = '';
+            if (!alerts || !alerts.length) {
+                ui.tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">No alerts found.</td></tr>`;
+                return;
+            }
+            alerts.forEach(alert => {
+                const statusText = alert.computedStatus || 'Unknown';
+                const statusClass = statusText.toLowerCase();
+                const sanitizedTitle = (alert.title || 'this alert').replace(/"/g, '"');
+                
+                const alertDate = alert.eventDateTime ? new Date(alert.eventDateTime).toLocaleString('en-GB', {day: 'numeric', month: 'short', year: 'numeric', hour:'2-digit', minute: '2-digit'}) : '—';
+                const createdDate = alert.createdAt ? new Date(alert.createdAt).toLocaleString('en-GB', {day: 'numeric', month: 'short', year: 'numeric', hour:'2-digit', minute: '2-digit'}) : '—';
+                const createdBy = alert.user?.email || 'N/A';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="teaser-cell">${alert.teaserImagePath ? `<img src="http://localhost:5000${alert.teaserImagePath}" alt="Teaser">` : '<div class="no-teaser-placeholder"><i class="far fa-image"></i></div>'}</td>
+                    <td class="title-cell" title="${alert.title || ''}">${alert.title || 'N/A'}</td>
+                    <td class="status-cell"><span class="status-badge status-${statusClass}">${statusText}</span></td>
+                    <td class="date-column">${alertDate}</td>
+                    <td class="date-column">${createdDate}</td>
+                    <td class="created-by-cell" title="${createdBy}">${createdBy}</td>
+                    <td class="actions-cell">
+                        <div class="action-button-group">
+                            <button class="action-button action-button-view btn-view" data-uuid="${alert.uuid}" title="View"><i class="fas fa-eye"></i></button>
+                            <button class="action-button action-button-edit btn-edit" data-uuid="${alert.uuid}" title="Edit" ${statusText === 'Archived' ? 'disabled' : ''}><i class="fas fa-edit"></i></button>
+                            <button class="action-button action-button-delete btn-delete" data-uuid="${alert.uuid}" data-title="${sanitizedTitle}" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                ui.tableBody.appendChild(tr);
+            });
+        };
+
+        const openViewModal = async (uuid) => {
+            ui.viewDetailModal.classList.add('open');
+            ui.viewDetailModalBody.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+            try {
+                // To view details, we can use the same /foredit endpoint for active alerts.
+                // A dedicated detail endpoint might be better, but this works.
+                // For archived items, we will need a new backend route.
+                let res = await fetch(`http://localhost:5000/api/v1/radar/alerts/foredit/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                
+                let alertData;
+                if (res.status === 404) {
+                    res = await fetch(`http://localhost:5000/api/v1/radar/history/by-uuid/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (!res.ok) throw new Error('Alert not found in active or archived records.');
+                }
+                
+                if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+
+                const result = await res.json();
+                if (!result.success) throw new Error(result.error);
+                alertData = result.data;
+                
+                ui.viewDetailModalTitle.textContent = alertData.title;
+                
+                let tagsHtml = 'N/A';
+                if (alertData.tags && alertData.tags.length > 0) {
+                   tagsHtml = Array.isArray(alertData.tags) ? alertData.tags.join(', ') : alertData.tags;
+                }
+                const alertDateForModal = alertData.eventDateTime || alertData.originalEventDateTime;
+
+                ui.viewDetailModalBody.innerHTML = `
+                    ${alertData.teaserImagePath ? `<img src="http://localhost:5000${alertData.teaserImagePath}" alt="Teaser" class="detail-teaser-img">` : ''}
+                    <div class="detail-item"><strong>Brand:</strong> ${alertData.brand || 'N/A'}</div>
+                    <div class="detail-item"><strong>Region:</strong> ${alertData.region || 'N/A'}</div>
+                    <div class="detail-item"><strong>Alert Date:</strong> ${new Date(alertDateForModal).toLocaleString('en-GB')}</div>
+                    <div class="detail-item"><strong>Description:</strong><p style="white-space:pre-wrap; margin-top:5px;">${alertData.description || 'N/A'}</p></div>
+                    <div class="detail-item"><strong>Tags:</strong> ${tagsHtml}</div>
+                `;
+            } catch (error) { 
+                ui.viewDetailModalBody.innerHTML = `<p style="color:var(--color-danger); text-align:center;">${error.message}</p>`;
+            }
+        };
+
+        const openDeleteConfirmModal = (uuid, title) => {
+            ui.deleteConfirmText.innerHTML = `Are you sure you want to permanently delete the alert:<br><strong>"${title}"</strong>?<br><br>This action cannot be undone.`;
+            ui.deleteConfirmModal.classList.add('open');
+            ui.deleteConfirmBtn.onclick = async () => {
+                try {
+                    const res = await fetch(`http://localhost:5000/api/v1/radar/alerts/${uuid}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }});
+                    const result = await res.json();
+                    if (!result.success) throw new Error(result.error);
+                    ui.deleteConfirmModal.classList.remove('open');
+                    fetchAndRenderAlerts(currentPage);
+                } catch (err) { alert(`Error: ${err.message}`); }
+            };
+        };
+
+        ui.tableBody.addEventListener('click', e => {
+            const button = e.target.closest('button.action-button');
+            if (!button || button.disabled) return;
+            const uuid = button.dataset.uuid;
+            if (button.classList.contains('btn-edit')) {
+                window.location.href = `AssetDBmenu1.6.html?formType=radar&editAlertUUID=${uuid}`;
+            }
+            if (button.classList.contains('btn-delete')) {
+                openDeleteConfirmModal(uuid, button.dataset.title);
+            }
+            if (button.classList.contains('btn-view')) {
+                openViewModal(uuid);
+            }
+        });
+        
+        if (ui.deleteCancelBtn) ui.deleteCancelBtn.addEventListener('click', () => ui.deleteConfirmModal.classList.remove('open'));
+        if (ui.prevPageBtn) ui.prevPageBtn.addEventListener('click', () => { if(currentPage > 1) fetchAndRenderAlerts(--currentPage) });
+        if (ui.nextPageBtn) ui.nextPageBtn.addEventListener('click', (e) => {
+            const totalPages = parseInt(e.currentTarget.dataset.totalPages, 10);
+            if(currentPage < totalPages) fetchAndRenderAlerts(++currentPage);
+        });
+
+        const updatePagination = (data) => {
+            const { currentPage, totalPages, totalItems } = data;
+            if(ui.pageInfo) ui.pageInfo.textContent = `Page ${currentPage} of ${totalPages || 1}`;
+            if(ui.totalItemsInfo) ui.totalItemsInfo.textContent = `Total Alerts: ${totalItems || 0}`;
+            const startItem = totalItems > 0 ? (currentPage - 1) * 10 + 1 : 0;
+            const endItem = Math.min(startItem + 9, totalItems);
+            if(ui.paginationSummary) ui.paginationSummary.textContent = totalItems > 0 ? `Showing ${startItem}-${endItem} of ${totalItems}` : '';
+            if(ui.prevPageBtn) ui.prevPageBtn.disabled = currentPage <= 1;
+            if(ui.nextPageBtn) {
+                ui.nextPageBtn.disabled = currentPage >= totalPages;
+                ui.nextPageBtn.dataset.totalPages = totalPages;
+            }
+        };
+
+        setupUI();
+        fetchAndRenderAlerts(1);
+    });
+</script>
+</body>
+</html>

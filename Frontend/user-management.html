@@ -1,0 +1,2228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="module">
+      import { protectPage } from "./auth.js";
+      protectPage("platform_admin");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - User Management</title>
+    
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- ✅ GLOBAL CSS - REPLACES ALL OLD STYLES -->
+    <link rel="stylesheet" href="css/amc-globalshell.css">
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+<style>
+        :root {
+            /* ── LAYERED BACKGROUND ARCHITECTURE (Light Mode Premium) ─────── */
+            --amc-body-bg-light: #f8fafc;         /* soft neutral layer */
+            --amc-surface-bg-light: #ffffff;      /* cards / containers */
+            --amc-table-bg-light: #fcfcfd;        /* table wrapper */
+            --amc-header-bg-light: #f3f4f6;       /* table header background */
+            --amc-sidebar-bg-light: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* sidebar gradient */
+            
+            /* Legacy variables (maintained for compatibility) */
+            --bg-primary: var(--amc-body-bg-light);
+            --bg-secondary: var(--amc-surface-bg-light);
+            --bg-tertiary: #e9ecef;
+            
+            /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────────── */
+            --text-headings: #111827;    /* headers: strong */
+            --text-primary: #374151;     /* body text: medium */
+            --text-secondary: #6b7280;   /* metadata: subtle */
+            --text-muted: #9ca3af;       /* ultra-subtle */
+            
+            --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #5a6268;
+
+            --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
+            
+            --border-primary: #e5e7eb; --border-secondary: #d1d5db; --border-color-light: #e9ecef;
+            --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+            --icon-available: var(--accent-primary); --icon-unavailable: #ced4da;
+            --shadow-primary: rgba(0, 0, 0, 0.08); --shadow-hover: rgba(0, 0, 0, 0.15);
+            --overlay-bg: rgba(0, 0, 0, 0.65);
+            --tag-bg: var(--bg-tertiary); --tag-text: var(--text-secondary);
+            --color-info: #17a2b8;
+            --color-warning: #ffc107;
+            --brand-band-light-bg: #212529; --brand-band-light-text: #f8f9fa;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --bg-image-placeholder: #e9ecef;
+            --font-family-main: 'Poppins', sans-serif;
+            --sidebar-width: 260px;
+            --header-height: 61px;
+            --footer-height: 60px;
+            --accent-primary-rgb: 13, 110, 253;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --highlight-color-rgb: 255, 193, 7;
+            --notification-error: #dc3545;
+            --accent-action-positive: #28a745;
+            --accent-action-positive-hover: #218838;
+            --accent-action-positive-rgb: 40, 167, 69;
+            --accent-action-danger: #dc3545;
+            --accent-action-danger-hover: #c82333;
+            --selection-dot-color: var(--accent-primary); /* Blue for selection */
+            
+            /* ENTERPRISE TYPOGRAPHY SYSTEM */
+            --font-display: 2rem;      /* Page titles (h1) */
+            --font-heading: 1.4rem;    /* Section headers */
+            --font-subheading: 1.1rem; /* Card headers */
+            --font-body: 0.95rem;      /* Body text */
+            --font-muted: 0.85rem;     /* Metadata / labels */
+        }
+
+        body.dark-mode {
+            --bg-primary: #121212; --bg-secondary: #1a1c1e; --bg-tertiary: #2a2d30;
+            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #545b62;
+            
+            --border-primary: #3a3a3a; --border-secondary: #444; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+            --icon-available: var(--accent-primary); --icon-unavailable: #555;
+            --shadow-primary: rgba(0, 0, 0, 0.25); --shadow-hover: rgba(0, 0, 0, 0.35);
+            --overlay-bg: rgba(0, 0, 0, 0.75);
+            --tag-bg: #4a4a4a; --tag-text: var(--text-primary);
+            --brand-band-light-bg: #f8f9fa; --brand-band-light-text: #212529;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --color-info: #36c4d9;
+            --color-warning: #ffd04a;
+            --bg-image-placeholder: #2c2c2c;
+            --accent-primary-rgb: 63, 145, 255;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --accent-action-positive: #20c997;
+            --accent-action-positive-hover: #1ba984;
+            --accent-action-positive-rgb: 32, 201, 151;
+            --accent-action-danger: #e74c3c;
+            --accent-action-danger-hover: #d63031;
+            --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
+            --sidebar-bg: #1a1c1e;
+        }
+
+        /* Basic reset - layout now handled by amc-globalshell.css */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        a { color: var(--accent-primary); text-decoration: none; }
+        a:hover { color: var(--accent-primary-hover); text-decoration: underline; }
+        
+        /* Header styling now handled by amc-globalshell.css and amc-header.js */
+
+        /* Sidebar styling is now handled by amc-globalshell.css */
+
+        /* ── ENTERPRISE BUTTON SYSTEM ───────────────────────────────── */
+        .btn {
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.01em;
+            transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 44px; /* Touch-friendly minimum */
+        }
+        
+        .btn i {
+            margin: 0; /* Remove margin, use gap instead */
+            font-size: 0.9em;
+            transition: transform 0.2s ease;
+        }
+        
+        /* PRIMARY BUTTON - ENTERPRISE BLUE */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #0056d3 100%);
+            color: #ffffff !important;
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background: #0a66d1; /* solid premium blue */
+            color: #ffffff !important; /* Force white text on hover */
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(11,116,255,0.3); /* refined shadow */
+            border-color: var(--accent-primary-hover);
+        }
+        
+        /* SECONDARY BUTTON */
+        .btn-secondary {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border-secondary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* PREMIUM CARD SYSTEM WITH LAYERED DEPTH */
+        .card {
+            background: var(--amc-surface-bg-light); /* cards / containers layer */
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            overflow: visible;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        
+        /* Specific override for user management card */
+        .amc-card {
+            overflow: visible !important;
+        }
+        
+        .card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+        
+        /* Dark mode card styling */
+        body.dark-mode .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+
+        /* CARD HEADER WITH VISUAL HIERARCHY */
+        .card-header {
+            border-bottom: 1px solid #e5e7eb; /* clear structural separation */
+            padding: 1rem 1.5rem; /* consistent spacing */
+            background: #f9fafb; /* soft header background for structure */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body {
+            background: #ffffff; /* pure white for content area */
+            padding: 1.5rem; /* generous content padding */
+        }
+
+        /* ENTERPRISE TYPOGRAPHY HIERARCHY */
+        .card-header h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin: 0;
+            color: var(--text-headings); /* strong hierarchy */
+        }
+
+        /* STATS GRID - HORIZONTAL LAYOUT */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-primary);
+            border: 1px solid var(--border-primary);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        /* Color-coded stat icons matching role pills */
+        .stat-icon.total-users { background: #8b5cf6; } /* Purple for total users */
+        .stat-icon.media-users { background: #3B82F6; } /* Blue for media users */
+        .stat-icon.client-users { background: #10B981; } /* Green for client users */
+        .stat-icon.client-admins { background: #F59E0B; } /* Yellow for client admins */
+        .stat-icon.platform-admins { background: #EF4444; } /* Red for platform admins */
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive { color: var(--accent-action-positive); }
+
+        /* CONTENT HEADER */
+        .content-header {
+            position: relative;
+            margin-top: 0;
+            background: var(--bg-primary);
+            z-index: 100;
+            margin-bottom: 25px;
+            padding: 0 0 15px 0;
+            border-bottom: 1px solid var(--border-primary);
+        }
+        .content-header h1 {
+            font-size: var(--font-display);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #111827;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .content-header h1 i { color: var(--accent-primary); margin-right: 0; }
+        .content-header p {
+            font-size: var(--font-body);
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-width: 720px;
+            margin: 0;
+        }
+
+        /* CONTROLS SECTION */
+        .controls-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--amc-surface-bg-light);
+            padding: 18px 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 12px;
+            border: 1px solid #e5e7eb;
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .controls-section:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        /* ENTERPRISE TABLE STYLING - MATCHING ORIGINAL DESIGN */
+        .amc-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+            background: var(--amc-surface-bg-light);
+            border-radius: 12px;
+            overflow: visible;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .amc-table thead th {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-headings);
+            letter-spacing: 0.05em;
+            background: var(--amc-header-bg-light);
+            padding: 16px 20px;
+            text-align: left;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .amc-table td {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #374151;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            border-right: 1px solid #f3f4f6; /* Add vertical lines */
+            vertical-align: middle;
+            background: #ffffff;
+            position: relative;
+        }
+        
+        .amc-table td.cell--actions {
+            overflow: visible;
+        }
+
+        .amc-table td:last-child {
+            border-right: none; /* Remove border from last column */
+        }
+
+        .amc-table tbody tr {
+            position: relative;
+            overflow: visible;
+        }
+
+        .amc-table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.08) !important;
+            box-shadow: inset 3px 0 0 var(--accent-primary);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .amc-table tbody tr:hover td {
+            background: rgba(59, 130, 246, 0.08) !important;
+        }
+        
+        /* CRITICAL: Prevent row hover from creating stacking context that clips kebab menu */
+        .amc-table tbody tr:hover td.cell--actions {
+            background: rgba(59, 130, 246, 0.08) !important;
+            overflow: visible !important;
+            position: relative !important;
+            z-index: 10000 !important;
+        }
+
+        /* Dark mode table styling */
+        body.dark-mode .amc-table {
+            background: var(--bg-secondary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+
+        body.dark-mode .amc-table thead th {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-bottom-color: var(--border-primary);
+        }
+
+        body.dark-mode .amc-table td {
+            color: var(--text-primary);
+            border-bottom-color: var(--border-primary);
+            border-right-color: var(--border-primary); /* Dark mode vertical lines */
+            background: var(--bg-secondary);
+        }
+
+        body.dark-mode .amc-table tbody tr:hover {
+            background: rgba(var(--accent-primary-rgb), 0.08) !important;
+        }
+
+        body.dark-mode .amc-table tbody tr:hover td {
+            background: rgba(var(--accent-primary-rgb), 0.08) !important;
+        }
+        
+        /* CRITICAL: Dark mode - Prevent row hover from creating stacking context that clips kebab menu */
+        body.dark-mode .amc-table tbody tr:hover td.cell--actions {
+            background: rgba(var(--accent-primary-rgb), 0.08) !important;
+            overflow: visible !important;
+            position: relative !important;
+            z-index: 10000 !important;
+        }
+
+        /* Status BADGES */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Status BADGES - MATCHING AVATAR RING COLORS */
+        .status-badge.media-user {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+        }
+
+        .status-badge.client-user {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10B981;
+        }
+
+        .status-badge.client-admin {
+            background: rgba(245, 158, 11, 0.1);
+            color: #F59E0B;
+        }
+
+        .status-badge.platform-admin {
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+        }
+
+        /* Dark mode status badges - matching avatar ring colors */
+        body.dark-mode .status-badge.media-user {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        body.dark-mode .status-badge.client-user {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        body.dark-mode .status-badge.client-admin {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+        }
+
+        body.dark-mode .status-badge.platform-admin {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+        }
+
+        /* SEARCH INPUT */
+        .search-input {
+            padding: 0.5rem;
+            border: 1px solid var(--border-primary);
+            border-radius: 0.5rem;
+            min-width: 300px;
+            font-size: 0.95rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 0;
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: var(--bg-primary);
+            overflow-y: auto;
+            overflow-x: visible;
+            min-height: calc(100vh - 61px);
+        }
+        
+
+        /* DARK MODE OVERRIDES */
+        body.dark-mode .card-header {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+        }
+
+        body.dark-mode .card-body {
+            background: var(--bg-secondary);
+        }
+
+        body.dark-mode .content-header {
+            background: var(--bg-primary);
+            border-bottom-color: var(--border-primary);
+        }
+
+        body.dark-mode .content-header h1 {
+            color: var(--text-headings);
+        }
+
+        body.dark-mode .content-header p {
+            color: var(--text-secondary);
+        }
+
+        body.dark-mode .controls-section {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+        }
+
+        body.dark-mode .table {
+            background: var(--bg-secondary);
+        }
+
+        body.dark-mode .table thead th {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        body.dark-mode .table tbody tr:nth-child(odd) {
+            background: var(--bg-secondary) !important;
+        }
+
+        body.dark-mode .table tbody tr:nth-child(even) {
+            background: var(--bg-tertiary) !important;
+        }
+
+        body.dark-mode .table tbody tr:hover {
+            background: rgba(var(--accent-primary-rgb), 0.08) !important;
+        }
+
+        body.dark-mode .table td {
+            color: var(--text-primary);
+            border-color: var(--border-primary);
+        }
+
+        body.dark-mode .search-input {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+            color: var(--text-primary);
+        }
+
+        body.dark-mode .search-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(63, 145, 255, 0.1);
+        }
+
+        body.dark-mode .main-content {
+            background-color: var(--bg-primary) !important;
+        }
+
+        /* ============================================================
+           ENTERPRISE User MANAGEMENT STYLES - MATCHING DESIGN SYSTEM
+           ============================================================ */
+
+        /* Compact controls bar (matching manage_releases.html) */
+        .controls-section{
+            display:flex; align-items:center; justify-content:space-between;
+            gap:16px; padding:12px 0;
+        }
+        .controls-left{ display:flex; gap:12px; align-items:center; }
+        .controls-right .btn{
+            font-size:.95rem; padding:0 18px; font-weight:500;
+            height:38px; display:inline-flex; align-items:center; justify-content:center;
+            box-sizing:border-box; border-radius:8px; text-decoration:none; border:none; cursor:pointer;
+        }
+        .btn-primary{ background:var(--accent-primary); color:white; }
+        .btn-primary:hover{ background:var(--accent-hover,#0056b3); }
+        .btn i{ margin-right:0.5rem; }
+
+        /* Search (matching manage_releases.html) */
+        .search-container{ position:relative; display:flex; align-items:center; }
+        .search-input{
+            padding:10px 16px 10px 40px;
+            border:1px solid var(--border-primary);
+            border-radius:8px; font-size:.95rem;
+            background:var(--bg-primary); color:var(--text-primary);
+            width:300px; transition:border-color .2s ease, box-shadow .2s ease;
+            height:38px; box-sizing:border-box; line-height:1.5;
+        }
+        .search-input:focus{
+            outline:none; border-color:var(--accent-primary);
+            box-shadow:0 0 0 3px rgba(13,110,253,.1);
+        }
+        .search-input::placeholder{
+            color:var(--text-secondary);
+        }
+        .search-icon{
+            position:absolute; left:12px; top:50%; transform:translateY(-50%);
+            color:var(--text-secondary); pointer-events:none; font-size:0.875rem; z-index:1;
+        }
+
+        /* Filter selects */
+        .filter-select {
+            padding: 10px 16px;
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-width: 140px;
+            cursor: pointer;
+            height: 38px;
+            box-sizing: border-box;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+
+        /* Divider under the controls row */
+        .section-divider{ height:1px; background:#e5e7eb; margin:16px 0; }
+
+        /* Bulk Actions Bar */
+        .bulk-actions-bar {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            padding: 12px 20px;
+            margin: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bulk-selection-info {
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* User Cell Styling */
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .user-email {
+            font-weight: 600;
+            color: var(--accent-primary);
+            font-size: 14px;
+        }
+
+        .user-name {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .user-id {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+            margin-top: 2px;
+        }
+
+        /* Role Pills - Glass treatment matching manage_releases.html */
+        .role-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .2px;
+            white-space: nowrap;
+            height: 24px;
+            text-align: center;
+            border: 1px solid transparent;
+            
+            /* Glass morphism effect */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        /* Role Colors - Matching avatar system with glass treatment */
+        .role-pill.media-user {
+            background: rgba(59, 130, 246, 0.12);
+            color: #3B82F6;
+            border-color: rgba(59, 130, 246, 0.25);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .role-pill.client-user {
+            background: rgba(16, 185, 129, 0.12);
+            color: #10B981;
+            border-color: rgba(16, 185, 129, 0.25);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .role-pill.client-admin {
+            background: rgba(245, 158, 11, 0.12);
+            color: #F59E0B;
+            border-color: rgba(245, 158, 11, 0.25);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .role-pill.platform-admin {
+            background: rgba(239, 68, 68, 0.12);
+            color: #EF4444;
+            border-color: rgba(239, 68, 68, 0.25);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Status Pills - Glass treatment matching manage_releases.html */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .2px;
+            white-space: nowrap;
+            height: 24px;
+            text-align: center;
+            border: 1px solid transparent;
+            
+            /* Glass morphism effect */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .status-pill.active {
+            background: rgba(34, 197, 94, 0.12);
+            color: #16a34a;
+            border-color: rgba(34, 197, 94, 0.25);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .status-pill.suspended {
+            background: rgba(239, 68, 68, 0.12);
+            color: #dc2626;
+            border-color: rgba(239, 68, 68, 0.25);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Last Login Styling */
+        .last-login {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .last-login.never {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Kebab menu system (matching manage_releases.html) */
+        .kebab-wrap {
+            position: relative;
+            display: inline-block;
+        }
+
+        .kebab-btn {
+            background: transparent;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .kebab-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .kebab-menu {
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            min-width: 160px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 4px;
+            z-index: 9999;
+        }
+        
+        /* Ensure kebab wrapper has proper stacking context */
+        .kebab-wrap {
+            position: relative;
+            z-index: 1001;
+        }
+        
+
+        .kebab-item {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .kebab-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .kebab-item[data-action="view"] {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .kebab-item[data-action="edit"] {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .kebab-item[data-action="suspend"] {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .kebab-item[data-action="activate"] {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .kebab-item[data-action="delete"] {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .kebab-item[data-action="view"]:hover {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .kebab-item[data-action="edit"]:hover {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        .kebab-item[data-action="suspend"]:hover {
+            background: #f59e0b;
+            color: #fff;
+        }
+
+        .kebab-item[data-action="activate"]:hover {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .kebab-item[data-action="delete"]:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        /* Checkbox column styling */
+        .checkbox-col {
+            width: 50px;
+            text-align: center;
+        }
+
+        .checkbox-col input[type="checkbox"] {
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        /* Actions column styling */
+        .cell--actions {
+            width: 80px;
+            text-align: center;
+            position: relative;
+            overflow: visible;
+        }
+
+        /* Dark-mode harmonisation */
+        body.dark-mode .search-input{
+            background:var(--bg-secondary); border-color:var(--border-primary); color:var(--text-primary);
+        }
+        body.dark-mode .search-input:focus{
+            border-color:var(--accent-primary); box-shadow:0 0 0 3px rgba(63,145,255,.1);
+        }
+        body.dark-mode .section-divider{ background:var(--border-secondary) !important; opacity:.3; }
+        body.dark-mode .filter-select {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+            color: var(--text-primary);
+        }
+        body.dark-mode .filter-select:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(63, 145, 255, 0.1);
+        }
+
+        /* Dark mode role pills */
+        body.dark-mode .role-pill.media-user {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .role-pill.client-user {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .role-pill.client-admin {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .role-pill.platform-admin {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        /* Dark mode status pills */
+        body.dark-mode .status-pill.active {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        body.dark-mode .status-pill.suspended {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        /* Dark mode support for table header and footer */
+        body.dark-mode .amc-page__tools {
+            background: var(--bg-secondary) !important;
+            border-bottom-color: var(--border-primary) !important;
+        }
+
+        body.dark-mode .table-footer {
+            background: var(--bg-secondary) !important;
+            border-top-color: var(--border-primary) !important;
+        }
+
+        body.dark-mode .table-info {
+            color: var(--text-secondary) !important;
+        }
+
+        body.dark-mode .user-id {
+            color: var(--text-muted) !important;
+        }
+
+        body.dark-mode .card-header {
+            background: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+
+        /* Export button styling */
+        .btn-export {
+            background: var(--color-info);
+            color: white !important;
+            border: 1px solid var(--color-info);
+            margin-right: 12px;
+        }
+
+        .btn-export:hover {
+            background: #138496;
+            border-color: #138496;
+            color: white !important;
+        }
+
+        body.dark-mode .btn-export {
+            background: #36c4d9;
+            border-color: #36c4d9;
+        }
+
+        body.dark-mode .btn-export:hover {
+            background: #2ba8c4;
+            border-color: #2ba8c4;
+        }
+
+        /* Red delete button styling */
+        .btn-danger {
+            background: var(--accent-action-danger) !important;
+            border-color: var(--accent-action-danger) !important;
+            color: white !important;
+        }
+
+        .btn-danger:hover {
+            background: var(--accent-action-danger-hover) !important;
+            border-color: var(--accent-action-danger-hover) !important;
+            color: white !important;
+        }
+
+        body.dark-mode .btn-danger {
+            background: #e74c3c !important;
+            border-color: #e74c3c !important;
+        }
+
+        body.dark-mode .btn-danger:hover {
+            background: #d63031 !important;
+            border-color: #d63031 !important;
+        }
+        
+        /**
+         * KEBAB MENU CSS - NO HOVER VERSION
+         * Clean implementation without hover complications
+         */
+        
+
+        /* Portal container */
+        #kebab-portal {
+            position: fixed !important;
+            inset: 0 !important;
+            pointer-events: none !important;
+            z-index: 999999 !important;
+            overflow: visible !important;
+        }
+
+        /* Floating menu in portal */
+        #kebab-portal .kebab-float {
+            pointer-events: auto !important;
+            position: fixed !important;
+            z-index: 999999 !important;
+            overflow: visible !important;
+        }
+
+        /* CRITICAL: Disable ALL hover behavior on kebab buttons */
+        .kebab-btn:hover {
+            /* No special styles */
+        }
+
+        /* CRITICAL: Never show inline menu on hover */
+        .kebab-btn:hover + .kebab-menu,
+        .kebab-menu:hover {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+
+        /* Inline kebab menus should always be hidden */
+        .kebab-menu {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        /* Only the cloned menu in portal should be visible */
+        #kebab-portal .kebab-float {
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        /* Arrow "nub" for extra snug look */
+        .kebab-float.kebab-float--arrow::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            transform: rotate(45deg);
+            right: 14px; /* aligns near right edge */
+            background: inherit;
+            border-right: inherit;
+            border-bottom: inherit;
+            top: -6px; /* below-mode default; JS can toggle to bottom if you want */
+        }
+    </style>
+</head>
+<body>
+    <!-- AMC Header Component -->
+    <amc-header></amc-header>
+
+    <div class="amc-app">
+        <!-- Enterprise Sidebar -->
+        <aside id="sidebar" class="amc-sidebar">
+            <!-- Content will be dynamically generated by components/sidebar.js -->
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="amc-page user-management" role="main">
+            <div class="amc-page__container">
+                <header class="amc-page__header">
+                    <h1 class="amc-page__title"><i class="fas fa-users-cog"></i> User Management</h1>
+                    <p class="amc-page__sub">Comprehensive overview of all registered users across the AutoMediaCenter platform. Monitor user activity, manage roles, and track company associations.</p>
+                </header>
+
+                <div class="amc-page__body">
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon total-users">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-change positive" id="totalUsersChange">+0 this month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon media-users">
+                            <i class="fas fa-video"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="mediaUsers">0</div>
+                    <div class="stat-label">Media Users</div>
+                    <div class="stat-change positive" id="mediaUsersChange">+0 this month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon client-users">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="clientUsers">0</div>
+                    <div class="stat-label">Client Users</div>
+                    <div class="stat-change positive" id="clientUsersChange">+0 this month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon client-admins">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="clientAdmins">0</div>
+                    <div class="stat-label">Client Admin Users</div>
+                    <div class="stat-change positive" id="clientAdminsChange">+0 this month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon platform-admins">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="platformAdmins">0</div>
+                    <div class="stat-label">Platform Admin Users</div>
+                    <div class="stat-change" id="platformAdminsChange">AutoMediaCenter</div>
+                </div>
+            </div>
+
+            <!-- User Management Card -->
+            <div class="amc-card" style="margin-top:12px; border-radius: 12px 12px 0 0; margin-bottom: 0;">
+                <div class="card-header" style="border-radius: 12px 12px 0 0; border-bottom: none; padding-bottom: 0;">
+                    <h2><i class="fas fa-users"></i> All Registered Users</h2>
+                </div>
+                
+                <!-- Enterprise Controls Section -->
+                <div class="amc-page__tools" style="background: var(--amc-surface-bg-light); padding: 18px 25px; border-bottom: 1px solid #e5e7eb;">
+                    <div class="controls-section" style="background: transparent; padding: 0; box-shadow: none; border: none; margin-bottom: 0;">
+                        <div class="controls-left">
+                            <div class="search-container">
+                                <input type="text" id="searchUsers" placeholder="Search by email, name, or company..." class="search-input" />
+                                <i class="fas fa-search search-icon"></i>
+                            </div>
+                            <select id="roleFilter" class="filter-select">
+                                <option value="">All Roles</option>
+                                <option value="media_user">Media User</option>
+                                <option value="client_user">Client User</option>
+                                <option value="client_admin">Client Admin</option>
+                                <option value="platform_admin">Platform Admin</option>
+                            </select>
+                            <select id="statusFilter" class="filter-select">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                        <div class="controls-right">
+                            <button class="btn btn-export" onclick="exportUsers()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="btn btn-primary" onclick="showCreateUserModal()">
+                                <i class="fas fa-user-plus"></i> Add User
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk Actions Bar (Hidden by default) -->
+                <div id="bulkActionsBar" class="bulk-actions-bar" style="display: none;">
+                    <div class="bulk-selection-info">
+                        <span id="selectedCount">0</span> users selected
+                    </div>
+                    <div class="bulk-actions">
+                        <button class="btn btn-secondary" onclick="bulkActivate()" style="background: var(--accent-action-positive); color: white;">
+                            <i class="fas fa-user-check"></i> Activate
+                        </button>
+                        <button class="btn btn-secondary" onclick="bulkSuspend()" style="background: var(--color-warning); color: white;">
+                            <i class="fas fa-user-slash"></i> Suspend
+                        </button>
+                        <button class="btn btn-danger" onclick="bulkDelete()">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearSelection()">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Enterprise Users Table -->
+                <table class="amc-table table-lined users-table" style="border-radius: 0;">
+                    <colgroup>
+                        <col style="width:50px;">     <!-- checkbox -->
+                        <col style="width:25%;">      <!-- user info -->
+                        <col style="width:15%;">      <!-- role -->
+                        <col style="width:20%;">      <!-- company -->
+                        <col style="width:12%;">      <!-- status -->
+                        <col style="width:15%;">      <!-- last login -->
+                        <col style="width:80px;">     <!-- actions -->
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th class="checkbox-col">
+                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                            </th>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Company</th>
+                            <th style="text-align: center;">Status</th>
+                            <th>Last Login</th>
+                            <th class="cell--actions" style="text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be populated here -->
+                    </tbody>
+                </table>
+                
+                <!-- Table Footer matching manage_releases.html -->
+                <div class="table-footer" style="background: var(--amc-surface-bg-light); padding: 16px 25px; border-top: 1px solid #e5e7eb; border-radius: 0 0 12px 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div class="table-info" style="color: var(--text-secondary); font-size: 14px;">
+                        <span id="paginationSummary">Showing 0-0 of 0</span>
+                    </div>
+                    <div class="pagination-controls" style="display: flex; align-items: center; gap: 8px;">
+                        <button class="btn btn-secondary btn-sm" id="prevPageButton" disabled style="padding: 6px 12px; font-size: 12px;">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span id="pageInfo" style="color: var(--text-secondary); font-size: 14px; margin: 0 8px;">Page 1 of 1</span>
+                        <button class="btn btn-secondary btn-sm" id="nextPageButton" disabled style="padding: 6px 12px; font-size: 12px;">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <script>
+        // Global state
+        let users = [];
+        let companies = [];
+        let currentUser = null;
+        let currentPage = 1;
+        let usersPerPage = 12;
+        let filteredUsers = [];
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize avatar system
+            if (typeof initializeAvatarSystem === 'function') {
+                initializeAvatarSystem();
+            }
+
+            // Apply saved theme (dark mode is now handled by AMC header component)
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.classList.toggle('dark-mode', savedTheme === 'dark');
+
+            // Load initial data
+            await loadUserStats();
+            await loadUsers();
+            await loadCompanies();
+
+            // Set up event listeners
+            setupEventListeners();
+        });
+
+        // Load user statistics
+        async function loadUserStats() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                console.log('🔍 DEBUG: Loading user stats with token:', token ? 'Present' : 'Missing');
+                
+                const response = await fetch('http://localhost:5000/api/v1/user-management/admin/users/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('🔍 DEBUG: Stats API response status:', response.status);
+                console.log('🔍 DEBUG: Stats API response ok:', response.ok);
+
+                if (response.ok) {
+                    const stats = await response.json();
+                    console.log('🔍 DEBUG: Stats API response data:', stats);
+                    updateUserStats(stats);
+                } else {
+                    const errorText = await response.text();
+                    console.error('Failed to load user stats - Status:', response.status, 'Error:', errorText);
+                    // Set default stats
+                    updateUserStats({
+                        totalUsers: 0,
+                        mediaUsers: 0,
+                        clientUsers: 0,
+                        clientAdmins: 0,
+                        platformAdmins: 0
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading user stats:', error);
+                // Set default stats on error
+                updateUserStats({
+                    totalUsers: 0,
+                    mediaUsers: 0,
+                    clientUsers: 0,
+                    clientAdmins: 0,
+                    platformAdmins: 0
+                });
+            }
+        }
+
+        // Update user statistics
+        function updateUserStats(stats) {
+            document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+            document.getElementById('mediaUsers').textContent = stats.mediaUsers || 0;
+            document.getElementById('clientUsers').textContent = stats.clientUsers || 0;
+            document.getElementById('clientAdmins').textContent = stats.clientAdmins || 0;
+            document.getElementById('platformAdmins').textContent = stats.platformAdmins || 0;
+
+            // Update change indicators
+            document.getElementById('totalUsersChange').textContent = `+${stats.totalUsersChange || 0} this month`;
+            document.getElementById('mediaUsersChange').textContent = `+${stats.mediaUsersChange || 0} this month`;
+            document.getElementById('clientUsersChange').textContent = `+${stats.clientUsersChange || 0} this month`;
+            document.getElementById('clientAdminsChange').textContent = `+${stats.clientAdminsChange || 0} this month`;
+        }
+
+        // Load all users with populated company data
+        async function loadUsers() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                console.log('🔍 DEBUG: Loading users with token:', token ? 'Present' : 'Missing');
+                console.log('🔍 DEBUG: Token preview:', token ? token.substring(0, 20) + '...' : 'No token');
+                
+                // Use the correct admin endpoint with populated company data
+                const response = await fetch('http://localhost:5000/api/v1/user-management/admin/users', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('🔍 DEBUG: Users API response status:', response.status);
+                console.log('🔍 DEBUG: Users API response ok:', response.ok);
+
+                if (response.ok) {
+                    const result = await response.json();
+                    users = result.users || result;
+                    console.log('🔍 DEBUG: Users API Response:', result);
+                    console.log('🔍 DEBUG: Loaded users with company data:', users);
+                    console.log('🔍 DEBUG: Number of users loaded:', users.length);
+                    // Load companies to populate associations, then render table
+                    await loadCompaniesForAssociation();
+                    renderUsersTable();
+                } else {
+                    const errorText = await response.text();
+                    console.error('Failed to load users - Status:', response.status, 'Error:', errorText);
+                    users = [];
+                    renderUsersTable();
+                }
+            } catch (error) {
+                console.error('Error loading users (server not running):', error);
+                users = [];
+                renderUsersTable();
+            }
+        }
+
+        // Load companies to resolve clientId associations
+        async function loadCompaniesForAssociation() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                const response = await fetch('http://localhost:5000/api/v1/companies', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    companies = result.companies || result.data || result;
+                    console.log('🔍 DEBUG: Loaded companies for association:', companies);
+                } else {
+                    console.error('Failed to load companies for association');
+                    companies = [];
+                }
+            } catch (error) {
+                console.error('Error loading companies for association:', error);
+                companies = [];
+            }
+        }
+
+        // Load mock users for demonstration when server is not available
+        function loadMockUsers() {
+            console.log('🔄 Loading mock data for demonstration...');
+            users = [
+                {
+                    _id: '507f1f77bcf86cd799439011',
+                    firstName: 'John',
+                    lastName: 'Smith',
+                    email: 'john.smith@mercedes-benz.com',
+                    role: 'client_admin',
+                    clientId: {
+                        _id: '507f1f77bcf86cd799439001',
+                        name: 'Mercedes-Benz AG',
+                        companyId: 'MB001'
+                    },
+                    createdAt: '2024-01-15T10:30:00Z',
+                    lastLogin: '2024-10-20T14:22:00Z',
+                    isActive: true
+                },
+                {
+                    _id: '507f1f77bcf86cd799439012',
+                    firstName: 'Sarah',
+                    lastName: 'Johnson',
+                    email: 'sarah.johnson@bmw.com',
+                    role: 'client_user',
+                    clientId: {
+                        _id: '507f1f77bcf86cd799439002',
+                        name: 'BMW Group',
+                        companyId: 'BMW001'
+                    },
+                    createdAt: '2024-02-10T09:15:00Z',
+                    lastLogin: '2024-10-22T11:45:00Z',
+                    isActive: true
+                },
+                {
+                    _id: '507f1f77bcf86cd799439013',
+                    firstName: 'Michael',
+                    lastName: 'Chen',
+                    email: 'michael.chen@automediacenter.com',
+                    role: 'platform_admin',
+                    clientId: null,
+                    createdAt: '2023-12-01T08:00:00Z',
+                    lastLogin: '2024-10-24T09:30:00Z',
+                    isActive: true
+                },
+                {
+                    _id: '507f1f77bcf86cd799439014',
+                    firstName: 'Emma',
+                    lastName: 'Wilson',
+                    email: 'emma.wilson@gmail.com',
+                    role: 'media_user',
+                    clientId: null,
+                    createdAt: '2024-03-05T16:20:00Z',
+                    lastLogin: '2024-10-23T19:10:00Z',
+                    isActive: true
+                },
+                {
+                    _id: '507f1f77bcf86cd799439015',
+                    firstName: 'David',
+                    lastName: 'Brown',
+                    email: 'david.brown@audi.com',
+                    role: 'client_admin',
+                    clientId: {
+                        _id: '507f1f77bcf86cd799439003',
+                        name: 'Audi AG',
+                        companyId: 'AUDI001'
+                    },
+                    createdAt: '2024-01-20T12:45:00Z',
+                    lastLogin: '2024-10-21T16:30:00Z',
+                    isActive: true
+                },
+                {
+                    _id: '507f1f77bcf86cd799439016',
+                    firstName: 'Lisa',
+                    lastName: 'Garcia',
+                    email: 'lisa.garcia@volkswagen.com',
+                    role: 'client_user',
+                    clientId: {
+                        _id: '507f1f77bcf86cd799439004',
+                        name: 'Volkswagen AG',
+                        companyId: 'VW001'
+                    },
+                    createdAt: '2024-04-12T14:10:00Z',
+                    lastLogin: '2024-10-19T10:20:00Z',
+                    isActive: true
+                },
+                {
+                    _id: '507f1f77bcf86cd799439017',
+                    firstName: 'Robert',
+                    lastName: 'Miller',
+                    email: 'robert.miller@porsche.com',
+                    role: 'client_admin',
+                    clientId: {
+                        _id: '507f1f77bcf86cd799439005',
+                        name: 'Porsche AG',
+                        companyId: 'POR001'
+                    },
+                    createdAt: '2024-03-15T11:20:00Z',
+                    lastLogin: '2024-10-23T08:15:00Z',
+                    isActive: true
+                },
+                {
+                    _id: '507f1f77bcf86cd799439018',
+                    firstName: 'Anna',
+                    lastName: 'Schmidt',
+                    email: 'anna.schmidt@gmail.com',
+                    role: 'media_user',
+                    clientId: null,
+                    createdAt: '2024-05-08T14:30:00Z',
+                    lastLogin: null,
+                    isActive: true
+                },
+                {
+                    _id: '507f1f77bcf86cd799439019',
+                    firstName: 'Thomas',
+                    lastName: 'Weber',
+                    email: 'thomas.weber@suspended-company.com',
+                    role: 'client_user',
+                    clientId: {
+                        _id: '507f1f77bcf86cd799439006',
+                        name: 'Test Company',
+                        companyId: 'TEST001'
+                    },
+                    createdAt: '2024-02-28T16:45:00Z',
+                    lastLogin: '2024-09-15T12:30:00Z',
+                    isActive: false
+                },
+                {
+                    _id: '507f1f77bcf86cd799439020',
+                    firstName: 'Maria',
+                    lastName: 'Rodriguez',
+                    email: 'maria.rodriguez@ferrari.com',
+                    role: 'client_admin',
+                    clientId: {
+                        _id: '507f1f77bcf86cd799439007',
+                        name: 'Ferrari S.p.A.',
+                        companyId: 'FER001'
+                    },
+                    createdAt: '2024-06-12T09:00:00Z',
+                    lastLogin: '2024-10-24T07:45:00Z',
+                    isActive: true
+                }
+            ];
+            
+            console.log('✅ Mock users loaded:', users.length);
+            
+            // Update stats with mock data
+            updateUserStats({
+                totalUsers: users.length,
+                mediaUsers: users.filter(u => u.role === 'media_user').length,
+                clientUsers: users.filter(u => u.role === 'client_user').length,
+                clientAdmins: users.filter(u => u.role === 'client_admin').length,
+                platformAdmins: users.filter(u => u.role === 'platform_admin').length
+            });
+            
+            renderUsersTable();
+        }
+
+        // Load companies for filter dropdown
+        async function loadCompanies() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                const response = await fetch('http://localhost:5000/api/v1/companies', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    companies = result.companies || result.data || result;
+                    console.log('🔍 DEBUG: Loaded companies for filter:', companies);
+                    
+                } else {
+                    console.error('Failed to load companies');
+                    companies = [];
+                }
+            } catch (error) {
+                console.error('Error loading companies:', error);
+                companies = [];
+            }
+        }
+
+        // Populate company filter dropdown
+        function populateCompanyFilter() {
+            const companyFilter = document.getElementById('companyFilter');
+            
+            // Clear existing options except "All Companies"
+            while (companyFilter.children.length > 1) {
+                companyFilter.removeChild(companyFilter.lastChild);
+            }
+
+            // Add AutoMediaCenter option for platform admins
+            const amcOption = document.createElement('option');
+            amcOption.value = 'AutoMediaCenter';
+            amcOption.textContent = 'AutoMediaCenter';
+            companyFilter.appendChild(amcOption);
+
+            // Add company options
+            companies.forEach(company => {
+                const option = document.createElement('option');
+                option.value = company._id;
+                option.textContent = company.companyName || company.name || company.clientName || company.legalName;
+                companyFilter.appendChild(option);
+            });
+        }
+
+        // Render users table with pagination
+        function renderUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            const searchTerm = document.getElementById('searchUsers').value.toLowerCase();
+            const roleFilter = document.getElementById('roleFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            // Filter users with comprehensive search
+            filteredUsers = users.filter(user => {
+                // Search across multiple fields
+                const firstName = (user.firstName || '').toLowerCase();
+                const lastName = (user.lastName || '').toLowerCase();
+                const email = user.email.toLowerCase();
+                const companyName = getCompanyName(user).toLowerCase();
+                const role = formatRole(user.role).toLowerCase();
+                
+                const matchesSearch = !searchTerm ||
+                    firstName.includes(searchTerm) ||
+                    lastName.includes(searchTerm) ||
+                    email.includes(searchTerm) ||
+                    companyName.includes(searchTerm) ||
+                    role.includes(searchTerm);
+                    
+                const matchesRole = !roleFilter || user.role === roleFilter;
+                const userStatus = (user.isActive !== false) ? 'active' : 'suspended';
+                const matchesStatus = !statusFilter || userStatus === statusFilter;
+                
+                return matchesSearch && matchesRole && matchesStatus;
+            });
+
+            // Sort by signup date (latest first)
+            filteredUsers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            // Calculate pagination
+            const totalUsers = filteredUsers.length;
+            const totalPages = Math.ceil(totalUsers / usersPerPage);
+            const startIndex = (currentPage - 1) * usersPerPage;
+            const endIndex = startIndex + usersPerPage;
+            const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+            // Render table rows
+            tbody.innerHTML = paginatedUsers.map(user => {
+                const userStatus = (user.isActive !== false) ? 'active' : 'suspended';
+                // Check both possible login timestamp fields (different routes use different field names)
+                const loginTimestamp = user.lastLoginAt || user.lastLogin;
+                const lastLoginText = loginTimestamp ?
+                    new Date(loginTimestamp).toLocaleDateString('en-GB') + ' ' +
+                    new Date(loginTimestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'Never';
+                const lastLoginClass = loginTimestamp ? '' : 'never';
+                
+                return `
+                <tr data-id="${user._id}">
+                    <td class="checkbox-col">
+                        <input type="checkbox" class="user-checkbox" value="${user._id}" onchange="updateBulkActions()">
+                    </td>
+                    <td>
+                        <div class="user-info">
+                            <div class="user-email">${user.email}</div>
+                            <div class="user-id">${user._id.substring(0, 8)}...</div>
+                            <div class="user-name">${user.firstName || ''} ${user.lastName || ''}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="role-pill ${user.role.replace('_', '-')}">${formatRole(user.role)}</span>
+                    </td>
+                    <td>
+                        <div style="font-weight: 500;">
+                            ${getCompanyName(user)}
+                        </div>
+                    </td>
+                    <td style="text-align: center;">
+                        <span class="status-pill ${userStatus}">${userStatus.charAt(0).toUpperCase() + userStatus.slice(1)}</span>
+                    </td>
+                    <td>
+                        <span class="last-login ${lastLoginClass}">${lastLoginText}</span>
+                    </td>
+                    <td class="cell--actions" style="text-align: center;">
+                        <div class="kebab-wrap">
+                            <button class="kebab-btn" aria-haspopup="true" aria-expanded="false" aria-controls="menu-${user._id}">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="menu-${user._id}" class="kebab-menu" role="menu" hidden>
+                                <button type="button" class="kebab-item" data-action="view" data-user-id="${user._id}" data-title="${user.email}">View</button>
+                                <button type="button" class="kebab-item" data-action="edit" data-user-id="${user._id}" data-title="${user.email}">Edit</button>
+                                ${(user.isActive !== false) ?
+                                    `<button type="button" class="kebab-item" data-action="suspend" data-user-id="${user._id}" data-title="${user.email}">Suspend</button>` :
+                                    `<button type="button" class="kebab-item" data-action="activate" data-user-id="${user._id}" data-title="${user.email}">Activate</button>`
+                                }
+                                <button type="button" class="kebab-item" data-action="delete" data-user-id="${user._id}" data-title="${user.email}">Delete</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // Update pagination info
+            updatePaginationInfo(totalUsers, totalPages, startIndex, endIndex);
+            
+            // Update total count in stats
+            document.getElementById('totalUsers').textContent = totalUsers;
+            
+            // Initialize kebab menus after rendering
+        }
+
+        // Update pagination information and controls
+        function updatePaginationInfo(totalUsers, totalPages, startIndex, endIndex) {
+            const actualEnd = Math.min(endIndex, totalUsers);
+            const actualStart = totalUsers > 0 ? startIndex + 1 : 0;
+            
+            document.getElementById('paginationSummary').textContent = `Showing ${actualStart}-${actualEnd} of ${totalUsers}`;
+            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+            
+            // Update pagination buttons
+            const prevButton = document.getElementById('prevPageButton');
+            const nextButton = document.getElementById('nextPageButton');
+            
+            prevButton.disabled = currentPage <= 1;
+            nextButton.disabled = currentPage >= totalPages;
+            
+            // Add click handlers if not already added
+            if (!prevButton.hasAttribute('data-handler-added')) {
+                prevButton.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderUsersTable();
+                    }
+                });
+                prevButton.setAttribute('data-handler-added', 'true');
+            }
+            
+            if (!nextButton.hasAttribute('data-handler-added')) {
+                nextButton.addEventListener('click', () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderUsersTable();
+                    }
+                });
+                nextButton.setAttribute('data-handler-added', 'true');
+            }
+        }
+
+        // Reset to first page when filters change
+        function resetPagination() {
+            currentPage = 1;
+        }
+        // Helper function to format role names
+        function formatRole(role) {
+            const roleMap = {
+                'media_user': 'Media User',
+                'client_user': 'Client User',
+                'client_admin': 'Client Admin',
+                'platform_admin': 'Platform Admin'
+            };
+            return roleMap[role] || role;
+        }
+
+        // Helper function to get company name using populated clientId data
+        function getCompanyName(user) {
+            console.log('🔍 DEBUG: Getting company for user:', user.email, 'user object:', user);
+            
+            if (user.role === 'platform_admin') {
+                return 'AutoMediaCenter';
+            }
+            if (user.role === 'media_user') {
+                return 'No Company'; // Media users are not associated with companies
+            }
+            
+            // Client users and client admins should have company associations via clientId
+            if (user.role === 'client_user' || user.role === 'client_admin') {
+                console.log('🔍 DEBUG: Processing client user/admin:', user.email);
+                console.log('🔍 DEBUG: User clientId:', user.clientId);
+                
+                // First check if clientId is already populated (object with company data)
+                if (user.clientId && typeof user.clientId === 'object') {
+                    console.log('✅ Found populated clientId:', user.clientId);
+                    // Return the company name from the populated Company model
+                    return user.clientId.name || user.clientId.companyName || user.clientId.clientName || user.clientId.legalName || 'Unknown Company';
+                }
+                
+                // If clientId is just a string ID, look up the company in our companies array
+                if (user.clientId && typeof user.clientId === 'string') {
+                    console.log('🔍 DEBUG: Looking up company by ID:', user.clientId);
+                    const company = companies.find(c => c._id === user.clientId);
+                    if (company) {
+                        console.log('✅ Found company by lookup:', company.name || company.companyName);
+                        return company.name || company.companyName || company.clientName || company.legalName || 'Unknown Company';
+                    } else {
+                        console.log('❌ Company not found in companies array for clientId:', user.clientId);
+                        console.log('Available companies:', companies.map(c => ({ id: c._id, name: c.name || c.companyName })));
+                    }
+                }
+                
+                // If no clientId or company not found
+                console.log('❌ No clientId or company not found for user:', user.email);
+                return 'Missing Company Association';
+            }
+            
+            return 'No Company';
+        }
+
+        // Event listeners for real-time search
+        function setupEventListeners() {
+            const searchInput = document.getElementById('searchUsers');
+            const roleFilter = document.getElementById('roleFilter');
+            const statusFilter = document.getElementById('statusFilter');
+
+            // Real-time search with debouncing
+            let searchTimeout;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                resetPagination();
+                searchTimeout = setTimeout(renderUsersTable, 300);
+            });
+
+            roleFilter.addEventListener('change', () => {
+                resetPagination();
+                renderUsersTable();
+            });
+            
+            statusFilter.addEventListener('change', () => {
+                resetPagination();
+                renderUsersTable();
+            });
+
+            // Enter key for immediate search
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    clearTimeout(searchTimeout);
+                    resetPagination();
+                    renderUsersTable();
+                }
+            });
+
+            // Escape key to clear search
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchInput.value = '';
+                    clearTimeout(searchTimeout);
+                    resetPagination();
+                    renderUsersTable();
+                }
+            });
+        }
+
+        // Enterprise bulk operations
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            updateBulkActions();
+        }
+
+        function updateBulkActions() {
+            const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+            const bulkActionsBar = document.getElementById('bulkActionsBar');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            if (checkboxes.length > 0) {
+                bulkActionsBar.style.display = 'flex';
+                selectedCount.textContent = checkboxes.length;
+            } else {
+                bulkActionsBar.style.display = 'none';
+            }
+            
+            // Update select all checkbox state
+            const allCheckboxes = document.querySelectorAll('.user-checkbox');
+            const selectAll = document.getElementById('selectAll');
+            selectAll.indeterminate = checkboxes.length > 0 && checkboxes.length < allCheckboxes.length;
+            selectAll.checked = checkboxes.length === allCheckboxes.length && allCheckboxes.length > 0;
+        }
+
+        function clearSelection() {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            checkboxes.forEach(checkbox => checkbox.checked = false);
+            document.getElementById('selectAll').checked = false;
+            updateBulkActions();
+        }
+
+        function getSelectedUserIds() {
+            const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        async function bulkActivate() {
+            const userIds = getSelectedUserIds();
+            if (userIds.length === 0) return;
+            
+            if (!confirm(`Are you sure you want to activate ${userIds.length} user(s)?`)) return;
+            
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                const response = await fetch('http://localhost:5000/api/v1/user-management/admin/users/bulk-activate', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userIds })
+                });
+                
+                if (response.ok) {
+                    showNotification('Users activated successfully', 'success');
+                    clearSelection();
+                    refreshUsers();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.message || 'Failed to activate users', 'error');
+                }
+            } catch (error) {
+                showNotification('Error activating users: ' + error.message, 'error');
+            }
+        }
+
+        async function bulkSuspend() {
+            const userIds = getSelectedUserIds();
+            if (userIds.length === 0) return;
+            
+            if (!confirm(`Are you sure you want to suspend ${userIds.length} user(s)? This will revoke their access but preserve their data.`)) return;
+            
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                const response = await fetch('http://localhost:5000/api/v1/user-management/admin/users/bulk-suspend', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userIds })
+                });
+                
+                if (response.ok) {
+                    showNotification('Users suspended successfully', 'success');
+                    clearSelection();
+                    refreshUsers();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.message || 'Failed to suspend users', 'error');
+                }
+            } catch (error) {
+                showNotification('Error suspending users: ' + error.message, 'error');
+            }
+        }
+
+        async function bulkDelete() {
+            const userIds = getSelectedUserIds();
+            if (userIds.length === 0) return;
+            
+            if (!confirm(`⚠️ DANGER: Are you sure you want to permanently delete ${userIds.length} user(s)?\n\nThis action cannot be undone and will remove all user data.\n\nConsider suspending users instead to preserve data.`)) return;
+            
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                const response = await fetch('http://localhost:5000/api/v1/user-management/admin/users/bulk-delete', {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userIds })
+                });
+                
+                if (response.ok) {
+                    showNotification('Users deleted successfully', 'success');
+                    clearSelection();
+                    refreshUsers();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.message || 'Failed to delete users', 'error');
+                }
+            } catch (error) {
+                showNotification('Error deleting users: ' + error.message, 'error');
+            }
+        }
+
+        // Individual user actions
+        async function suspendUser(userId) {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                const response = await fetch(`http://localhost:5000/api/v1/user-management/admin/users/${userId}/suspend`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    showNotification('User suspended successfully', 'success');
+                    refreshUsers();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.message || 'Failed to suspend user', 'error');
+                }
+            } catch (error) {
+                showNotification('Error suspending user: ' + error.message, 'error');
+            }
+        }
+
+        async function activateUser(userId) {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                const response = await fetch(`http://localhost:5000/api/v1/user-management/admin/users/${userId}/activate`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    showNotification('User activated successfully', 'success');
+                    refreshUsers();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.message || 'Failed to activate user', 'error');
+                }
+            } catch (error) {
+                showNotification('Error activating user: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteUser(userId) {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                const response = await fetch(`http://localhost:5000/api/v1/user-management/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    showNotification('User deleted successfully', 'success');
+                    refreshUsers();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.message || 'Failed to delete user', 'error');
+                }
+            } catch (error) {
+                showNotification('Error deleting user: ' + error.message, 'error');
+            }
+        }
+
+
+        function editUser(userId) {
+            // TODO: Implement user edit modal
+            console.log('Edit user:', userId);
+            showNotification('User edit functionality coming soon', 'info');
+        }
+
+        // Utility functions
+        function refreshUsers() {
+            loadUsers();
+            loadUserStats();
+        }
+
+        function showUserDetails(userId) {
+            // TODO: Implement user details modal
+            console.log('Show user details for:', userId);
+            showNotification('User details functionality coming soon', 'info');
+        }
+
+        function showCreateUserModal() {
+            // TODO: Implement create user modal
+            console.log('Show create user modal');
+            showNotification('Create user functionality coming soon', 'info');
+        }
+
+        function exportUsers() {
+            // TODO: Implement user export functionality
+            console.log('Export users');
+            showNotification('Export functionality coming soon', 'info');
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+
+            // Set background color based on type
+            switch (type) {
+                case 'success':
+                    notification.style.background = 'var(--accent-action-positive)';
+                    break;
+                case 'error':
+                    notification.style.background = 'var(--accent-action-danger)';
+                    break;
+                default:
+                    notification.style.background = 'var(--accent-primary)';
+            }
+
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            // Remove after 3 seconds
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+    
+    <script src="kebab-portal-NO-HOVER.js"></script>
+    
+    <!-- ✅ ADD COMPONENT SCRIPTS -->
+    <script src="components/amc-header.js"></script>
+    <script src="components/sidebar.js"></script>
+    
+    <!-- Premium Avatar System -->
+    <script defer src="amc-avatar-system.js"></script>
+    
+    <!-- Kebab Menu Portal - MUST be in HTML, not created by JS -->
+    <div id="kebab-portal" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></div>
+</body>
+</html>

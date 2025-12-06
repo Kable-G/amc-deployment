@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Login Test Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-headings: #343a40;
+            --accent-primary: #0d6efd;
+            --accent-primary-hover: #0b5ed7;
+            --accent-success: #28a745;
+            --accent-warning: #ffc107;
+            --accent-danger: #dc3545;
+            --border-primary: #dee2e6;
+            --border-secondary: #e0e0e0;
+            --shadow-primary: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.12);
+            --font-family-main: 'Poppins', sans-serif;
+        }
+
+        body.dark-mode {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2c2c2c;
+            --text-primary: #e0e0e0;
+            --text-secondary: #adb5bd;
+            --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff;
+            --accent-primary-hover: #5fa0ff;
+            --border-primary: #3a3a3a;
+            --border-secondary: #444;
+            --shadow-primary: rgba(0, 0, 0, 0.25);
+            --shadow-hover: rgba(0, 0, 0, 0.35);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: var(--font-family-main); 
+            background-color: var(--bg-primary); 
+            color: var(--text-primary); 
+            line-height: 1.6; 
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            border-bottom: 2px solid var(--border-primary);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: var(--text-headings);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            color: var(--text-secondary);
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .user-level-card {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px var(--shadow-primary);
+            border: 2px solid var(--border-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .user-level-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px var(--shadow-hover);
+            border-color: var(--accent-primary);
+        }
+
+        .user-level-card.active {
+            border-color: var(--accent-success);
+            background-color: rgba(40, 167, 69, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-header i {
+            font-size: 2em;
+            margin-right: 15px;
+            padding: 15px;
+            border-radius: 50%;
+            color: white;
+        }
+
+        .user-card i { background-color: #6c757d; }
+        .client-card i { background-color: var(--accent-primary); }
+        .admin-card i { background-color: var(--accent-danger); }
+
+        .card-header h3 {
+            font-size: 1.4em;
+            color: var(--text-headings);
+        }
+
+        .card-header .badge {
+            margin-left: auto;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: white;
+        }
+
+        .badge-user { background-color: #6c757d; }
+        .badge-client { background-color: var(--accent-primary); }
+        .badge-admin { background-color: var(--accent-danger); }
+
+        .permissions-list {
+            margin-bottom: 20px;
+        }
+
+        .permissions-list h4 {
+            font-size: 1em;
+            color: var(--text-headings);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .permissions-list h4 i {
+            margin-right: 8px;
+            font-size: 1em;
+            color: var(--accent-success);
+        }
+
+        .permissions-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .permissions-list li {
+            padding: 6px 0;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+
+        .permissions-list li i {
+            margin-right: 8px;
+            color: var(--accent-success);
+            font-size: 0.8em;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background-color: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-btn:hover {
+            background-color: var(--accent-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .login-btn i {
+            margin-right: 8px;
+        }
+
+        .current-session {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px var(--shadow-primary);
+            border-left: 4px solid var(--accent-success);
+        }
+
+        .session-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .session-details h3 {
+            color: var(--text-headings);
+            margin-bottom: 5px;
+        }
+
+        .session-details p {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background-color: var(--accent-danger);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        .page-links {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px var(--shadow-primary);
+        }
+
+        .page-links h3 {
+            color: var(--text-headings);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .page-links h3 i {
+            margin-right: 10px;
+            color: var(--accent-primary);
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .link-category {
+            margin-bottom: 20px;
+        }
+
+        .link-category h4 {
+            font-size: 1em;
+            color: var(--text-headings);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .page-link {
+            display: block;
+            padding: 10px 15px;
+            margin-bottom: 5px;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .page-link:hover {
+            background-color: var(--accent-primary);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .page-link.restricted {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: var(--bg-tertiary);
+        }
+
+        .page-link.restricted:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            transform: none;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: var(--accent-primary-hover);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .session-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> AutoMediaCenter Login Test Portal</h1>
+            <p>Test different user authentication levels and access permissions</p>
+        </div>
+
+        <div id="currentSession" class="current-session" style="display: none;">
+            <div class="session-info">
+                <div class="session-details">
+                    <h3 id="sessionUserLevel">Not Logged In</h3>
+                    <p id="sessionUserEmail">No active session</p>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <div class="test-grid">
+            <!-- Public User Level -->
+            <div class="user-level-card user-card" id="userCard">
+                <div class="card-header">
+                    <i class="fas fa-user"></i>
+                    <div>
+                        <h3>Public User</h3>
+                        <span class="badge badge-user">Level 1</span>
+                    </div>
+                </div>
+                <div class="permissions-list">
+                    <h4><i class="fas fa-eye"></i> Access Permissions</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> AutoMediaCenter public pages</li>
+                        <li><i class="fas fa-check"></i> AutoMediaRadar public pages</li>
+                        <li><i class="fas fa-check"></i> View published releases</li>
+                        <li><i class="fas fa-check"></i> Download public assets</li>
+                        <li><i class="fas fa-times" style="color: var(--accent-danger);"></i> Upload dashboard</li>
+                        <li><i class="fas fa-times" style="color: var(--accent-danger);"></i> Management tools</li>
+                    </ul>
+                </div>
+                <button class="login-btn" onclick="loginAs('user')">
+                    <i class="fas fa-sign-in-alt"></i> Login as Public User
+                </button>
+            </div>
+
+            <!-- Client User Level -->
+            <div class="user-level-card client-card" id="clientCard">
+                <div class="card-header">
+                    <i class="fas fa-user-tie"></i>
+                    <div>
+                        <h3>Client User</h3>
+                        <span class="badge badge-client">Level 2</span>
+                    </div>
+                </div>
+                <div class="permissions-list">
+                    <h4><i class="fas fa-key"></i> Access Permissions</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> All public pages</li>
+                        <li><i class="fas fa-check"></i> Upload dashboard</li>
+                        <li><i class="fas fa-check"></i> Manage releases</li>
+                        <li><i class="fas fa-check"></i> Radar history & analytics</li>
+                        <li><i class="fas fa-check"></i> Center analytics (coming)</li>
+                        <li><i class="fas fa-times" style="color: var(--accent-danger);"></i> Admin functions</li>
+                    </ul>
+                </div>
+                <button class="login-btn" onclick="loginAs('client')">
+                    <i class="fas fa-sign-in-alt"></i> Login as Client User
+                </button>
+            </div>
+
+            <!-- Admin User Level -->
+            <div class="user-level-card admin-card" id="adminCard">
+                <div class="card-header">
+                    <i class="fas fa-user-shield"></i>
+                    <div>
+                        <h3>Admin User</h3>
+                        <span class="badge badge-admin">Level 3</span>
+                    </div>
+                </div>
+                <div class="permissions-list">
+                    <h4><i class="fas fa-crown"></i> Access Permissions</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> All client permissions</li>
+                        <li><i class="fas fa-check"></i> Delete any content</li>
+                        <li><i class="fas fa-check"></i> Modify any content</li>
+                        <li><i class="fas fa-check"></i> User management</li>
+                        <li><i class="fas fa-check"></i> System settings</li>
+                        <li><i class="fas fa-check"></i> Full platform control</li>
+                    </ul>
+                </div>
+                <button class="login-btn" onclick="loginAs('admin')">
+                    <i class="fas fa-sign-in-alt"></i> Login as Admin User
+                </button>
+            </div>
+        </div>
+
+        <div class="page-links">
+            <h3><i class="fas fa-sitemap"></i> Available Pages & Tools</h3>
+            <div class="links-grid">
+                <div class="link-category">
+                    <h4>Public Pages</h4>
+                    <a href="automediacenter.html" class="page-link" id="link-amc">
+                        <i class="fas fa-home"></i> AutoMediaCenter
+                    </a>
+                    <a href="newradarfe.html" class="page-link" id="link-radar">
+                        <i class="fas fa-satellite-dish"></i> AutoMediaRadar
+                    </a>
+                    <a href="amc-release-detail.html" class="page-link" id="link-detail">
+                        <i class="fas fa-file-alt"></i> Release Details
+                    </a>
+                </div>
+
+                <div class="link-category">
+                    <h4>Client Dashboard</h4>
+                    <a href="AssetDBmenu1.6.html" class="page-link" id="link-upload">
+                        <i class="fas fa-upload"></i> Upload Dashboard
+                    </a>
+                    <a href="manage_releases.html" class="page-link" id="link-manage">
+                        <i class="fas fa-list-alt"></i> Manage Releases
+                    </a>
+                    <a href="radar_history.html" class="page-link" id="link-history">
+                        <i class="fas fa-history"></i> Radar History
+                    </a>
+                    <a href="radar_analytics.html" class="page-link" id="link-analytics">
+                        <i class="fas fa-chart-pie"></i> Radar Analytics
+                    </a>
+                </div>
+
+                <div class="link-category">
+                    <h4>Admin Tools</h4>
+                    <a href="admin-user-analytics.html" class="page-link" id="link-admin-analytics">
+                        <i class="fas fa-chart-line"></i> User Analytics
+                    </a>
+                    <a href="#" class="page-link" id="link-admin-users">
+                        <i class="fas fa-users-cog"></i> User Management
+                    </a>
+                    <a href="#" class="page-link" id="link-admin-settings">
+                        <i class="fas fa-cogs"></i> System Settings
+                    </a>
+                    <a href="#" class="page-link" id="link-admin-logs">
+                        <i class="fas fa-clipboard-list"></i> System Logs
+                    </a>
+                </div>
+
+                <div class="link-category">
+                    <h4>Coming Soon</h4>
+                    <a href="#" class="page-link" id="link-center-analytics">
+                        <i class="fas fa-chart-line"></i> Center Analytics
+                    </a>
+                    <a href="#" class="page-link" id="link-vault">
+                        <i class="fas fa-shield-alt"></i> AutoMediaVault
+                    </a>
+                    <a href="#" class="page-link" id="link-live">
+                        <i class="fas fa-broadcast-tower"></i> AutoMediaLive
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        const currentSession = document.getElementById('currentSession');
+        const sessionUserLevel = document.getElementById('sessionUserLevel');
+        const sessionUserEmail = document.getElementById('sessionUserEmail');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Dark mode functionality
+        function applyTheme(theme) {
+            const icon = darkModeToggle.querySelector('i');
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                icon.className = 'fas fa-sun';
+                darkModeToggle.title = "Switch to Light Mode";
+            } else {
+                body.classList.remove('dark-mode');
+                icon.className = 'fas fa-moon';
+                darkModeToggle.title = "Switch to Dark Mode";
+            }
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 
+            (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(savedTheme);
+
+        darkModeToggle.addEventListener('click', () => {
+            const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // User level definitions
+        const userLevels = {
+            user: {
+                level: 1,
+                name: 'Public User',
+                email: 'public@example.com',
+                permissions: ['automediacenter.html', 'newradarfe.html', 'amc-release-detail.html']
+            },
+            client: {
+                level: 2,
+                name: 'Client User',
+                email: 'client@example.com',
+                permissions: [
+                    'automediacenter.html', 'newradarfe.html', 'amc-release-detail.html',
+                    'AssetDBmenu1.6.html', 'manage_releases.html', 'radar_history.html', 
+                    'radar_analytics.html', 'center_analytics.html'
+                ]
+            },
+            admin: {
+                level: 3,
+                name: 'Admin User',
+                email: 'admin@example.com',
+                permissions: ['*'] // All permissions
+            }
+        };
+
+        // Login functionality
+        function loginAs(userType) {
+            const user = userLevels[userType];
+            
+            // Store user session
+            localStorage.setItem('testUser', JSON.stringify({
+                type: userType,
+                level: user.level,
+                name: user.name,
+                email: user.email,
+                permissions: user.permissions,
+                loginTime: new Date().toISOString()
+            }));
+
+            // Update UI
+            updateSessionDisplay();
+            updatePageAccess();
+            
+            // Visual feedback
+            document.querySelectorAll('.user-level-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.getElementById(userType + 'Card').classList.add('active');
+            
+            alert(`Successfully logged in as ${user.name}!\n\nYou can now test the available pages and tools based on your permission level.`);
+        }
+
+        // Update session display
+        function updateSessionDisplay() {
+            const testUser = JSON.parse(localStorage.getItem('testUser') || 'null');
+            
+            if (testUser) {
+                currentSession.style.display = 'block';
+                sessionUserLevel.textContent = `${testUser.name} (Level ${testUser.level})`;
+                sessionUserEmail.textContent = `${testUser.email} • Logged in: ${new Date(testUser.loginTime).toLocaleString()}`;
+            } else {
+                currentSession.style.display = 'none';
+            }
+        }
+
+        // Update page access based on permissions
+        function updatePageAccess() {
+            const testUser = JSON.parse(localStorage.getItem('testUser') || 'null');
+            const allLinks = document.querySelectorAll('.page-link');
+            
+            allLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                let hasAccess = false;
+                
+                if (testUser) {
+                    if (testUser.permissions.includes('*')) {
+                        hasAccess = true; // Admin has access to everything
+                    } else if (href && href !== '#') {
+                        const filename = href.split('/').pop();
+                        hasAccess = testUser.permissions.includes(filename);
+                    }
+                }
+                
+                if (hasAccess) {
+                    link.classList.remove('restricted');
+                    link.style.pointerEvents = 'auto';
+                } else {
+                    link.classList.add('restricted');
+                    link.style.pointerEvents = 'none';
+                }
+            });
+        }
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('testUser');
+            updateSessionDisplay();
+            updatePageAccess();
+            
+            document.querySelectorAll('.user-level-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            alert('Successfully logged out!');
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSessionDisplay();
+            updatePageAccess();
+            
+            // Check if there's an existing session and highlight the appropriate card
+            const testUser = JSON.parse(localStorage.getItem('testUser') || 'null');
+            if (testUser) {
+                document.getElementById(testUser.type + 'Card').classList.add('active');
+            }
+        });
+
+        // Add click handlers for restricted links
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('restricted') || e.target.closest('.restricted')) {
+                e.preventDefault();
+                const testUser = JSON.parse(localStorage.getItem('testUser') || 'null');
+                if (!testUser) {
+                    alert('Please log in to access this page.');
+                } else {
+                    alert(`Access denied. Your current user level (${testUser.name}) does not have permission to access this page.`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

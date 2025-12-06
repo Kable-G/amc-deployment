@@ -1,0 +1,392 @@
+/* ═══════════════════════════════════════════════════════════════
+   AMC RELEASE ARTICLE STYLES - READABLE HTML VERSION
+   Replaces PDF viewer with clean, readable article format
+   ═══════════════════════════════════════════════════════════════ */
+
+/* —— MAIN CONTENT WRAPPER —— */
+.pr-content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 40px;
+    padding: 0;
+    margin: 0;
+}
+
+/* —— ARTICLE CONTAINER —— */
+.pr-article {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    padding: 0;
+    margin: 0;
+}
+
+/* —— ARTICLE HEADER —— */
+.pr-article .pr-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--border-primary);
+}
+
+.pr-article .pr-logo {
+    max-height: 60px;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.pr-article h1 {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: var(--text-headings);
+    margin-bottom: 15px;
+    line-height: 1.2;
+    font-family: var(--font-family-main);
+}
+
+.pr-article .pr-meta {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.pr-article .pr-meta span {
+    margin-right: 15px;
+}
+
+/* —— ARTICLE SUMMARY —— */
+.pr-summary {
+    margin-bottom: 30px;
+}
+
+.pr-summary .pr-lead {
+    font-size: 1.3em;
+    font-weight: 500;
+    color: var(--text-headings);
+    margin-bottom: 25px;
+    line-height: 1.6;
+    font-family: var(--font-family-main);
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-left: 4px solid var(--accent-primary);
+    border-radius: 0 8px 8px 0;
+}
+
+.pr-summary #summary-content {
+    margin-bottom: 25px;
+}
+
+.pr-summary #summary-content p {
+    margin-bottom: 1.2em;
+}
+
+.pr-summary #summary-content h2,
+.pr-summary #summary-content h3,
+.pr-summary #summary-content h4 {
+    font-family: var(--font-family-main);
+    color: var(--text-headings);
+    margin-top: 2em;
+    margin-bottom: 0.8em;
+}
+
+.pr-summary #summary-content h2 {
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+.pr-summary #summary-content h3 {
+    font-size: 1.15em;
+    font-weight: 600;
+}
+
+.pr-summary #summary-content h4 {
+    font-size: 1.05em;
+    font-weight: 600;
+}
+
+/* —— KEY FACTS BOX —— */
+.pr-key-facts {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 25px 0;
+}
+
+.pr-key-facts h4 {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--text-headings);
+    margin-bottom: 15px;
+    font-family: var(--font-family-main);
+}
+
+.pr-key-facts ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pr-key-facts li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pr-key-facts li:last-child {
+    border-bottom: none;
+}
+
+.pr-key-facts .fact-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    flex: 1;
+}
+
+.pr-key-facts .fact-value {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: right;
+    flex: 1;
+}
+
+/* —— READ MORE BUTTON —— */
+#read-more-btn {
+    text-align: center;
+    margin: 30px 0;
+}
+
+#read-more-btn button {
+    background: linear-gradient(135deg, var(--accent-primary), #0056b3);
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.3);
+    font-family: var(--font-family-main);
+}
+
+#read-more-btn button:hover {
+    background: linear-gradient(135deg, #0056b3, var(--accent-primary));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var(--accent-primary-rgb), 0.4);
+}
+
+#read-more-btn button:active {
+    transform: translateY(0);
+}
+
+/* —— FULL CONTENT —— */
+#full-content {
+    margin-top: 30px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+#full-content p {
+    margin-bottom: 1.2em;
+}
+
+#full-content h2,
+#full-content h3,
+#full-content h4 {
+    font-family: var(--font-family-main);
+    color: var(--text-headings);
+    margin-top: 2.5em;
+    margin-bottom: 1em;
+}
+
+#full-content h2 {
+    font-size: 1.4em;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-primary);
+    padding-bottom: 10px;
+}
+
+#full-content h3 {
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+#full-content h4 {
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+#full-content blockquote {
+    border-left: 4px solid var(--accent-primary);
+    background: var(--bg-secondary);
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+}
+
+#full-content ul,
+#full-content ol {
+    margin: 1.2em 0;
+    padding-left: 30px;
+}
+
+#full-content li {
+    margin-bottom: 0.5em;
+}
+
+/* —— PDF DOWNLOAD SECTION —— */
+.pr-pdf-download {
+    text-align: center;
+    margin: 40px 0;
+    padding: 25px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-secondary);
+    border-radius: 8px;
+}
+
+.pr-pdf-download .btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent-primary);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1em;
+    transition: all 0.2s ease;
+    font-family: var(--font-family-main);
+}
+
+.pr-pdf-download .btn-download:hover {
+    background: var(--accent-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.3);
+}
+
+.pr-pdf-download .btn-download i {
+    font-size: 1.1em;
+}
+
+/* —— ANIMATIONS —— */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* —— RESPONSIVE DESIGN —— */
+@media (max-width: 992px) {
+    .pr-content-wrapper {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .pr-article {
+        font-size: 17px;
+    }
+    
+    .pr-article h1 {
+        font-size: 2.1em;
+    }
+    
+    .pr-summary .pr-lead {
+        font-size: 1.2em;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .pr-article {
+        font-size: 16px;
+        line-height: 1.7;
+    }
+    
+    .pr-article h1 {
+        font-size: 1.9em;
+    }
+    
+    .pr-summary .pr-lead {
+        font-size: 1.1em;
+        padding: 12px;
+    }
+    
+    #read-more-btn button {
+        padding: 12px 30px;
+        font-size: 1em;
+    }
+    
+    .pr-key-facts {
+        padding: 15px;
+    }
+    
+    .pr-key-facts li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .pr-key-facts .fact-value {
+        text-align: left;
+    }
+}
+
+/* —— DARK MODE ADJUSTMENTS —— */
+body.dark-mode .pr-summary .pr-lead {
+    background: var(--bg-tertiary);
+}
+
+body.dark-mode .pr-key-facts {
+    background: var(--bg-secondary);
+}
+
+body.dark-mode .pr-pdf-download {
+    background: var(--bg-tertiary);
+}
+
+body.dark-mode #full-content blockquote {
+    background: var(--bg-tertiary);
+}
+
+/* —— PRINT STYLES —— */
+@media print {
+    .pr-content-wrapper {
+        grid-template-columns: 1fr;
+    }
+    
+    .pr-right-sidebar {
+        display: none;
+    }
+    
+    #read-more-btn {
+        display: none;
+    }
+    
+    #full-content {
+        display: block !important;
+    }
+    
+    .pr-article {
+        font-size: 12pt;
+        line-height: 1.6;
+    }
+    
+    .pr-article h1 {
+        font-size: 18pt;
+    }
+    
+    .pr-summary .pr-lead {
+        font-size: 14pt;
+    }
+}

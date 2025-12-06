@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AMC System Check</title>
+
+<!-- ===== GLOBAL CSS (RELATIVE TO /Frontend) ===== -->
+<link rel="stylesheet" href="./css/amc-globalshell.css" />
+<link rel="stylesheet" href="./css/sidebar.css" />
+<link rel="stylesheet" href="./amc-avatar-styles.css" />
+<link rel="stylesheet" href="./css/amc-main-layout.css" /> <!-- LAST -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet" />
+
+<!-- Role shim (must be before sidebar/header scripts) -->
+<script type="module" src="./components/amc-role.js"></script>
+
+<style>
+  /* Diagnostics table visuals (page-specific only) */
+  table{border-collapse:collapse;margin-top:12px;width:100%;max-width:720px;background:#0f172a;border-radius:12px;overflow:hidden}
+  th,td{padding:.7rem 1rem;border-bottom:1px solid #1f2937;text-align:left}
+  thead th{background:#111827;color:#cbd5e1;font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .ok{color:#16a34a;font-weight:700}.fail{color:#ef4444;font-weight:700}
+  .muted{color:#94a3b8}
+
+  /* Diagnostics page only: suppress any giant avatar fallback visuals */
+  .amc-avatar-backdrop, .amc-avatar-fallback, .amc-avatar-silhouette { display:none !important; }
+</style>
+</head>
+
+<body>
+  <!-- Header + Sidebar (populated by your components) -->
+  <amc-header></amc-header>
+  <aside id="sidebar" class="amc-sidebar"></aside>
+
+  <!-- Uniform layout wrapper -->
+  <main class="amc-content amc-layout--mgmt">
+    <div class="amc-page">
+
+      <header class="amc-page-header">
+        <h1 class="amc-page-title">AutoMediaCenter System Diagnostics</h1>
+        <p class="amc-page-subtitle">
+          This page verifies the global header, sidebar, avatar system, shell, and kebab portal are all loaded and talking to each other.
+        </p>
+      </header>
+
+      <table id="amcStatusTable" role="grid" aria-label="AMC Module Status">
+        <thead><tr><th>Module</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>auth.js</td><td id="st-auth">–</td><td></td></tr>
+          <tr><td>sidebar.js</td><td id="st-sidebar">–</td><td></td></tr>
+          <tr><td>amc-header.js</td><td id="st-header">–</td><td></td></tr>
+          <tr><td>amc-avatar-system.js</td><td id="st-avatar">–</td><td></td></tr>
+          <tr><td>globalshell.js</td><td id="st-shell">–</td><td></td></tr>
+          <tr><td>kebab-portal-NO-HOVER.js</td><td id="st-kebab">–</td><td></td></tr>
+        </tbody>
+      </table>
+
+    </div>
+  </main>
+
+  <!-- Kebab portal target (shared by table pages) -->
+  <div id="kebab-portal" style="position:fixed; inset:0; pointer-events:none; z-index:2147483646;"></div>
+
+  <!-- ===== GLOBAL JS (RELATIVE TO /Frontend) ===== -->
+  <script defer src="./components/amc-header.js"></script>
+  
+  <script>
+    // AMC role compatibility bridge for legacy readers (avatar/sidebar):
+    (function () {
+      // Prefer AMC.role (from amc-role.js), else look at the common override, else fall back
+      const resolvedRole =
+        (window.AMC && AMC.role) ||
+        sessionStorage.getItem("amcRoleOverride") ||
+        localStorage.getItem("amc-role") ||
+        "media_user";
+
+      // Gather whichever user blob we already have and normalize it
+      const raw =
+        localStorage.getItem("user") ||
+        localStorage.getItem("currentUser") ||
+        localStorage.getItem("amcUser") ||
+        localStorage.getItem("amc_current_user");
+
+      let u = {};
+      try { u = raw ? JSON.parse(raw) : {}; } catch(e) { u = {}; }
+      // write a plain 'role' field the avatar script actually reads
+      u.role = resolvedRole;
+
+      // Mirror to both keys the avatar looks up today
+      localStorage.setItem("user", JSON.stringify(u));
+      localStorage.setItem("currentUser", JSON.stringify(u));
+    })();
+  </script>
+  
+  <!-- Now load the avatar system so it picks up the normalized role -->
+  <script defer src="./amc-avatar-system.js"></script>
+  <script defer src="./components/globalshell.js"></script>
+  <script defer src="./components/sidebar.js"></script>
+  <script defer src="./kebab-portal-NO-HOVER.js"></script>
+  <!-- Optional helper if your sidebar doesn’t toggle body.sidebar-collapsed consistently -->
+  <!-- <script defer src="./components/amc-main-layout.js"></script> -->
+
+  <!-- Fallback: try common sidebar init hooks if your builder expects it -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const el = document.getElementById('sidebar');
+      if (!el) return;
+      if (window.buildSidebar && !el.dataset.amcBuilt) { try { window.buildSidebar(el); } catch(e){} }
+      else if (window.initSidebar && !el.dataset.amcBuilt) { try { window.initSidebar(el); } catch(e){} }
+      else if (window.Sidebar?.init && !el.dataset.amcBuilt) { try { window.Sidebar.init(el); } catch(e){} }
+    });
+  </script>
+
+  <!-- ===== DIAGNOSTICS ===== -->
+  <script>
+  window.addEventListener('error', (e) => {
+    const row = document.querySelector('#amcStatusTable tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>runtime</td><td class="fail">✖ Fail</td><td>${e.message}</td>`;
+    row.appendChild(tr);
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const set = (id, ok, msg="") => {
+      const td = document.getElementById(id);
+      td.textContent = ok ? "✔ OK" : "✖ Fail";
+      td.className = ok ? "ok" : "fail";
+      td.nextElementSibling.textContent = msg;
+    };
+
+    // 1) auth
+    try {
+      const u = localStorage.getItem("user") || localStorage.getItem("currentUser");
+      set("st-auth", !!u, u ? "User token present" : "No user in storage");
+    } catch { set("st-auth", false, "auth.js error"); }
+
+    // 2) sidebar (allow time for builder)
+    setTimeout(() => {
+      const built = document.querySelector(".amc-sidebar, nav.amc-sidebar, [data-amc-sidebar]");
+      const state = document.body.classList.contains("sidebar-collapsed") ? "Collapsed" : "Expanded";
+      set("st-sidebar", !!built, built ? state : "Not built");
+    }, 700);
+
+    // 3) header
+    set("st-header", !!document.querySelector("header, amc-header"), "Header element found");
+
+    // 4) avatar
+    window.addEventListener("avatarSystemReady", () => set("st-avatar", true, "Avatar system ready"));
+    setTimeout(() => {
+      if (!document.getElementById("st-avatar").className) {
+        const ok = typeof window.AMCAvatar !== "undefined" || document.querySelector(".amc-avatar-container");
+        set("st-avatar", !!ok, ok ? "Instance/container detected" : "Not loaded");
+      }
+    }, 1000);
+
+    // 5) globalshell
+    window.addEventListener("amcShellReady", () => set("st-shell", true, "Global object present"));
+    setTimeout(() => {
+      if (!document.getElementById("st-shell").className) {
+        set("st-shell", typeof window.AMCShell !== "undefined",
+            typeof window.AMCShell !== "undefined" ? "Global object present" : "Missing");
+      }
+    }, 1200);
+
+    // 6) kebab
+    setTimeout(() => {
+      const ok = document.getElementById("kebab-portal") || typeof window.initKebabPortal === "function";
+      set("st-kebab", !!ok, ok ? "Portal/function found" : "No portal detected");
+    }, 1400);
+  });
+  </script>
+
+<script>
+  // Show current role in the corner (diagnostics only)
+  (function(){
+    const b = document.createElement('div');
+    b.textContent = 'Role: ' + (window.AMC?.role || 'unknown');
+    Object.assign(b.style, {
+      position:'fixed', bottom:'12px', right:'12px',
+      background:'rgba(15,23,42,.9)', color:'#cbd5e1',
+      padding:'8px 10px', borderRadius:'8px',
+      font:'12px/1.3 Inter,sans-serif', zIndex: 999999
+    });
+    document.body.appendChild(b);
+  })();
+</script>
+</body>
+</html>

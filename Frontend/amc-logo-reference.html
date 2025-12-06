@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter Logo Reference</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .logo-showcase {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .logo-showcase h1 {
+            margin: 0 0 30px 0;
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .logo-sizes {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .logo-size {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-size h3 {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Small Logo (24x15) */
+        .logo-small {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            width: 24px;
+            height: 15px;
+        }
+
+        .logo-small .logo-rect {
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .logo-small .logo-rect.filled {
+            background: #000000;
+        }
+
+        .logo-small .logo-rect.outline {
+            background: white;
+            border: 1.5px solid #000000;
+        }
+
+        /* Medium Logo (32x20) */
+        .logo-medium {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            width: 32px;
+            height: 20px;
+        }
+
+        .logo-medium .logo-rect {
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .logo-medium .logo-rect.filled {
+            background: #000000;
+        }
+
+        .logo-medium .logo-rect.outline {
+            background: white;
+            border: 2px solid #000000;
+        }
+
+        /* Large Logo (48x30) */
+        .logo-large {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3px;
+            width: 48px;
+            height: 30px;
+        }
+
+        .logo-large .logo-rect {
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .logo-large .logo-rect.filled {
+            background: #000000;
+        }
+
+        .logo-large .logo-rect.outline {
+            background: white;
+            border: 3px solid #000000;
+        }
+
+        /* Extra Large Logo (64x40) */
+        .logo-xlarge {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            width: 64px;
+            height: 40px;
+        }
+
+        .logo-xlarge .logo-rect {
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .logo-xlarge .logo-rect.filled {
+            background: #000000;
+        }
+
+        .logo-xlarge .logo-rect.outline {
+            background: white;
+            border: 4px solid #000000;
+        }
+
+        .usage-notes {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+        }
+
+        .usage-notes h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .usage-notes ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .usage-notes li {
+            margin-bottom: 8px;
+        }
+
+        .code-example {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-showcase">
+        <h1>AutoMediaCenter Logo Reference</h1>
+        <div class="logo-sizes">
+            <div class="logo-size">
+                <h3>Small (24×15)</h3>
+                <div class="logo-small">
+                    <div class="logo-rect filled"></div>
+                    <div class="logo-rect outline"></div>
+                    <div class="logo-rect outline"></div>
+                    <div class="logo-rect filled"></div>
+                </div>
+            </div>
+
+            <div class="logo-size">
+                <h3>Medium (32×20)</h3>
+                <div class="logo-medium">
+                    <div class="logo-rect filled"></div>
+                    <div class="logo-rect outline"></div>
+                    <div class="logo-rect outline"></div>
+                    <div class="logo-rect filled"></div>
+                </div>
+            </div>
+
+            <div class="logo-size">
+                <h3>Large (48×30)</h3>
+                <div class="logo-large">
+                    <div class="logo-rect filled"></div>
+                    <div class="logo-rect outline"></div>
+                    <div class="logo-rect outline"></div>
+                    <div class="logo-rect filled"></div>
+                </div>
+            </div>
+
+            <div class="logo-size">
+                <h3>Extra Large (64×40)</h3>
+                <div class="logo-xlarge">
+                    <div class="logo-rect filled"></div>
+                    <div class="logo-rect outline"></div>
+                    <div class="logo-rect outline"></div>
+                    <div class="logo-rect filled"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="usage-notes">
+        <h2>Logo Usage Guidelines</h2>
+        <ul>
+            <li><strong>Pattern:</strong> 2×2 grid of rectangles (wider than tall)</li>
+            <li><strong>Top Left:</strong> Black filled rectangle</li>
+            <li><strong>Top Right:</strong> White rectangle with black border</li>
+            <li><strong>Bottom Left:</strong> White rectangle with black border</li>
+            <li><strong>Bottom Right:</strong> Black filled rectangle</li>
+            <li><strong>Border Radius:</strong> Subtle rounding (3-8px depending on size)</li>
+            <li><strong>Aspect Ratio:</strong> Approximately 1.6:1 (width:height)</li>
+        </ul>
+
+        <div class="code-example">
+&lt;div class="logo-grid"&gt;
+    &lt;div class="logo-rect filled"&gt;&lt;/div&gt;
+    &lt;div class="logo-rect outline"&gt;&lt;/div&gt;
+    &lt;div class="logo-rect outline"&gt;&lt;/div&gt;
+    &lt;div class="logo-rect filled"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+.logo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    width: 32px;
+    height: 20px;
+}
+
+.logo-rect {
+    border-radius: 4px;
+}
+
+.logo-rect.filled {
+    background: #000000;
+}
+
+.logo-rect.outline {
+    background: white;
+    border: 2px solid #000000;
+}
+&lt;/style&gt;
+        </div>
+    </div>
+</body>
+</html>

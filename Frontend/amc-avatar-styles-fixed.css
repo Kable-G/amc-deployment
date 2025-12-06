@@ -1,0 +1,412 @@
+/**
+ * AMC Avatar System - Fixed Styles
+ * Enterprise-grade profile avatar with role-based halo rings
+ * Fixes the SVG explosion issue with proper size constraints
+ */
+
+/* Avatar container - FIXED SIZE */
+.avatar-wrapper {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    border: 3px solid var(--role-color, #9ca3af);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    background-color: var(--bg-secondary, #ffffff);
+    flex-shrink: 0;
+}
+
+/* Ensure SVG scales properly inside container */
+.avatar-img {
+    width: 24px !important;
+    height: 24px !important;
+    color: var(--role-color, #9ca3af);
+    flex-shrink: 0;
+}
+
+/* Hover effect */
+.avatar-wrapper:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Focus state for accessibility */
+.avatar-wrapper:focus {
+    outline: 2px solid var(--role-color, #3B82F6);
+    outline-offset: 2px;
+}
+
+/* Halo pulse animation on login */
+@keyframes haloPulse {
+    0% { 
+        box-shadow: 0 0 0 0 var(--role-color-alpha, rgba(59,130,246,0.6));
+        transform: scale(1);
+    }
+    70% { 
+        box-shadow: 0 0 0 8px var(--role-color-alpha-transparent, rgba(59,130,246,0));
+        transform: scale(1.05);
+    }
+    100% { 
+        box-shadow: 0 0 0 0 var(--role-color-alpha-transparent, rgba(59,130,246,0));
+        transform: scale(1);
+    }
+}
+
+.avatar-wrapper.pulse {
+    animation: haloPulse 1.2s ease-out;
+}
+
+/* Header layout fixes */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    color: var(--text-primary, #374151);
+}
+
+.icon-btn:hover {
+    background-color: var(--bg-hover, #f3f4f6);
+}
+
+/* Profile Modal Styles */
+.amc-profile-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.amc-profile-modal.amc-modal-open {
+    opacity: 1;
+}
+
+.amc-profile-modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+}
+
+.amc-profile-modal.amc-modal-open .amc-profile-modal-content {
+    transform: scale(1);
+}
+
+/* Modal Header */
+.amc-profile-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.amc-profile-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.amc-profile-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.amc-profile-close:hover {
+    color: #374151;
+    background-color: #f3f4f6;
+}
+
+/* User Info Section */
+.amc-profile-user-info {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.amc-profile-avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 4px solid var(--role-color, #9ca3af);
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9fafb;
+}
+
+.amc-profile-avatar-large svg {
+    width: 40px;
+    height: 40px;
+    color: var(--role-color, #9ca3af);
+}
+
+.amc-profile-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 4px 0;
+}
+
+.amc-profile-email {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 8px 0;
+}
+
+.amc-profile-role {
+    display: inline-block;
+    background-color: var(--role-color, #9ca3af);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Menu Sections */
+.amc-profile-section {
+    margin-bottom: 20px;
+}
+
+.amc-profile-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.amc-profile-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+    color: #374151;
+    margin-bottom: 4px;
+}
+
+.amc-profile-menu-item:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+.amc-profile-menu-item-icon {
+    margin-right: 12px;
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+.amc-profile-menu-item-text {
+    flex: 1;
+    font-size: 14px;
+}
+
+.amc-profile-menu-item-arrow {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+/* Theme Toggle */
+.amc-theme-toggle {
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+    background-color: #f3f4f6;
+    border-radius: 8px;
+}
+
+.amc-theme-option {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.2s ease;
+}
+
+.amc-theme-option.active {
+    background-color: white;
+    color: #111827;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.amc-theme-option:hover:not(.active) {
+    color: #374151;
+}
+
+/* Sign Out Button */
+.amc-profile-signout {
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    margin-top: 16px;
+}
+
+.amc-profile-signout:hover {
+    background-color: #fecaca;
+}
+
+/* Dark Mode Support */
+.dark-mode .amc-profile-modal-content {
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+.dark-mode .amc-profile-modal-header {
+    border-bottom-color: #374151;
+}
+
+.dark-mode .amc-profile-modal-title,
+.dark-mode .amc-profile-name {
+    color: #f9fafb;
+}
+
+.dark-mode .amc-profile-email {
+    color: #9ca3af;
+}
+
+.dark-mode .amc-profile-section-title {
+    color: #d1d5db;
+}
+
+.dark-mode .amc-profile-menu-item {
+    color: #d1d5db;
+}
+
+.dark-mode .amc-profile-menu-item:hover {
+    background-color: #374151;
+    color: #f9fafb;
+}
+
+.dark-mode .amc-theme-toggle {
+    background-color: #374151;
+}
+
+.dark-mode .amc-theme-option.active {
+    background-color: #4b5563;
+    color: #f9fafb;
+}
+
+.dark-mode .amc-profile-close:hover {
+    background-color: #374151;
+    color: #f9fafb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .amc-profile-modal-content {
+        width: 95%;
+        margin: 20px;
+        padding: 20px;
+    }
+    
+    .avatar-wrapper {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .avatar-img {
+        width: 20px !important;
+        height: 20px !important;
+    }
+    
+    .header-actions {
+        gap: 8px;
+    }
+    
+    .icon-btn {
+        padding: 6px;
+        font-size: 16px;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .avatar-wrapper,
+    .amc-profile-modal,
+    .amc-profile-modal-content,
+    .amc-profile-menu-item,
+    .amc-theme-option {
+        transition: none;
+    }
+    
+    .avatar-wrapper.pulse {
+        animation: none;
+    }
+    
+    .avatar-wrapper:hover {
+        transform: none;
+    }
+}
+
+/* High Contrast Support */
+@media (prefers-contrast: high) {
+    .avatar-wrapper {
+        border-width: 4px;
+    }
+    
+    .amc-profile-modal-content {
+        border: 2px solid #000;
+    }
+    
+    .amc-profile-menu-item:hover {
+        background-color: #000;
+        color: #fff;
+    }
+}

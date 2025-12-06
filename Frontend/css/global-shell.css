@@ -1,0 +1,751 @@
+
+/**
+ * AMC Global Shell CSS - Extracted from test_globalshell.html
+ * Contains ALL legendary styles that are proven to work:
+ * - 40px uniform icons with 4px spacing (Issue #1 Fix)
+ * - Glass morphism search bar with focus expansion (Issue #2 Fix)
+ * - Smart badge animations with spring physics (Issue #3 Fix)
+ * - Enterprise sidebar with colored sections
+ * - Premium light/dark mode system
+ * - Collapsible sections with elegant bars
+ * - Tools dropdown styling
+ * - Unified tooltip system
+ */
+
+:root {
+    /* ── LAYERED BACKGROUND ARCHITECTURE (Light Mode Premium) ─────── */
+    --amc-body-bg-light: #f8fafc;         /* soft neutral layer */
+    --amc-surface-bg-light: #ffffff;      /* cards / containers */
+    --amc-table-bg-light: #fcfcfd;        /* table wrapper */
+    --amc-header-bg-light: #f3f4f6;       /* table header background */
+    --amc-sidebar-bg-light: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* sidebar gradient */
+    
+    /* Legacy variables (maintained for compatibility) */
+    --bg-primary: var(--amc-body-bg-light);
+    --bg-secondary: var(--amc-surface-bg-light);
+    --bg-tertiary: #e9ecef;
+    
+    /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────────── */
+    --text-headings: #111827;    /* headers: strong */
+    --text-primary: #374151;     /* body text: medium */
+    --text-secondary: #6b7280;   /* metadata: subtle */
+    --text-muted: #9ca3af;       /* ultra-subtle */
+    
+    --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7;
+    
+    --accent-secondary-default: #6c757d;
+    --accent-secondary-default-hover: #5a6268;
+
+    --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
+    
+    --border-primary: #e5e7eb; --border-secondary: #d1d5db; --border-color-light: #e9ecef;
+    --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+    --icon-available: var(--accent-primary); --icon-unavailable: #ced4da;
+    --shadow-primary: rgba(0, 0, 0, 0.08); --shadow-hover: rgba(0, 0, 0, 0.15);
+    --overlay-bg: rgba(0, 0, 0, 0.65);
+    --tag-bg: var(--bg-tertiary); --tag-text: var(--text-secondary);
+    --color-info: #17a2b8;
+    --color-warning: #ffc107;
+    --brand-band-light-bg: #212529; --brand-band-light-text: #f8f9fa;
+    --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+    --bg-image-placeholder: #e9ecef;
+    --font-family-main: 'Poppins', sans-serif;
+    --sidebar-width: 260px;
+    --header-height: 64px; /* Updated for premium header */
+    --footer-height: 60px;
+    --accent-primary-rgb: 13, 110, 253;
+    --accent-secondary-default-rgb: 108, 117, 125;
+    --highlight-color-rgb: 255, 193, 7;
+    --notification-error: #dc3545;
+    --accent-action-positive: #28a745;
+    --accent-action-positive-hover: #218838;
+    --accent-action-positive-rgb: 40, 167, 69;
+    --accent-action-danger: #dc3545;
+    --accent-action-danger-hover: #c82333;
+    --selection-dot-color: var(--accent-primary); /* Blue for selection */
+    
+    /* ENTERPRISE TYPOGRAPHY SYSTEM */
+    --font-display: 2rem;      /* Page titles (h1) */
+    --font-heading: 1.4rem;    /* Section headers */
+    --font-subheading: 1.1rem; /* Card headers */
+    --font-body: 0.95rem;      /* Body text */
+    --font-muted: 0.85rem;     /* Metadata / labels */
+
+    /* SIDEBAR VARIABLES */
+    --amc-header-h: 64px;
+    --amc-sidebar-expanded: 264px;
+    --amc-sidebar-collapsed: 72px;
+
+    /* colors (light) */
+    --amc-bg: #ffffff;
+    --amc-line: #E5E7EB;
+    --amc-text: #0f172a;
+    --amc-muted:#64748b;
+
+    /* colors (dark) */
+    --amc-bg-dark: #0f1115;
+    --amc-line-dark: rgba(255,255,255,.12);
+    --amc-text-dark:#e5e7eb;
+    --amc-muted-dark:#94a3b8;
+}
+
+body.dark-mode {
+    --bg-primary: #121212; --bg-secondary: #1a1c1e; --bg-tertiary: #2a2d30;
+    --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+    --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff;
+    
+    --accent-secondary-default: #6c757d;
+    --accent-secondary-default-hover: #545b62;
+    
+    --border-primary: #3a3a3a; --border-secondary: #444; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+    --icon-available: var(--accent-primary); --icon-unavailable: #555;
+    --shadow-primary: rgba(0, 0, 0, 0.25); --shadow-hover: rgba(0, 0, 0, 0.35);
+    --overlay-bg: rgba(0, 0, 0, 0.75);
+    --tag-bg: #4a4a4a; --tag-text: var(--text-primary);
+    --brand-band-light-bg: #f8f9fa; --brand-band-light-text: #212529;
+    --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+    --color-info: #36c4d9;
+    --color-warning: #ffd04a;
+    --bg-image-placeholder: #2c2c2c;
+    --accent-primary-rgb: 63, 145, 255;
+    --accent-secondary-default-rgb: 108, 117, 125;
+    --accent-action-positive: #20c997;
+    --accent-action-positive-hover: #1ba984;
+    --accent-action-positive-rgb: 32, 201, 151;
+    --accent-action-danger: #e74c3c;
+    --accent-action-danger-hover: #d63031;
+    --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
+    --sidebar-bg: #1a1c1e;
+
+    /* AVATAR DARK MODE SUPPORT - Enable role-based rings in dark mode */
+    --bg-secondary-dark: #1a1c1e;
+    --text-primary-dark: #e2e8f0;
+    --border-primary-dark: #374151;
+    --bg-tertiary-dark: #2a2d30;
+    --text-headings-dark: #f8f9fa;
+    --text-secondary-dark: #9ca3af;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* 🚀 INDUSTRY-BUSTING: Global Motion Baseline */
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: background, color, transform, box-shadow;
+}
+
+/* 🎯 TYPOGRAPHY UPGRADE: Variable font smoothing for retina displays */
+html {
+    font-smooth: always;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--amc-body-bg-light); /* soft neutral layer */
+    color: var(--text-primary);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Body layout variables (expanded by default) */
+    --amc-sidebar-w: var(--amc-sidebar-expanded);
+    padding-top: var(--header-height); /* FIXED: Use same variable as header height */
+}
+
+/* Light mode layered background system */
+body:not(.dark-mode) {
+    background: var(--amc-body-bg-light);
+}
+
+/* DARK MODE BODY BACKGROUND */
+body.dark-mode {
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* When collapsed (remembered in localStorage) */
+body.amc-collapsed { 
+    --amc-sidebar-w: var(--amc-sidebar-collapsed); 
+}
+
+a { 
+    color: var(--accent-primary); 
+    text-decoration: none; 
+} 
+
+a:hover { 
+    color: var(--accent-primary-hover); 
+    text-decoration: underline; 
+}
+
+.app-container { 
+    display: flex; 
+    flex-direction: column; 
+    flex-grow: 1; 
+    margin-left: var(--amc-sidebar-w); 
+    transition: margin-left .18s ease; 
+}
+
+.app-body { 
+    display: flex; 
+    flex-grow: 1; 
+    transition: margin-left 0.3s ease; 
+}
+
+/* ============ INDUSTRY-LEADING HEADER SYSTEM ============ */
+
+.app-header {
+    /* Premium glass morphism */
+    backdrop-filter: blur(24px) saturate(180%);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 255, 255, 0.92) 100%
+    );
+    
+    /* Precise positioning */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px; /* Taller for premium feel */
+    z-index: 10000;
+    
+    /* Enterprise elevation */
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.04),
+        0 1px 2px rgba(0, 0, 0, 0.02),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.8);
+    
+    /* Perfect layout */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px 0 32px;
+    
+    /* Smooth transitions */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark mode header */
+body.dark-mode .app-header {
+    background: linear-gradient(
+        180deg,
+        rgba(17, 24, 39, 0.95) 0%,
+        rgba(17, 24, 39, 0.92) 100%
+    );
+    border-bottom-color: rgba(55, 65, 81, 0.6);
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ============ LOGO: BRAND IDENTITY ============ */
+
+.app-header .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    position: relative;
+}
+
+.app-header .logo h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin: 0;
+    color: #0f172a; /* Normal dark color in light mode */
+    
+    /* Premium font stack */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    
+    /* Smooth transition */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-header .logo:hover h1 {
+    /* Keep same text color but add blue glow/hue around letters */
+    color: #0f172a;
+    text-shadow:
+        0 0 10px rgba(37, 99, 235, 0.4),
+        0 0 20px rgba(37, 99, 235, 0.2),
+        0 0 30px rgba(37, 99, 235, 0.1);
+    transform: translateX(2px);
+}
+
+/* Dark mode: White text with blue glow on hover */
+body.dark-mode .app-header .logo h1 {
+    color: #f8fafc; /* Normal white color in dark mode */
+}
+
+body.dark-mode .app-header .logo:hover h1 {
+    /* Keep white text but add blue glow */
+    color: #f8fafc;
+    text-shadow:
+        0 0 10px rgba(96, 165, 250, 0.5),
+        0 0 20px rgba(96, 165, 250, 0.3),
+        0 0 30px rgba(96, 165, 250, 0.1);
+}
+
+.app-header .user-actions-group { 
+    display: flex; 
+    align-items: center; 
+    gap: 20px;
+}
+
+.app-header .user-info { 
+    font-size: 0.9em; 
+} 
+
+.app-header .user-info span { 
+    opacity: 0.8; 
+}
+
+.app-header .logout-link { 
+    color: var(--header-link); 
+    text-decoration: none; 
+    font-size: 0.9em;
+}
+
+.app-header .logout-link:hover { 
+    color: var(--header-text); 
+} 
+
+.app-header .logout-link i { 
+    margin-right: 5px; 
+}
+
+/* ============ LEGENDARY HEADER ICONS - ISSUE #1 FIX ============ */
+
+.amc-header-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important; /* Tight professional spacing - Linear/Stripe standard */
+}
+
+/* LEGENDARY: Uniform 40px icon system - EXACT VERCEL/LINEAR STANDARD */
+.cart-indicator,
+.notification-indicator,
+.tools-toggle-btn {
+    width: 40px !important;
+    height: 40px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative;
+    border-radius: 8px;
+    cursor: pointer;
+    
+    /* Clean default state */
+    background: transparent;
+    color: #64748b;
+    border: none;
+    outline: none;
+    
+    /* Smooth transitions - ENHANCED */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* LEGENDARY: Uniform hover feedback with lift + shadow - VERCEL STANDARD */
+.cart-indicator:hover,
+.notification-indicator:hover,
+.tools-toggle-btn:hover {
+    background: rgba(241, 245, 249, 0.8);
+    color: #0f172a;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* LEGENDARY: Click feedback - LINEAR STANDARD */
+.cart-indicator:active,
+.notification-indicator:active,
+.tools-toggle-btn:active {
+    transform: translateY(-1px) scale(0.96);
+}
+
+/* Icon sizing */
+.cart-indicator i,
+.notification-indicator i,
+.tools-toggle-btn i {
+    font-size: 18px;
+}
+
+/* LEGENDARY: Smart badge system - ISSUE #3 FIX */
+.cart-badge,
+.notification-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background: #2563eb;
+    color: #ffffff;
+    border-radius: 10px;
+    border: 2px solid #ffffff;
+    
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    
+    /* LEGENDARY: Hidden by default, spring physics entrance */
+    transform: scale(0);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity: 0;
+}
+
+/* LEGENDARY: Badge appears with spring + pulse animation */
+.cart-indicator.has-items .cart-badge,
+.notification-indicator.has-new .notification-badge {
+    transform: scale(1);
+    opacity: 1;
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+/* LEGENDARY: Pulse animation with expanding ring */
+@keyframes badgePulse {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+    50% {
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3),
+                    0 0 0 6px rgba(37, 99, 235, 0);
+    }
+}
+
+/* LEGENDARY: Notification badge - red variant */
+.notification-badge {
+    background: #dc2626;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+.notification-indicator.has-new .notification-badge {
+    animation: badgePulseRed 2s ease-in-out infinite;
+}
+
+/* LEGENDARY: Red pulse animation */
+@keyframes badgePulseRed {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    }
+    50% {
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3),
+                    0 0 0 6px rgba(220, 38, 38, 0);
+    }
+}
+
+/* LEGENDARY: Badge entrance animation on state change */
+.cart-indicator:not(.has-items) .cart-badge,
+.notification-indicator:not(.has-new) .notification-badge {
+    transform: scale(0);
+    opacity: 0;
+    animation: none;
+}
+
+/* LEGENDARY: Smooth badge count updates */
+.cart-badge,
+.notification-badge {
+    transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        opacity 0.3s ease,
+        background-color 0.2s ease;
+}
+
+/* Active states */
+.cart-indicator.has-items {
+    color: #f59e0b;
+}
+
+.notification-indicator.has-new {
+    color: #dc2626;
+}
+
+/* ============ THREE-DOT MENU: GREEN ACCENT BUTTON ============ */
+
+.amc-menu-dots {
+    width: 32px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
+    
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #059669; /* Always green - consistent with color scheme */
+    cursor: pointer;
+    
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.amc-menu-dots:hover {
+    background: rgba(5, 150, 105, 0.08); /* Green tint */
+    color: #047857; /* Darker green on hover */
+    box-shadow: 0 0 12px rgba(5, 150, 105, 0.4); /* Green glow */
+}
+
+.amc-menu-dots i {
+    font-size: 16px;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .cart-indicator:hover,
+body.dark-mode .notification-indicator:hover,
+body.dark-mode .tools-toggle-btn:hover {
+    background: rgba(51, 65, 85, 0.8);
+    color: #f1f5f9;
+}
+
+/* Dark mode: Green menu dots */
+body.dark-mode .amc-menu-dots {
+    color: #059669; /* Keep same green in dark mode */
+}
+
+body.dark-mode .amc-menu-dots:hover {
+    background: rgba(5, 150, 105, 0.12); /* Green tint for dark mode */
+    color: #10b981; /* Brighter green on hover in dark mode */
+    box-shadow: 0 0 16px rgba(5, 150, 105, 0.5); /* Stronger green glow for dark mode */
+}
+
+body.dark-mode .cart-badge,
+body.dark-mode .notification-badge {
+    border-color: #111827;
+}
+
+/* ============ UNIFIED HEADER ICON GLOW SYSTEM ============ */
+
+/* 🔔 NOTIFICATION BELL: Red glow when there are notifications */
+.notification-indicator.has-new > i.fa-bell {
+    color: #dc2626 !important; /* Red color */
+    animation: pulseNotificationIcon 1.5s infinite;
+}
+
+.notification-indicator.has-new:hover {
+    box-shadow: 0 0 12px rgba(220, 38, 38, 0.4) !important; /* Red glow */
+    background: rgba(220, 38, 38, 0.08) !important; /* Red tint */
+}
+
+@keyframes pulseNotificationIcon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* 🔧 TOOLS WRENCH: Blue glow on hover (always, no state needed) */
+.tools-toggle-btn:hover {
+    color: #2563eb !important; /* Blue color */
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.4) !important; /* Blue glow */
+    background: rgba(37, 99, 235, 0.08) !important; /* Blue tint */
+}
+
+.tools-toggle-btn:hover i {
+    animation: pulseToolsIcon 1.5s infinite;
+}
+
+@keyframes pulseToolsIcon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* 💼 BRIEFCASE CART: Yellow glow (existing - kept for reference) */
+.cart-indicator.has-items > i.fa-briefcase {
+    color: var(--highlight-color) !important;
+    animation: pulseBriefcaseIcon 1.5s infinite;
+}
+
+.cart-indicator.has-items:hover {
+    box-shadow: 0 0 12px rgba(var(--highlight-color-rgb), 0.4) !important;
+    background: rgba(var(--highlight-color-rgb), 0.08) !important;
+}
+
+@keyframes pulseBriefcaseIcon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* ============ DARK MODE ADJUSTMENTS ============ */
+
+/* Dark mode: Keep the same glow colors but adjust intensity */
+body.dark-mode .notification-indicator.has-new:hover {
+    box-shadow: 0 0 16px rgba(220, 38, 38, 0.5) !important;
+    background: rgba(220, 38, 38, 0.12) !important;
+}
+
+body.dark-mode .tools-toggle-btn:hover {
+    box-shadow: 0 0 16px rgba(37, 99, 235, 0.5) !important;
+    background: rgba(37, 99, 235, 0.12) !important;
+}
+
+body.dark-mode .cart-indicator.has-items:hover {
+    box-shadow: 0 0 16px rgba(var(--highlight-color-rgb), 0.5) !important;
+    background: rgba(var(--highlight-color-rgb), 0.12) !important;
+}
+
+/* ============ AVATAR: PREMIUM PROFILE INDICATOR ============ */
+
+.amc-avatar-container {
+    width: 40px !important;
+    height: 40px !important;
+    margin-left: 8px;
+    cursor: pointer;
+    
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.amc-avatar-container:hover {
+    transform: translateY(-1px) scale(1.05);
+}
+
+.amc-avatar-container:active {
+    transform: scale(0.98);
+}
+
+.amc-avatar-ring {
+    width: 40px !important;
+    height: 40px !important;
+    border-width: 2.5px !important;
+    
+    /* Enhanced shadow */
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        0 0 0 3px rgba(255, 255, 255, 0.8);
+}
+
+body.dark-mode .amc-avatar-ring {
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        0 0 0 3px rgba(17, 24, 39, 0.8);
+}
+
+/* 🌙 THEME TOGGLE ICON: Visual cue of intelligence */
+.theme-toggle-btn i {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 🌙 THEME ICON ROTATION: Smooth transition between sun/moon */
+body.dark-mode .theme-toggle-btn i {
+    transform: rotate(180deg);
+}
+
+/* 👤 AVATAR SIZE: Slightly larger to match icon system */
+.amc-avatar-container {
+    width: 36px !important; /* ENHANCED: UP from 32px */
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.amc-avatar-ring {
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    border-radius: 50% !important;
+    border-width: 2px !important;
+}
+
+.amc-avatar-ring img,
+.amc-avatar-ring i {
+    width: 30px !important; /* Scaled proportionally */
+    height: 30px !important;
+    font-size: 16px !important; /* Scaled proportionally */
+    object-fit: cover !important;
+    border-radius: 50% !important;
+}
+
+/* 🎯 HEADER ICON ALIGNMENT: Ensure all icons align properly */
+.amc-header-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+    height: 100% !important;
+}
+
+.amc-header-right > * {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.btn-icon { 
+    background:transparent; 
+    border:none; 
+    padding:5px 8px; 
+    margin-left:10px; 
+    cursor:pointer; 
+}
+
+.btn-icon i { 
+    color:var(--header-link); 
+    font-size:1.1em; 
+}
+
+.btn-icon:hover i { 
+    color: var(--header-text); 
+}
+
+/* ============ LEGENDARY SEARCH BAR - ISSUE #2 FIX ============ */
+
+.global-search {
+    flex: 0 1 480px; /* Flexible but not too wide */
+    max-width: 480px;
+    margin: 0 auto;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 40px !important;
+    
+    /* LEGENDARY: Glass morphism effect - Vercel/Linear standard */
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    border: 1.5px solid rgba(226, 232, 240, 0.8) !important;
+    border-radius: 10px !important;
+    
+    /* LEGENDARY: Multi-layer shadow depth */
+    box-shadow:
+        inset 0 1px 2px rgba(0, 0, 0, 0.02),
+        0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    
+    /* LEGENDARY: Smooth interaction */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.search-container:hover {
+    border-color: rgba(148, 163, 184, 0.8);
+    box-shadow:
+        inset 0 1px 2px rgba(0, 0, 0, 0.02),
+        0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.search-container:focus-within {
+    border-color: #2563eb !important;
+    background: #ffffff !important;
+    
+    /* LEGENDARY: Premium focus ring */
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.08),
+        0 2px 8px rgba(0, 0, 0, 

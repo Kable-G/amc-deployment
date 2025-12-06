@@ -1,0 +1,91 @@
+{
+  "name": "Currency Converter Pro - AutoMediaCenter",
+  "short_name": "Currency Pro",
+  "description": "Professional currency converter with real-time exchange rates, history tracking, and offline support",
+  "start_url": "./currencyconverter.html",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#0d6efd",
+  "orientation": "portrait-primary",
+  "categories": ["finance", "productivity", "utilities"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA4AAAAOECAYAAAB5c+XJAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Currency Converter Pro - Desktop View"
+    },
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAASwCAYAAAA2kONJAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+      "sizes": "480x854",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Currency Converter Pro - Mobile View"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quick Convert USD to EUR",
+      "short_name": "USD→EUR",
+      "description": "Quickly convert US Dollars to Euros",
+      "url": "./currencyconverter.html?from=USD&to=EUR",
+      "icons": [
+        {
+          "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+          "sizes": "32x32"
+        }
+      ]
+    },
+    {
+      "name": "View History",
+      "short_name": "History",
+      "description": "View conversion history",
+      "url": "./currencyconverter.html#history",
+      "icons": [
+        {
+          "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA",
+          "sizes": "32x32"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

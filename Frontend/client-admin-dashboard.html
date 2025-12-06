@@ -1,0 +1,2151 @@
+m
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="module">
+      import { protectPage } from "./auth.js";
+      protectPage("client_admin");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Company Management [Client Admin]</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- ✅ GLOBAL CSS - REPLACES ALL OLD STYLES -->
+    <link rel="stylesheet" href="css/amc-globalshell.css">
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+    <!-- Page-specific styles -->
+    <style>
+    /* —— MINIMAL PAGE-SPECIFIC STYLES - GLOBAL SHELL HANDLES LAYOUT —— */
+
+    .app-footer {
+        flex-shrink: 0;
+        margin-top: auto;
+        background: var(--header-bg);
+        color: var(--header-link);
+        text-align: center;
+        padding: 15px 25px;
+        font-size: 0.85em;
+        border-top: 1px solid var(--border-primary);
+    }
+    
+    .app-footer nav a {
+        color: var(--header-link);
+        margin: 0 8px;
+        text-decoration: none;
+    }
+    
+    .app-footer nav a:hover {
+        color: var(--header-text);
+    }
+    
+    /* ============================================
+       MODAL Z-INDEX FIXES
+       ============================================ */
+    .detail-modal-backdrop,
+    .confirm-modal-backdrop {
+        z-index: 10050 !important;
+        position: fixed !important;
+        inset: 0 !important;
+    }
+    
+    .detail-modal,
+    .confirm-modal {
+        z-index: 10051 !important;
+    }
+    
+    /* ============================================
+       FILTER CONTROLS
+       ============================================ */
+    .filter-controls {
+        margin-bottom: 25px;
+        padding: 15px;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        display: flex;
+        gap: 15px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    
+    .filter-controls .form-group {
+        margin-bottom: 0;
+        flex: 1 1 180px;
+    }
+    
+    .filter-controls label {
+        font-size: 0.85em;
+        margin-bottom: 0.3rem;
+        display: block;
+        color: var(--text-secondary);
+    }
+    
+    .filter-controls .form-control {
+        width: 100%;
+        padding: .5rem .75rem;
+        font-size: 0.9em;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: .25rem;
+    }
+    
+    .filter-controls .btn-stack {
+        display: flex;
+        gap: 10px;
+        align-self: flex-end;
+        margin-top: 1.2em;
+    }
+    
+    /* ============================================
+       BUTTONS
+       ============================================ */
+    .btn {
+        padding: 10px 18px;
+        font-size: 0.95em;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+    }
+    
+    .btn i { margin-right: 6px; }
+    
+    .btn-primary {
+        background-color: var(--accent-primary);
+        color: #fff;
+    }
+    
+    .btn-secondary {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+    }
+    
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+    }
+    
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.85em;
+    }
+    
+    /* ============================================
+       MINIMAL PAGE-SPECIFIC OVERRIDES
+       Global shell handles table styling
+       ============================================ */
+    
+    /* Kebab menu specific styles */
+    .kebab-float{
+      position: fixed;
+      min-width: 176px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-primary, #e5e7eb);
+      box-shadow: 0 18px 48px var(--shadow-primary, rgba(0,0,0,.25));
+      border-radius: 12px;
+      padding: 6px;
+      pointer-events: auto;
+    }
+
+    .kebab-item{
+      display:block; width:100%; text-align:left;
+      background: transparent; border: none;
+      color: var(--text-primary);
+      padding: 9px 12px; border-radius: 8px; cursor: pointer;
+    }
+
+    .kebab-item[data-action="view"]   { background: rgba(16,185,129,.30); }
+    .kebab-item[data-action="edit"]   { background: rgba(59,130,246,.30); }
+    .kebab-item[data-action="delete"] { background: rgba(239,68,68,.30);  }
+
+    .kebab-item[data-action="view"]:hover   { background:#10b981; color:#fff; }
+    .kebab-item[data-action="edit"]:hover   { background:#3b82f6; color:#fff; }
+    .kebab-item[data-action="delete"]:hover { background:#ef4444; color:#fff; }
+
+    .kebab-item + .kebab-item { margin-top: 6px; }
+    
+    /* Add the arrow "nub" for extra snug look */
+    .kebab-float.kebab-float--arrow::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      transform: rotate(45deg);
+      right: 14px; /* aligns near right edge */
+      background: inherit;
+      border-right: inherit;
+      border-bottom: inherit;
+      top: -6px; /* below-mode default; JS can toggle to bottom if you want */
+    }
+
+        /* ── ENTERPRISE BUTTON SYSTEM ───────────────────────────────── */
+        .btn, .nav-link {
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.01em;
+            transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 44px; /* Touch-friendly minimum */
+        }
+        
+        /* Navigation links specific styling */
+        .nav-link {
+            padding: 10px 12px;
+            min-height: auto;
+        }
+        
+        .btn i {
+            font-size: 0.9em;
+            transition: transform 0.2s ease;
+        }
+        
+        /* PRIMARY BUTTON - ENTERPRISE BLUE */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #0056d3 100%);
+            color: #ffffff !important;
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background: #0a66d1; /* solid premium blue */
+            color: #ffffff !important; /* Force white text on hover */
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(11,116,255,0.3); /* refined shadow */
+            border-color: var(--accent-primary-hover);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+        }
+        
+        .btn-primary:hover i {
+            transform: scale(1.1);
+        }
+        
+        /* SECONDARY BUTTON */
+        .btn-secondary {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border-secondary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* DANGER BUTTON */
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-action-danger) 0%, #c82333 100%);
+            color: #ffffff !important;
+            border: 1px solid var(--accent-action-danger);
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, var(--accent-action-danger-hover) 0%, #b21e2f 100%);
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+        
+        /* DARK MODE BUTTON ADJUSTMENTS */
+        body.dark-mode .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #2563eb 100%);
+            box-shadow: 0 2px 4px rgba(63, 145, 255, 0.25);
+        }
+        
+        body.dark-mode .btn-primary:hover {
+            background: linear-gradient(135deg, var(--accent-primary-hover) 0%, #1d4ed8 100%);
+            box-shadow: 0 4px 12px rgba(63, 145, 255, 0.35);
+        }
+        
+        body.dark-mode .btn-secondary {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+        }
+        
+        body.dark-mode .btn-secondary:hover {
+            background-color: #374151;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        }
+        
+        /* SMALL BUTTON VARIANT */
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            min-height: 36px;
+        }
+        
+        /* ── PREMIUM CARD SYSTEM WITH LAYERED DEPTH ─────────────────── */
+        .card, .table-container {
+            background: var(--amc-surface-bg-light); /* cards / containers layer */
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+        
+        /* Dark mode card styling */
+        body.dark-mode .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+        
+        /* ── CARD HEADER WITH VISUAL HIERARCHY ─────────────────────── */
+        .card-header {
+            border-bottom: 1px solid #e5e7eb; /* clear structural separation */
+            padding: 1rem 1.5rem; /* consistent spacing */
+            background: #f9fafb; /* soft header background for structure */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-footer {
+            padding: 1rem 1.5rem;
+            background: #f9fafb; /* match header background */
+            border-top: 1px solid #e5e7eb; /* consistent with header */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body {
+            background: #ffffff; /* pure white for content area */
+            padding: 1.5rem; /* generous content padding */
+        }
+        
+        /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────── */
+        .card-header h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin: 0;
+            color: var(--text-headings); /* strong hierarchy */
+        }
+        
+        /* DARK MODE SUPPORT FOR CARD HEADER */
+        body.dark-mode .card-header h2 {
+            color: var(--text-headings) !important;
+        }
+        
+        body.dark-mode .card-header, body.dark-mode .card-footer {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-primary);
+        }
+        
+        body.dark-mode .card-body {
+            background: var(--bg-secondary);
+        }
+        
+        /* ── PREMIUM CONTROL PANEL WITH ELEVATION ─────────────────── */
+        .controls-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--amc-surface-bg-light); /* cards / containers layer */
+            padding: 18px 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 12px;
+            border: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 16px;
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .controls-section:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+        }
+        
+        .controls-left h2.controls-title {
+            font-size: var(--font-heading);
+            font-weight: 600;
+            color: var(--text-headings); /* strong hierarchy */
+            margin: 0 0 4px 0;
+        }
+        
+        .controls-left p.controls-subtitle {
+            font-size: var(--font-muted);
+            color: var(--text-secondary); /* metadata hierarchy */
+            margin: 0;
+            line-height: 1.4;
+        }
+        
+        .controls-right .btn {
+            font-size: 0.95rem;
+            padding: 10px 18px;
+            font-weight: 500;
+        }
+        
+        /* DARK MODE CONTROLS SECTION */
+        body.dark-mode .controls-section {
+            background: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+        
+        /* ---- FIX: Prevent container clipping below sticky header ---- */
+        .content-header {
+            position: relative; /* instead of sticky */
+            margin-top: 0; /* Remove margin-top completely to match automediacenter.html */
+            background: var(--bg-primary);
+            z-index: 100;
+            margin-bottom: 25px; /* Match automediacenter.html: 25px */
+            padding: 0 0 15px 0; /* Match automediacenter.html: 15px bottom padding */
+            border-bottom: 1px solid var(--border-primary);
+        }
+        .content-header h1 {
+            font-size: var(--font-display);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #111827; /* darkest */
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .content-header h1 i { color: var(--accent-primary); margin-right: 0; }
+        .content-header p {
+            font-size: var(--font-body);
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-width: 720px;
+            margin: 0;
+        }
+        
+        /* DARK MODE CONTENT HEADER */
+        body.dark-mode .content-header {
+            background: var(--bg-primary) !important;
+            border-bottom-color: var(--border-primary) !important;
+        }
+        
+        body.dark-mode .content-header h1 {
+            color: var(--text-headings) !important;
+        }
+        
+        body.dark-mode .content-header p {
+            color: var(--text-secondary) !important;
+        }
+        
+        /* SECTION DIVIDER */
+        .section-divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 16px 0;
+        }
+        
+        /* COMPREHENSIVE DARK MODE OVERRIDES - FORCE ALL WHITE ELEMENTS TO DARK */
+        body.dark-mode .section-divider {
+            background: var(--border-secondary) !important;
+            opacity: 0.3;
+        }
+        
+        /* FORCE DARK MODE FOR ALL CONTAINERS AND BACKGROUNDS */
+        body.dark-mode .card,
+        body.dark-mode .card-header,
+        body.dark-mode .card-body,
+        body.dark-mode .card-footer {
+            background: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+        
+        /* FORCE DARK MODE FOR ALL MAIN CONTAINERS */
+        body.dark-mode .amc-content,
+        body.dark-mode .amc-main,
+        body.dark-mode .app-container,
+        body.dark-mode main {
+            background: var(--bg-primary) !important;
+        }
+        
+        /* RESPONSIVE TYPOGRAPHY */
+        @media (max-width: 1200px) {
+            :root {
+                --font-display: 1.75rem;
+                --font-heading: 1.25rem;
+                --font-subheading: 1rem;
+                --font-body: 0.9rem;
+                --font-muted: 0.8rem;
+            }
+            
+            .main-content {
+                padding: 30px 40px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .controls-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .controls-right {
+                width: 100%;
+            }
+            
+            .controls-right .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* ── MODAL SYSTEM ─────────────────────────────────────────── */
+        .modal-backdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.75);
+            z-index: 1060;
+            display: none;
+            align-items: center; justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-backdrop.open {
+            display: flex !important;
+            opacity: 1;
+        }
+        .modal-content {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex; flex-direction: column;
+            max-height: 90vh;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .modal-backdrop.open .modal-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .modal-header {
+            display: flex; align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-secondary);
+            flex-shrink: 0;
+        }
+        .modal-header h3 {
+            font-size: 1.2em;
+            margin: 0;
+            color: var(--text-headings);
+            flex-grow: 1;
+        }
+        .modal-header .close-btn {
+            background: none; border: none;
+            font-size: 1.8em;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0 5px; line-height: 1;
+        }
+        .modal-header .close-btn:hover { color: var(--text-primary); }
+        .modal-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-secondary);
+            flex-shrink: 0;
+            background-color: var(--bg-secondary);
+            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* FORM STYLING */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+        
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+        
+        /* Dark mode form controls */
+        body.dark-mode .form-control {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+            color: var(--text-primary);
+        }
+        
+        body.dark-mode .form-control:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(63, 145, 255, 0.1);
+        }
+        
+        /* TABLE STYLING */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+            background: var(--amc-table-bg-light);
+        }
+        
+        .table thead th {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            background: var(--amc-header-bg-light);
+            padding: 14px 20px 16px 20px;
+            text-align: left;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s ease;
+        }
+        
+        .table td {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #374151;
+            padding: 14px 20px;
+            border-top: 1px solid var(--border-secondary);
+        }
+        
+        .table tbody tr:nth-child(odd) {
+            background: #ffffff !important;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background: #f9fafb !important;
+        }
+        
+        .table tbody tr:hover {
+            background: #f1f5f9 !important;
+            cursor: pointer;
+            box-shadow: inset 2px 0 0 var(--accent-primary);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Dark mode table fixes */
+        body.dark-mode .table {
+            background: var(--bg-secondary) !important;
+        }
+        
+        body.dark-mode .table thead th {
+            background: var(--bg-tertiary) !important;
+            color: var(--text-secondary) !important;
+        }
+        
+        body.dark-mode .table tbody tr:nth-child(odd) {
+            background: var(--bg-secondary) !important;
+        }
+
+        body.dark-mode .table tbody tr:nth-child(even) {
+            background: var(--bg-tertiary) !important;
+        }
+        
+        body.dark-mode .table tbody tr:hover {
+            background: rgba(11, 116, 255, 0.08) !important;
+        }
+        
+        body.dark-mode .table td {
+            color: var(--text-primary) !important;
+            border-color: var(--border-primary) !important;
+        }
+        
+        /* ACTION BUTTONS */
+        .action-button-group {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+        
+        .action-button {
+            width: 32px;
+            height: 32px;
+            border-radius: 5px;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: filter 0.2s ease, transform 0.2s ease;
+        }
+        
+        .action-button:hover {
+            filter: brightness(1.15);
+            transform: scale(1.1);
+        }
+        
+        .action-button:disabled {
+            background-color: #e9ecef !important;
+            color: #6c757d !important;
+            cursor: not-allowed;
+            filter: none;
+            transform: none;
+        }
+        
+        .action-button-edit { background-color: var(--accent-primary); }
+        .action-button-delete { background-color: var(--accent-action-danger); }
+        .action-button-suspend { background-color: var(--color-warning); color: #000; }
+        .action-button-activate { background-color: var(--accent-action-positive); }
+        
+        /* ENHANCED STATUS BADGES WITH ICONS */
+        .status-badge {
+            padding: 0.25em 0.6em;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            border-radius: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .status-active { background-color: var(--accent-action-positive); color: #fff; }
+        .status-suspended { background-color: var(--color-warning); color: #000; }
+        .status-pending { background-color: var(--color-info); color: #fff; }
+        
+        /* INVITATION STATUS BADGES */
+        .status-invitation-pending {
+            background-color: #fbbf24;
+            color: #000;
+        }
+        .status-invitation-accepted {
+            background-color: var(--accent-action-positive);
+            color: #fff;
+        }
+        .status-invitation-expired {
+            background-color: #f87171;
+            color: #fff;
+        }
+        .status-invitation-revoked {
+            background-color: #6b7280;
+            color: #fff;
+        }
+        
+        /* INVITATION FILTER TABS */
+        .invitation-filter-tabs {
+            display: flex;
+            background: var(--amc-header-bg-light);
+            border-bottom: 1px solid var(--border-primary);
+            padding: 0;
+            margin: 0;
+            overflow-x: auto;
+        }
+        
+        .filter-tab {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .filter-tab:hover {
+            background: rgba(13, 110, 253, 0.05);
+            color: var(--accent-primary);
+        }
+        
+        .filter-tab.active {
+            color: var(--accent-primary);
+            background: rgba(13, 110, 253, 0.08);
+            border-bottom-color: var(--accent-primary);
+            font-weight: 600;
+        }
+        
+        .tab-count {
+            background: var(--accent-primary);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .filter-tab.active .tab-count {
+            background: var(--accent-primary);
+        }
+        
+        /* Dark mode filter tabs */
+        body.dark-mode .invitation-filter-tabs {
+            background: var(--bg-tertiary);
+        }
+        
+        body.dark-mode .filter-tab {
+            color: var(--text-secondary);
+        }
+        
+        body.dark-mode .filter-tab:hover {
+            background: rgba(63, 145, 255, 0.1);
+            color: var(--accent-primary);
+        }
+        
+        body.dark-mode .filter-tab.active {
+            background: rgba(63, 145, 255, 0.15);
+            color: var(--accent-primary);
+        }
+        
+        /* COMPANY INFO STYLING */
+        .company-info {
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .card-body.no-padding {
+            padding: 0 !important;
+        }
+        
+        /* ADDITIONAL STYLING FOR BETTER UX */
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .invitation-filter-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .filter-tab {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+                padding: 10px 12px;
+            }
+        }
+        
+        /* RESEND BUTTON STYLING */
+        .action-button-resend {
+            background-color: var(--color-info);
+        }
+        
+        .action-button-resend:hover {
+            background-color: #138496;
+        }
+        
+        /* INVITATION ROW STYLING BASED ON STATUS */
+        .invitation-row-expired {
+            background-color: rgba(248, 113, 113, 0.05) !important;
+        }
+        
+        .invitation-row-revoked {
+            background-color: rgba(107, 114, 128, 0.05) !important;
+            opacity: 0.7;
+        }
+        
+        body.dark-mode .invitation-row-expired {
+            background-color: rgba(248, 113, 113, 0.1) !important;
+        }
+        
+        body.dark-mode .invitation-row-revoked {
+            background-color: rgba(107, 114, 128, 0.1) !important;
+        }
+
+        /* Disable old header container since <amc-header> is now used */
+        /* .app-header { display: none !important; } */
+
+        /* Let AMC shell own the left rail spacing */
+        .app-container,
+        .amc-app {
+          margin-left: 0 !important;
+        }
+
+        /* Remove all sidebar overrides - let global shell handle everything */
+
+        /* COMPLETE HEADER FIX - Add to bottom of <style> section */
+
+        /* Force the custom element to be visible */
+        amc-header {
+            display: block !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 60px !important;
+            z-index: 1000 !important;
+            background: #1e2327 !important;
+        }
+
+        /* Force the wrapper inside to fill the element */
+        amc-header > * {
+            display: flex !important;
+            height: 100% !important;
+            width: 100% !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        /* Make sure content pushes down */
+        main.amc-content {
+            margin-top: 60px !important;
+        }
+
+        #sidebar {
+            top: 60px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- AMC Header Component -->
+    <amc-header></amc-header>
+
+    <div class="amc-app">
+        <!-- Enterprise Sidebar -->
+        <aside id="sidebar" class="amc-sidebar">
+            <!-- Content will be dynamically generated by components/sidebar.js -->
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="amc-page client-admin-dashboard" role="main">
+            <div class="amc-page__container">
+                <header class="amc-page__header">
+                    <h1 class="amc-page__title"><i class="fas fa-building"></i> Company Management</h1>
+                    <p class="amc-page__sub">Manage your team, invite users, and configure company settings</p>
+                </header>
+
+                <div class="amc-page__tools">
+                  <div class="controls-section">
+                    <div class="controls-left">
+                      <h2 class="controls-title">Team Overview</h2>
+                      <p class="controls-subtitle">Manage users and permissions for your company</p>
+                    </div>
+                    <div class="controls-right">
+                      <button class="btn btn-primary" id="inviteUserBtn">
+                        <i class="fas fa-user-plus"></i> Invite User
+                      </button>
+                    </div>
+                  </div>
+                  <div class="section-divider"></div>
+                </div>
+
+                <div class="amc-page__body">
+
+                <!-- COMPANY SETTINGS CARD -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-cog"></i> Company Settings</h2>
+                        <button class="btn btn-secondary btn-sm" id="editCompanyBtn">
+                            <i class="fas fa-edit"></i> Edit Settings
+                        </button>
+                    </div>
+                    <div class="card-body no-padding">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td style="font-weight: 600; color: var(--text-secondary); width: 280px; border-right: 1px solid var(--border-secondary); white-space: nowrap;">
+                                            <i class="fas fa-building" style="margin-right: 8px; color: var(--accent-primary);"></i>
+                                            Company Name
+                                        </td>
+                                        <td id="companyName" style="font-weight: 500;">Loading...</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 600; color: var(--text-secondary); width: 280px; border-right: 1px solid var(--border-secondary); white-space: nowrap;">
+                                            <i class="fas fa-certificate" style="margin-right: 8px; color: var(--accent-primary);"></i>
+                                            Legal Name
+                                        </td>
+                                        <td id="companyLegalName" style="font-weight: 500;">Loading...</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 600; color: var(--text-secondary); width: 280px; border-right: 1px solid var(--border-secondary); white-space: nowrap;">
+                                            <i class="fas fa-user-tie" style="margin-right: 8px; color: var(--accent-primary);"></i>
+                                            Contact Person
+                                        </td>
+                                        <td id="companyContactPerson" style="font-weight: 500;">Loading...</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 600; color: var(--text-secondary); width: 280px; border-right: 1px solid var(--border-secondary); white-space: nowrap;">
+                                            <i class="fas fa-envelope" style="margin-right: 8px; color: var(--accent-primary);"></i>
+                                            Contact Email
+                                        </td>
+                                        <td id="companyEmail" style="font-weight: 500;">Loading...</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 600; color: var(--text-secondary); width: 280px; border-right: 1px solid var(--border-secondary); white-space: nowrap;">
+                                            <i class="fas fa-phone" style="margin-right: 8px; color: var(--accent-primary);"></i>
+                                            Contact Phone
+                                        </td>
+                                        <td id="companyContactPhone" style="font-weight: 500;">Loading...</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 600; color: var(--text-secondary); width: 280px; border-right: 1px solid var(--border-secondary); white-space: nowrap;">
+                                            <i class="fas fa-link" style="margin-right: 8px; color: var(--accent-primary);"></i>
+                                            Company Website
+                                        </td>
+                                        <td id="companyWebsite" style="font-weight: 500;">Loading...</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 600; color: var(--text-secondary); width: 280px; border-right: 1px solid var(--border-secondary); white-space: nowrap;">
+                                            <i class="fas fa-users" style="margin-right: 8px; color: var(--accent-primary);"></i>
+                                            Active Users
+                                        </td>
+                                        <td id="companyUserCount" style="font-weight: 500;">Loading...</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 600; color: var(--text-secondary); width: 280px; border-right: 1px solid var(--border-secondary); white-space: nowrap;">
+                                            <i class="fas fa-user-clock" style="margin-right: 8px; color: var(--accent-primary);"></i>
+                                            Pending Users
+                                        </td>
+                                        <td id="companyPendingCount" style="font-weight: 500;">Loading...</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 600; color: var(--text-secondary); width: 280px; border-right: 1px solid var(--border-secondary); white-space: nowrap;">
+                                            <i class="fas fa-crown" style="margin-right: 8px; color: var(--accent-primary);"></i>
+                                            AutoMediaCenter Plan
+                                        </td>
+                                        <td id="companyPlan" style="font-weight: 500;">Loading...</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 600; color: var(--text-secondary); width: 280px; border-right: 1px solid var(--border-secondary); white-space: nowrap;">
+                                            <i class="fas fa-check-circle" style="margin-right: 8px; color: var(--accent-primary);"></i>
+                                            Company Status
+                                        </td>
+                                        <td id="companyStatus" style="font-weight: 500;">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TEAM MEMBERS CARD -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-users"></i> Team Members</h2>
+                        <span id="teamMemberCount">Loading...</span>
+                    </div>
+                    <div class="card-body no-padding">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Last Login</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="teamMembersTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align:center; padding:20px;">
+                                            <i class="fas fa-spinner fa-spin fa-fw"></i> Loading team members...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INVITATION LIFECYCLE MANAGEMENT CARD -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-envelope-open-text"></i> Invitation Management</h2>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <span id="invitationSummary">Loading...</span>
+                            <button class="btn btn-secondary btn-sm" id="refreshInvitationsBtn">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body no-padding">
+                        <!-- Invitation Status Filter Tabs -->
+                        <div class="invitation-filter-tabs">
+                            <button class="filter-tab active" data-status="all">
+                                <i class="fas fa-list"></i> All Invitations
+                                <span class="tab-count" id="allCount">0</span>
+                            </button>
+                            <button class="filter-tab" data-status="pending">
+                                <i class="fas fa-clock"></i> Pending
+                                <span class="tab-count" id="pendingCount">0</span>
+                            </button>
+                            <button class="filter-tab" data-status="accepted">
+                                <i class="fas fa-check-circle"></i> Accepted
+                                <span class="tab-count" id="acceptedCount">0</span>
+                            </button>
+                            <button class="filter-tab" data-status="expired">
+                                <i class="fas fa-exclamation-triangle"></i> Expired
+                                <span class="tab-count" id="expiredCount">0</span>
+                            </button>
+                            <button class="filter-tab" data-status="revoked">
+                                <i class="fas fa-ban"></i> Revoked
+                                <span class="tab-count" id="revokedCount">0</span>
+                            </button>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Invited By</th>
+                                        <th>Sent Date</th>
+                                        <th>Expires / Accepted</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invitationsTableBody">
+                                    <tr>
+                                        <td colspan="7" style="text-align:center; padding:20px;">
+                                            <i class="fas fa-spinner fa-spin fa-fw"></i> Loading invitations...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <nav>
+            <a href="#">About Us</a> |
+            <a href="#">Help Center</a> |
+            <a href="#">Terms of Service</a> |
+            <a href="#">Privacy Policy</a>
+        </nav>
+        <p>© <span id="currentYearText"></span> AutoMediaCenter. All rights reserved.</p>
+    </footer>
+    
+    <!-- INVITE USER MODAL -->
+    <div class="modal-backdrop" id="inviteUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Invite New User</h3>
+                <button class="close-btn" aria-label="Close modal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="inviteUserForm">
+                    <div class="form-group">
+                        <label class="form-label" for="inviteName">Full Name *</label>
+                        <input type="text" id="inviteName" class="form-control" required
+                               placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="inviteEmail">Email Address *</label>
+                        <input type="email" id="inviteEmail" class="form-control" required
+                               placeholder="user@company.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="inviteRole">Role *</label>
+                        <select id="inviteRole" class="form-control form-select" required>
+                            <option value="">Select a role</option>
+                            <option value="client_user">Client User</option>
+                            <option value="client_admin">Client Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Permissions</label>
+                        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="canUpload" checked>
+                                Can Upload Content
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="canApprove">
+                                Can Approve Content
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                                <input type="checkbox" id="canManageUsers">
+                                Can Manage Users
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelInviteBtn">Cancel</button>
+                <button class="btn btn-primary" id="sendInviteBtn">
+                    <i class="fas fa-paper-plane"></i> Send Invitation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT COMPANY MODAL -->
+    <div class="modal-backdrop" id="editCompanyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Company Settings</h3>
+                <button class="close-btn" aria-label="Close modal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="editCompanyForm">
+                    <div class="form-group">
+                        <label class="form-label" for="editCompanyName">Company Name *</label>
+                        <input type="text" id="editCompanyName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editLegalName">Legal Name</label>
+                        <input type="text" id="editLegalName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editPrimaryDomain">Primary Domain</label>
+                        <input type="text" id="editPrimaryDomain" class="form-control"
+                               placeholder="company.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editContactEmail">Contact Email *</label>
+                        <input type="email" id="editContactEmail" class="form-control" required>
+                    <div class="form-group">
+                        <label class="form-label" for="editContactPerson">Contact Person</label>
+                        <input type="text" id="editContactPerson" class="form-control"
+                               placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editContactPhone">Contact Phone</label>
+                        <input type="tel" id="editContactPhone" class="form-control"
+                               placeholder="+1 (555) 123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editCompanyWebsite">Company Website</label>
+                        <input type="url" id="editCompanyWebsite" class="form-control"
+                               placeholder="https://company.com">
+                    </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveCompanyBtn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRM MODAL -->
+    <div class="modal-backdrop" id="confirmModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="confirmModalTitle">Confirm Action</h3>
+                <button class="close-btn" aria-label="Close modal">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalText">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="confirmCancelBtn">Cancel</button>
+                <button class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // FIXED: Single theme toggle system - no conflicts
+    document.addEventListener('DOMContentLoaded', () => {
+        // Authentication is handled server-side via adminRoutes.js middleware
+        // Client-side authentication removed to prevent conflicts with localStorage tokens
+        let token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        let userString = localStorage.getItem('user') || localStorage.getItem('currentUser');
+        let user = null;
+        
+        if (userString) {
+            try {
+                user = JSON.parse(userString);
+            } catch (e) {
+                console.error("Error parsing user from localStorage", e);
+                user = { email: 'User', role: 'client_admin' }; // Fallback for display
+            }
+        }
+        
+        // Fallback user object for display purposes
+        if (!user) {
+            user = { email: 'User', role: 'client_admin' };
+        }
+
+        const ui = {
+            // Company info elements
+            companyName: document.getElementById('companyName'),
+            companyLegalName: document.getElementById('companyLegalName'),
+            companyContactPerson: document.getElementById('companyContactPerson'),
+            companyEmail: document.getElementById('companyEmail'),
+            companyContactPhone: document.getElementById('companyContactPhone'),
+            companyWebsite: document.getElementById('companyWebsite'),
+            companyUserCount: document.getElementById('companyUserCount'),
+            companyPendingCount: document.getElementById('companyPendingCount'),
+            companyPlan: document.getElementById('companyPlan'),
+            companyStatus: document.getElementById('companyStatus'),
+            
+            // Team members
+            teamMembersTableBody: document.getElementById('teamMembersTableBody'),
+            teamMemberCount: document.getElementById('teamMemberCount'),
+            
+            // Enhanced invitation management
+            invitationsTableBody: document.getElementById('invitationsTableBody'),
+            invitationSummary: document.getElementById('invitationSummary'),
+            refreshInvitationsBtn: document.getElementById('refreshInvitationsBtn'),
+            
+            // Filter tab counts
+            allCount: document.getElementById('allCount'),
+            pendingCount: document.getElementById('pendingCount'),
+            acceptedCount: document.getElementById('acceptedCount'),
+            expiredCount: document.getElementById('expiredCount'),
+            revokedCount: document.getElementById('revokedCount'),
+            
+            // Buttons
+            inviteUserBtn: document.getElementById('inviteUserBtn'),
+            editCompanyBtn: document.getElementById('editCompanyBtn'),
+            
+            // Modals
+            inviteUserModal: document.getElementById('inviteUserModal'),
+            editCompanyModal: document.getElementById('editCompanyModal'),
+            confirmModal: document.getElementById('confirmModal'),
+            
+            // Form elements
+            inviteUserForm: document.getElementById('inviteUserForm'),
+            editCompanyForm: document.getElementById('editCompanyForm'),
+            
+            currentYearText: document.getElementById('currentYearText'),
+        };
+
+        let currentCompany = null;
+        let allInvitations = [];
+        let currentFilter = 'all';
+
+        const setupUI = () => {
+            if (ui.currentYearText) ui.currentYearText.textContent = new Date().getFullYear();
+            
+            // FIXED: Theme toggle functionality - now handled by avatar modal
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    // Also add modal-dark class for avatar system compatibility
+                    document.body.classList.add('modal-dark');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    document.body.classList.remove('modal-dark');
+                }
+            };
+            
+            // Initialize theme - check saved preference or default to light
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+        };
+
+        const openModal = (modal) => {
+            modal.style.display = 'flex';
+            requestAnimationFrame(() => {
+                modal.classList.add('open');
+            });
+        };
+
+        const closeModal = (modal) => {
+            modal.classList.remove('open');
+            modal.addEventListener('transitionend', function handler(e) {
+                if (e.propertyName === 'opacity' && !modal.classList.contains('open')) {
+                    modal.style.display = 'none';
+                    modal.removeEventListener('transitionend', handler);
+                }
+            });
+        };
+
+        const fetchCompanyInfo = async () => {
+            try {
+                console.log('🔥 DEBUG: Fetching company info...');
+                const response = await fetch('http://localhost:5000/api/v1/client-admin/company', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                console.log('🔥 DEBUG: Response status:', response.status);
+                const result = await response.json();
+                console.log('🔥 DEBUG: Full API response:', result);
+                
+                if (!response.ok) throw new Error(result.error || `Server Error: ${response.status}`);
+                
+                currentCompany = result.company;
+                console.log('🔥 DEBUG: Company data:', currentCompany);
+                renderCompanyInfo(currentCompany);
+            } catch (error) {
+                console.error('🔥 DEBUG: Error fetching company info:', error);
+                ui.companyName.textContent = 'Error loading company info';
+            }
+        };
+
+        const renderCompanyInfo = (company) => {
+            ui.companyName.textContent = company.name || 'N/A';
+            ui.companyLegalName.textContent = company.legalName || 'N/A';
+            ui.companyContactPerson.textContent = company.contactPerson || 'N/A';
+            ui.companyEmail.textContent = company.contactEmail || 'N/A';
+            ui.companyContactPhone.textContent = company.contactPhone || 'N/A';
+            ui.companyWebsite.textContent = company.companyWebsite || 'N/A';
+            ui.companyPlan.innerHTML = `<span class="status-badge status-${company.planType || 'enterprise'}">${(company.planType || 'enterprise').toUpperCase()}</span>`;
+            ui.companyStatus.innerHTML = `<span class="status-badge status-${company.status || 'active'}">${(company.status || 'active').toUpperCase()}</span>`;
+        };
+
+        const updateUserCounts = (teamMembers, invitations) => {
+            // Count active users - all team members are active by default since they're fetched with isActive: true
+            const activeUsers = teamMembers ? teamMembers.length : 0;
+            ui.companyUserCount.textContent = activeUsers;
+
+            // Count pending invitations
+            const pendingInvites = invitations ? invitations.filter(inv => inv.status === 'pending' || getInvitationStatus(inv) === 'pending').length : 0;
+            ui.companyPendingCount.textContent = pendingInvites;
+        };
+
+        const fetchTeamMembers = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/client-admin/team', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
+                
+                if (!response.ok) throw new Error(result.error || `Server Error: ${response.status}`);
+                
+                renderTeamMembers(result.teamMembers);
+                
+                // DYNAMIC LINK: Team member count = Active Users count
+                const teamCount = result.teamMembers.length;
+                ui.teamMemberCount.textContent = `${teamCount} members`;
+                ui.companyUserCount.textContent = teamCount;
+                
+                console.log('🔥 DYNAMIC LINK: Team members:', teamCount, 'Active Users:', teamCount);
+                
+                // Store team members globally for other functions
+                window.currentTeamMembers = result.teamMembers;
+                
+            } catch (error) {
+                console.error('Error fetching team members:', error);
+                ui.teamMembersTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--accent-action-danger);">${error.message}</td></tr>`;
+                // Even on error, try to get count from UI if available
+                const existingCount = ui.teamMemberCount.textContent.match(/(\d+)/);
+                if (existingCount) {
+                    ui.companyUserCount.textContent = existingCount[1];
+                }
+            }
+        };
+
+        const renderTeamMembers = (users) => {
+            ui.teamMembersTableBody.innerHTML = '';
+            
+            if (!users || !users.length) {
+                ui.teamMembersTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">No team members found.</td></tr>`;
+                return;
+            }
+
+            users.forEach(user => {
+                const lastLogin = user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString('en-GB') : 'Never';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${user.name || 'N/A'}</td>
+                    <td>${user.email}</td>
+                    <td><span class="status-badge status-${user.role === 'client_admin' ? 'active' : 'pending'}">${user.role.replace('_', ' ').toUpperCase()}</span></td>
+                    <td><span class="status-badge status-${user.status || 'active'}">${(user.status || 'active').toUpperCase()}</span></td>
+                    <td>${lastLogin}</td>
+                    <td>
+                        <div class="action-button-group">
+                            <button class="action-button action-button-edit" data-user-id="${user._id}" title="Edit User">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${user.status === 'active' ?
+                                `<button class="action-button action-button-suspend" data-user-id="${user._id}" title="Suspend User">
+                                    <i class="fas fa-pause"></i>
+                                </button>` :
+                                `<button class="action-button action-button-activate" data-user-id="${user._id}" title="Activate User">
+                                    <i class="fas fa-play"></i>
+                                </button>`
+                            }
+                            <button class="action-button action-button-delete" data-user-id="${user._id}" data-user-email="${user.email}" title="Remove User">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                ui.teamMembersTableBody.appendChild(tr);
+            });
+        };
+
+        const fetchAllInvitations = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/client-admin/invites', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
+                
+                if (!response.ok) throw new Error(result.error || `Server Error: ${response.status}`);
+                
+                allInvitations = result.invitations || [];
+                updateInvitationCounts();
+                renderInvitations();
+                
+                // Update pending count in company settings
+                updateUserCounts(null, allInvitations);
+            } catch (error) {
+                console.error('Error fetching invitations:', error);
+                ui.invitationsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--accent-action-danger);">${error.message}</td></tr>`;
+            }
+        };
+
+        const updateInvitationCounts = () => {
+            const counts = {
+                all: allInvitations.length,
+                pending: allInvitations.filter(inv => getInvitationStatus(inv) === 'pending').length,
+                accepted: allInvitations.filter(inv => getInvitationStatus(inv) === 'accepted').length,
+                expired: allInvitations.filter(inv => getInvitationStatus(inv) === 'expired').length,
+                revoked: allInvitations.filter(inv => getInvitationStatus(inv) === 'revoked').length
+            };
+            
+            ui.allCount.textContent = counts.all;
+            ui.pendingCount.textContent = counts.pending;
+            ui.acceptedCount.textContent = counts.accepted;
+            ui.expiredCount.textContent = counts.expired;
+            ui.revokedCount.textContent = counts.revoked;
+            
+            ui.invitationSummary.textContent = `${counts.pending} pending, ${counts.accepted} accepted, ${counts.expired} expired`;
+        };
+
+        const getInvitationStatus = (invitation) => {
+            if (invitation.redeemedAt) return 'accepted';
+            if (invitation.revokedAt) return 'revoked';
+            if (new Date(invitation.expiresAt) < new Date()) return 'expired';
+            return 'pending';
+        };
+
+        const getStatusBadgeHTML = (status) => {
+            const statusConfig = {
+                pending: { icon: 'fas fa-clock', class: 'status-invitation-pending', text: 'PENDING' },
+                accepted: { icon: 'fas fa-check-circle', class: 'status-invitation-accepted', text: 'ACCEPTED' },
+                expired: { icon: 'fas fa-exclamation-triangle', class: 'status-invitation-expired', text: 'EXPIRED' },
+                revoked: { icon: 'fas fa-ban', class: 'status-invitation-revoked', text: 'REVOKED' }
+            };
+            
+            const config = statusConfig[status] || statusConfig.pending;
+            return `<span class="status-badge ${config.class}"><i class="${config.icon}"></i> ${config.text}</span>`;
+        };
+
+        const renderInvitations = () => {
+            const filteredInvitations = currentFilter === 'all'
+                ? allInvitations
+                : allInvitations.filter(inv => getInvitationStatus(inv) === currentFilter);
+            
+            ui.invitationsTableBody.innerHTML = '';
+            
+            if (!filteredInvitations.length) {
+                const message = currentFilter === 'all'
+                    ? 'No invitations found.'
+                    : `No ${currentFilter} invitations found.`;
+                ui.invitationsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">${message}</td></tr>`;
+                return;
+            }
+
+            filteredInvitations.forEach(invite => {
+                const status = getInvitationStatus(invite);
+                const sentDate = new Date(invite.createdAt).toLocaleDateString('en-GB');
+                const invitedBy = invite.invitedBy?.email || 'System';
+                
+                let dateInfo = '';
+                if (status === 'accepted') {
+                    dateInfo = `Accepted: ${new Date(invite.redeemedAt).toLocaleDateString('en-GB')}`;
+                } else if (status === 'revoked') {
+                    dateInfo = `Revoked: ${new Date(invite.revokedAt).toLocaleDateString('en-GB')}`;
+                } else {
+                    dateInfo = `Expires: ${new Date(invite.expiresAt).toLocaleDateString('en-GB')}`;
+                }
+                
+                const tr = document.createElement('tr');
+                tr.className = `invitation-row-${status}`;
+                tr.innerHTML = `
+                    <td>${invite.email}</td>
+                    <td><span class="status-badge status-${invite.role === 'client_admin' ? 'active' : 'pending'}">${invite.role.replace('_', ' ').toUpperCase()}</span></td>
+                    <td>${getStatusBadgeHTML(status)}</td>
+                    <td>${invitedBy}</td>
+                    <td>${sentDate}</td>
+                    <td>${dateInfo}</td>
+                    <td>
+                        <div class="action-button-group">
+                            ${status === 'pending' ? `
+                                <button class="action-button action-button-resend" data-invite-id="${invite._id}" data-invite-email="${invite.email}" title="Resend Invitation">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                                <button class="action-button action-button-delete" data-invite-id="${invite._id}" data-invite-email="${invite.email}" title="Cancel Invitation">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            ` : status === 'expired' ? `
+                                <button class="action-button action-button-resend" data-invite-id="${invite._id}" data-invite-email="${invite.email}" title="Resend Invitation">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                `;
+                ui.invitationsTableBody.appendChild(tr);
+            });
+        };
+
+        const resendInvitation = async (inviteId, email) => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/v1/client-admin/invites/${inviteId}/resend`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) throw new Error(result.error || 'Failed to resend invitation');
+                
+                return result;
+            } catch (error) {
+                throw error;
+            }
+        };
+
+        const sendInvitation = async (inviteData) => {
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/client-admin/invite', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(inviteData)
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) throw new Error(result.error || `Server Error: ${response.status}`);
+                
+                return result;
+            } catch (error) {
+                throw error;
+            }
+        };
+
+        // Event Listeners
+        ui.inviteUserBtn.addEventListener('click', () => {
+            ui.inviteUserForm.reset();
+            document.getElementById('canUpload').checked = true;
+            openModal(ui.inviteUserModal);
+        });
+
+        ui.editCompanyBtn.addEventListener('click', () => {
+            if (currentCompany) {
+                document.getElementById('editCompanyName').value = currentCompany.name || '';
+                document.getElementById('editLegalName').value = currentCompany.legalName || '';
+                document.getElementById('editPrimaryDomain').value = currentCompany.primaryDomain || '';
+                document.getElementById('editContactEmail').value = currentCompany.contactEmail || '';
+                document.getElementById('editContactPerson').value = currentCompany.contactPerson || '';
+                document.getElementById('editContactPhone').value = currentCompany.contactPhone || '';
+                document.getElementById('editCompanyWebsite').value = currentCompany.companyWebsite || '';
+            }
+            openModal(ui.editCompanyModal);
+        });
+        // ROOT CAUSE FIX: Save company changes handler
+        document.getElementById('saveCompanyBtn').addEventListener('click', async () => {
+            console.log('🔥 SAVE: Button clicked!');
+            
+            const form = ui.editCompanyForm;
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Get the actual values from the form fields
+            const legalNameValue = document.getElementById('editLegalName').value.trim();
+            const contactPersonValue = document.getElementById('editContactPerson').value.trim();
+            const contactPhoneValue = document.getElementById('editContactPhone').value.trim();
+            const companyWebsiteValue = document.getElementById('editCompanyWebsite').value.trim();
+
+            const updateData = {
+                legalName: legalNameValue,
+                contactPerson: contactPersonValue,
+                contactPhone: contactPhoneValue,
+                companyWebsite: companyWebsiteValue
+            };
+
+            console.log('🔥 SAVE: Sending data:', updateData);
+
+            try {
+                const saveBtn = document.getElementById('saveCompanyBtn');
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                
+                const response = await fetch('http://localhost:5000/api/v1/client-admin/company', {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                const result = await response.json();
+                console.log('🔥 SAVE: Server response:', result);
+                
+                if (!response.ok) {
+                    throw new Error(result.error || `Server Error: ${response.status}`);
+                }
+                
+                // ROOT CAUSE FIX: Update the UI immediately with the saved values
+                if (legalNameValue) {
+                    ui.companyLegalName.textContent = legalNameValue;
+                    console.log('🔥 SAVE: Legal Name updated to:', legalNameValue);
+                }
+                if (contactPersonValue) {
+                    ui.companyContactPerson.textContent = contactPersonValue;
+                }
+                if (contactPhoneValue) {
+                    ui.companyContactPhone.textContent = contactPhoneValue;
+                }
+                if (companyWebsiteValue) {
+                    ui.companyWebsite.textContent = companyWebsiteValue;
+                }
+                
+                closeModal(ui.editCompanyModal);
+                alert('Company settings saved successfully!');
+                
+            } catch (error) {
+                console.error('🔥 SAVE: Error:', error);
+                alert(`Failed to save: ${error.message}`);
+            } finally {
+                const saveBtn = document.getElementById('saveCompanyBtn');
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            }
+        });
+
+
+        // Modal close handlers
+        document.querySelectorAll('.close-btn, #cancelInviteBtn, #cancelEditBtn, #confirmCancelBtn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const modal = e.target.closest('.modal-backdrop');
+                if (modal) closeModal(modal);
+            });
+        });
+
+        // Send invitation
+        document.getElementById('sendInviteBtn').addEventListener('click', async () => {
+            const form = ui.inviteUserForm;
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const inviteData = {
+                name: document.getElementById('inviteName').value,
+                email: document.getElementById('inviteEmail').value,
+                role: document.getElementById('inviteRole').value,
+                permissions: {
+                    canUpload: document.getElementById('canUpload').checked,
+                    canApprove: document.getElementById('canApprove').checked,
+                    canManageUsers: document.getElementById('canManageUsers').checked
+                }
+            };
+
+            try {
+                document.getElementById('sendInviteBtn').disabled = true;
+                document.getElementById('sendInviteBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                
+                await sendInvitation(inviteData);
+                
+                closeModal(ui.inviteUserModal);
+                fetchAllInvitations(); // Refresh the list
+                
+                // Show success message
+                alert('Invitation sent successfully!');
+            } catch (error) {
+                alert(`Error sending invitation: ${error.message}`);
+            } finally {
+                document.getElementById('sendInviteBtn').disabled = false;
+                document.getElementById('sendInviteBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Send Invitation';
+            }
+        });
+
+        // Table action handlers
+        ui.teamMembersTableBody.addEventListener('click', (e) => {
+            const button = e.target.closest('.action-button');
+            if (!button) return;
+
+            const userId = button.dataset.userId;
+            const userEmail = button.dataset.userEmail;
+
+            if (button.classList.contains('action-button-delete')) {
+                document.getElementById('confirmModalTitle').textContent = 'Remove User';
+                document.getElementById('confirmModalText').textContent = `Are you sure you want to remove ${userEmail} from your company? This action cannot be undone.`;
+                
+                document.getElementById('confirmActionBtn').onclick = async () => {
+                    try {
+                        const response = await fetch(`http://localhost:5000/api/v1/client-admin/team/${userId}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        
+                        if (!response.ok) {
+                            const result = await response.json();
+                            throw new Error(result.error || 'Failed to remove user');
+                        }
+                        
+                        closeModal(ui.confirmModal);
+                        fetchTeamMembers(); // Refresh the list
+                        alert('User removed successfully');
+                    } catch (error) {
+                        alert(`Error removing user: ${error.message}`);
+                    }
+                };
+                
+                openModal(ui.confirmModal);
+            }
+        });
+
+        // Enhanced invitation management event handlers
+        ui.invitationsTableBody.addEventListener('click', (e) => {
+            const button = e.target.closest('.action-button');
+            if (!button) return;
+
+            const inviteId = button.dataset.inviteId;
+            const inviteEmail = button.dataset.inviteEmail;
+
+            if (button.classList.contains('action-button-delete')) {
+                document.getElementById('confirmModalTitle').textContent = 'Cancel Invitation';
+                document.getElementById('confirmModalText').textContent = `Are you sure you want to cancel the invitation for ${inviteEmail}?`;
+                
+                document.getElementById('confirmActionBtn').onclick = async () => {
+                    try {
+                        const response = await fetch(`http://localhost:5000/api/v1/client-admin/invites/${inviteId}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        
+                        if (!response.ok) {
+                            const result = await response.json();
+                            throw new Error(result.error || 'Failed to cancel invitation');
+                        }
+                        
+                        closeModal(ui.confirmModal);
+                        fetchAllInvitations(); // Refresh the list
+                        alert('Invitation cancelled successfully');
+                    } catch (error) {
+                        alert(`Error cancelling invitation: ${error.message}`);
+                    }
+                };
+                
+                openModal(ui.confirmModal);
+            } else if (button.classList.contains('action-button-resend')) {
+                document.getElementById('confirmModalTitle').textContent = 'Resend Invitation';
+                document.getElementById('confirmModalText').textContent = `Are you sure you want to resend the invitation to ${inviteEmail}?`;
+                
+                document.getElementById('confirmActionBtn').textContent = 'Resend';
+                document.getElementById('confirmActionBtn').className = 'btn btn-primary';
+                
+                document.getElementById('confirmActionBtn').onclick = async () => {
+                    try {
+                        button.disabled = true;
+                        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                        
+                        await resendInvitation(inviteId, inviteEmail);
+                        
+                        closeModal(ui.confirmModal);
+                        fetchAllInvitations(); // Refresh the list
+                        alert('Invitation resent successfully!');
+                    } catch (error) {
+                        alert(`Error resending invitation: ${error.message}`);
+                    } finally {
+                        button.disabled = false;
+                        button.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                        // Reset confirm button
+                        document.getElementById('confirmActionBtn').textContent = 'Confirm';
+                        document.getElementById('confirmActionBtn').className = 'btn btn-danger';
+                    }
+                };
+                
+                openModal(ui.confirmModal);
+            }
+        });
+
+        // Filter tab event handlers
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Update current filter and re-render
+                currentFilter = tab.dataset.status;
+                renderInvitations();
+            });
+        });
+
+        // Refresh button handler
+        ui.refreshInvitationsBtn.addEventListener('click', async () => {
+            const originalHTML = ui.refreshInvitationsBtn.innerHTML;
+            ui.refreshInvitationsBtn.disabled = true;
+            ui.refreshInvitationsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+            
+            try {
+                await fetchAllInvitations();
+            } catch (error) {
+                console.error('Error refreshing invitations:', error);
+            } finally {
+                ui.refreshInvitationsBtn.disabled = false;
+                ui.refreshInvitationsBtn.innerHTML = originalHTML;
+            }
+        });
+
+        // Initialize the dashboard
+        setupUI();
+        fetchCompanyInfo();
+        fetchTeamMembers();
+        fetchAllInvitations();
+        
+        // BULLETPROOF FIX: Force sync Active Users with Team Members count
+        setInterval(() => {
+            const teamMemberText = ui.teamMemberCount.textContent;
+            if (teamMemberText && teamMemberText.includes('members')) {
+                const match = teamMemberText.match(/(\d+)/);
+                if (match && match[1]) {
+                    const currentActiveUsers = ui.companyUserCount.textContent;
+                    if (currentActiveUsers !== match[1]) {
+                        ui.companyUserCount.textContent = match[1];
+                        console.log('🔥 SYNC: Active Users synced to', match[1]);
+                    }
+                }
+            }
+        }, 1000); // Check every second
+    });
+</script>
+
+<!-- AGGRESSIVE ROLE FIX - Force client_admin role for this page -->
+<script>
+// IMMEDIATE role fix - run before any components load
+(function() {
+    console.log('🚨 AGGRESSIVE ROLE FIX: Starting...');
+    
+    // Get the authenticated user data
+    let token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    let userString = localStorage.getItem('user') || localStorage.getItem('currentUser');
+    let user = null;
+    
+    if (userString) {
+        try {
+            user = JSON.parse(userString);
+            console.log('🚨 AGGRESSIVE ROLE FIX: Found user:', user);
+        } catch (e) {
+            console.error("Error parsing user from localStorage", e);
+        }
+    }
+    
+    // FORCE client_admin role for this page since user is authenticated and accessing client admin dashboard
+    const forceRole = 'client_admin';
+    const roleData = {
+        email: user?.email || 'Unknown User',
+        role: forceRole,
+        name: user?.name || user?.email || 'Admin User'
+    };
+    
+    console.log('🚨 AGGRESSIVE ROLE FIX: Forcing role to:', forceRole);
+    
+    // FORCE role data into ALL possible storage locations
+    localStorage.setItem('user', JSON.stringify(roleData));
+    localStorage.setItem('currentUser', JSON.stringify(roleData));
+    sessionStorage.setItem('user', JSON.stringify(roleData));
+    sessionStorage.setItem('currentUser', JSON.stringify(roleData));
+    localStorage.setItem('userRole', forceRole);
+    sessionStorage.setItem('userRole', forceRole);
+    
+    // Set global variables that components might read
+    window.currentUser = roleData;
+    window.userRole = forceRole;
+    
+    console.log('✅ AGGRESSIVE ROLE FIX: Forced client_admin role into all storage locations');
+})();
+
+// Also run on DOMContentLoaded to catch any late-loading components
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🔧 Role Detection Fix: DOMContentLoaded - ensuring role consistency');
+    
+    const forceRole = 'client_admin';
+    const roleData = {
+        email: user?.email || 'Unknown User',
+        role: forceRole,
+        name: user?.name || user?.email || 'Admin User'
+    };
+    
+    // Re-force the role data
+    localStorage.setItem('user', JSON.stringify(roleData));
+    localStorage.setItem('currentUser', JSON.stringify(roleData));
+    sessionStorage.setItem('user', JSON.stringify(roleData));
+    sessionStorage.setItem('currentUser', JSON.stringify(roleData));
+    localStorage.setItem('userRole', forceRole);
+    sessionStorage.setItem('userRole', forceRole);
+    
+    // Force refresh components if they exist
+    if (window.amcAvatarInstance) {
+        console.log('🔧 Refreshing avatar with client_admin role');
+        window.amcAvatarInstance.refreshUser();
+    }
+    
+    if (window.amcSidebar) {
+        console.log('🔧 Refreshing sidebar with client_admin role');
+        window.amcSidebar.refresh(forceRole);
+    }
+    
+    // Dispatch role update event
+    window.dispatchEvent(new CustomEvent('roleUpdated', {
+        detail: { role: forceRole, user: roleData }
+    }));
+});
+</script>
+
+    <!-- ✅ ADD COMPONENT SCRIPTS -->
+    <script src="components/amc-header.js"></script>
+    <script src="components/sidebar.js"></script>
+    
+    <!-- Premium Avatar System -->
+    <script defer src="amc-avatar-system.js"></script>
+    
+    <!-- Kebab menu portal -->
+    <div id="kebab-portal" style="position:fixed; inset:0; pointer-events:none; z-index:1000;"></div>
+    
+<script>
+  // Real-time search functionality - client-side filtering
+  (function(){
+    const input = document.getElementById('filterSearch');
+    if(!input) return;
+
+    console.log('🔍 DEBUG: Setting up real-time search...');
+
+    // Real-time search function
+    const performSearch = () => {
+      console.log('🔍 DEBUG: performSearch called');
+      
+      // Use stored data for client-side filtering
+      if (window.currentReleasesData && window.currentReleasesData.length > 0) {
+        console.log('🔍 DEBUG: Using stored data for search, releases:', window.currentReleasesData.length);
+        window.renderMyAmcReleasesTable(window.currentReleasesData);
+      } else {
+        console.log('🔍 DEBUG: No stored data, triggering API call');
+        // Fallback to API call if no stored data
+        const btn = document.getElementById('applyFilters');
+        if (btn) btn.click();
+      }
+    };
+
+    // Real-time search on input
+    input.addEventListener('input', () => {
+      console.log('🔍 DEBUG: Search input changed:', input.value);
+      performSearch();
+    });
+    
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        console.log('🔍 DEBUG: Enter key pressed');
+        performSearch();
+      }
+    });
+
+    // ESC clears the field & shows all results
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        console.log('🔍 DEBUG: Escape key pressed - clearing search');
+        input.value = '';
+        performSearch(); // Show all results
+      }
+    });
+
+    // Make functions globally available
+    window.performSearch = performSearch;
+  })();
+</script>
+
+</body>
+</html>

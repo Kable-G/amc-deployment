@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMC Global Shell Template</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            color: #1a202c;
+        }
+        
+        /* Placeholder for amc-globalshell.css */
+        /* This will be loaded from your actual file */
+        
+        .amc-app {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-left: 240px; /* Sidebar width */
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            margin-top: 64px; /* Header height */
+        }
+        
+        /* Demo content styles */
+        .demo-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .demo-section h2 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: #1a202c;
+        }
+        
+        .demo-section p {
+            line-height: 1.6;
+            color: #4a5568;
+            margin-bottom: 12px;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+        
+        .demo-card {
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .demo-card h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+        
+        .demo-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .demo-card li {
+            padding: 8px 0;
+            color: #4a5568;
+        }
+        
+        .demo-card li::before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        /* Dark mode */
+        body.dark-mode {
+            background: #0f1419;
+            color: #e2e8f0;
+        }
+        
+        body.dark-mode .demo-section {
+            background: #1a202c;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        body.dark-mode .demo-section h2 {
+            color: #e2e8f0;
+        }
+        
+        body.dark-mode .demo-card {
+            background: #2d3748;
+            border-color: #4a5568;
+        }
+        
+        body.dark-mode .demo-card h3 {
+            color: #e2e8f0;
+        }
+    </style>
+    
+    <!-- AMC Global Components -->
+    <link rel="stylesheet" href="amc-globalshell.css">
+</head>
+<body>
+    <div class="amc-app">
+        <!-- Sidebar will be injected here by sidebar.js -->
+        <div id="sidebar-container"></div>
+        
+        <div class="content-wrapper">
+            <!-- Header will be injected here by amc-header.js -->
+            <div class="amc-header"></div>
+            
+            <main class="main-content">
+                <div class="demo-section">
+                    <h2>🎉 AMC Global Shell Template</h2>
+                    <p>This page demonstrates the complete AutoMediaCenter global shell system with all integrated components:</p>
+                </div>
+                
+                <div class="demo-grid">
+                    <div class="demo-card">
+                        <h3>🧭 Navigation Sidebar</h3>
+                        <ul>
+                            <li>Collapsible sections</li>
+                            <li>Active state tracking</li>
+                            <li>Icon + label design</li>
+                            <li>Dark mode support</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-card">
+                        <h3>📱 Global Header</h3>
+                        <ul>
+                            <li>Search functionality</li>
+                            <li>Notifications bell</li>
+                            <li>Shopping cart</li>
+                            <li>User avatar menu</li>
+                            <li>Tools dropdown</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-card">
+                        <h3>🎨 Theme System</h3>
+                        <ul>
+                            <li>Light/Dark mode toggle</li>
+                            <li>Persistent preferences</li>
+                            <li>Smooth transitions</li>
+                            <li>System preference detection</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-card">
+                        <h3>🔧 Interactive Components</h3>
+                        <ul>
+                            <li>Kebab menus (contextual)</li>
+                            <li>Modals & dialogs</li>
+                            <li>Toast notifications</li>
+                            <li>Loading states</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="demo-section" style="margin-top: 32px;">
+                    <h2>📋 Sample Content Area</h2>
+                    <p>This is where your page-specific content would go. The global shell provides:</p>
+                    <ul style="list-style: disc; padding-left: 24px; color: #4a5568;">
+                        <li>Consistent header across all pages</li>
+                        <li>Persistent sidebar navigation</li>
+                        <li>Responsive layout system</li>
+                        <li>Dark mode compatibility</li>
+                        <li>User session management</li>
+                    </ul>
+                </div>
+                
+                <div class="demo-section">
+                    <h2>🚀 Usage Instructions</h2>
+                    <p><strong>To use this shell in your pages:</strong></p>
+                    <ol style="list-style: decimal; padding-left: 24px; color: #4a5568; line-height: 1.8;">
+                        <li>Include <code>amc-globalshell.css</code> in your <code>&lt;head&gt;</code></li>
+                        <li>Add sidebar container: <code>&lt;div id="sidebar-container"&gt;&lt;/div&gt;</code></li>
+                        <li>Add header placeholder: <code>&lt;div class="amc-header"&gt;&lt;/div&gt;</code></li>
+                        <li>Load scripts: <code>sidebar.js</code>, <code>amc-header.js</code>, <code>auth.js</code></li>
+                        <li>Your content goes in <code>&lt;main class="main-content"&gt;</code></li>
+                    </ol>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- AMC Global Scripts -->
+    <script src="auth.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="amc-header.js"></script>
+    <script src="amc-avatar-system.js"></script>
+    
+    <script>
+        // Initialize demo
+        console.log('🎉 AMC Global Shell Template Loaded');
+        
+        // Set active sidebar item (for demo purposes)
+        setTimeout(() => {
+            const firstNavItem = document.querySelector('.amc-nav-item');
+            if (firstNavItem) {
+                firstNavItem.classList.add('active');
+            }
+        }, 500);
+    </script>
+</body>
+</html>

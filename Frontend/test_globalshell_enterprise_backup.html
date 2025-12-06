@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Global Shell Test</title>
+    
+    <!-- Enterprise Sidebar System -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <script src="components/sidebar.js"></script>
+    
+    <script type="module">
+      import { protectPage } from "./auth.js";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        protectPage();       // ✅ Checks login and role properly
+        // Sidebar is now auto-initialized by components/sidebar.js
+      });
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+<style>
+        :root {
+            /* ── LAYERED BACKGROUND ARCHITECTURE (Light Mode Premium) ─────── */
+            --amc-body-bg-light: #f8fafc;         /* soft neutral layer */
+            --amc-surface-bg-light: #ffffff;      /* cards / containers */
+            --amc-table-bg-light: #fcfcfd;        /* table wrapper */
+            --amc-header-bg-light: #f3f4f6;       /* table header background */
+            --amc-sidebar-bg-light: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* sidebar gradient */
+            
+            /* Legacy variables (maintained for compatibility) */
+            --bg-primary: var(--amc-body-bg-light);
+            --bg-secondary: var(--amc-surface-bg-light);
+            --bg-tertiary: #e9ecef;
+            
+            /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────────── */
+            --text-headings: #111827;    /* headers: strong */
+            --text-primary: #374151;     /* body text: medium */
+            --text-secondary: #6b7280;   /* metadata: subtle */
+            --text-muted: #9ca3af;       /* ultra-subtle */
+            
+            --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #5a6268;
+
+            --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
+            
+            --border-primary: #e5e7eb; --border-secondary: #d1d5db; --border-color-light: #e9ecef;
+            --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+            --icon-available: var(--accent-primary); --icon-unavailable: #ced4da;
+            --shadow-primary: rgba(0, 0, 0, 0.08); --shadow-hover: rgba(0, 0, 0, 0.15);
+            --overlay-bg: rgba(0, 0, 0, 0.65);
+            --tag-bg: var(--bg-tertiary); --tag-text: var(--text-secondary);
+            --color-info: #17a2b8;
+            --color-warning: #ffc107;
+            --brand-band-light-bg: #212529; --brand-band-light-text: #f8f9fa;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --bg-image-placeholder: #e9ecef;
+            --font-family-main: 'Poppins', sans-serif;
+            --sidebar-width: 260px;
+            --header-height: 61px;
+            --footer-height: 60px;
+            --accent-primary-rgb: 13, 110, 253;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --highlight-color-rgb: 255, 193, 7;
+            --notification-error: #dc3545;
+            --accent-action-positive: #28a745;
+            --accent-action-positive-hover: #218838;
+            --accent-action-positive-rgb: 40, 167, 69;
+            --accent-action-danger: #dc3545;
+            --accent-action-danger-hover: #c82333;
+            --selection-dot-color: var(--accent-primary); /* Blue for selection */
+            
+            /* ENTERPRISE TYPOGRAPHY SYSTEM */
+            --font-display: 2rem;      /* Page titles (h1) */
+            --font-heading: 1.4rem;    /* Section headers */
+            --font-subheading: 1.1rem; /* Card headers */
+            --font-body: 0.95rem;      /* Body text */
+            --font-muted: 0.85rem;     /* Metadata / labels */
+        }
+
+        body.dark-mode {
+            --bg-primary: #121212; --bg-secondary: #1a1c1e; --bg-tertiary: #2a2d30;
+            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #545b62;
+            
+            --border-primary: #3a3a3a; --border-secondary: #444; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+            --icon-available: var(--accent-primary); --icon-unavailable: #555;
+            --shadow-primary: rgba(0, 0, 0, 0.25); --shadow-hover: rgba(0, 0, 0, 0.35);
+            --overlay-bg: rgba(0, 0, 0, 0.75);
+            --tag-bg: #4a4a4a; --tag-text: var(--text-primary);
+            --brand-band-light-bg: #f8f9fa; --brand-band-light-text: #212529;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --color-info: #36c4d9;
+            --color-warning: #ffd04a;
+            --bg-image-placeholder: #2c2c2c;
+            --accent-primary-rgb: 63, 145, 255;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --accent-action-positive: #20c997;
+            --accent-action-positive-hover: #1ba984;
+            --accent-action-positive-rgb: 32, 201, 151;
+            --accent-action-danger: #e74c3c;
+            --accent-action-danger-hover: #d63031;
+            --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
+            --sidebar-bg: #1a1c1e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--amc-body-bg-light); /* soft neutral layer */
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Light mode layered background system */
+        body:not(.dark-mode) {
+            background: var(--amc-body-bg-light);
+        }
+        
+        /* DARK MODE BODY BACKGROUND */
+        body.dark-mode {
+            background: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        a { color: var(--accent-primary); text-decoration: none; } a:hover { color: var(--accent-primary-hover); text-decoration: underline; }
+        .app-container { display: flex; flex-direction: column; flex-grow: 1; }
+        .app-body { display: flex; flex-grow: 1; transition: margin-left 0.3s ease; }
+        .app-header {
+            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%); /* subtle gradient for depth */
+            border-bottom: 1px solid #e5e7eb;
+            color: #1f2937; /* dark text for white background */
+            padding: 10px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10000;
+            height: var(--header-height);
+            width: 100%;
+        }
+        
+        .app-header .logo h1 {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0;
+            color: #1f2937; /* ensure logo is dark and visible in light mode */
+        }
+        
+        /* Dark mode header styling */
+        body.dark-mode .app-header {
+            background: linear-gradient(180deg, #1e2327 0%, #181b1f 100%); /* subtle gradient for depth */
+            border-bottom: 1px solid #3a3a3a;
+            color: #f0f0f0; /* light text for dark background */
+        }
+        
+        body.dark-mode .app-header .logo h1 {
+            color: #f0f0f0; /* ensure logo is light and visible in dark mode */
+        }
+        
+        .app-header .user-actions-group { display: flex; align-items: center; gap: 20px;}
+        .app-header .user-info { font-size: 0.9em; } .app-header .user-info span { opacity: 0.8; }
+        .app-header .logout-link { color: var(--header-link); text-decoration: none; font-size: 0.9em;}
+        .app-header .logout-link:hover { color: var(--header-text); } .app-header .logout-link i { margin-right: 5px; }
+
+        .cart-indicator, .notification-indicator { position: relative; display: inline-flex; align-items: center; cursor: pointer; color: var(--header-link); transition: color 0.2s ease; font-size: 1.1em; }
+        .cart-indicator:hover, .notification-indicator:hover { color: var(--header-text); }
+        .cart-badge, .notification-badge { position: absolute; top: -8px; right: -10px; background-color: var(--accent-primary); color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: bold; transform: scale(0); transition: transform 0.2s ease-out; }
+        .notification-badge { background-color: var(--notification-error); top: -5px; right: -8px; width: 16px; height: 16px;}
+        .cart-indicator.has-items .cart-badge, .notification-indicator.has-new .notification-badge { transform: scale(1); }
+        .cart-indicator.has-items > i.fa-shopping-cart { color: var(--highlight-color); animation: pulseCartIcon 1.5s infinite; }
+        @keyframes pulseCartIcon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .amc-header-right { display: flex; align-items: center; gap: 15px; }
+        .amc-menu-dots { background: none; border: none; color: var(--header-link); font-size: 1.2em; cursor: pointer; padding: 5px; }
+        .amc-menu-dots:hover { color: var(--header-text); }
+
+        .btn-icon { background:transparent; border:none; padding:5px 8px; margin-left:10px; cursor:pointer; }
+        .btn-icon i { color:var(--header-link); font-size:1.1em; }
+        .btn-icon:hover i { color: var(--header-text); }
+
+  :root{
+    /* adjust if your header height differs on this page */
+    --amc-header-h: 72px;
+    --amc-sidebar-expanded: 264px;
+    --amc-sidebar-collapsed: 72px;
+
+    /* colors (light) */
+    --amc-bg: #ffffff;
+    --amc-line: #E5E7EB;
+    --amc-text: #0f172a;
+    --amc-muted:#64748b;
+
+    /* colors (dark) */
+    --amc-bg-dark: #0f1115;
+    --amc-line-dark: rgba(255,255,255,.12);
+    --amc-text-dark:#e5e7eb;
+    --amc-muted-dark:#94a3b8;
+  }
+
+  /* Body layout variables (expanded by default) */
+  body{
+    --amc-sidebar-w: var(--amc-sidebar-expanded);
+    padding-top: var(--amc-header-h);
+  }
+  /* When collapsed (remembered in localStorage) */
+  body.amc-collapsed{ --amc-sidebar-w: var(--amc-sidebar-collapsed); }
+
+  /* Sidebar (fixed, left) */
+  .amc-sidebar{
+    position: fixed; top: var(--amc-header-h); left:0; bottom:0;
+    width: var(--amc-sidebar-w);
+    background: var(--amc-bg);
+    border-right: 1px solid var(--amc-line);
+    overflow: visible auto; /* FIXED: changed from hidden to visible for tooltips */
+    transition: width .18s ease;
+    z-index: 900;
+  }
+  /* Dark mode support - FIXED: Use dark-mode class */
+  body.dark-mode .amc-sidebar{
+    background: var(--sidebar-bg);
+    border-right-color: var(--border-color);
+    color: var(--text-primary);
+  }
+  
+  /* AVATAR DARK MODE SUPPORT - Enable role-based rings in dark mode */
+  body.dark-mode {
+    /* Avatar modal dark mode support */
+    --bg-secondary-dark: #1a1c1e;
+    --text-primary-dark: #e2e8f0;
+    --border-primary-dark: #374151;
+    --bg-tertiary-dark: #2a2d30;
+    --text-headings-dark: #f8f9fa;
+    --text-secondary-dark: #9ca3af;
+  }
+  
+  /* Apply dark mode class to avatar system */
+  body.dark-mode .avatar-modal {
+    background: var(--bg-secondary-dark, #2c2c2c);
+    color: var(--text-primary-dark, #e2e8f0);
+    border-color: var(--border-primary-dark, #374151);
+  }
+  
+  body.dark-mode .avatar-modal-header {
+    background: linear-gradient(135deg, var(--bg-secondary-dark, #2c2c2c) 0%, var(--bg-tertiary-dark, #374151) 100%);
+    border-color: var(--border-primary-dark, #374151);
+  }
+  
+  body.dark-mode .avatar-email {
+    color: var(--text-headings-dark, #f8f9fa);
+  }
+  
+  body.dark-mode .avatar-role {
+    color: var(--text-secondary-dark, #9ca3af);
+  }
+  
+  body.dark-mode .modal-btn {
+    color: var(--text-primary-dark, #e2e8f0);
+  }
+  
+  body.dark-mode .modal-btn:hover {
+    background: var(--bg-tertiary-dark, #374151);
+    color: var(--accent-primary, #3b82f6);
+  }
+  
+  body.dark-mode .modal-divider {
+    border-color: var(--border-primary-dark, #374151);
+  }
+  
+  /* Ensure avatar ring colors work in dark mode */
+  body.dark-mode .amc-avatar-ring {
+    background: var(--bg-secondary, #1a1c1e);
+    border-color: var(--avatar-ring, #3B82F6);
+  }
+
+  /* Sidebar sections rendered by sidebar-builder.js */
+  .sidebar-section{ padding: 14px 10px; margin-bottom: 14px; }
+  .sidebar-section-header{
+    margin: 16px 12px 6px 12px; font: 700 12px/1 Inter, ui-sans-serif, system-ui;
+    color: var(--amc-muted); text-transform: uppercase; letter-spacing: .4px;
+  }
+  
+  /* ENHANCED SIDEBAR SECTION TITLES - TYPOGRAPHY & COLORS */
+  .sidebar .section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 16px 12px 6px 12px;
+    font-family: Inter, ui-sans-serif, system-ui;
+    color: #9ca3af; /* unified neutral tone */
+  }
+  
+  /* COLORFUL SECTION TITLES */
+  .sidebar .section-title.core { color: #2563eb; }       /* vivid blue */
+  .sidebar .section-title.management { color: #059669; } /* vivid green */
+  .sidebar .section-title.analytics { color: #d97706; }  /* vivid orange */
+  .sidebar .section-title.admin { color: #dc2626; }      /* vivid red */
+  .sidebar-list{ list-style:none; margin:0; padding:4px; }
+  .sidebar-item{ margin: 2px 6px; }
+  .sidebar-link{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:10px;
+    color: inherit; text-decoration:none; font: 600 14px/1.2 Inter, ui-sans-serif, system-ui;
+  }
+  .sidebar-link:hover{ background: var(--sidebar-hover-bg); color: var(--text-primary); }
+  body.dark-mode .sidebar-link:hover{ background: var(--sidebar-hover-bg); color: var(--text-primary); }
+  .sidebar-link.active{ background: var(--sidebar-hover-bg); color: var(--sidebar-active-bar); border-left: 3px solid var(--sidebar-active-bar); }
+
+  /* Collapsed state: show only icons and hide text */
+  body.sidebar-collapsed .sidebar-section-header{ opacity: 0; }
+  body.sidebar-collapsed .sidebar-text{ opacity: 0; transform: translateX(-5px); }
+  body.sidebar-collapsed .sidebar-badge{ opacity: 0; }
+  body.sidebar-collapsed .sidebar-link{ justify-content: center; }
+
+  /* Main content shifts to the right of the sidebar */
+  .amc-main{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
+  .app-container{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
+
+/* === AMC Radar History HOTFIX (non-destructive) ========================= */
+/* 1) Kill the accidental header we injected in this page only */
+.amc-header-wrap{ display:none !important; }
+
+/* 2) Neutralize the generic sidebar skin so it can't override AMC */
+.sidebar, .sidebar-top, .sidebar-brand, .sidebar-menu,
+.sidebar .sidebar-link, .sidebar-toggle { all: unset; display: initial; }
+
+/* 3) Canonical AMC sidebar (driven by #sidebar that sidebar-builder.js fills) */
+:root{
+  --amc-header-h: 60px;         /* match the real header height on this page */
+  --amc-sidebar-expanded: 264px;
+  --amc-sidebar-collapsed: 72px;
+}
+
+/* page-wide width var + push the app container, not the header */
+body{ --amc-sidebar-w: var(--amc-sidebar-expanded); }
+body.amc-collapsed{ --amc-sidebar-w: var(--amc-sidebar-collapsed); }
+
+/* Restore AMC sidebar functionality but match automediacenter.html positioning */
+.app-container{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
+
+/* ENTERPRISE LAYOUT RHYTHM & ALIGNMENT */
+.main-content {
+    margin-left: 0;
+    max-width: 1500px; /* Increased from 1400px to accommodate wider table */
+    margin: 0 auto;
+    padding: 2rem; /* Enhanced padding for better content breathing room */
+    background-color: var(--bg-primary);
+    overflow-y: auto;
+    min-height: calc(100vh - var(--header-height) - var(--footer-height)); /* Ensure full height usage */
+}
+
+/* DARK MODE MAIN CONTENT */
+body.dark-mode .main-content {
+    background-color: var(--bg-primary) !important;
+}
+
+/* ENTERPRISE SIDEBAR SHELL - PREMIUM LIGHT MODE ELEVATION */
+#sidebar{
+  position: fixed; left: 0; top: var(--header-height); bottom: 0;
+  width: var(--amc-sidebar-w);
+  background: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* soft contrast gradient */
+  border-right: 1px solid #d1d5db; /* stronger border contrast */
+  overflow: visible auto; z-index: 950;
+  transition: width 0.18s ease, background 0.2s ease, box-shadow 0.2s ease;
+  padding-top: 8px;
+  box-shadow: inset -1px 0 0 rgba(0,0,0,0.05), 2px 0 8px rgba(0,0,0,0.06); /* enhanced panel depth */
+}
+body.dark-mode #sidebar{
+  background: var(--sidebar-bg); /* cooler anthracite grey */
+  border-right-color: var(--border-primary);
+  color: var(--text-primary);
+  box-shadow: inset -1px 0 0 rgba(255,255,255,0.03); /* subtle light inset for dark mode */
+}
+
+/* ENTERPRISE SIDEBAR SECTIONS - TIGHTER RHYTHM */
+#sidebar .sidebar-section{
+  padding: 0 10px; /* remove vertical padding */
+  margin-bottom: 14px; /* consistent spacing between sections */
+}
+
+/* ENTERPRISE SECTION HEADERS - REFINED HYBRID WITH ORANGE ACCENT */
+#sidebar .sidebar-section-header{
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: #9ca3af; /* neutral grey */
+  padding: 6px 12px;
+  margin-top: 16px; /* instead of ~32px */
+  margin-bottom: 4px; /* tighter below for better rhythm */
+  margin-left: 12px;
+  margin-right: 12px;
+  text-transform: uppercase;
+  background: rgba(0,0,0,0.08); /* darker tone for better definition in light mode */
+  border-left: 2px solid #f97316; /* orange accent strip */
+  border-radius: 4px;
+  padding-left: 10px; /* adjust for thinner accent bar */
+}
+
+/* Pull first section closer to top - ENTERPRISE SPACING */
+#sidebar .sidebar-section:first-child .sidebar-section-header {
+  margin-top: 4px; /* pull 'Core' closer to top */
+}
+
+/* Dark mode refined headers - enhanced visibility */
+body.dark-mode #sidebar .sidebar-section-header {
+  background: rgba(255, 255, 255, 0.05); /* subtle translucent bar for dark mode */
+  color: #9ca3af; /* consistent neutral grey */
+  border-left-color: #fb923c; /* lighter orange for dark mode visibility */
+}
+
+#sidebar .sidebar-list{ list-style:none; margin:0; padding:4px; }
+#sidebar .sidebar-item{ margin:2px 6px; }
+#sidebar .sidebar-link{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:10px; text-decoration:none;
+  color: var(--text-primary); font:600 14px/1.2 Inter, ui-sans-serif, system-ui;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+#sidebar .sidebar-link:hover{
+  background: #d1d5db; /* Darker hover for better visibility in light mode */
+  transform: translateX(2px); /* subtle slide effect */
+}
+body.dark-mode #sidebar .sidebar-link:hover{ background: var(--bg-tertiary); }
+#sidebar .sidebar-link.active{
+  background: rgba(11,116,255,0.08);
+  color: #0b74ff;
+  border-left: 3px solid #0b74ff;
+  padding-left: 11px;
+}
+
+/* icon/label wrappers (we add them in JS below) */
+#sidebar .i{ width:22px; text-align:center; font-size:18px; line-height:1; }
+#sidebar .t{ white-space:nowrap; }
+
+/* collapsed: hide headings + labels, keep icons only */
+body.amc-collapsed #sidebar .sidebar-section-header{ display:none; }
+body.amc-collapsed #sidebar .t{ display:none; }
+body.amc-collapsed #sidebar .sidebar-link{ justify-content:center; gap:0; }
+/* --- Minimalist hamburger toggle --- */
+.sidebar-header {
+  height: 28px; /* tighter */
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+#sidebarToggle {
+  all: unset;                       /* strip default button styles */
+  position: relative;               /* ensure tooltip positions correctly */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 4px 8px;
+}
+
+#sidebarToggle .hamburger {
+  position: relative;
+  width: 18px;
+  height: 2px;
+  background: var(--amc-sidebar-icon, #9ca3af);
+  border-radius: 1px;
+  transition: background 0.2s ease;
+}
+
+#sidebarToggle .hamburger::before,
+#sidebarToggle .hamburger::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 18px;
+  height: 2px;
+  background: inherit;
+  border-radius: 1px;
+  transition: background 0.2s ease;
+}
+
+#sidebarToggle .hamburger::before { top: -6px; }
+#sidebarToggle .hamburger::after { top: 6px; }
+
+#sidebarToggle:hover .hamburger,
+#sidebarToggle:hover .hamburger::before,
+#sidebarToggle:hover .hamburger::after {
+  background: var(--amc-accent, #0b74ff);  /* subtle hover colour only */
+}
+
+/* 🔧 SIMPLE WORKING TOOLTIP - NO CONFLICTS */
+
+button#sidebarToggle {
+  position: relative !important;
+}
+
+/* DYNAMIC HAMBURGER TOOLTIP - ADJUSTS BASED ON SIDEBAR STATE */
+button#sidebarToggle[data-tooltip]:hover::after {
+  content: attr(data-tooltip) !important;
+  position: fixed !important;
+  /* Dynamic positioning based on sidebar state */
+  left: var(--tooltip-left, 270px) !important;
+  top: 80px !important;
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  z-index: 99999 !important;
+  pointer-events: none !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  display: block !important;
+  opacity: 1 !important;
+}
+
+/* Expanded sidebar - tooltip close to button */
+body:not(.sidebar-collapsed) button#sidebarToggle[data-tooltip]:hover::after {
+  --tooltip-left: 270px;
+}
+
+/* Collapsed sidebar - tooltip close to button */
+body.sidebar-collapsed button#sidebarToggle[data-tooltip]:hover::after {
+  --tooltip-left: 80px;
+}
+
+/* Dark mode version */
+body.dark-mode button#sidebarToggle[data-tooltip]:hover::after {
+  background: #374151 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
+}
+</style>
+</head>
+<body>
+    <!-- Header at the very top, spanning full width -->
+    <header class="app-header">
+        <div class="logo"><h1>AutoMediaCenter</h1></div>
+        <div class="user-actions-group">
+            <div class="amc-header-right">
+                <div class="notification-indicator" id="notification-indicator" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">0</span>
+                </div>
+                <div class="cart-indicator" id="cart-indicator" title="View Cart (0 items)">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge">0</span>
+                </div>
+                <!-- Avatar will be auto-injected by amc-avatar-system.js -->
+                <button class="amc-menu-dots" title="More options">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="amc-app">
+        

@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>AutoMediaCenter - Latest Releases</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --bg-primary: #f8f9fa; --bg-secondary: #ffffff; --bg-tertiary: #e9ecef;
+            --text-primary: #212529; --text-secondary: #6c757d; --text-headings: #343a40;
+            --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7; 
+            
+            --accent-secondary-default: #6c757d; 
+            --accent-secondary-default-hover: #5a6268;
+
+            --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
+            
+            --border-primary: #dee2e6; --border-secondary: #e0e0e0; --border-color-light: #e9ecef; 
+            --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+            --icon-available: var(--accent-primary); --icon-unavailable: #ced4da;
+            --shadow-primary: rgba(0, 0, 0, 0.07); --shadow-hover: rgba(0, 0, 0, 0.1);
+            --overlay-bg: rgba(0, 0, 0, 0.65); 
+            --tag-bg: var(--bg-tertiary); --tag-text: var(--text-secondary);
+            --color-info: #17a2b8; 
+            --color-warning: #ffc107;
+            --brand-band-light-bg: #212529; --brand-band-light-text: #f8f9fa;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --bg-image-placeholder: #e9ecef; 
+            --font-family-main: 'Poppins', sans-serif; 
+            --sidebar-width: 260px; 
+            --header-height: 61px; 
+            --footer-height: 60px; 
+            --accent-primary-rgb: 13, 110, 253; 
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --highlight-color-rgb: 255, 193, 7;
+            --notification-error: #dc3545;
+            --accent-action-positive: #28a745; 
+            --accent-action-positive-hover: #218838;
+            --accent-action-positive-rgb: 40, 167, 69;
+            --accent-action-danger: #dc3545;
+            --accent-action-danger-hover: #c82333;
+            --selection-dot-color: var(--accent-primary); /* Blue for selection */
+        }
+
+        body.dark-mode {
+            --bg-primary: #121212; --bg-secondary: #1e1e1e; --bg-tertiary: #2c2c2c;
+            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff; 
+            
+            --accent-secondary-default: #6c757d; 
+            --accent-secondary-default-hover: #545b62;
+            
+            --border-primary: #3a3a3a; --border-secondary: #444; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+            --icon-available: var(--accent-primary); --icon-unavailable: #555;
+            --shadow-primary: rgba(0, 0, 0, 0.25); --shadow-hover: rgba(0, 0, 0, 0.35);
+            --overlay-bg: rgba(0, 0, 0, 0.75); 
+            --tag-bg: #4a4a4a; --tag-text: var(--text-primary);
+            --brand-band-light-bg: #f8f9fa; --brand-band-light-text: #212529; 
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa; 
+            --color-info: #36c4d9; 
+            --color-warning: #ffd04a; 
+            --bg-image-placeholder: #2c2c2c; 
+            --accent-primary-rgb: 63, 145, 255; 
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --accent-action-positive: #20c997;
+            --accent-action-positive-hover: #1ba984;
+            --accent-action-positive-rgb: 32, 201, 151;
+            --accent-action-danger: #e74c3c;
+            --accent-action-danger-hover: #d63031;
+            --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-family-main); background-color: var(--bg-primary); color: var(--text-primary); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; transition: background-color 0.3s ease, color 0.3s ease; }
+        a { color: var(--accent-primary); text-decoration: none; } a:hover { color: var(--accent-primary-hover); text-decoration: underline; }
+        .app-container { display: flex; flex-direction: column; flex-grow: 1; }
+        .app-body { display: flex; flex-grow: 1; transition: margin-left 0.3s ease; }
+        .app-header { background-color: var(--header-bg); color: var(--header-text); padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-primary); position: sticky; top: 0; z-index: 1020; height: var(--header-height); }
+        .app-header .logo h1 { font-size: 1.5em; font-weight: bold; margin: 0; }
+        
+        .app-header .user-actions-group { display: flex; align-items: center; gap: 20px;}
+        .app-header .user-info { font-size: 0.9em; } .app-header .user-info span { opacity: 0.8; } 
+        .app-header .logout-link { color: var(--header-link); text-decoration: none; font-size: 0.9em;}
+        .app-header .logout-link:hover { color: var(--header-text); } .app-header .logout-link i { margin-right: 5px; }
+
+        .cart-indicator, .notification-indicator { position: relative; display: inline-flex; align-items: center; cursor: pointer; color: var(--header-link); transition: color 0.2s ease; font-size: 1.1em; }
+        .cart-indicator:hover, .notification-indicator:hover { color: var(--header-text); }
+        .cart-badge, .notification-badge { position: absolute; top: -8px; right: -10px; background-color: var(--accent-primary); color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: bold; transform: scale(0); transition: transform 0.2s ease-out; }
+        .notification-badge { background-color: var(--notification-error); top: -5px; right: -8px; width: 16px; height: 16px;}
+        .cart-indicator.has-items .cart-badge, .notification-indicator.has-new .notification-badge { transform: scale(1); }
+        .cart-indicator.has-items > i.fa-shopping-cart { color: var(--highlight-color); animation: pulseCartIcon 1.5s infinite; }
+        @keyframes pulseCartIcon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+
+        .sidebar { width: var(--sidebar-width); background-color: var(--bg-secondary); border-right: 1px solid var(--border-secondary); display: flex; flex-direction: column; padding-top: 15px; flex-shrink: 0; transition: width 0.3s ease; position: sticky; top: var(--header-height); height: calc(100vh - var(--header-height) - var(--footer-height)); overflow-y: auto; z-index: 1010; }
+        .sidebar.collapsed { width: 70px; } .sidebar.collapsed .section-title, .sidebar.collapsed li a span, .sidebar.collapsed .sidebar-disclaimer { opacity: 0; visibility: hidden; white-space: nowrap; width: 0; } .sidebar.collapsed li a { justify-content: center; padding: 10px 0; } .sidebar.collapsed li a i.fa-fw { margin-right: 0; font-size: 1.2em; } .sidebar.collapsed .sidebar-header { justify-content: center; }
+        .sidebar-header { display: flex; justify-content: flex-end; padding: 0 15px 10px 15px; border-bottom: 1px solid var(--border-secondary); margin-bottom: 15px; }
+        #sidebar-toggle { background: none; border: none; color: var(--text-secondary); font-size: 1.2em; cursor: pointer; padding: 5px; } #sidebar-toggle:hover { color: var(--text-primary); }
+        .sidebar nav { flex-grow: 1; } .sidebar-section { margin-bottom: 20px; padding: 0 10px; transition: padding 0.3s ease; } .sidebar.collapsed .sidebar-section { padding: 0 5px; }
+        .sidebar .section-title { font-size: 0.7em; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; display: block; margin-bottom: 8px; padding: 0 10px; transition: opacity 0.2s ease; }
+        .sidebar ul { list-style: none; } .sidebar li a { display: flex; align-items: center; padding: 10px 15px; color: var(--text-primary); border-radius: 5px; margin-bottom: 3px; font-size: 0.95em; font-weight: 500; text-decoration: none; transition: background-color 0.2s ease, color 0.2s ease; white-space: nowrap; overflow: hidden; } .sidebar li a i.fa-fw { width: 1.5em; margin-right: 10px; text-align: center; color: var(--text-secondary); opacity: 0.8; flex-shrink: 0; transition: margin-right 0.3s ease, font-size 0.3s ease; } .sidebar li a span { transition: opacity 0.2s ease; }
+        .sidebar li a:hover { background-color: var(--bg-tertiary); color: var(--text-headings); text-decoration: none; } .sidebar li.active a { background-color: var(--accent-primary); color: #fff; font-weight: 600; } .sidebar li.active a:hover { background-color: var(--accent-primary-hover); } .sidebar li.active a i { opacity: 1; color: #fff;}
+        .sidebar-disclaimer { padding: 15px; font-size: 0.8em; color: var(--text-secondary); border-top: 1px solid var(--border-secondary); margin-top: auto; white-space: normal; } .sidebar.collapsed .sidebar-disclaimer { display: none; }
+
+        .main-content { flex-grow: 1; padding: 25px 30px; background-color: var(--bg-primary); transition: padding 0.3s ease; width: calc(100% - var(--sidebar-width)); overflow-y: auto; height: calc(100vh - var(--header-height) - var(--footer-height));} 
+        .sidebar.collapsed + .main-content { width: calc(100% - 70px); }
+        .content-header { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border-primary); } 
+        .content-header h1 { font-size: 1.8em; font-weight: 600; color: var(--text-headings); margin-bottom: 5px; display: flex; align-items: center; gap: 10px;}
+        .content-header h1 i { color: var(--accent-primary); margin-right: 0; }
+        .content-header p { color: var(--text-secondary); font-size: 1em; }
+        .controls-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; } .search-bar { display: flex; flex-grow: 1; max-width: 450px; }
+        .search-bar input[type="search"] { width: 100%; padding: 10px 15px; border: 1px solid var(--border-secondary); border-radius: 5px 0 0 5px; font-size: 1em; outline: none; background-color: var(--bg-secondary); color: var(--text-primary); font-family: inherit;}
+        .search-bar input[type="search"]:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 0.25rem rgba(var(--accent-primary-rgb), 0.25); } 
+        .search-bar button.search-submit-btn { border-radius: 0 5px 5px 0; border-left: none; background-color: var(--accent-secondary-default); color: #fff; border-color: var(--accent-secondary-default);}
+        .search-bar button.search-submit-btn:hover { background-color: var(--accent-secondary-default-hover); border-color: var(--accent-secondary-default-hover); }
+
+        .filter-controls { display: flex; gap: 10px; align-items: center; }
+        .btn { padding: 10px 18px; font-size: 0.95em; border: 1px solid transparent; border-radius: 5px; cursor: pointer; transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease; display: inline-flex; align-items: center; justify-content: center; font-weight: 500; text-decoration: none; white-space: nowrap; line-height: 1.4;} .btn i { margin-right: 6px; } 
+        .btn-primary { background-color: var(--accent-primary); color: #fff; border-color: var(--accent-primary);} .btn-primary:hover { background-color: var(--accent-primary-hover); border-color: var(--accent-primary-hover); box-shadow: 0 2px 5px rgba(var(--accent-primary-rgb), 0.3); text-decoration: none; color: #fff; } 
+        .btn-secondary { background-color: var(--accent-secondary); color: #212529; border-color: var(--accent-secondary);} 
+        .btn-secondary:hover { background-color: var(--accent-secondary-hover); border-color: var(--accent-secondary-hover); box-shadow: 0 2px 5px rgba(var(--accent-secondary-rgb),0.3); text-decoration: none; color: #212529; } 
+        body.dark-mode .btn-secondary { color: var(--text-headings); } 
+        body.dark-mode .btn-secondary:hover { color: var(--text-headings); }
+
+        .btn-light { background-color: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-secondary); } .btn-light:hover { background-color: var(--border-secondary); border-color: var(--border-primary); } .btn-icon { padding: 8px 10px; }
+        .btn-small { padding: 6px 12px; font-size: 0.85em; }
+
+        .amc-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .media-card { 
+            background-color: var(--bg-secondary); 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 3px 7px var(--shadow-primary); 
+            transition: box-shadow 0.2s ease-out, transform 0.2s ease-out, border-color 0.2s ease-out; 
+            display: flex; flex-direction: column; 
+            position: relative; 
+            border: 1px solid var(--border-secondary); 
+        }
+        .media-card:hover { 
+            transform: translateY(-6px); 
+            border-color: rgba(var(--accent-primary-rgb), 0.5);
+            box-shadow: 0 12px 28px rgba(var(--accent-primary-rgb), 0.2), 0 0 0 1.5px rgba(var(--accent-primary-rgb), 0.25);
+        }
+        .media-card .card-image-field {
+            height: 180px; 
+            background-color: var(--bg-image-placeholder); 
+            position: relative; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .media-card .card-image-field img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+        }
+        .media-card .card-image-field .placeholder-icon {
+            font-size: 3.5em;
+            color: var(--text-secondary);
+            opacity: 0.4;
+        }
+        
+        .video-placeholder-enhanced {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #0056b3 100%);
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .video-placeholder-enhanced::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+            z-index: 1;
+        }
+        
+        .video-placeholder-enhanced i {
+            font-size: 3.5em;
+            margin-bottom: 8px;
+            z-index: 2;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+        
+        .video-placeholder-enhanced span {
+            font-size: 0.9em;
+            font-weight: 600;
+            z-index: 2;
+            position: relative;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .video-placeholder-enhanced:hover {
+            background: linear-gradient(135deg, #0056b3 0%, var(--accent-primary) 100%);
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(var(--accent-primary-rgb), 0.3);
+        }
+        
+        .video-placeholder-enhanced:hover i {
+            transform: scale(1.1);
+            animation: none;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .media-card .brand-band {
+            padding: 8px 15px; 
+            font-size: 0.9em;
+            font-weight: 600;
+            text-align: left;
+            background-color: var(--brand-band-light-bg);
+            color: var(--brand-band-light-text);
+            border-bottom: 1px solid var(--border-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        body.dark-mode .media-card .brand-band {
+            background-color: var(--brand-band-dark-bg);
+            color: var(--brand-band-dark-text);
+            border-bottom-color: var(--border-secondary);
+        }
+
+        .media-card .card-content-body {
+            padding: 15px; 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .media-card .card-content-body h3 { 
+            font-size: 1.1em; 
+            font-weight: 600; 
+            color: var(--text-headings); 
+            line-height: 1.45; 
+            margin: 0 0 12px 0; 
+            display: -webkit-box; -webkit-line-clamp: 3; 
+            -webkit-box-orient: vertical; 
+            overflow: hidden; text-overflow: ellipsis; 
+            min-height: calc(1.45em * 3); 
+        }
+        .media-card .card-content-body h3 a { color: inherit; display: block; } 
+        .media-card .card-content-body h3 a:hover { text-decoration: underline; color: var(--accent-primary);}
+
+        .card-bottom-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end; 
+            margin-top: auto; 
+            padding-top: 12px; 
+            border-top: 1px solid var(--border-secondary);
+        }
+        .media-card .card-assets { 
+            display: flex; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+        }
+        .media-card .asset-icon { 
+            font-size: 0.95em; 
+            display: inline-flex; 
+            align-items: center; 
+            transition: color 0.2s ease; 
+            color: var(--icon-unavailable);
+        }
+        .media-card .asset-icon.available { 
+            color: var(--icon-available); 
+        }
+        .media-card .asset-icon i { 
+            width: 1.1em; 
+            text-align: center; 
+            margin-right: 4px; 
+            font-size: 1.1em; 
+        }
+        .media-card .asset-icon .asset-count-badge { 
+            font-size: 0.85em; 
+            font-weight: 500; 
+            color: var(--text-secondary); 
+        }
+        body.dark-mode .media-card .asset-icon .asset-count-badge {
+            color: var(--text-primary);
+        }
+        .media-card .release-date-time-footer {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            text-align: right;
+            line-height: 1.35;
+        }
+        .media-card .release-date-time-footer i {
+            margin-right: 3px;
+            color: var(--icon-available); /* Make calendar icon blue like other asset icons */
+            font-size: 1.1em; /* Match size of other asset icons */
+            opacity: 1; /* Remove opacity to match other asset icons */
+        }
+        .media-card .release-date-time-footer .date-part,
+        .media-card .release-date-time-footer .time-part {
+            display: block;
+        }
+       
+        .media-card .card-image-field .card-image-hover-buttons-overlay { 
+            position: absolute; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: var(--overlay-bg); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.25s ease-out; 
+            gap: 12px; 
+            z-index: 2; 
+        }
+        .media-card:hover .card-image-field .card-image-hover-buttons-overlay { 
+            opacity: 1; 
+            pointer-events: auto; 
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn { 
+            min-width: 160px; 
+            padding: 10px 20px; 
+            font-size: 0.95em; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border-width: 1px;
+            border-style: solid;
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn-primary { /* Quick View */
+             border-color: var(--accent-primary);
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn-primary:hover {
+            border-color: var(--accent-primary-hover);
+        }
+        /* Styling for Add to Cart button on card hover */
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn.add-to-cart-btn {
+            background-color: var(--accent-secondary-default); 
+            border-color: var(--accent-secondary-default);
+            color: #fff; 
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn.add-to-cart-btn:hover {
+            background-color: var(--accent-secondary-default-hover); 
+            border-color: var(--accent-secondary-default-hover);
+            color: #fff;
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn.add-to-cart-btn.in-cart-style {
+            background-color: var(--accent-action-positive);
+            border-color: var(--accent-action-positive);
+            color: #fff;
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn.add-to-cart-btn.in-cart-style:hover {
+            background-color: var(--accent-action-positive-hover);
+            border-color: var(--accent-action-positive-hover);
+        }
+
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn-light { /* Download All */
+            border-color: var(--border-secondary);
+        }
+        body.dark-mode .media-card .card-image-field .card-image-hover-buttons-overlay .btn-light {
+             border-color: var(--border-secondary);
+        }
+        .media-card .card-image-field .card-image-hover-buttons-overlay .btn-light:hover {
+             border-color: var(--border-primary);
+        }
+        
+        .pagination { text-align: center; margin-top: 30px; padding-bottom: 15px; font-size: 0.9em; color: var(--text-secondary); } 
+        .pagination button { background-color: var(--bg-secondary); border: 1px solid var(--border-secondary); color: var(--accent-primary); padding: 6px 12px; margin: 0 3px; border-radius: 4px; cursor: pointer; transition: background-color 0.2s, color 0.2s; } 
+        .pagination button:hover { background-color: var(--bg-tertiary); } 
+        .pagination button.current { background-color: var(--accent-primary); color: #fff; border-color: var(--accent-primary); font-weight: bold; cursor: default; } 
+        .pagination button:disabled { background-color: var(--bg-tertiary); color: var(--text-secondary); cursor: not-allowed; opacity: 0.6;}
+
+        /* General Modal Styles (Ensure these are effective) */
+        .amc-modal-backdrop { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: rgba(0,0,0,0.75); /* Or your theme variable */
+            z-index: 1060; /* High z-index */
+            display: none; /* Initially hidden */
+            align-items: center; justify-content: center;
+            padding: 20px; /* Padding for the backdrop itself */
+            backdrop-filter: blur(4px);
+            opacity: 0; 
+            transition: opacity 0.3s ease;
+        }
+        .amc-modal-backdrop.open { 
+            display: flex !important; /* Ensure display is flex when open */
+            opacity: 1; 
+        }
+        .amc-modal-backdrop .amc-modal-content { /* Applied to #cartModalContent and #imageGalleryModal .amc-modal-content etc. */
+            background-color: var(--bg-secondary); 
+            color: var(--text-primary);
+            border-radius: 8px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            width: 90%; /* Default width */
+            margin: 0 auto; 
+            display: flex; flex-direction: column;
+            max-height: 90vh; /* Default max height */
+            opacity: 0; 
+            transform: scale(0.95); 
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .amc-modal-backdrop.open .amc-modal-content { 
+            opacity: 1; 
+            transform: scale(1); 
+        }
+        .amc-modal-backdrop .amc-modal-header { /* Applied to #cartModalContent .amc-modal-header etc. */
+            display: flex; align-items: center;
+            padding: 15px 20px; /* Consistent padding */
+            border-bottom: 1px solid var(--border-secondary);
+            flex-shrink: 0;
+        }
+        .amc-modal-backdrop .amc-modal-header h3 {
+            font-size: 1.2em; /* Consistent font size */
+            margin: 0; 
+            color: var(--text-headings);
+            flex-grow: 1;
+        }
+        .amc-modal-backdrop .amc-modal-header .close-btn {
+            background: none; border: none; 
+            font-size: 1.8em; /* Consistent size */
+            color: var(--text-secondary); 
+            cursor: pointer; 
+            padding: 0 5px; line-height: 1;
+        }
+        .amc-modal-backdrop .amc-modal-header .close-btn:hover { color: var(--text-primary); }
+        .amc-modal-backdrop .amc-modal-body {
+            flex-grow: 1; 
+            overflow-y: auto; /* Enable scrolling for content */
+            padding: 20px; /* Default padding, can be overridden */
+        }
+        .amc-modal-backdrop .amc-modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-secondary);
+            flex-shrink: 0;
+            background-color: var(--bg-secondary); /* Ensure footer bg matches content */
+            text-align: right; /* Align buttons to the right by default */
+        }
+
+
+        .filter-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 1050; backdrop-filter: blur(3px); }
+        .filter-modal-content { position: absolute; top: var(--header-height); right: 0; width: 450px; max-width: 90%; height: calc(100% - var(--header-height)); background-color: var(--bg-secondary); border-left: 1px solid var(--border-primary); box-shadow: -5px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.3s ease-out; }
+        .filter-modal.open .filter-modal-content { transform: translateX(0); }
+        .filter-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border-secondary); flex-shrink: 0; } .filter-modal-header h3 { font-size: 1.2em; margin: 0; color: var(--text-headings); }
+        .filter-modal-header .close-btn { background: none; border: none; font-size: 1.5em; color: var(--text-secondary); cursor: pointer; padding: 5px; line-height: 1; } .filter-modal-header .close-btn:hover { color: var(--text-primary); }
+        .filter-modal-body { padding: 20px; overflow-y: auto; flex-grow: 1; }
+        .filter-group { margin-bottom: 25px; } .filter-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9em; color: var(--text-headings); }
+        .filter-group input[type="text"], .filter-group input[type="date"], .filter-group select { width: 100%; padding: 8px 12px; border: 1px solid var(--border-secondary); border-radius: 4px; background-color: var(--bg-primary); color: var(--text-primary); font-size: 0.95em; }
+        .filter-group .date-range-inputs { display: flex; gap: 10px; }
+        .filter-group .checkbox-group label { display: block; font-weight: normal; margin-bottom: 5px; font-size: 0.95em; color: var(--text-primary); } .filter-group .checkbox-group input[type="checkbox"] { margin-right: 8px; }
+        .filter-group select[multiple] { min-height: 100px; }
+        .filter-modal-footer { padding: 15px 20px; border-top: 1px solid var(--border-secondary); display: flex; justify-content: flex-end; gap: 10px; background-color: var(--bg-secondary); flex-shrink: 0; } .filter-modal-footer .btn { width: auto; }
+
+        .app-footer { background-color: var(--header-bg); color: var(--header-link); text-align: center; padding: 15px 25px; font-size: 0.85em; border-top: 1px solid var(--border-primary); height: var(--footer-height); flex-shrink:0; }
+        .app-footer nav a { color: var(--header-link); margin: 0 8px; } .app-footer nav a:hover { color: var(--header-text); } .app-footer p { margin-top: 8px; color: var(--header-link); }
+
+         @media (max-width: 992px) { .main-content { padding: 20px; } }
+         @media (max-width: 768px) {
+             .app-body { flex-direction: column;}
+             .sidebar { width: 100%; height: auto; position: static; border-bottom: 1px solid var(--border-secondary); border-right: none; overflow-y: visible;}
+             .main-content { width: 100% !important; height: auto; padding: 20px; overflow-y: visible;}
+             /* Responsive image scaling for tablets */
+             .media-card .card-image-field { height: 160px; }
+         }
+         @media (max-width: 550px) {
+             .main-content { padding: 15px;}
+             .controls-section { flex-direction: column; align-items: stretch;}
+             .search-bar { max-width: none; }
+         }
+         @media (max-width: 480px) {
+             /* Responsive image scaling for mobile */
+             .media-card .card-image-field { height: 140px; }
+         }
+
+        
+        .amc-quick-view-modal-backdrop {
+            /* Uses .amc-modal-backdrop general styles */
+        }
+        .amc-quick-view-modal-backdrop .amc-quick-view-modal { /* Specifics for quick view content */
+            /* Inherits .amc-modal-content but can override width/max-height */
+            max-width: 1200px;
+        }
+        
+        .amc-quick-view-header {
+            /* Uses .amc-modal-header base */
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .amc-quick-view-top-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .amc-quick-view-header h3#amcQuickViewTitle {
+            /* Inherits general h3 but allow wrapping */
+            margin: 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 70%;
+            align-self: flex-start;
+        }
+        .amc-quick-view-meta {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .amc-quick-view-meta #amcQuickViewReleaseTime {
+            font-weight: 500;
+        }
+        
+        .amc-quick-view-body { /* Uses .amc-modal-body base */
+            display: flex; /* Override for quick view layout */
+            gap: 30px; 
+        }
+        .amc-quick-view-col-media { flex: 1; min-width: 0; }
+        .amc-quick-view-col-details { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        
+        .amc-quick-view-col-media h4, .amc-quick-view-col-details h4 { 
+            font-size: 1.1em; margin-bottom: 15px; color: var(--text-headings); 
+            padding-bottom: 5px; border-bottom: 1px solid var(--border-secondary); 
+        }
+        
+        #amcQuickViewMediaPreviewArea { 
+            width: 100%; aspect-ratio: 16 / 9; 
+            background-color: var(--bg-tertiary); 
+            border-radius: 6px; 
+            display: flex; align-items: center; justify-content: center; 
+            color: var(--text-secondary); font-size: 1em; 
+            overflow: hidden; border: 1px solid var(--border-secondary); 
+        }
+        #amcQuickViewMediaPreviewArea img, #amcQuickViewMediaPreviewArea video { 
+            width: 100%; height: 100%; object-fit: contain; 
+        }
+        
+        #amcQuickViewSummaryArea { 
+            font-size: 0.95em; max-height: 200px; overflow-y: auto; 
+            margin-bottom: 20px; padding-right: 10px; 
+            border-bottom: 1px solid var(--border-secondary); padding-bottom: 15px; 
+        }
+        #amcQuickViewSummaryArea p { margin-bottom: 1em;}
+        
+        #amcQuickViewAssetListArea { 
+            max-height: 250px; overflow-y: auto; 
+            margin-bottom: 25px; padding-right: 10px; 
+        }
+        .amc-quick-view-asset-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 0; border-bottom: 1px solid var(--border-secondary);
+            font-size: 0.9em;
+        }
+         .amc-quick-view-asset-item:last-child { border-bottom: none; }
+        .amc-quick-view-asset-item i.fa-fw {
+            color: var(--accent-primary); font-size: 1.2em;
+            flex-shrink: 0;
+        }
+        .amc-quick-view-asset-item .asset-name {
+            flex-grow: 1;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+            margin-right: 15px;
+        }
+        .amc-quick-view-asset-item .asset-details {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+        .amc-quick-view-asset-item .asset-actions {
+            flex-shrink: 0;
+        }
+        .amc-quick-view-asset-item .asset-actions .btn-small {
+            width: auto; padding: 4px 8px; font-size: 0.8em;
+        }
+        .amc-quick-view-asset-item .asset-actions .download-asset-btn i {
+            color: var(--accent-primary);
+        }
+        
+        #amcQuickViewActionsArea { 
+            margin-top: auto; padding-top: 20px; 
+            border-top: 1px solid var(--border-secondary); 
+        }
+        #amcQuickViewActionsArea .btn { width: 100%; margin-bottom: 10px; }
+        #amcQuickViewActionsArea .btn:last-child { margin-bottom: 0; }
+        #amcQuickViewActionsArea .btn.qv-add-cart-btn { 
+            background-color: var(--accent-secondary-default); /* Default grey */
+            border-color: var(--accent-secondary-default);
+            color: #fff; 
+        }
+        #amcQuickViewActionsArea .btn.qv-add-cart-btn:hover {
+            background-color: var(--accent-secondary-default-hover); 
+            border-color: var(--accent-secondary-default-hover);
+        }
+        #amcQuickViewActionsArea .btn.qv-add-cart-btn.in-cart-style {
+            background-color: var(--accent-action-positive);
+            border-color: var(--accent-action-positive);
+        }
+         #amcQuickViewActionsArea .btn.qv-add-cart-btn.in-cart-style:hover {
+            background-color: var(--accent-action-positive-hover);
+            border-color: var(--accent-action-positive-hover);
+        }
+
+        /* Cart Modal Specific Styles */
+        #cartModalBackdrop .amc-modal-content { /* Specifics for cart content */
+            max-width: 700px; 
+        }
+        #cartModalBody { /* Overrides default .amc-modal-body padding */
+            padding: 0; 
+            min-height: 200px; 
+            max-height: 50vh; 
+            overflow-y: auto;
+        }
+        .cart-select-all-bar {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--border-secondary);
+            font-size: 0.9em;
+        }
+        .cart-select-all-bar input[type="checkbox"] {
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .cart-select-all-bar label {
+            cursor: pointer;
+            user-select: none;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        #cartItemsList .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px 12px 20px; /* Adjusted padding to accommodate selector */
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        #cartItemsList .cart-item:last-child {
+            border-bottom: none;
+        }
+        .cart-item-selector {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-secondary);
+            border-radius: 50%;
+            margin-right: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+            flex-shrink: 0;
+        }
+        .cart-item-selector.selected {
+            background-color: var(--selection-dot-color);
+            border-color: var(--selection-dot-color);
+        }
+        .cart-item-selector.selected::after { /* Inner dot */
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--bg-secondary); /* Or white if you prefer more contrast */
+            border-radius: 50%;
+        }
+
+        #cartItemsList .cart-item-thumbnail {
+            width: 70px;
+            height: 50px;
+            background-color: var(--bg-tertiary);
+            border-radius: 4px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        #cartItemsList .cart-item-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #cartItemsList .cart-item-thumbnail .placeholder-icon {
+            font-size: 1.5em;
+            color: var(--text-secondary);
+        }
+        #cartItemsList .cart-item-info {
+            flex-grow: 1;
+            min-width: 0; /* Allow text to truncate */
+        }
+        #cartItemsList .cart-item-info .item-title {
+            font-weight: 600;
+            color: var(--text-headings);
+            font-size: 1em;
+            margin-bottom: 2px;
+            display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
+        }
+         #cartItemsList .cart-item-info .item-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+        #cartItemsList .cart-item-info .item-title a:hover {
+            color: var(--accent-primary);
+            text-decoration: underline;
+        }
+        #cartItemsList .cart-item-info .item-brand {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+        #cartItemsList .cart-item-remove-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary); 
+            font-size: 1.2em; 
+            cursor: pointer;
+            padding: 8px; 
+            margin-left: 10px; /* Reduced margin slightly */
+            transition: color 0.2s ease;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        #cartItemsList .cart-item-remove-btn:hover {
+            color: var(--accent-action-danger); 
+        }
+        .empty-cart-message {
+            text-align:center; padding: 40px 20px; color: var(--text-secondary); font-size: 1.1em;
+        }
+        #cartModalFooter { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #cartModalFooter .cart-summary {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            flex-shrink: 0; /* Prevent shrinking if buttons take up space */
+        }
+        #cartModalFooter .cart-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller modal widths */
+            justify-content: flex-end; /* Align to right if wrapping */
+        }
+
+
+        @media (max-width: 992px) { 
+            .amc-quick-view-body { flex-direction: column; } 
+            .amc-quick-view-modal { max-height: calc(100vh - 40px); } 
+            #amcQuickViewSummaryArea, #amcQuickViewAssetListArea { max-height: 200px; } 
+        }
+         @media (max-width: 500px) { /* Adjust cart modal footer for small screens */
+            #cartModalFooter {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch; /* Make buttons full width */
+            }
+            #cartModalFooter .cart-actions {
+                width: 100%;
+                flex-direction: column; /* Stack buttons */
+            }
+            #cartModalFooter .cart-actions .btn {
+                width: 100%;
+                margin-left: 0 !important; /* Override any specific margins for stacked buttons */
+                margin-right: 0 !important;
+            }
+            #cartModalFooter .cart-summary {
+                text-align: center; /* Center summary text */
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Toast Notification System */
+        .toast-container {
+            position: fixed;
+            bottom: 30px; /* Move to bottom to avoid browser download popup */
+            left: 50%; /* Center horizontally */
+            transform: translateX(-50%); /* Center alignment */
+            z-index: 99999; /* Higher z-index to ensure visibility */
+            pointer-events: none;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .toast {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 20px 28px;
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            margin: 0 auto 12px auto; /* Center each toast */
+            max-width: 450px;
+            opacity: 0;
+            transform: translateY(50px) scale(0.9); /* Slide up from bottom */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Smooth bounce effect */
+            pointer-events: auto;
+            position: relative;
+            border-left: 5px solid #fff;
+            text-align: center; /* Center text */
+            font-size: 1.1em; /* Larger text for better visibility */
+            font-weight: 600;
+            border: 2px solid rgba(255, 255, 255, 0.2); /* Subtle border for definition */
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1); /* Slide into position with scale */
+        }
+
+        .toast.hide {
+            opacity: 0;
+            transform: translateY(50px) scale(0.9); /* Slide down and shrink */
+        }
+
+        .toast-icon {
+            display: inline-block;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .toast-message {
+            display: inline-block;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+        }
+
+        /* Dark mode toast */
+        body.dark-mode .toast {
+            background: linear-gradient(135deg, #198754, #17a2b8);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        </style>
+        
+        <!-- Welcome Modal Styles -->
+        <link rel="stylesheet" href="simple-welcome-modal.css">
+</head>
+<body>
+<!-- Welcome Modal (Hidden by default) -->
+<div id="welcomeModal" class="simple-welcome-backdrop hidden">
+    <div class="simple-welcome-modal">
+        <button class="welcome-close-btn" onclick="hideWelcomeModal()" title="Close Welcome Modal">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="welcome-header">
+            <h2 id="welcomeGreeting">Welcome back!</h2>
+            <p class="welcome-subtitle">You're signed in and ready to explore.</p>
+        </div>
+        
+        <div class="welcome-content">
+            <div class="release-update">
+                <div class="release-icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <div class="release-text">
+                    <p>Since your last visit, <strong>42 new media releases</strong> have been added - dive in and discover what's new.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="welcome-footer">
+            <button class="btn-continue" id="closeWelcomeBtn" onclick="hideWelcomeModal()">
+                Continue
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <!-- Role-based color dot -->
+        <div class="role-indicator" id="roleIndicator"></div>
+    </div>
+</div>
+
+<!-- Page Content Filter (Hidden by default) -->
+<div id="pageFilter" class="page-content-filter hidden"></div>
+
+<!-- Toast Notification Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="app-container">
+<header class="app-header">
+    <div class="logo"><h1>AutoMediaCenter</h1></div>
+    <div class="user-actions-group">
+        <div class="user-info"><span id="user-email-display">user@example.com</span></div>
+        <div class="notification-indicator" id="notification-indicator" title="Notifications">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge">0</span>
+        </div>
+        <div class="cart-indicator" id="cart-indicator" title="View Cart (0 items)">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge">0</span>
+        </div>
+        <a class="logout-link" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+</header>
+<div class="app-body">
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-header"><button id="sidebar-toggle" title="Toggle Sidebar"><i class="fas fa-bars"></i></button></div>
+<nav>
+<div class="sidebar-section">
+<span class="section-title">Radar</span>
+<ul>
+    <li><a href="newradarfe.html"><i class="fas fa-clock fa-fw"></i> <span>All Upcoming</span></a></li>
+    <li><a href="#"><i class="fas fa-hourglass-half fa-fw"></i> <span>Dropping Soon</span></a></li>
+    <li><a href="#"><i class="fas fa-tags fa-fw"></i> <span>By Brand / Topic</span></a></li>
+    <li><a href="#"><i class="fas fa-bookmark fa-fw"></i> <span>My Followed Items</span></a></li>
+    <li><a href="radar_history.html"><i class="fas fa-history fa-fw"></i> <span>Radar History</span></a></li>
+    <li><a href="radar_analytics.html"><i class="fas fa-chart-pie fa-fw"></i> <span>Radar Analytics</span></a></li>
+</ul>
+</div>
+<div class="sidebar-section">
+<span class="section-title">Other Platforms</span>
+<ul>
+    <li><a href="AssetDBmenu1.6.html"><i class="fas fa-upload fa-fw"></i> <span>Upload Hub</span></a></li>
+    <li class="active"><a href="automediacenter.html"><i class="fas fa-home fa-fw"></i> <span>AutoMediaCenter</span></a></li>
+    <li><a href="#"><i class="fas fa-broadcast-tower fa-fw"></i> <span>To AutoMediaLive</span></a></li>
+    <li><a href="#"><i class="fas fa-shield-alt fa-fw"></i> <span>To AutoMediaVault</span></a></li>
+</ul>
+</div>
+<div class="sidebar-section">
+<span class="section-title">Account</span>
+<ul><li><a href="#"><i class="fas fa-user-circle fa-fw"></i> <span>My Account</span></a></li><li><a href="#"><i class="fas fa-life-ring fa-fw"></i> <span>Support</span></a></li></ul>
+</div>
+</nav>
+<div class="sidebar-disclaimer"> Access to AutoMediaCenter content is intended for verified media partners. </div>
+</aside>
+<main class="main-content">
+<div class="content-header">
+    <h1>AutoMediaCenter</h1>
+    <p>Browse and download the latest media releases, images, videos and documents.</p>
+</div>
+<div class="controls-section">
+    <div class="search-bar"> <input placeholder="Search AMC releases..." type="search"/> <button class="btn btn-icon search-submit-btn"><i class="fas fa-search"></i></button> </div>
+    <div class="filter-controls"> <button class="btn btn-light" id="filter-trigger-button" title="Filter Results"><i class="fas fa-filter"></i> Filters</button> <button class="btn btn-light" title="Sort Options"><i class="fas fa-sort-amount-down"></i> Sort</button> <button class="btn btn-light" id="dark-mode-toggle" title="Toggle Dark Mode"><i class="fas fa-moon"></i></button> </div>
+</div>
+<div class="amc-card-grid">
+    <!-- Release cards will be dynamically inserted here -->
+</div>
+<div class="pagination" id="pagination-controls">
+    <!-- Pagination controls will be dynamically inserted here -->
+</div>
+</main>
+</div>
+<footer class="app-footer">
+<nav> <a href="#">About Us</a> | <a href="#">Help Center</a> | <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a> </nav>
+<p>© <span id="currentYear"></span> AutoMediaCenter. All rights reserved.</p>
+</footer>
+</div>
+<div class="filter-modal" id="filter-modal">
+<div class="filter-modal-content">
+<div class="filter-modal-header"> <h3><i class="fas fa-filter"></i> Filter AMC Releases</h3> <button class="close-btn" id="filter-close-button" title="Close Filters">×</button> </div>
+<div class="filter-modal-body">
+<div class="filter-group"> <label for="filter-amc-brand">Brand</label> <select id="filter-amc-brand" multiple="" name="brand[]" size="5"> <option value="audi">Audi</option><option value="porsche">Porsche</option><option value="mercedes">Mercedes-Benz</option><option value="ford">Ford</option><option value="hyundai">Hyundai</option><option value="toyota">Toyota</option><option value="vw">Volkswagen</option><option value="ferrari">Ferrari</option> </select> <small>Use Ctrl/Cmd + Click</small> </div>
+<div class="filter-group"> <label>Asset Type</label> <div class="checkbox-group"> <label><input name="amc_asset_type" type="checkbox" value="press_release"/> Press Release</label><br/> <label><input name="amc_asset_type" type="checkbox" value="image"/> Image</label><br/> <label><input name="amc_asset_type" type="checkbox" value="video"/> Video</label><br/> <label><input name="amc_asset_type" type="checkbox" value="document"/> Document</label> </div> </div>
+<div class="filter-group"> <label>Release Date Range</label> <div class="date-range-inputs"> <input aria-label="Release Start Date" id="filter-release-start" name="release_start" type="date"/> <input aria-label="Release End Date" id="filter-release-end" name="release_end" type="date"/> </div> </div>
+<div class="filter-group"> <label for="filter-amc-tags">Keywords/Topics</label> <input id="filter-amc-tags" placeholder="e.g., EV, Interview, Specifications" type="text"/> </div>
+<div class="filter-group"> <label for="filter-amc-sort">Sort By</label> <select id="filter-amc-sort" name="sort"> <option value="date_newest">Release Date (Newest First)</option><option value="date_oldest">Release Date (Oldest First)</option> <option value="brand_asc">Brand (A-Z)</option><option value="title_asc">Title (A-Z)</option></select> </div>
+</div>
+<div class="filter-modal-footer"> <button class="btn btn-light" id="filter-clear-button">Clear Filters</button> <button class="btn btn-primary" id="filter-apply-button">Apply Filters</button> </div>
+</div>
+</div>
+
+<div class="amc-modal-backdrop amc-quick-view-modal-backdrop" id="amcQuickViewModalBackdrop">
+    <div class="amc-modal-content amc-quick-view-modal">
+        <div class="amc-modal-header amc-quick-view-header">
+            <div class="amc-quick-view-top-line">
+                <div class="amc-quick-view-meta">
+                    <span id="amcQuickViewBrandName">Brand</span> | <span id="amcQuickViewReleaseDate">Date</span><span id="amcQuickViewReleaseTime" style="display: none;"></span>
+                </div>
+                <button class="close-btn" id="amcQuickViewCloseBtn" title="Close Quick View">×</button>
+            </div>
+            <h3 id="amcQuickViewTitle">Release Title</h3>
+        </div>
+        <div class="amc-modal-body amc-quick-view-body">
+            <div class="amc-quick-view-col-media">
+                <h4>Media Preview</h4>
+                <div id="amcQuickViewMediaPreviewArea">
+                    <span>Loading Preview...</span>
+                </div>
+            </div>
+            <div class="amc-quick-view-col-details">
+                <h4>Press Release Summary</h4>
+                <div id="amcQuickViewSummaryArea">
+                    <p>Loading release details...</p>
+                </div>
+                <h4>Available Assets</h4>
+                <div id="amcQuickViewAssetListArea">
+                    <p>Loading assets...</p>
+                </div>
+                <div id="amcQuickViewActionsArea">
+                    <!-- Actions like Add to Cart, Download All will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CART MODAL HTML Structure -->
+<div class="amc-modal-backdrop" id="cartModalBackdrop">
+    <div class="amc-modal-content" id="cartModalContent">
+        <div class="amc-modal-header">
+            <h3>Your Media Cart</h3>
+            <button class="close-btn" id="cartModalCloseBtn" title="Close Cart">×</button>
+        </div>
+        <div class="amc-modal-body" id="cartModalBody">
+            <div class="cart-select-all-bar">
+                <input type="checkbox" id="cartSelectAllCheckbox" title="Select/Deselect all releases in cart">
+                <label for="cartSelectAllCheckbox">Select / Deselect All</label>
+            </div>
+            <div id="cartItemsList">
+                <!-- Cart items will be rendered here by JavaScript -->
+                <p class="empty-cart-message">Your cart is currently empty.</p>
+            </div>
+        </div>
+        <div class="amc-modal-footer" id="cartModalFooter">
+            <div class="cart-summary">
+                Total Releases: <span id="cartTotalItems">0</span>
+                (<span id="cartSelectedItemsCount">0</span> selected)
+            </div>
+            <div class="cart-actions">
+                <button class="btn btn-light" id="cartClearAllBtn" title="Remove all releases from cart">Clear Cart</button>
+                <button class="btn btn-primary" id="cartDownloadSelectedBtn" disabled title="Download assets for selected releases">Download Selected (ZIPs)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+        const API_BASE_URL = 'http://localhost:5000';
+
+        // Toast Notification System
+        function showToast(message, type = 'success', duration = 5000) {
+            const toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) return;
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            const icon = type === 'success' ? '🎉' : type === 'error' ? '❌' : 'ℹ️';
+            
+            toast.innerHTML = `
+                <span class="toast-icon">${icon}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="hideToast(this.parentElement)">&times;</button>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            // Show toast with animation
+            setTimeout(() => toast.classList.add('show'), 100);
+
+            // Auto-hide after duration
+            setTimeout(() => hideToast(toast), duration);
+        }
+
+        function hideToast(toast) {
+            if (!toast) return;
+            
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+            
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.parentElement.removeChild(toast);
+                }
+            }, 300);
+        }
+
+        function showDownloadSuccessToast(releaseTitle) {
+            const message = `"${releaseTitle}" media assets downloaded successfully!`;
+            showToast(message, 'success', 5000);
+        }
+        const sidebar = document.getElementById('sidebar'); 
+        const sidebarToggle = document.getElementById('sidebar-toggle'); 
+        const darkModeToggle = document.getElementById('dark-mode-toggle'); 
+        const body = document.body; 
+        const filterModal = document.getElementById('filter-modal'); 
+        const filterTriggerButton = document.getElementById('filter-trigger-button'); 
+        const filterCloseButton = document.getElementById('filter-close-button'); 
+        const filterApplyButton = document.getElementById('filter-apply-button'); 
+        const filterClearButton = document.getElementById('filter-clear-button'); 
+        const currentYearSpan = document.getElementById('currentYear');
+        const userEmailDisplay = document.getElementById('user-email-display'); 
+        const logoutLink = document.querySelector('.app-header .logout-link'); 
+        const paginationControls = document.getElementById('pagination-controls');
+
+        const amcQuickViewModalBackdrop = document.getElementById('amcQuickViewModalBackdrop');
+        const amcQuickViewCloseBtn = document.getElementById('amcQuickViewCloseBtn');
+        const amcQuickViewTitleEl = document.getElementById('amcQuickViewTitle');
+        const amcQuickViewBrandNameEl = document.getElementById('amcQuickViewBrandName');
+        const amcQuickViewReleaseDateEl = document.getElementById('amcQuickViewReleaseDate');
+        const amcQuickViewReleaseTimeEl = document.getElementById('amcQuickViewReleaseTime');
+        const amcQuickViewMediaPreviewAreaEl = document.getElementById('amcQuickViewMediaPreviewArea');
+        const amcQuickViewSummaryAreaEl = document.getElementById('amcQuickViewSummaryArea');
+        const amcQuickViewAssetListAreaEl = document.getElementById('amcQuickViewAssetListArea');
+        const amcQuickViewActionsAreaEl = document.getElementById('amcQuickViewActionsArea');
+
+        const cartIndicator = document.getElementById('cart-indicator');
+        const notificationIndicator = document.getElementById('notification-indicator');
+
+        // Cart Modal Elements
+        const cartModalBackdrop = document.getElementById('cartModalBackdrop');
+        const cartModalCloseBtn = document.getElementById('cartModalCloseBtn');
+        const cartSelectAllCheckbox = document.getElementById('cartSelectAllCheckbox'); 
+        const cartItemsListEl = document.getElementById('cartItemsList');
+        const cartTotalItemsEl = document.getElementById('cartTotalItems');
+        const cartSelectedItemsCountEl = document.getElementById('cartSelectedItemsCount'); 
+        const cartClearAllBtn = document.getElementById('cartClearAllBtn');
+        const cartDownloadSelectedBtn = document.getElementById('cartDownloadSelectedBtn'); 
+        const emptyCartMessageEl = cartItemsListEl.querySelector('.empty-cart-message');
+
+        let cartSelectedUuids = new Set(); 
+
+
+        class CartManager {
+            constructor(storageKey = 'amcUserCart') {
+                this.storageKey = storageKey;
+                this.cart = this.loadCart();
+                this.updateCartIndicatorDOM(); 
+            }
+
+            loadCart() {
+                const cartData = localStorage.getItem(this.storageKey);
+                return cartData ? JSON.parse(cartData) : [];
+            }
+
+            saveCart() {
+                localStorage.setItem(this.storageKey, JSON.stringify(this.cart));
+                this.updateCartIndicatorDOM();
+                this.dispatchCartUpdateEvent();
+            }
+
+            addItem(release) { 
+                if (!release || !release.uuid) {
+                    console.error("CartManager: Invalid release data provided to addItem.");
+                    return false;
+                }
+                const existingItem = this.cart.find(item => item.uuid === release.uuid);
+                if (existingItem) {
+                    return false; 
+                }
+                this.cart.push({
+                    uuid: release.uuid,
+                    title: release.title || 'Unknown Release',
+                    brand: release.brand || 'Unknown Brand',
+                    teaserPath: release.teaserPath || null, 
+                    addedAt: new Date().toISOString()
+                });
+                this.saveCart();
+                return true;
+            }
+
+            removeItem(releaseUuid) { 
+                const initialLength = this.cart.length;
+                this.cart = this.cart.filter(item => item.uuid !== releaseUuid);
+                cartSelectedUuids.delete(releaseUuid); 
+                if (this.cart.length < initialLength) {
+                    this.saveCart();
+                    return true;
+                }
+                return false;
+            }
+            isInCart(releaseUuid) { return this.cart.some(item => item.uuid === releaseUuid); }
+            getCartCount() { return this.cart.length; }
+            getCartItems() { return [...this.cart]; } 
+            clearCart() { 
+                this.cart = [];
+                cartSelectedUuids.clear(); 
+                this.saveCart();
+            }
+            
+            dispatchCartUpdateEvent() {
+                document.dispatchEvent(new CustomEvent('amcCartUpdated', { 
+                    detail: { 
+                        cartCount: this.getCartCount(),
+                        items: this.getCartItems() 
+                    } 
+                }));
+            }
+
+            updateCartIndicatorDOM() {
+                if (!cartIndicator) return;
+                const badge = cartIndicator.querySelector('.cart-badge');
+                const count = this.getCartCount();
+                
+                if (badge) badge.textContent = count;
+                cartIndicator.title = `View Cart (${count} item${count !== 1 ? 's' : ''})`;
+                
+                if (count > 0) {
+                    cartIndicator.classList.add('has-items');
+                } else {
+                    cartIndicator.classList.remove('has-items');
+                }
+            }
+        }
+        const cartManager = new CartManager();
+        
+        function updateNotificationIndicatorDOM(count = 0) {
+            if (!notificationIndicator) return;
+            const badge = notificationIndicator.querySelector('.notification-badge');
+            if (badge) badge.textContent = count;
+            if (count > 0) {
+                notificationIndicator.classList.add('has-new');
+            } else {
+                notificationIndicator.classList.remove('has-new');
+            }
+        }
+
+
+        if (sidebarToggle && sidebar) { 
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                const icon = sidebarToggle.querySelector('i');
+                if (sidebar.classList.contains('collapsed')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-arrow-right');
+                    sidebarToggle.title = "Expand Sidebar";
+                } else {
+                    icon.classList.remove('fa-arrow-right');
+                    icon.classList.add('fa-bars');
+                    sidebarToggle.title = "Collapse Sidebar";
+                }
+            });
+        }
+        
+        function applyTheme(theme) { 
+            const icon = darkModeToggle?.querySelector('i'); 
+            if (theme === 'dark') { 
+                body.classList.add('dark-mode'); 
+                if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+                if (darkModeToggle) darkModeToggle.title = "Switch to Light Mode"; 
+            } else { 
+                body.classList.remove('dark-mode'); 
+                if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+                if (darkModeToggle) darkModeToggle.title = "Switch to Dark Mode"; 
+            } 
+            setAccentRgbVariable(); 
+        }
+        
+        function setAccentRgbVariable() { 
+            try { 
+                const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim(); 
+                if (accentColor && accentColor.startsWith('#')) {
+                    const r = parseInt(accentColor.substring(1, 3), 16); 
+                    const g = parseInt(accentColor.substring(3, 5), 16); 
+                    const b = parseInt(accentColor.substring(5, 7), 16); 
+                    document.documentElement.style.setProperty('--accent-primary-rgb', `${r}, ${g}, ${b}`);
+                } else { throw new Error('Primary accent color not a valid hex.'); }
+
+                const accentSecondaryDefaultColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-secondary-default').trim();
+                 if (accentSecondaryDefaultColor && accentSecondaryDefaultColor.startsWith('#')) {
+                    const r2 = parseInt(accentSecondaryDefaultColor.substring(1,3), 16);
+                    const g2 = parseInt(accentSecondaryDefaultColor.substring(3,5), 16);
+                    const b2 = parseInt(accentSecondaryDefaultColor.substring(5,7), 16);
+                    document.documentElement.style.setProperty('--accent-secondary-default-rgb', `${r2},${g2},${b2}`);
+                } else { throw new Error('Secondary default accent color not a valid hex.'); }
+                
+                const accentActionPositiveColorStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-action-positive');
+                if (accentActionPositiveColorStyle) {
+                    const accentActionPositiveColor = accentActionPositiveColorStyle.trim();
+                    if (accentActionPositiveColor && accentActionPositiveColor.startsWith('#')) {
+                        const r3 = parseInt(accentActionPositiveColor.substring(1,3), 16);
+                        const g3 = parseInt(accentActionPositiveColor.substring(3,5), 16);
+                        const b3 = parseInt(accentActionPositiveColor.substring(5,7), 16);
+                        document.documentElement.style.setProperty('--accent-action-positive-rgb', `${r3},${g3},${b3}`);
+                    } else { throw new Error('Positive action accent color not a valid hex.'); }
+                } else { document.documentElement.style.setProperty('--accent-action-positive-rgb', `40, 167, 69`); }
+            } catch(e){ 
+                document.documentElement.style.setProperty('--accent-primary-rgb', `13, 110, 253`);
+                document.documentElement.style.setProperty('--accent-secondary-default-rgb', `108, 117, 125`);
+                document.documentElement.style.setProperty('--accent-action-positive-rgb', `40, 167, 69`);
+            } 
+        }
+
+        if (darkModeToggle) { 
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); 
+            applyTheme(savedTheme); 
+            darkModeToggle.addEventListener('click', () => { 
+                let currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light'; 
+                let newTheme = currentTheme === 'dark' ? 'light' : 'dark'; 
+                applyTheme(newTheme); 
+                localStorage.setItem('theme', newTheme); 
+            }); 
+        }
+        
+        function openFilterModal() { if (filterModal) { filterModal.style.display = 'block'; setTimeout(() => { filterModal.classList.add('open'); }, 10); } }
+        function closeFilterModal() { if (filterModal) { filterModal.classList.remove('open'); setTimeout(() => { filterModal.style.display = 'none'; }, 300); } }
+        
+        if (filterTriggerButton) { filterTriggerButton.addEventListener('click', openFilterModal); } 
+        if (filterCloseButton) { filterCloseButton.addEventListener('click', closeFilterModal); } 
+        if (filterModal) { filterModal.addEventListener('click', (event) => { if (event.target === filterModal) { closeFilterModal(); } }); } 
+        if(filterApplyButton) { filterApplyButton.addEventListener('click', () => { alert("Apply AMC Filters clicked (placeholder)."); closeFilterModal(); }); } 
+        if(filterClearButton) { filterClearButton.addEventListener('click', () => { const formElements = filterModal.querySelectorAll('input, select'); formElements.forEach(el => { if (el.type === 'checkbox' || el.type === 'radio') el.checked = false; else if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = ''; }); alert("Clear AMC Filters clicked (placeholder)."); }); }
+        
+        if (currentYearSpan) { currentYearSpan.textContent = new Date().getFullYear(); }
+        
+        let currentPage = 1;
+        const releasesPerPage = 24;
+
+        // Function to dynamically determine timezone based on date
+        function getDynamicTimezone(dateObj) {
+            if (!dateObj || !(dateObj instanceof Date)) {
+                return 'CET'; // Default fallback
+            }
+            
+            // Check if the date falls within daylight saving time (CEST)
+            // In Europe, DST typically runs from last Sunday in March to last Sunday in October
+            const year = dateObj.getFullYear();
+            
+            // Calculate last Sunday in March
+            const marchLastSunday = new Date(year, 2, 31); // March 31st
+            marchLastSunday.setDate(31 - marchLastSunday.getDay()); // Go back to last Sunday
+            
+            // Calculate last Sunday in October
+            const octoberLastSunday = new Date(year, 9, 31); // October 31st
+            octoberLastSunday.setDate(31 - octoberLastSunday.getDay()); // Go back to last Sunday
+            
+            // Check if the date falls within DST period
+            if (dateObj >= marchLastSunday && dateObj < octoberLastSunday) {
+                return 'CEST'; // Central European Summer Time
+            } else {
+                return 'CET';  // Central European Time
+            }
+        }
+
+        function checkAmcPageLoginStatus() {
+            // Check for both old token system and new MongoDB auth system
+            let token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            let userString = localStorage.getItem('user') || localStorage.getItem('currentUser');
+            let user = null;
+            if (userString) {
+                try { user = JSON.parse(userString); }
+                catch (e) { console.error("Error parsing user from localStorage", e); }
+            }
+
+            if (token && user && user.email) {
+                if(userEmailDisplay) userEmailDisplay.textContent = user.email;
+                fetchAndDisplayAmcReleases(token, currentPage);
+            } else {
+                if(userEmailDisplay) userEmailDisplay.textContent = "Not Logged In";
+                fetchAndDisplayAmcReleases(null, currentPage);
+            }
+        }
+
+        if (logoutLink) {
+            logoutLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                // Clear both old and new authentication systems
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('currentUser');
+                if(userEmailDisplay) userEmailDisplay.textContent = "Not Logged In";
+                const amcGrid = document.querySelector('.amc-card-grid');
+                if (amcGrid) {
+                    amcGrid.innerHTML = '<p style="text-align:center; padding: 20px;">You have been logged out. <a href="login-test-mongodb.html">Log in</a> to access your account features.</p>';
+                }
+                 if(paginationControls) paginationControls.innerHTML = '';
+                 cartManager.clearCart();
+                 document.dispatchEvent(new CustomEvent('amcUserLoggedOut'));
+            });
+        }
+        
+        async function logAmcInteraction(itemUuid, interactionType, itemType = 'release') {
+            if (!itemUuid) { console.error("logAmcInteraction: itemUuid is missing for interaction type:", interactionType); return; }
+            // console.log(`AMC Interaction (CONSOLE LOG): ItemType=${itemType}, ItemUUID=${itemUuid}, Interaction=${interactionType}`);
+        }
+
+        function setupAmcViewTracking() {
+            const viewedInSessionKey = 'viewedAmcReleasesInSession';
+            let viewedInSession = new Set(JSON.parse(sessionStorage.getItem(viewedInSessionKey)) || []);
+            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.5 };
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const cardElement = entry.target;
+                        const releaseUuid = cardElement.dataset.uuid;
+                        if (releaseUuid && !viewedInSession.has(releaseUuid)) {
+                            logAmcInteraction(releaseUuid, 'view', 'release');
+                            viewedInSession.add(releaseUuid);
+                            sessionStorage.setItem(viewedInSessionKey, JSON.stringify(Array.from(viewedInSession)));
+                        }
+                    }
+                });
+            }, observerOptions);
+            document.querySelectorAll('.media-card[data-uuid]').forEach(card => { observer.observe(card); });
+        }
+
+        function generateAssetIconHtml(assetArray, iconClass, title) {
+            const count = assetArray && assetArray.length > 0 ? assetArray.length : 0;
+            const isAvailable = count > 0;
+            return `
+                <span class="asset-icon ${isAvailable ? 'available' : 'unavailable'}" title="${title}${isAvailable ? ` (${count})` : ''}">
+                    <i class="fas fa-${iconClass}"></i> 
+                    ${isAvailable ? `<span class="asset-count-badge">${count}</span>` : ''}
+                </span>
+            `;
+        }
+        
+        function updateCardCartButtonState(cardElement, releaseUuid) {
+            const cartButton = cardElement.querySelector('.add-to-cart-btn');
+            if (!cartButton) return;
+
+            const isInCart = cartManager.isInCart(releaseUuid);
+            if (isInCart) {
+                cartButton.innerHTML = '<i class="fas fa-check"></i> In Cart';
+                cartButton.classList.add('in-cart-style');
+                cartButton.title = "Remove from Cart";
+            } else {
+                cartButton.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
+                cartButton.classList.remove('in-cart-style');
+                cartButton.title = "Add to Cart";
+            }
+        }
+
+
+
+        async function fetchAndDisplayAmcReleases(token, page = 1) { 
+            currentPage = page; 
+            const amcGridContainer = document.querySelector('.amc-card-grid');
+            if (!amcGridContainer) { console.error('Error: ".amc-card-grid" container not found.'); return; }
+            amcGridContainer.innerHTML = '<p style="text-align:center; padding: 20px;"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Loading AutoMediaCenter releases...</p>';
+            if(paginationControls) paginationControls.innerHTML = '';
+
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                const response = await fetch(`${API_BASE_URL}/api/v1/center/releases?page=${page}&limit=${releasesPerPage}`, {
+                    method: 'GET',
+                    headers: headers
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
+                }
+                const responseData = await response.json();
+
+                if (responseData.success && responseData.data && Array.isArray(responseData.data.releases)) {
+                    const releasesToDisplay = responseData.data.releases;
+                    const paginationInfo = responseData.data; 
+
+                    amcGridContainer.innerHTML = ''; 
+                    if (releasesToDisplay.length === 0 && page === 1) {
+                        amcGridContainer.innerHTML = '<p style="text-align:center; padding: 20px;">No published AutoMediaCenter releases found at this time.</p>';
+                    } else if (releasesToDisplay.length === 0 && page > 1) {
+                         amcGridContainer.innerHTML = '<p style="text-align:center; padding: 20px;">No more releases found.</p>';
+                    } else {
+                        releasesToDisplay.forEach(release => { 
+                            const releaseDateObj = new Date(release.releaseDate);
+                            
+                            let teaserPathForCart = null;
+                            let teaserImageContent = '<i class="fas fa-photo-video placeholder-icon"></i>';
+                            if (release.cardTeaserImagePath) {
+                                teaserPathForCart = release.cardTeaserImagePath;
+                                const imageUrl = `${API_BASE_URL}${release.cardTeaserImagePath}`;
+                                teaserImageContent = `<img src="${imageUrl}" alt="${release.title || 'Release Teaser'}">`;
+                            } else if (release.images && release.images.length > 0 && release.images[0].path) {
+                                teaserPathForCart = release.images[0].path;
+                                const imageUrl = `${API_BASE_URL}${release.images[0].path}`;
+                                teaserImageContent = `<img src="${imageUrl}" alt="${release.title || 'Release Teaser'}">`;
+                            } else if (release.videos && release.videos.length > 0) {
+                                // Check if the first video has a thumbnail
+                                if (release.videos[0].thumbPath) {
+                                    teaserPathForCart = release.videos[0].thumbPath;
+                                    const thumbnailUrl = `${API_BASE_URL}${release.videos[0].thumbPath}`;
+                                    teaserImageContent = `<img src="${thumbnailUrl}" alt="${release.title || 'Video Thumbnail'}">`;
+                                } else if (release.videos[0].thumb && release.videos[0].thumb !== release.videos[0].path) {
+                                    // Try alternative thumb field
+                                    teaserPathForCart = release.videos[0].thumb;
+                                    const thumbnailUrl = release.videos[0].thumb.startsWith('http') ? release.videos[0].thumb : `${API_BASE_URL}${release.videos[0].thumb}`;
+                                    teaserImageContent = `<img src="${thumbnailUrl}" alt="${release.title || 'Video Thumbnail'}" onerror="this.parentNode.innerHTML='<div class=\\"video-placeholder-enhanced\\"><i class=\\"fas fa-play-circle\\"></i><span>Click to Play Video</span></div>';">`;
+                                } else {
+                                    // Enhanced fallback for videos without thumbnails
+                                    teaserImageContent = '<div class="video-placeholder-enhanced"><i class="fas fa-play-circle"></i><span>Click to Play Video</span></div>';
+                                }
+                            }
+                            
+                            const fullReleasePageUrl = `amc-release-detail.html?uuid=${release.uuid}`;
+                            const releaseTitle = release.title || 'Untitled Release';
+                            const brandName = release.brand || 'N/A';
+                            const isInCart = cartManager.isInCart(release.uuid);
+                            const cartButtonText = isInCart ? '<i class="fas fa-check"></i> In Cart' : '<i class="fas fa-cart-plus"></i> Add to Cart';
+                            const cartButtonInitialClass = isInCart ? 'in-cart-style' : '';
+                            const cartButtonTitle = isInCart ? "Remove from Cart" : "Add to Cart";
+
+
+                            const cardHtml = `
+                                <article class="media-card" data-uuid="${release.uuid}" data-release-db-id="${release._id}" 
+                                         data-title="${encodeURIComponent(releaseTitle)}" 
+                                         data-brand="${encodeURIComponent(brandName)}"
+                                         data-teaser-path="${teaserPathForCart || ''}">
+                                    <div class="card-image-field">
+                                        ${teaserImageContent}
+                                        <div class="card-image-hover-buttons-overlay">
+                                            <button class="btn btn-primary amc-quick-view-trigger" data-uuid="${release.uuid}">
+                                                <i class="fas fa-eye"></i> Quick View
+                                            </button>
+                                            <button class="btn add-to-cart-btn ${cartButtonInitialClass}" data-uuid="${release.uuid}" title="${cartButtonTitle}">
+                                                ${cartButtonText}
+                                            </button>
+                                            <button class="btn btn-light download-all-btn" data-uuid="${release.uuid}" title="Download All Assets for this Release">
+                                                <i class="fas fa-download"></i> Download All
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="brand-band" title="${brandName}">
+                                        ${brandName}
+                                    </div>
+                                    <div class="card-content-body">
+                                        <h3><a href="${fullReleasePageUrl}" title="View full release: ${releaseTitle}">${releaseTitle}</a></h3>
+                                        <div class="card-bottom-meta">
+                                            <div class="card-assets">
+                                                ${generateAssetIconHtml(release.releaseDocs, 'file-alt', 'Press Release')}
+                                                ${generateAssetIconHtml(release.images, 'image', 'Images')}
+                                                ${generateAssetIconHtml(release.videos, 'video', 'Videos')}
+                                                ${generateAssetIconHtml(release.supplementaryDocs, 'folder', 'Other Docs')}
+                                            </div>
+                                            <div class="release-date-time-footer">
+                                                <span class="date-part"><i class="far fa-calendar-alt"></i>
+                                                ${releaseDateObj.toLocaleDateString('en-GB', {day:'numeric', month:'short', year: 'numeric'})}</span>
+                                                ${release.releaseTime ? `<span class="time-part">${release.releaseTime.substring(0,5)} ${getDynamicTimezone(releaseDateObj)}</span>` : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            `;
+                            amcGridContainer.insertAdjacentHTML('beforeend', cardHtml);
+                        });
+                        
+                        
+                        setupAmcViewTracking();
+                        attachAmcActionListeners();
+                        attachAmcQuickViewListeners();
+                        renderPagination(paginationInfo);
+                    }
+                } else {
+                    throw new Error(responseData.error || responseData.message || 'Failed to load AMC releases: Unexpected response structure.');
+                }
+            } catch (error) {
+                console.error('Error fetching or rendering AMC releases:', error);
+                amcGridContainer.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--color-danger);">Could not load AMC releases. Error: ${error.message}</p>`;
+                 if(paginationControls) paginationControls.innerHTML = '';
+            }
+        } 
+
+        function renderPagination(paginationData) {
+            if (!paginationControls || !paginationData || !paginationData.totalPages || paginationData.totalPages <= 1) {
+                if(paginationControls) paginationControls.innerHTML = '';
+                return;
+            }
+
+            const { currentPage, totalPages } = paginationData; 
+            let paginationHtml = '';
+            paginationHtml += `<button class="btn btn-light" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">« Prev</button>`;
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+
+            if (currentPage > 3 && totalPages > 5) { 
+                paginationHtml += `<button class="btn btn-light" data-page="1">1</button>`;
+                if (currentPage > 4) paginationHtml += `<button class="btn btn-light" disabled>...</button>`; 
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                if (i < 1) continue; 
+                if (i > totalPages) break;
+                paginationHtml += `<button class="btn btn-light ${i === currentPage ? 'current' : ''}" data-page="${i}">${i}</button>`;
+            }
+
+            if (currentPage < totalPages - 2 && totalPages > 5) { 
+                 if (currentPage < totalPages - 3) paginationHtml += `<button class="btn btn-light" disabled>...</button>`; 
+                paginationHtml += `<button class="btn btn-light" data-page="${totalPages}">${totalPages}</button>`;
+            }
+            
+            paginationHtml += `<button class="btn btn-light" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">Next »</button>`;
+            
+            paginationControls.innerHTML = paginationHtml;
+
+            paginationControls.querySelectorAll('button[data-page]').forEach(button => {
+                if (!button.disabled) {
+                    button.addEventListener('click', (e) => {
+                        const page = parseInt(e.currentTarget.dataset.page);
+                        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                        fetchAndDisplayAmcReleases(token, page); 
+                        window.scrollTo({ top: 0, behavior: 'smooth' }); 
+                    });
+                }
+            });
+        }
+
+        // Store handler function for proper cleanup - preserves all existing functionality
+        let amcGridClickHandler = null;
+
+        function attachAmcActionListeners() {
+            const amcGridContainer = document.querySelector('.amc-card-grid');
+            if (amcGridContainer) {
+                // Remove any existing listener before adding new one to prevent duplicates
+                if (amcGridClickHandler) {
+                    amcGridContainer.removeEventListener('click', amcGridClickHandler);
+                }
+                
+                // Define the handler function - identical logic, just with button state management
+                amcGridClickHandler = function(event) {
+                    const cartButton = event.target.closest('.add-to-cart-btn');
+                    const downloadAllButton = event.target.closest('.download-all-btn');
+                    
+                    if (cartButton) {
+                        // Cart functionality unchanged
+                        event.preventDefault();
+                        const cardElement = cartButton.closest('.media-card');
+                        const releaseUuid = cardElement.dataset.uuid;
+                        const releaseTitle = decodeURIComponent(cardElement.dataset.title);
+                        const releaseBrand = decodeURIComponent(cardElement.dataset.brand);
+                        const teaserPath = cardElement.dataset.teaserPath || null;
+
+                        if (cartManager.isInCart(releaseUuid)) {
+                            cartManager.removeItem(releaseUuid);
+                        } else {
+                            cartManager.addItem({ uuid: releaseUuid, title: releaseTitle, brand: releaseBrand, teaserPath: teaserPath });
+                        }
+                        logAmcInteraction(releaseUuid, cartManager.isInCart(releaseUuid) ? 'add_to_cart_via_card' : 'remove_from_cart_via_card', 'release');
+                    } else if (downloadAllButton) {
+                        // Download functionality with button state management to prevent multiple clicks
+                        event.preventDefault();
+                        
+                        // Prevent multiple rapid clicks - this is the key fix
+                        if (downloadAllButton.disabled) return;
+                        downloadAllButton.disabled = true;
+                        
+                        const originalContent = downloadAllButton.innerHTML;
+                        downloadAllButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+                        
+                        const releaseUuid = downloadAllButton.dataset.uuid;
+                        const releaseTitle = decodeURIComponent(downloadAllButton.closest('.media-card').dataset.title);
+                        
+                        // Use fetch to download ZIP with proper authentication - same as before
+                        const downloadUrl = `${API_BASE_URL}/api/v1/zip/release/${releaseUuid}/zip`;
+                        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                        
+                        fetch(downloadUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`Download failed: ${response.status}`);
+                            }
+                            return response.blob();
+                        })
+                        .then(blob => {
+                            // Create download link - same as before
+                            const url = window.URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = `${releaseTitle.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')}_Media_Assets.zip`;
+                            link.style.display = 'none';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            window.URL.revokeObjectURL(url);
+                            
+                            // Show professional toast notification - same as before
+                            showDownloadSuccessToast(releaseTitle);
+                        })
+                        .catch(error => {
+                            console.error('Download error:', error);
+                            alert(`Download failed: ${error.message}`);
+                        })
+                        .finally(() => {
+                            // Re-enable button after 2 seconds - this prevents multiple downloads
+                            setTimeout(() => {
+                                downloadAllButton.disabled = false;
+                                downloadAllButton.innerHTML = originalContent;
+                            }, 2000);
+                        });
+                    }
+                };
+                
+                // Add the new listener
+                amcGridContainer.addEventListener('click', amcGridClickHandler);
+            }
+        }
+
+        function getFileIconClass(mimetype, filename) {
+            if (!mimetype && !filename) return { icon: 'fa-file-alt', color: '#7f8c8d' };
+            
+            // Determine file type from mimetype or filename extension
+            const fileExt = filename ? filename.toLowerCase().split('.').pop() : '';
+            
+            if (mimetype && mimetype.startsWith('image/')) {
+                return { icon: 'fa-file-image', color: '#28a745' }; // Green for images
+            }
+            if (mimetype && mimetype.startsWith('video/')) {
+                return { icon: 'fa-file-video', color: '#6f42c1' }; // Purple for videos
+            }
+            if (mimetype && mimetype.includes('pdf') || fileExt === 'pdf') {
+                return { icon: 'fa-file-pdf', color: '#dc3545' }; // Red for PDF
+            }
+            if (mimetype && (mimetype.includes('word') || mimetype.includes('document')) || ['doc', 'docx'].includes(fileExt)) {
+                return { icon: 'fa-file-word', color: '#0d6efd' }; // Blue for Word docs
+            }
+            if (mimetype && (mimetype.includes('excel') || mimetype.includes('spreadsheet')) || ['xls', 'xlsx'].includes(fileExt)) {
+                return { icon: 'fa-file-excel', color: '#28a745' }; // Green for Excel
+            }
+            if (mimetype && (mimetype.includes('powerpoint') || mimetype.includes('presentation')) || ['ppt', 'pptx'].includes(fileExt)) {
+                return { icon: 'fa-file-powerpoint', color: '#fd7e14' }; // Orange for PowerPoint
+            }
+            if (mimetype && (mimetype.includes('archive') || mimetype.includes('zip')) || ['zip', 'rar', '7z'].includes(fileExt)) {
+                return { icon: 'fa-file-archive', color: '#6c757d' }; // Gray for archives
+            }
+            
+            return { icon: 'fa-file-alt', color: '#7f8c8d' }; // Default gray
+        }
+
+        function formatBytes(bytes, decimals = 2) {
+            if (!bytes || bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+        
+        function updateQuickViewCartButtonState(releaseUuid, releaseTitle, releaseBrand, teaserPath) {
+            const qvCartBtn = amcQuickViewActionsAreaEl.querySelector('.qv-add-cart-btn');
+            if (!qvCartBtn) return;
+
+            qvCartBtn.dataset.uuid = releaseUuid;
+            qvCartBtn.dataset.title = encodeURIComponent(releaseTitle);
+            qvCartBtn.dataset.brand = encodeURIComponent(releaseBrand);
+            qvCartBtn.dataset.teaserPath = teaserPath || '';
+
+
+            if (cartManager.isInCart(releaseUuid)) {
+                qvCartBtn.innerHTML = '<i class="fas fa-check"></i> In Cart';
+                qvCartBtn.classList.add('in-cart-style');
+                qvCartBtn.title = "Remove from Cart";
+            } else {
+                qvCartBtn.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
+                qvCartBtn.classList.remove('in-cart-style');
+                qvCartBtn.title = "Add to Cart";
+            }
+
+            if (qvCartBtn._clickHandler) {
+                qvCartBtn.removeEventListener('click', qvCartBtn._clickHandler);
+            }
+            qvCartBtn._clickHandler = function(e) {
+                const uuid = e.currentTarget.dataset.uuid;
+                const title = decodeURIComponent(e.currentTarget.dataset.title);
+                const brand = decodeURIComponent(e.currentTarget.dataset.brand);
+                const path = e.currentTarget.dataset.teaserPath || null;
+
+
+                if (cartManager.isInCart(uuid)) {
+                    cartManager.removeItem(uuid);
+                } else {
+                    cartManager.addItem({ uuid, title, brand, teaserPath: path });
+                }
+                logAmcInteraction(uuid, cartManager.isInCart(uuid) ? 'quick_view_add_to_cart' : 'quick_view_remove_from_cart', 'release');
+            };
+            qvCartBtn.addEventListener('click', qvCartBtn._clickHandler);
+        }
+
+        // <<< MODIFICATION 1 OF 2: The minimal fix is applied to the asset list generation logic. >>>
+        async function openAmcQuickViewModal(releaseUuid) { 
+            if (!amcQuickViewModalBackdrop || !releaseUuid) { return; }
+            logAmcInteraction(releaseUuid, 'quick_view_open', 'release');
+            
+            amcQuickViewTitleEl.textContent = 'Loading Release...';
+            amcQuickViewBrandNameEl.textContent = 'Loading...';
+            amcQuickViewReleaseDateEl.textContent = 'Loading...';
+            amcQuickViewMediaPreviewAreaEl.innerHTML = '<span><i class="fas fa-spinner fa-spin"></i> Loading Preview...</span>';
+            amcQuickViewSummaryAreaEl.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Loading summary...</p>';
+            amcQuickViewAssetListAreaEl.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Loading assets...</p>';
+            amcQuickViewActionsAreaEl.innerHTML = `
+                <button class="btn btn-secondary qv-add-cart-btn" data-uuid="">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </button>
+                <button class="btn btn-light qv-download-all-btn" data-uuid="">
+                    <i class="fas fa-download"></i> Download All Assets (.zip)
+                </button>
+            `; 
+
+            amcQuickViewModalBackdrop.style.display = 'flex';
+            requestAnimationFrame(() => { 
+                 if (amcQuickViewModalBackdrop) amcQuickViewModalBackdrop.classList.add('open');
+            });
+
+
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) { headers['Authorization'] = `Bearer ${token}`; }
+
+                const response = await fetch(`${API_BASE_URL}/api/v1/center/releases/${releaseUuid}`, { headers });
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({error: `HTTP Error: ${response.status}`}));
+                    throw new Error(errorData.error || `Failed to fetch release details. Status: ${response.status}`);
+                }
+                const responseData = await response.json();
+                if (responseData.success && responseData.data) {
+                    const release = responseData.data;
+                    
+                    amcQuickViewTitleEl.textContent = release.title || 'Release Details';
+                    amcQuickViewBrandNameEl.textContent = release.brand || 'N/A';
+                    amcQuickViewReleaseDateEl.textContent = release.releaseDate ? new Date(release.releaseDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A';
+                    
+                    // Handle release time display
+                    if (release.releaseTime && release.releaseTime.trim() !== '') {
+                        // Format time as HH.MM (CEST)
+                        const timeFormatted = release.releaseTime.substring(0, 5).replace(':', '.');
+                        amcQuickViewReleaseTimeEl.textContent = ` ${timeFormatted} (CEST)`;
+                        amcQuickViewReleaseTimeEl.style.display = 'inline';
+                    } else {
+                        amcQuickViewReleaseTimeEl.style.display = 'none';
+                    }
+                    
+                    let teaserPathForQuickViewCart = null;
+                    amcQuickViewMediaPreviewAreaEl.innerHTML = '';
+                    let previewSet = false;
+                    if (release.cardTeaserImageMeta && release.cardTeaserImageMeta.path) {
+                        teaserPathForQuickViewCart = release.cardTeaserImageMeta.path;
+                        const img = document.createElement('img');
+                        img.src = `${API_BASE_URL}${release.cardTeaserImageMeta.path}`;
+                        img.alt = `${release.title} Preview`;
+                        img.setAttribute('style', 'width:100%; height:100%; object-fit:contain; border-radius: 4px;');
+                        amcQuickViewMediaPreviewAreaEl.appendChild(img);
+                        previewSet = true;
+                    } else if (release.videos && release.videos.length > 0 && release.videos[0].path) {
+                        const video = document.createElement('video');
+                        video.src = `${API_BASE_URL}${release.videos[0].path}`;
+                        video.controls = true;
+                        if (release.videos[0].thumbPath) video.poster = `${API_BASE_URL}${release.videos[0].thumbPath}`;
+                        video.setAttribute('style', 'width:100%; height:100%; object-fit:contain; border-radius: 4px;');
+                        amcQuickViewMediaPreviewAreaEl.appendChild(video);
+                        previewSet = true;
+                    } else if (release.images && release.images.length > 0 && release.images[0].path) {
+                        teaserPathForQuickViewCart = release.images[0].path;
+                        const img = document.createElement('img');
+                        img.src = `${API_BASE_URL}${release.images[0].path}`;
+                        img.alt = `${release.title} Preview`;
+                        img.setAttribute('style', 'width:100%; height:100%; object-fit:contain; border-radius: 4px;');
+                        amcQuickViewMediaPreviewAreaEl.appendChild(img);
+                        previewSet = true;
+                    }
+                    
+                    if (!previewSet) { amcQuickViewMediaPreviewAreaEl.innerHTML = '<span>No media preview available</span>'; }
+                    amcQuickViewSummaryAreaEl.innerHTML = `<p>${release.summary || 'No summary provided.'}</p>`;
+
+                    let assetsHtml = '';
+                    const allAssets = [
+                        ...(release.releaseDocs || []).map(f => ({...f, typeName: 'Document'})),
+                        ...(release.images || []).map(f => ({...f, typeName: 'Image'})),
+                        ...(release.videos || []).map(f => ({...f, typeName: 'Video'})),
+                        ...(release.supplementaryDocs || []).map(f => ({...f, typeName: 'Supplementary'})),
+                    ];
+
+                    if (allAssets.length > 0) {
+                        allAssets.forEach(asset => {
+                            // Check for a valid asset with required fields
+                            if (asset && asset.originalName && asset.path) {
+                                // Use asset._id if available, otherwise use a fallback identifier
+                                const assetId = asset._id || `${asset.path}-${asset.originalName}`;
+                                const downloadDisabled = !asset._id; // Disable download if no _id
+                                
+                                // Get enhanced file icon with color
+                                const fileIconData = getFileIconClass(asset.mimetype, asset.originalName);
+                                
+                                // Show actual preview for image and video assets, icon for others
+                                let iconOrImage;
+                                if (asset.mimetype && asset.mimetype.startsWith('image/')) {
+                                    iconOrImage = `<img class="asset-thumbnail" src="http://localhost:5000${asset.path}" alt="thumbnail" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; background-color: var(--bg-tertiary);">`;
+                                } else if (asset.mimetype && asset.mimetype.startsWith('video/')) {
+                                    iconOrImage = `<video class="asset-thumbnail" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; background-color: var(--bg-tertiary);" muted><source src="http://localhost:5000${asset.path}" type="${asset.mimetype}"></video>`;
+                                } else {
+                                    iconOrImage = `<i class="fas ${fileIconData.icon} fa-fw" style="color: ${fileIconData.color}; width: 50px; text-align: center; font-size: 1.8em;"></i>`;
+                                }
+                                
+                                assetsHtml += `
+                                    <div class="amc-quick-view-asset-item">
+                                        ${iconOrImage}
+                                        <span class="asset-name" title="${asset.originalName}">${asset.originalName}</span>
+                                        <span class="asset-details">${asset.typeName}, ${formatBytes(asset.size, 1)}</span>
+                                        <div class="asset-actions">
+                                            <button class="btn btn-light btn-small download-asset-btn"
+                                                    data-asset-id="${assetId}"
+                                                    title="Download ${asset.originalName}"
+                                                    ${downloadDisabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </div>
+                                    </div>`;
+                            }
+                        });
+                    }
+                    
+                    if (assetsHtml === '') { 
+                        assetsHtml = '<p>No downloadable assets available for this release.</p>'; 
+                    }
+                    amcQuickViewAssetListAreaEl.innerHTML = assetsHtml;
+                    
+                    updateQuickViewCartButtonState(release.uuid, release.title, release.brand, teaserPathForQuickViewCart);
+                    
+                    const downloadBtn = amcQuickViewActionsAreaEl.querySelector('.qv-download-all-btn');
+                    if(downloadBtn) {
+                        downloadBtn.dataset.uuid = release.uuid;
+                        if (downloadBtn._clickHandler) { downloadBtn.removeEventListener('click', downloadBtn._clickHandler); }
+                        downloadBtn._clickHandler = function(e) {
+                            // Prevent multiple rapid clicks - same fix as main grid download
+                            if (downloadBtn.disabled) return;
+                            downloadBtn.disabled = true;
+                            
+                            const originalContent = downloadBtn.innerHTML;
+                            downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+                            
+                            const uuid = e.currentTarget.dataset.uuid;
+                            const releaseTitle = release.title || 'Release';
+                            
+                            // Use fetch with blob handling instead of iframe for consistency
+                            const downloadUrl = `${API_BASE_URL}/api/v1/zip/release/${uuid}/zip`;
+                            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                            
+                            fetch(downloadUrl, {
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`Download failed: ${response.status}`);
+                                }
+                                return response.blob();
+                            })
+                            .then(blob => {
+                                // Create download link
+                                const url = window.URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.download = `${releaseTitle.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')}_Media_Assets.zip`;
+                                link.style.display = 'none';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                window.URL.revokeObjectURL(url);
+                                
+                                // Show professional toast notification
+                                showDownloadSuccessToast(releaseTitle);
+                            })
+                            .catch(error => {
+                                console.error('Quick View download error:', error);
+                                alert(`Download failed: ${error.message}`);
+                            })
+                            .finally(() => {
+                                // Re-enable button after 2 seconds to prevent multiple downloads
+                                setTimeout(() => {
+                                    downloadBtn.disabled = false;
+                                    downloadBtn.innerHTML = originalContent;
+                                }, 2000);
+                            });
+                        };
+                        downloadBtn.addEventListener('click', downloadBtn._clickHandler);
+                    }
+
+                } else { throw new Error(responseData.error || responseData.message || 'Failed to parse release data.'); }
+            } catch (error) {
+                console.error('Error opening/populating AMC Quick View Modal:', error);
+                amcQuickViewTitleEl.textContent = 'Error';
+                amcQuickViewSummaryAreaEl.innerHTML = `<p>Could not load release details: ${error.message}</p>`;
+                 amcQuickViewAssetListAreaEl.innerHTML = '';
+                 amcQuickViewMediaPreviewAreaEl.innerHTML = '<span>Error loading preview</span>';
+                 amcQuickViewActionsAreaEl.innerHTML = ''; // Clear buttons on error
+            }
+        }
+        // <<< END MODIFICATION >>>
+
+        function closeAmcQuickViewModal() {
+            if (amcQuickViewModalBackdrop) {
+                amcQuickViewModalBackdrop.classList.remove('open');
+                amcQuickViewModalBackdrop.addEventListener('transitionend', function handler(e) {
+                    if (e.propertyName === 'opacity' && !amcQuickViewModalBackdrop.classList.contains('open')) {
+                        amcQuickViewModalBackdrop.style.display = 'none'; 
+                        const cartBtn = amcQuickViewActionsAreaEl.querySelector('.qv-add-cart-btn');
+                        const downloadBtn = amcQuickViewActionsAreaEl.querySelector('.qv-download-all-btn');
+                        if(cartBtn && cartBtn._clickHandler) cartBtn.removeEventListener('click', cartBtn._clickHandler);
+                        if(downloadBtn && downloadBtn._clickHandler) downloadBtn.removeEventListener('click', downloadBtn._clickHandler);
+                        amcQuickViewModalBackdrop.removeEventListener('transitionend', handler);
+                    }
+                });
+            }
+        }
+
+
+        function attachAmcQuickViewListeners() {
+            const amcGridContainer = document.querySelector('.amc-card-grid');
+            if (amcGridContainer) {
+                amcGridContainer.addEventListener('click', (event) => {
+                    const quickViewButton = event.target.closest('.amc-quick-view-trigger');
+                    if (quickViewButton) {
+                        event.preventDefault(); 
+                        const releaseUuid = quickViewButton.dataset.uuid;
+                        if (releaseUuid) { openAmcQuickViewModal(releaseUuid); }
+                    }
+                });
+            }
+        }
+
+
+        if (amcQuickViewCloseBtn) amcQuickViewCloseBtn.addEventListener('click', closeAmcQuickViewModal);
+        if (amcQuickViewModalBackdrop) {
+            amcQuickViewModalBackdrop.addEventListener('click', (event) => {
+                if (event.target === amcQuickViewModalBackdrop) { 
+                     closeAmcQuickViewModal();
+                }
+            });
+        }
+
+        // --- Cart Modal Functions ---
+        function openCartModal() {
+            if (cartModalBackdrop) {
+                cartSelectedUuids.clear(); 
+                if(cartSelectAllCheckbox) cartSelectAllCheckbox.checked = false;
+                renderCartModal(); 
+                cartModalBackdrop.style.display = 'flex';
+                requestAnimationFrame(() => { 
+                    cartModalBackdrop.classList.add('open');
+                });
+            }
+        }
+
+        function closeCartModal() {
+            if (cartModalBackdrop) {
+                cartModalBackdrop.classList.remove('open');
+                cartModalBackdrop.addEventListener('transitionend', function handler(e) {
+                    if (e.propertyName === 'opacity' && !amcQuickViewModalBackdrop.classList.contains('open')) {
+                         cartModalBackdrop.style.display = 'none';
+                         cartModalBackdrop.removeEventListener('transitionend', handler);
+                    }
+                });
+            }
+        }
+        
+        function updateCartModalFooter() {
+            if (!cartTotalItemsEl || !cartSelectedItemsCountEl || !cartDownloadSelectedBtn || !cartClearAllBtn) return;
+            const totalItems = cartManager.getCartCount();
+            const selectedCount = cartSelectedUuids.size;
+
+            cartTotalItemsEl.textContent = totalItems;
+            if(cartSelectedItemsCountEl) cartSelectedItemsCountEl.textContent = selectedCount;
+            
+            cartDownloadSelectedBtn.disabled = selectedCount === 0;
+            cartClearAllBtn.disabled = totalItems === 0;
+
+            if(cartSelectAllCheckbox) {
+                if (totalItems > 0 && selectedCount === totalItems) {
+                    cartSelectAllCheckbox.checked = true;
+                    cartSelectAllCheckbox.indeterminate = false;
+                } else if (selectedCount > 0 && selectedCount < totalItems) {
+                    cartSelectAllCheckbox.checked = false; 
+                    cartSelectAllCheckbox.indeterminate = true;
+                } else {
+                    cartSelectAllCheckbox.checked = false;
+                    cartSelectAllCheckbox.indeterminate = false;
+                }
+                cartSelectAllCheckbox.disabled = totalItems === 0;
+            }
+        }
+
+
+        function renderCartModal() {
+            if (!cartItemsListEl || !emptyCartMessageEl) return;
+
+            const items = cartManager.getCartItems();
+            cartItemsListEl.innerHTML = ''; 
+
+            if (items.length === 0) {
+                emptyCartMessageEl.style.display = 'block';
+                cartItemsListEl.appendChild(emptyCartMessageEl); 
+                cartSelectedUuids.clear(); 
+            } else {
+                emptyCartMessageEl.style.display = 'none';
+                items.forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'cart-item';
+                    itemEl.dataset.uuid = item.uuid;
+                    const releaseDetailUrl = `amc-release-detail.html?uuid=${item.uuid}`;
+
+                    let thumbnailHtml = '<i class="fas fa-photo-video placeholder-icon"></i>';
+                    if (item.teaserPath && item.teaserPath !== 'null' && item.teaserPath !== 'undefined') { 
+                        thumbnailHtml = `<img src="${API_BASE_URL}${item.teaserPath}" alt="${item.title || 'Teaser'}">`;
+                    }
+                    
+                    const isSelected = cartSelectedUuids.has(item.uuid);
+
+                    itemEl.innerHTML = `
+                        <div class="cart-item-selector ${isSelected ? 'selected' : ''}" data-uuid="${item.uuid}" title="Select/Deselect for download"></div>
+                        <div class="cart-item-thumbnail">${thumbnailHtml}</div>
+                        <div class="cart-item-info">
+                            <div class="item-title">
+                                <a href="${releaseDetailUrl}" target="_blank" title="View full release: ${item.title}">${item.title}</a>
+                            </div>
+                            <div class="item-brand">${item.brand}</div>
+                        </div>
+                        <button class="cart-item-remove-btn" title="Remove from cart">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    `;
+                    cartItemsListEl.appendChild(itemEl);
+                });
+            }
+            updateCartModalFooter();
+        }
+
+        // --- Cart Modal Event Listeners ---
+        if (cartIndicator) {
+            cartIndicator.addEventListener('click', openCartModal);
+        }
+        if (cartModalCloseBtn) {
+            cartModalCloseBtn.addEventListener('click', closeCartModal);
+        }
+        if (cartModalBackdrop) {
+            cartModalBackdrop.addEventListener('click', (event) => {
+                if (event.target === cartModalBackdrop) {
+                    closeCartModal();
+                }
+            });
+        }
+        if (cartItemsListEl) {
+            cartItemsListEl.addEventListener('click', (event) => {
+                const removeButton = event.target.closest('.cart-item-remove-btn');
+                const selectorDiv = event.target.closest('.cart-item-selector');
+
+                if (removeButton) {
+                    const itemDiv = removeButton.closest('.cart-item');
+                    const releaseUuid = itemDiv.dataset.uuid;
+                    cartManager.removeItem(releaseUuid); 
+                } else if (selectorDiv) {
+                    const releaseUuid = selectorDiv.dataset.uuid;
+                    if (cartSelectedUuids.has(releaseUuid)) {
+                        cartSelectedUuids.delete(releaseUuid);
+                        selectorDiv.classList.remove('selected');
+                    } else {
+                        cartSelectedUuids.add(releaseUuid);
+                        selectorDiv.classList.add('selected');
+                    }
+                    updateCartModalFooter(); 
+                }
+            });
+        }
+        if (cartSelectAllCheckbox) {
+            cartSelectAllCheckbox.addEventListener('change', (event) => {
+                const isChecked = event.target.checked;
+                // const itemsInCart = cartManager.getCartItems(); // Not needed directly here
+                document.querySelectorAll('#cartItemsList .cart-item-selector').forEach(selector => {
+                    const uuid = selector.dataset.uuid;
+                    if (isChecked) {
+                        cartSelectedUuids.add(uuid);
+                        selector.classList.add('selected');
+                    } else {
+                        cartSelectedUuids.delete(uuid);
+                        selector.classList.remove('selected');
+                    }
+                });
+                updateCartModalFooter();
+            });
+        }
+
+        if (cartClearAllBtn) {
+            cartClearAllBtn.addEventListener('click', () => {
+                if (confirm("Are you sure you want to clear all items from your cart?")) {
+                    cartManager.clearCart();
+                }
+            });
+        }
+
+        function downloadReleases(uuids) {
+            if (uuids.length === 0) {
+                alert("No releases selected for download.");
+                return;
+            }
+            
+            // Prevent multiple rapid clicks - same fix as other download buttons
+            if (cartDownloadSelectedBtn.disabled) return;
+            cartDownloadSelectedBtn.disabled = true;
+            
+            const originalContent = cartDownloadSelectedBtn.innerHTML;
+            cartDownloadSelectedBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+            
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            let completedDownloads = 0;
+            let failedDownloads = 0;
+            const successfulDownloads = []; // Track successful downloads for removal from cart
+            
+            // Use fetch with blob handling for each release - maintaining multiple release capability
+            uuids.forEach((uuid, index) => {
+                setTimeout(() => {
+                    const downloadUrl = `${API_BASE_URL}/api/v1/zip/release/${uuid}/zip`;
+                    
+                    fetch(downloadUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Download failed: ${response.status}`);
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        // Get release title from cart for filename
+                        const cartItem = cartManager.getCartItems().find(item => item.uuid === uuid);
+                        const releaseTitle = cartItem ? cartItem.title : `Release_${uuid}`;
+                        
+                        // Create download link
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `${releaseTitle.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')}_Media_Assets.zip`;
+                        link.style.display = 'none';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(url);
+                        
+                        completedDownloads++;
+                        successfulDownloads.push(uuid); // Track successful download
+                        
+                        // Show toast for individual download
+                        showDownloadSuccessToast(releaseTitle);
+                    })
+                    .catch(error => {
+                        console.error(`Cart download error for ${uuid}:`, error);
+                        failedDownloads++;
+                    })
+                    .finally(() => {
+                        // Check if all downloads are complete
+                        if (completedDownloads + failedDownloads === uuids.length) {
+                            // Remove successfully downloaded releases from cart
+                            successfulDownloads.forEach(downloadedUuid => {
+                                cartManager.removeItem(downloadedUuid);
+                                cartSelectedUuids.delete(downloadedUuid); // Also remove from selection
+                            });
+                            
+                            // Re-enable button after 2 seconds once all downloads complete
+                            setTimeout(() => {
+                                cartDownloadSelectedBtn.disabled = false;
+                                cartDownloadSelectedBtn.innerHTML = originalContent;
+                                
+                                // Show summary message
+                                if (failedDownloads > 0) {
+                                    alert(`Downloads completed: ${completedDownloads} successful, ${failedDownloads} failed.\n\nSuccessfully downloaded releases have been removed from your cart.`);
+                                } else if (completedDownloads > 0) {
+                                    // Only show success message if there were actual downloads
+                                    const message = completedDownloads === 1
+                                        ? "Download completed! The release has been removed from your cart."
+                                        : `${completedDownloads} downloads completed! Successfully downloaded releases have been removed from your cart.`;
+                                    showToast(message, 'success', 4000);
+                                }
+                            }, 2000);
+                        }
+                    });
+                }, index * 1500); // Stagger downloads to avoid overwhelming the server
+            });
+        }
+
+        if (cartDownloadSelectedBtn) {
+            cartDownloadSelectedBtn.addEventListener('click', () => {
+                downloadReleases(Array.from(cartSelectedUuids));
+            });
+        }
+        
+        // Welcome Modal Functions
+        function initializeWelcomeModal() {
+            console.log("Initializing welcome modal...");
+            
+            const welcomeModal = document.getElementById("welcomeModal");
+            const pageFilter = document.getElementById("pageFilter");
+            const closeWelcomeBtn = document.getElementById("closeWelcomeBtn");
+
+            console.log("Elements found:", {
+                welcomeModal: !!welcomeModal,
+                pageFilter: !!pageFilter,
+                closeWelcomeBtn: !!closeWelcomeBtn
+            });
+
+            if (!welcomeModal || !pageFilter) {
+                console.error("Required modal elements not found!");
+                return;
+            }
+
+            // Always show modal for testing - remove session check temporarily
+            showWelcomeModal();
+
+            // Close modal event listener
+            if (closeWelcomeBtn) {
+                closeWelcomeBtn.addEventListener("click", () => {
+                    hideWelcomeModal();
+                });
+            }
+
+            // Close on backdrop click
+            welcomeModal.addEventListener("click", (e) => {
+                if (e.target === welcomeModal) {
+                    hideWelcomeModal();
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && !welcomeModal.classList.contains("hidden")) {
+                    hideWelcomeModal();
+                }
+            });
+        }
+
+        function showWelcomeModal() {
+            const welcomeModal = document.getElementById("welcomeModal");
+            const pageFilter = document.getElementById("pageFilter");
+            
+            // Get user data and populate modal
+            populateWelcomeModal();
+            
+            // Set role-based color indicator
+            setRoleIndicator();
+            
+            // Show filter and modal
+            pageFilter.classList.remove("hidden");
+            welcomeModal.classList.remove("hidden");
+            document.body.classList.add("welcome-modal-active");
+            document.body.style.overflow = "hidden";
+            
+            // Add show class for animation
+            setTimeout(() => {
+                welcomeModal.classList.add("show");
+            }, 10);
+        }
+        
+        function setRoleIndicator() {
+            const roleIndicator = document.getElementById("roleIndicator");
+            if (!roleIndicator) return;
+            
+            // Get user data from localStorage
+            const userData = JSON.parse(localStorage.getItem('amcUser') || localStorage.getItem('user') || localStorage.getItem('currentUser') || '{}');
+            const userRole = userData.role || 'media_user';
+            
+            // Remove existing role classes
+            roleIndicator.classList.remove('media-user', 'client-user', 'client-admin', 'platform-admin');
+            
+            // Add appropriate role class based on user role
+            switch(userRole) {
+                case 'media_user':
+                    roleIndicator.classList.add('media-user');
+                    break;
+                case 'client_user':
+                    roleIndicator.classList.add('client-user');
+                    break;
+                case 'client_admin':
+                    roleIndicator.classList.add('client-admin');
+                    break;
+                case 'platform_admin':
+                    roleIndicator.classList.add('platform-admin');
+                    break;
+                default:
+                    roleIndicator.classList.add('media-user'); // Default to blue for media users
+            }
+        }
+
+        function hideWelcomeModal() {
+            const welcomeModal = document.getElementById("welcomeModal");
+            const pageFilter = document.getElementById("pageFilter");
+            
+            welcomeModal.classList.remove("show");
+            
+            setTimeout(() => {
+                welcomeModal.classList.add("hidden");
+                pageFilter.classList.add("hidden");
+                document.body.classList.remove("welcome-modal-active");
+                document.body.style.overflow = "auto";
+            }, 300);
+        }
+
+        function populateWelcomeModal() {
+            // Get user data from localStorage
+            let user = null;
+            try {
+                user = JSON.parse(localStorage.getItem('amcUser') || localStorage.getItem('user') || localStorage.getItem('currentUser') || '{}');
+            } catch (e) {
+                console.warn('Could not parse user data');
+                user = {};
+            }
+
+            // Set the enterprise welcome text
+            document.getElementById("welcomeGreeting").textContent = "Welcome back!";
+            
+            // Update the release text with the new enterprise copy
+            const releaseText = document.querySelector('.release-text p');
+            if (releaseText) {
+                releaseText.innerHTML = 'Since your last visit, <strong>42 new media releases</strong> have been added - dive in and discover what\'s new.';
+            }
+
+            // TODO: Replace "42" with real API call - fetchNewReleasesCount()
+            // For now, using placeholder value as requested
+            console.log("Welcome modal populated successfully");
+        }
+
+        function updateReleaseCount(count) {
+            const releaseCountText = document.getElementById("releaseCountText");
+            const updateInfo = document.getElementById("welcomeUpdateInfo");
+            const icon = updateInfo.querySelector("i");
+
+            if (count > 0) {
+                icon.className = "fas fa-newspaper";
+                releaseCountText.innerHTML = `<strong>${count}</strong> new media release${count === 1 ? '' : 's'} ${count === 1 ? 'has' : 'have'} been added since your last visit`;
+            } else {
+                icon.className = "fas fa-heart";
+                releaseCountText.textContent = "Welcome back! You're all caught up with the latest releases";
+            }
+        }
+
+        // Future function for real API integration
+        async function fetchNewReleasesCount() {
+            try {
+                const response = await fetch('/api/v1/releases/new-since-last-visit', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken') || localStorage.getItem('token')}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateReleaseCount(data.newReleases || 0);
+                }
+            } catch (error) {
+                console.warn('Could not fetch new releases count:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setAccentRgbVariable();
+            checkAmcPageLoginStatus();
+            
+            // Welcome Modal Logic
+            initializeWelcomeModal();
+            
+            document.addEventListener('amcCartUpdated', (event) => {
+                document.querySelectorAll('.media-card[data-uuid]').forEach(cardElement => {
+                    const releaseUuid = cardElement.dataset.uuid;
+                    updateCardCartButtonState(cardElement, releaseUuid);
+                });
+                if(amcQuickViewModalBackdrop.classList.contains('open')){
+                    const qvCartBtn = amcQuickViewActionsAreaEl.querySelector('.qv-add-cart-btn');
+                    if(qvCartBtn) {
+                        const qvVisibleUuid = qvCartBtn.dataset.uuid;
+                        if (qvVisibleUuid) { 
+                             const qvReleaseTitle = decodeURIComponent(qvCartBtn.dataset.title || '');
+                             const qvReleaseBrand = decodeURIComponent(qvCartBtn.dataset.brand || '');
+                             const qvTeaserPath = qvCartBtn.dataset.teaserPath || null;
+                             updateQuickViewCartButtonState(qvVisibleUuid, qvReleaseTitle, qvReleaseBrand, qvTeaserPath);
+                        }
+                    }
+                }
+                if (cartModalBackdrop && cartModalBackdrop.classList.contains('open')) {
+                    renderCartModal();
+                } else { 
+                    updateCartModalFooter(); 
+                }
+            });
+            updateNotificationIndicatorDOM(0); 
+            renderCartModal(); 
+        });
+
+    // <<< MODIFICATION 2 OF 2: Improved download implementation using fetch with blob handling >>>
+    document.addEventListener('click', function(event) {
+        const downloadBtn = event.target.closest('.download-asset-btn');
+    
+        if (downloadBtn) {
+            event.preventDefault();
+            const assetId = downloadBtn.dataset.assetId;
+            
+            if (!assetId || assetId === 'undefined') {
+                console.error("Download blocked: assetId is undefined. Please check the `openAmcQuickViewModal` function and the data source.", downloadBtn);
+                alert("Sorry, this asset download is not available for older releases.");
+                return;
+            }
+
+            // Check if this is a fallback ID (older releases without _id)
+            if (assetId.includes('-') && !assetId.match(/^[0-9a-fA-F]{24}$/)) {
+                console.warn("Download blocked: This appears to be an older release without proper asset IDs.");
+                alert("Sorry, downloads are not available for assets from older releases. Please contact support if you need access to this content.");
+                return;
+            }
+
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            // Allow anonymous downloads - authentication is optional
+    
+            const originalContent = downloadBtn.innerHTML;
+            downloadBtn.disabled = true;
+            downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    
+            // Use fetch with proper blob handling for downloads (authenticated or anonymous)
+            const headers = {};
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            
+            fetch(`${API_BASE_URL}/api/v1/center/assets/download/${assetId}`, {
+                method: 'GET',
+                headers: headers
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error(`Download failed: ${response.statusText}`);
+                }
+                
+                // Extract filename from Content-Disposition header
+                let filename = `asset-${assetId}`;
+                const contentDisposition = response.headers.get('Content-Disposition');
+                if (contentDisposition) {
+                    const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                    if (filenameMatch && filenameMatch[1]) {
+                        filename = filenameMatch[1].replace(/['"]/g, '');
+                    }
+                }
+                
+                return response.blob().then(blob => ({ blob, filename }));
+            }).then(({ blob, filename }) => {
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                
+                document.body.appendChild(a);
+                a.click();
+                
+                // Cleanup
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(url);
+                    if (document.body.contains(a)) {
+                        document.body.removeChild(a);
+                    }
+                }, 100);
+                
+            }).catch(error => {
+                console.error("Download error:", error);
+                alert(`Download failed: ${error.message}`);
+            }).finally(() => {
+                downloadBtn.disabled = false;
+                downloadBtn.innerHTML = originalContent;
+            });
+        }
+    });
+    </script>
+    
+    <!-- Analytics Tracking Script TEMPORARILY DISABLED FOR TESTING -->
+    <!-- <script src="amc-analytics-tracker.js"></script> -->
+</body>
+</html>

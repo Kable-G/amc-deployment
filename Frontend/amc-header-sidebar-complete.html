@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMC Header & Sidebar Template - Complete</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- AMC Avatar Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+    <!-- Complete Header & Sidebar CSS -->
+    <link rel="stylesheet" href="css/amc-header-sidebar-extracted.css">
+    
+    <style>
+        /* Body padding for header */
+        body {
+            margin: 0;
+            padding-top: 64px !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8f9fb;
+            color: #374151;
+        }
+        
+        /* Main content area - NO INTERFERENCE */
+        .main-content {
+            margin-left: 260px;
+            padding: 24px;
+            transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: calc(100vh - 64px);
+        }
+        
+        body.sidebar-collapsed .main-content {
+            margin-left: 72px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        
+        /* Demo content styling */
+        .demo-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+        
+        .demo-card h2 {
+            margin: 0 0 16px 0;
+            color: #111827;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .demo-card p {
+            margin: 0;
+            line-height: 1.6;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <!-- AMC Header -->
+    <header class="app-header">
+        <div class="logo">
+            <h1>AutoMediaCenter</h1>
+        </div>
+        
+        <div class="global-search">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search across all modules">
+                <div class="search-scope">
+                    <select class="scope-selector">
+                        <option value="all">All</option>
+                        <option value="releases">Releases</option>
+                        <option value="analytics">Analytics</option>
+                        <option value="vault">Vault</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="amc-header-right">
+            <button class="cart-indicator">
+                <i class="fas fa-shopping-cart"></i>
+            </button>
+            
+            <button class="notification-indicator">
+                <i class="fas fa-bell"></i>
+            </button>
+            
+            <button class="tools-toggle-btn">
+                <i class="fas fa-tools"></i>
+            </button>
+            
+            <button class="amc-menu-dots">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+            
+            <div class="amc-avatar-container">
+                <div class="amc-avatar-ring media_user">
+                    <span class="amc-avatar-initials">JD</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- AMC Sidebar -->
+    <nav class="amc-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <div class="sidebar-content">
+            <!-- CORE Section -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-header">Core</h3>
+                <ul class="sidebar-list">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link active">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <span class="sidebar-text">AutoMediaCenter</span>
+                            <span class="sidebar-tooltip">AutoMediaCenter</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-radar-dish"></i>
+                            </div>
+                            <span class="sidebar-text">AutoMediaRadar</span>
+                            <span class="sidebar-tooltip">AutoMediaRadar</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <span class="sidebar-text">AutoMediaLive</span>
+                            <span class="sidebar-tooltip">AutoMediaLive</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-vault"></i>
+                            </div>
+                            <span class="sidebar-text">AutoMediaVault</span>
+                            <span class="sidebar-tooltip">AutoMediaVault</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- MANAGEMENT Section -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-header">Management</h3>
+                <ul class="sidebar-list">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <span class="sidebar-text">Company Dashboard</span>
+                            <span class="sidebar-tooltip">Company Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <span class="sidebar-text">Upload Dashboard</span>
+                            <span class="sidebar-tooltip">Upload Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-boxes"></i>
+                            </div>
+                            <span class="sidebar-text">Manage Releases</span>
+                            <span class="sidebar-tooltip">Manage Releases</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <span class="sidebar-text">Radar History</span>
+                            <span class="sidebar-tooltip">Radar History</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ANALYTICS Section -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-header">Analytics</h3>
+                <ul class="sidebar-list">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <span class="sidebar-text">Company Analytics</span>
+                            <span class="sidebar-tooltip">Company Analytics</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <span class="sidebar-text">AMC Analytics</span>
+                            <span class="sidebar-tooltip">AMC Analytics</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-satellite-dish"></i>
+                            </div>
+                            <span class="sidebar-text">Radar Analytics</span>
+                            <span class="sidebar-tooltip">Radar Analytics</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-broadcast-tower"></i>
+                            </div>
+                            <span class="sidebar-text">Live Analytics</span>
+                            <span class="sidebar-tooltip">Live Analytics</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ADMIN Section -->
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-header">Admin</h3>
+                <ul class="sidebar-list">
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <span class="sidebar-text">Platform Admin</span>
+                            <span class="sidebar-tooltip">Platform Admin</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span class="sidebar-text">User Management</span>
+                            <span class="sidebar-tooltip">User Management</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <span class="sidebar-text">Client Management</span>
+                            <span class="sidebar-tooltip">Client Management</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#" class="sidebar-link">
+                            <div class="sidebar-icon">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <span class="sidebar-text">System Settings</span>
+                            <span class="sidebar-tooltip">System Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="demo-card">
+            <h2>Perfect Header & Sidebar Template</h2>
+            <p>This template demonstrates the complete AMC header and sidebar system with:</p>
+            <ul>
+                <li>✅ Complete header with search bar, icons, and avatar</li>
+                <li>✅ Full sidebar with all sections and proper styling</li>
+                <li>✅ Role-based avatar ring colors</li>
+                <li>✅ Responsive design and dark mode support</li>
+                <li>✅ Zero main content interference</li>
+                <li>✅ Proper spacing and typography</li>
+            </ul>
+        </div>
+        
+        <div class="demo-card">
+            <h2>Integration Ready</h2>
+            <p>This template can now be safely integrated into any existing page without breaking layouts. The CSS is extracted and isolated to only affect header and sidebar components.</p>
+        </div>
+    </main>
+
+    <!-- Authentication Script -->
+    <script src="auth.js"></script>
+    
+    <!-- AMC Avatar System -->
+    <script src="amc-avatar-system.js"></script>
+    
+    <!-- Sidebar Toggle Script -->
+    <script>
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+        
+        // Mobile sidebar toggle
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-open');
+        }
+        
+        // Close mobile sidebar when clicking overlay
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 1024 && document.body.classList.contains('sidebar-open')) {
+                if (!e.target.closest('.amc-sidebar') && !e.target.closest('.sidebar-toggle')) {
+                    document.body.classList.remove('sidebar-open');
+                }
+            }
+        });
+        
+        // Initialize authentication and avatar system
+        document.addEventListener('DOMContentLoaded', function() {
+            // Protect the page
+            if (typeof protectPage === 'function') {
+                protectPage();
+            }
+            
+            // Initialize avatar system
+            if (typeof initializeAvatarSystem === 'function') {
+                initializeAvatarSystem();
+            }
+        });
+    </script>
+</body>
+</html>

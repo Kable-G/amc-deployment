@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - AutoMediaCenter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-light: #ffffff;
+            --bg-dark: #1e1e1e;
+            --text-light: #1e1e1e;
+            --text-dark: #ffffff;
+            --text-secondary-light: #6b7280;
+            --text-secondary-dark: #9ca3af;
+            --border-light: #e5e7eb;
+            --border-dark: #374151;
+            --accent-blue: #0061ff;
+            --accent-blue-hover: #0052d9;
+            --button-secondary-light: #f9fafb;
+            --button-secondary-dark: #374151;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-dark: rgba(0, 0, 0, 0.3);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-light);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .header {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        body.dark-mode .logo {
+            color: var(--text-dark);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .control-button {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-secondary-light);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.dark-mode .control-button {
+            color: var(--text-secondary-dark);
+        }
+
+        .control-button:hover {
+            background: var(--button-secondary-light);
+            color: var(--text-light);
+        }
+
+        body.dark-mode .control-button:hover {
+            background: var(--button-secondary-dark);
+            color: var(--text-dark);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--text-light);
+        }
+
+        body.dark-mode .login-title {
+            color: var(--text-dark);
+        }
+
+        /* OAuth Buttons */
+        .oauth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .oauth-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: var(--bg-light);
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        body.dark-mode .oauth-btn {
+            border-color: var(--border-dark);
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .oauth-btn:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 2px 8px var(--shadow-light);
+        }
+
+        body.dark-mode .oauth-btn:hover {
+            box-shadow: 0 2px 8px var(--shadow-dark);
+        }
+
+        .oauth-btn.google {
+            background: #ffffff;
+            color: #1f2937;
+            border-color: #d1d5db;
+        }
+
+        .oauth-btn.google:hover {
+            background: #f9fafb;
+        }
+
+        /* Google Corporate Colors */
+        .google-icon {
+            background: linear-gradient(45deg, #4285f4 25%, #34a853 25%, #34a853 50%, #fbbc05 50%, #fbbc05 75%, #ea4335 75%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        .oauth-btn.apple {
+            background: #000000;
+            color: #ffffff;
+            border-color: #000000;
+        }
+
+        .oauth-btn.apple:hover {
+            background: #1f1f1f;
+        }
+
+        /* Divider */
+        .divider {
+            margin: 1.5rem 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--border-light);
+        }
+
+        body.dark-mode .divider::before {
+            background: var(--border-dark);
+        }
+
+        .divider span {
+            background: var(--bg-light);
+            padding: 0 1rem;
+            color: var(--text-secondary-light);
+            font-size: 0.875rem;
+        }
+
+        body.dark-mode .divider span {
+            background: var(--bg-dark);
+            color: var(--text-secondary-dark);
+        }
+
+        /* Email Form */
+        .email-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        body.dark-mode .form-label {
+            color: var(--text-dark);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: var(--bg-light);
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        body.dark-mode .form-input {
+            border-color: var(--border-dark);
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .primary-btn:hover {
+            background: var(--accent-blue-hover);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .forgot-password a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border-light);
+            padding: 2rem;
+            background: var(--bg-light);
+        }
+
+        body.dark-mode .footer {
+            border-top-color: var(--border-dark);
+            background: var(--bg-dark);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h4 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        body.dark-mode .footer-section h4 {
+            color: var(--text-dark);
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary-light);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+        }
+
+        body.dark-mode .footer-links a {
+            color: var(--text-secondary-dark);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .footer-links a.highlight {
+            color: var(--accent-blue);
+            font-weight: 500;
+        }
+
+        .footer-bottom {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+            text-align: center;
+            color: var(--text-secondary-light);
+            font-size: 0.875rem;
+        }
+
+        body.dark-mode .footer-bottom {
+            border-top-color: var(--border-dark);
+            color: var(--text-secondary-dark);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .login-container {
+                max-width: 100%;
+            }
+
+            .footer {
+                padding: 1.5rem 1rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .header-controls {
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-title {
+                font-size: 1.5rem;
+            }
+
+            .oauth-btn {
+                padding: 0.75rem;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="index.html" class="logo">AutoMediaCenter</a>
+        <div class="header-controls">
+            <button class="control-button" id="languageToggle" title="Language">
+                <i class="fas fa-globe"></i>
+            </button>
+            <button class="control-button" id="themeToggle" title="Toggle theme">
+                <i class="fas fa-sun"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="login-container">
+            <h1 class="login-title">Sign in</h1>
+            
+            <!-- OAuth Buttons -->
+            <div class="oauth-buttons">
+                <a href="#" class="oauth-btn google" id="googleLogin">
+                    <span class="google-icon">G</span>
+                    Continue with Google
+                </a>
+                <a href="#" class="oauth-btn apple" id="appleLogin">
+                    <i class="fab fa-apple"></i>
+                    Continue with Apple
+                </a>
+            </div>
+
+            <!-- Divider -->
+            <div class="divider">
+                <span>or</span>
+            </div>
+
+            <!-- Email Form -->
+            <form class="email-form" id="emailLoginForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" required>
+                </div>
+                <button type="submit" class="primary-btn">Sign in</button>
+            </form>
+
+            <div class="forgot-password">
+                <a href="#" id="forgotPassword">Forgot your password?</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Access</h4>
+                <ul class="footer-links">
+                    <li><a href="register.html?type=company" class="highlight">Client Upload Portal</a></li>
+                    <li><a href="register.html?type=admin">Admin Access</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="#help">Help Center</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 AutoMediaCenter. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const themeIcon = themeToggle.querySelector('i');
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-mode');
+            themeIcon.className = 'fas fa-moon';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            
+            themeIcon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        // Language Toggle (placeholder for future implementation)
+        const languageToggle = document.getElementById('languageToggle');
+        languageToggle.addEventListener('click', () => {
+            // Future: Show language selection dropdown
+            console.log('Language selection - to be implemented');
+        });
+
+        // OAuth Login Handlers
+        document.getElementById('googleLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            // Track analytics
+            trackActivity('oauth_login_attempt', { provider: 'google' });
+            // Redirect to OAuth
+            window.location.href = '/api/v1/oauth/google';
+        });
+
+        document.getElementById('appleLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            // Track analytics
+            trackActivity('oauth_login_attempt', { provider: 'apple' });
+            // Future: Implement Apple OAuth
+            alert('Apple login coming soon!');
+        });
+
+        // Email Login Form
+        document.getElementById('emailLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                trackActivity('email_login_attempt', { email });
+                
+                const response = await fetch('/api/v1/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    trackActivity('login_success', { method: 'email', userType: data.user.accessLevel });
+                    // Redirect based on user type
+                    if (data.user.accessLevel === 3) {
+                        window.location.href = '/admin-dashboard.html';
+                    } else if (data.user.accessLevel === 2) {
+                        window.location.href = '/client-dashboard.html';
+                    } else {
+                        window.location.href = '/dashboard.html';
+                    }
+                } else {
+                    alert(data.message || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Login failed. Please try again.');
+            }
+        });
+
+        // Forgot Password
+        document.getElementById('forgotPassword').addEventListener('click', (e) => {
+            e.preventDefault();
+            trackActivity('forgot_password_click');
+            // Future: Implement password reset
+            alert('Password reset functionality coming soon!');
+        });
+
+        // Analytics Tracking
+        function trackActivity(eventType, eventData = {}) {
+            const sessionId = sessionStorage.getItem('sessionId') || 
+                             `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            sessionStorage.setItem('sessionId', sessionId);
+
+            fetch('/api/v1/users/track-activity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    eventType,
+                    eventData: {
+                        ...eventData,
+                        referrer: document.referrer,
+                        userAgent: navigator.userAgent,
+                        url: window.location.href
+                    },
+                    pageUrl: window.location.href,
+                    timestamp: Date.now(),
+                    sessionId
+                })
+            }).catch(err => console.log('Analytics tracking failed:', err));
+        }
+
+        // Track page load
+        trackActivity('login_page_view');
+    </script>
+</body>
+</html>

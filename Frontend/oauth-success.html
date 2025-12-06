@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Authentication Successful</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-headings: #343a40;
+            --accent-primary: #0d6efd;
+            --accent-success: #28a745;
+            --border-primary: #dee2e6;
+            --shadow-primary: rgba(0, 0, 0, 0.08);
+            --font-family-main: 'Poppins', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: var(--font-family-main); 
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-tertiary) 100%);
+            color: var(--text-primary); 
+            line-height: 1.6; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-container {
+            background-color: var(--bg-secondary);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px var(--shadow-primary);
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .success-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-success), var(--accent-primary));
+        }
+
+        .success-icon {
+            font-size: 4em;
+            color: var(--accent-success);
+            margin-bottom: 20px;
+            animation: checkmark 0.6s ease-in-out;
+        }
+
+        @keyframes checkmark {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .success-title {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--text-headings);
+            margin-bottom: 10px;
+        }
+
+        .success-message {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        .user-info {
+            background-color: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .user-info h3 {
+            color: var(--text-headings);
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .user-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .user-detail strong {
+            color: var(--text-primary);
+        }
+
+        .user-detail span {
+            color: var(--text-secondary);
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: white;
+        }
+
+        .level-1 { background-color: #6c757d; }
+        .level-2 { background-color: var(--accent-primary); }
+        .level-3 { background-color: var(--accent-success); }
+
+        .redirect-info {
+            background-color: rgba(13, 110, 253, 0.1);
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent-primary);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .manual-redirect {
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--accent-success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+            text-decoration: none;
+            color: white;
+        }
+
+        .error-state {
+            color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 1px solid #dc3545;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 576px) {
+            .success-container {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+            
+            .success-title {
+                font-size: 1.6em;
+            }
+            
+            .btn {
+                display: block;
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        
+        <h1 class="success-title">Welcome to AutoMediaCenter!</h1>
+        <p class="success-message">Your account has been successfully authenticated.</p>
+        
+        <div id="user-info" class="user-info" style="display: none;">
+            <h3>Account Information</h3>
+            <div class="user-detail">
+                <strong>Email:</strong>
+                <span id="user-email">Loading...</span>
+            </div>
+            <div class="user-detail">
+                <strong>Access Level:</strong>
+                <span id="user-level-badge">Loading...</span>
+            </div>
+            <div class="user-detail">
+                <strong>Role:</strong>
+                <span id="user-role">Loading...</span>
+            </div>
+            <div class="user-detail">
+                <strong>Permissions:</strong>
+                <span id="user-permissions">Loading...</span>
+            </div>
+        </div>
+        
+        <div id="redirect-info" class="redirect-info">
+            <div class="loading-spinner"></div>
+            Redirecting you to your dashboard...
+        </div>
+        
+        <div id="error-state" class="error-state" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Authentication Error:</strong>
+            <span id="error-message">Something went wrong during authentication.</span>
+        </div>
+        
+        <div id="manual-redirect" class="manual-redirect" style="display: none;">
+            <p style="margin-bottom: 15px;">Choose where you'd like to go:</p>
+            <a href="AssetDBmenu1.6.html" class="btn btn-primary" id="dashboard-link">
+                <i class="fas fa-tachometer-alt"></i>
+                Upload Dashboard
+            </a>
+            <a href="automediacenter.html" class="btn btn-success" id="public-link">
+                <i class="fas fa-newspaper"></i>
+                Public Releases
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Analytics tracking
+        let sessionStartTime = Date.now();
+        
+        function trackEvent(eventType, data) {
+            const token = localStorage.getItem('token');
+            if (token) {
+                fetch('/api/v1/users/track-activity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        eventType: eventType,
+                        eventData: data,
+                        pageUrl: window.location.href,
+                        timestamp: Date.now()
+                    })
+                }).catch(err => console.log('Analytics tracking failed:', err));
+            }
+        }
+
+        // Parse URL parameters
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                token: urlParams.get('token'),
+                user: urlParams.get('user') ? JSON.parse(decodeURIComponent(urlParams.get('user'))) : null,
+                error: urlParams.get('error')
+            };
+        }
+
+        // Display user information
+        function displayUserInfo(user) {
+            const userInfoDiv = document.getElementById('user-info');
+            const userEmail = document.getElementById('user-email');
+            const userLevelBadge = document.getElementById('user-level-badge');
+            const userRole = document.getElementById('user-role');
+            const userPermissions = document.getElementById('user-permissions');
+
+            userEmail.textContent = user.email;
+            userRole.textContent = user.role.replace('_', ' ').toUpperCase();
+            
+            // Create level badge
+            const levelBadge = document.createElement('span');
+            levelBadge.className = `level-badge level-${user.level}`;
+            levelBadge.textContent = `Level ${user.level}`;
+            userLevelBadge.innerHTML = '';
+            userLevelBadge.appendChild(levelBadge);
+
+            // Display key permissions
+            const keyPermissions = [];
+            if (user.permissions?.canAccessUploadDashboard) keyPermissions.push('Upload Dashboard');
+            if (user.permissions?.canManageOwnReleases) keyPermissions.push('Manage Releases');
+            if (user.permissions?.canAccessAnalytics) keyPermissions.push('Analytics');
+            if (user.permissions?.canManageUsers) keyPermissions.push('User Management');
+            
+            userPermissions.textContent = keyPermissions.length > 0 ? keyPermissions.join(', ') : 'Basic Access';
+
+            userInfoDiv.style.display = 'block';
+        }
+
+        // Show error state
+        function showError(message) {
+            const errorState = document.getElementById('error-state');
+            const errorMessage = document.getElementById('error-message');
+            const redirectInfo = document.getElementById('redirect-info');
+            
+            errorMessage.textContent = message;
+            errorState.style.display = 'block';
+            redirectInfo.style.display = 'none';
+            
+            // Show manual redirect options after error
+            setTimeout(() => {
+                document.getElementById('manual-redirect').style.display = 'block';
+            }, 2000);
+        }
+
+        // Redirect user based on their level
+        function redirectUser(user, delay = 3000) {
+            setTimeout(() => {
+                trackEvent('oauth_redirect', { 
+                    userLevel: user.level,
+                    userRole: user.role,
+                    redirectTarget: user.level >= 2 ? 'dashboard' : 'public'
+                });
+
+                if (user.level >= 2) {
+                    // Level 2+ users go to upload dashboard
+                    window.location.href = 'AssetDBmenu1.6.html';
+                } else {
+                    // Level 1 users go to public releases
+                    window.location.href = 'automediacenter.html';
+                }
+            }, delay);
+        }
+
+        // Main initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = getUrlParams();
+            
+            trackEvent('oauth_success_page_load', {
+                hasToken: !!params.token,
+                hasUser: !!params.user,
+                hasError: !!params.error
+            });
+
+            if (params.error) {
+                showError(`Authentication failed: ${params.error}`);
+                trackEvent('oauth_error', { error: params.error });
+                return;
+            }
+
+            if (!params.token || !params.user) {
+                showError('Missing authentication data. Please try logging in again.');
+                trackEvent('oauth_error', { error: 'missing_data' });
+                return;
+            }
+
+            try {
+                // Store authentication data
+                localStorage.setItem('token', params.token);
+                localStorage.setItem('user', JSON.stringify(params.user));
+                
+                // Display user information
+                displayUserInfo(params.user);
+                
+                // Track successful OAuth completion
+                trackEvent('oauth_success', {
+                    provider: 'oauth', // Could be enhanced to track specific provider
+                    userLevel: params.user.level,
+                    userRole: params.user.role,
+                    isNewUser: !params.user.loginCount || params.user.loginCount <= 1
+                });
+
+                // Redirect after showing user info
+                redirectUser(params.user);
+
+            } catch (error) {
+                console.error('Error processing authentication data:', error);
+                showError('Error processing authentication data. Please try logging in again.');
+                trackEvent('oauth_error', { error: 'processing_error' });
+            }
+        });
+
+        // Handle manual redirect clicks
+        document.getElementById('dashboard-link').addEventListener('click', () => {
+            trackEvent('manual_redirect', { target: 'dashboard' });
+        });
+
+        document.getElementById('public-link').addEventListener('click', () => {
+            trackEvent('manual_redirect', { target: 'public' });
+        });
+
+        // Track time on page
+        window.addEventListener('beforeunload', () => {
+            const timeOnPage = Date.now() - sessionStartTime;
+            trackEvent('oauth_success_page_unload', { 
+                timeOnPage: timeOnPage 
+            });
+        });
+    </script>
+</body>
+</html>

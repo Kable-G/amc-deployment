@@ -1,0 +1,202 @@
+/**
+ * AMC Global Shell CSS - Clean Version
+ * Fixed CSS structure with proper sidebar width and table styling
+ */
+
+/* ============================================================
+   GLOBAL SHELL LAYOUT VARIABLES - AUTHORITATIVE SOURCE
+   ============================================================ */
+
+:root {
+  /* SIDEBAR DIMENSIONS - CRITICAL FOR LAYOUT */
+  --amc-sidebar-w: 272px;
+  --amc-sidebar-w-collapsed: 72px;
+  
+  /* HEADER DIMENSIONS */
+  --amc-header-h: 64px;
+  
+  /* SPACING SYSTEM */
+  --amc-spacing-xs: 4px;
+  --amc-spacing-sm: 8px;
+  --amc-spacing-md: 16px;
+  --amc-spacing-lg: 24px;
+  --amc-spacing-xl: 32px;
+  
+  /* COLORS - DARK MODE OPTIMIZED */
+  --amc-bg-primary: #1a1a1a;
+  --amc-bg-secondary: #2d2d2d;
+  --amc-bg-tertiary: #3a3a3a;
+  --amc-text-primary: #ffffff;
+  --amc-text-secondary: #b0b0b0;
+  --amc-border: #404040;
+  --amc-accent: #007bff;
+  
+  /* Light mode colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-primary: #dee2e6;
+}
+
+/* ============================================================
+   CORE APP LAYOUT - FOUNDATION
+   ============================================================ */
+
+.amc-app {
+  display: flex;
+  min-height: 100vh;
+  background: var(--amc-bg-primary);
+}
+
+/* MAIN CONTENT AREA - RESPONSIVE TO SIDEBAR STATE */
+.amc-page {
+  flex: 1;
+  margin-left: var(--amc-sidebar-w);
+  padding: var(--amc-spacing-lg);
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: calc(100vh - var(--amc-header-h));
+  background: var(--bg-primary);
+  width: calc(100vw - var(--amc-sidebar-w));
+}
+
+/* COLLAPSED SIDEBAR STATE - MORE SPACE FOR CONTENT */
+body.sidebar-collapsed .amc-page,
+body.amc-collapsed .amc-page {
+  margin-left: var(--amc-sidebar-w-collapsed);
+  width: calc(100vw - var(--amc-sidebar-w-collapsed));
+}
+
+/* SIDEBAR */
+.amc-sidebar {
+  position: fixed;
+  top: var(--amc-header-h);
+  left: 0;
+  height: calc(100vh - var(--amc-header-h));
+  width: var(--amc-sidebar-w);
+  transition: width 0.25s ease;
+  overflow: auto;
+  z-index: 100;
+}
+
+body.sidebar-collapsed .amc-sidebar,
+body.amc-collapsed .amc-sidebar {
+  width: var(--amc-sidebar-w-collapsed);
+}
+
+/* ============================================================
+   TABLE STYLING - PROPER LIGHT/DARK MODE SUPPORT
+   ============================================================ */
+
+/* Light mode table styling */
+body:not(.dark-mode) .releases-table {
+  background: #ffffff;
+  color: #212529;
+}
+
+body:not(.dark-mode) .releases-table thead th {
+  background: #f8f9fa;
+  color: #495057;
+  border-bottom: 1px solid #dee2e6;
+}
+
+body:not(.dark-mode) .releases-table tbody td {
+  color: #212529;
+  border-bottom: 1px solid #dee2e6;
+}
+
+body:not(.dark-mode) .releases-table tbody tr:nth-child(even) {
+  background: rgba(0,0,0,0.025);
+}
+
+/* Vertical lines - light mode */
+body:not(.dark-mode) .releases-table td + td,
+body:not(.dark-mode) .releases-table th + th {
+  border-left: 1px solid #dee2e6;
+}
+
+/* Dark mode table styling */
+body.dark-mode .releases-table {
+  background: #2d2d2d;
+  color: #ffffff;
+}
+
+body.dark-mode .releases-table thead th {
+  background: #3a3a3a;
+  color: #ffffff;
+  border-bottom: 1px solid #404040;
+}
+
+body.dark-mode .releases-table tbody td {
+  color: #ffffff;
+  border-bottom: 1px solid #404040;
+}
+
+body.dark-mode .releases-table tbody tr:nth-child(even) {
+  background: rgba(255,255,255,0.04);
+}
+
+/* Vertical lines - dark mode */
+body.dark-mode .releases-table td + td,
+body.dark-mode .releases-table th + th {
+  border-left: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ============================================================
+   TABLE COLUMN WIDTHS - RESTORE ORIGINAL LAYOUT
+   ============================================================ */
+
+.releases-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.releases-table colgroup col:nth-child(1) { width: 80px; }   /* Teaser */
+.releases-table colgroup col:nth-child(2) { width: 25%; }    /* Title */
+.releases-table colgroup col:nth-child(3) { width: 15%; }    /* Company */
+.releases-table colgroup col:nth-child(4) { width: 10%; }    /* Status */
+.releases-table colgroup col:nth-child(5) { width: 18%; }    /* Uploaded By */
+.releases-table colgroup col:nth-child(6) { width: 15%; }    /* Release Date */
+.releases-table colgroup col:nth-child(7) { width: 12%; }    /* Last Updated */
+.releases-table colgroup col:nth-child(8) { width: 60px; }   /* Actions */
+
+/* Table cell styling */
+.releases-table th,
+.releases-table td {
+  padding: 12px;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.releases-table th:last-child,
+.releases-table td:last-child {
+  text-align: center;
+}
+
+/* ============================================================
+   DARK MODE BODY STYLING
+   ============================================================ */
+
+body.dark-mode {
+  background: var(--amc-bg-primary) !important;
+  color: var(--amc-text-primary) !important;
+}
+
+body.dark-mode .amc-page {
+  background: var(--amc-bg-primary);
+  color: var(--amc-text-primary);
+}
+
+/* Light mode body styling */
+body:not(.dark-mode) {
+  background: #ffffff;
+  color: #212529;
+}
+
+body:not(.dark-mode) .amc-page {
+  background: #ffffff;
+  color: #212529;
+}

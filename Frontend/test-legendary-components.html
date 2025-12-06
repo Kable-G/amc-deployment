@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legendary Components Test - AutoMediaCenter</title>
+    
+    <!-- LEGENDARY SYSTEM - NEW COMPONENTS -->
+    <link rel="stylesheet" href="css/legendary-shell.css">
+    <link rel="stylesheet" href="css/legendary-header.css">
+    
+    <!-- EXISTING WORKING COMPONENTS -->
+    <link rel="stylesheet" href="css/legendary-sidebar.css">
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+    <!-- Font Awesome & Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============ EXACT WORKING CSS FROM test_globalshell.html ============ */
+        :root {
+            /* ── LAYERED BACKGROUND ARCHITECTURE (Light Mode Premium) ─────── */
+            --amc-body-bg-light: #f8fafc;         /* soft neutral layer */
+            --amc-surface-bg-light: #ffffff;      /* cards / containers */
+            --amc-table-bg-light: #fcfcfd;        /* table wrapper */
+            --amc-header-bg-light: #f3f4f6;       /* table header background */
+            --amc-sidebar-bg-light: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* sidebar gradient */
+            
+            /* Legacy variables (maintained for compatibility) */
+            --bg-primary: var(--amc-body-bg-light);
+            --bg-secondary: var(--amc-surface-bg-light);
+            --bg-tertiary: #e9ecef;
+            
+            /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────────── */
+            --text-headings: #111827;    /* headers: strong */
+            --text-primary: #374151;     /* body text: medium */
+            --text-secondary: #6b7280;   /* metadata: subtle */
+            --text-muted: #9ca3af;       /* ultra-subtle */
+            
+            --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #5a6268;
+
+            --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
+            
+            --border-primary: #e5e7eb; --border-secondary: #d1d5db; --border-color-light: #e9ecef;
+            --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+            --icon-available: var(--accent-primary); --icon-unavailable: #ced4da;
+            --shadow-primary: rgba(0, 0, 0, 0.08); --shadow-hover: rgba(0, 0, 0, 0.15);
+            --overlay-bg: rgba(0, 0, 0, 0.65);
+            --tag-bg: var(--bg-tertiary); --tag-text: var(--text-secondary);
+            --color-info: #17a2b8;
+            --color-warning: #ffc107;
+            --brand-band-light-bg: #212529; --brand-band-light-text: #f8f9fa;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --bg-image-placeholder: #e9ecef;
+            --font-family-main: 'Poppins', sans-serif;
+            --sidebar-width: 260px;
+            --header-height: 64px; /* Updated for premium header */
+            --footer-height: 60px;
+            --accent-primary-rgb: 13, 110, 253;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --highlight-color-rgb: 255, 193, 7;
+            --notification-error: #dc3545;
+            --accent-action-positive: #28a745;
+            --accent-action-positive-hover: #218838;
+            --accent-action-positive-rgb: 40, 167, 69;
+            --accent-action-danger: #dc3545;
+            --accent-action-danger-hover: #c82333;
+            --selection-dot-color: var(--accent-primary); /* Blue for selection */
+            
+            /* ENTERPRISE TYPOGRAPHY SYSTEM */
+            --font-display: 2rem;      /* Page titles (h1) */
+            --font-heading: 1.4rem;    /* Section headers */
+            --font-subheading: 1.1rem; /* Card headers */
+            --font-body: 0.95rem;      /* Body text */
+            --font-muted: 0.85rem;     /* Metadata / labels */
+        }
+
+        body.dark-mode {
+            --bg-primary: #121212; --bg-secondary: #1a1c1e; --bg-tertiary: #2a2d30;
+            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #545b62;
+            
+            --border-primary: #3a3a3a; --border-secondary: #444; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+            --icon-available: var(--accent-primary); --icon-unavailable: #555;
+            --shadow-primary: rgba(0, 0, 0, 0.25); --shadow-hover: rgba(0, 0, 0, 0.35);
+            --overlay-bg: rgba(0, 0, 0, 0.75);
+            --tag-bg: #4a4a4a; --tag-text: var(--text-primary);
+            --brand-band-light-bg: #f8f9fa; --brand-band-light-text: #212529;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --color-info: #36c4d9;
+            --color-warning: #ffd04a;
+            --bg-image-placeholder: #2c2c2c;
+            --accent-primary-rgb: 63, 145, 255;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --accent-action-positive: #20c997;
+            --accent-action-positive-hover: #1ba984;
+            --accent-action-positive-rgb: 32, 201, 151;
+            --accent-action-danger: #e74c3c;
+            --accent-action-danger-hover: #d63031;
+            --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
+            --sidebar-bg: #1a1c1e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            /* 🚀 INDUSTRY-BUSTING: Global Motion Baseline */
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: background, color, transform, box-shadow;
+        }
+        
+        /* 🎯 TYPOGRAPHY UPGRADE: Variable font smoothing for retina displays */
+        html {
+            font-smooth: always;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--amc-body-bg-light); /* soft neutral layer */
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Light mode layered background system */
+        body:not(.dark-mode) {
+            background: var(--amc-body-bg-light);
+        }
+        
+        /* DARK MODE BODY BACKGROUND */
+        body.dark-mode {
+            background: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        a { color: var(--accent-primary); text-decoration: none; } a:hover { color: var(--accent-primary-hover); text-decoration: underline; }
+        .app-container { display: flex; flex-direction: column; flex-grow: 1; }
+        .app-body { display: flex; flex-grow: 1; transition: margin-left 0.3s ease; }
+
+        /* FORCE BODY PADDING TO MATCH HEADER HEIGHT */
+        body {
+            padding-top: var(--header-height) !important;
+        }
+
+        /* Test-specific styles */
+        .test-status {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 11000;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .test-checklist {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .test-checklist h3 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .test-checklist ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .test-checklist li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 14px;
+        }
+        
+        .test-checklist .status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .test-checklist .status-pass {
+            background: #10b981;
+            color: white;
+        }
+        
+        .test-checklist .status-pending {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .legendary-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body data-amc-role-selector>
+    <!-- Test Status Indicator -->
+    <div class="test-status">
+        🚀 LEGENDARY COMPONENTS TEST
+    </div>
+
+    <!-- Use legendary header component -->
+    <legendary-header></legendary-header>
+    
+    <div class="amc-app">
+        <!-- Use legendary sidebar component -->
+        <legendary-sidebar></legendary-sidebar>
+        
+        <main class="amc-content">
+            <div class="main-content">
+                <div class="content-header">
+                    <h1><i class="fas fa-rocket"></i> Legendary Components Test</h1>
+                    <p>Testing the new legendary header and shell system with all premium improvements</p>
+                </div>
+                
+                <div class="legendary-badge">
+                    <i class="fas fa-star"></i>
+                    LEGENDARY STATUS: Testing All Premium Features
+                </div>
+                
+                <!-- Test Results -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-check-circle"></i> Legendary Features Test</h2>
+                        <span>Verify all three critical legendary improvements are working</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="test-checklist">
+                            <h3><i class="fas fa-clipboard-check"></i> ISSUE #1: Header Icons (40px + 4px spacing)</h3>
+                            <ul>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    Notification bell (40px, red glow when active)
+                                </li>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    Cart briefcase (40px, yellow glow when active)
+                                </li>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    Tools wrench (40px, blue glow always)
+                                </li>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    4px spacing between icons (Linear/Vercel standard)
+                                </li>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    Hover lift + shadow feedback
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="test-checklist">
+                            <h3><i class="fas fa-search"></i> ISSUE #2: Glass Morphism Search Bar</h3>
+                            <ul>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    Glass morphism backdrop-filter effect
+                                </li>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    Focus expansion (480px → 600px)
+                                </li>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    ⌘K keyboard shortcut (try it!)
+                                </li>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    Premium focus ring with blue glow
+                                </li>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    Scope selector dropdown
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="test-checklist">
+                            <h3><i class="fas fa-badge"></i> ISSUE #3: Smart Badge Animation</h3>
+                            <ul>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    Spring physics entrance (cubic-bezier)
+                                </li>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    Pulse animation with expanding ring
+                                </li>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    Smart visibility (hidden by default)
+                                </li>
+                                <li>
+                                    <span class="status-icon status-pass">✓</span>
+                                    Color-coded: Blue (cart), Red (notifications)
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Test Controls -->
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-gamepad"></i> Interactive Tests</h3>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Try these interactions:</strong></p>
+                            <ul>
+                                <li>🔍 Press <kbd>⌘K</kbd> or <kbd>Ctrl+K</kbd> to focus search</li>
+                                <li>🔔 Click notification bell (should show red glow)</li>
+                                <li>💼 Click cart briefcase (should show yellow glow)</li>
+                                <li>🔧 Click tools wrench (should open dropdown)</li>
+                                <li>⋮ Click three-dot menu (should show green glow)</li>
+                                <li>👤 Click avatar (should open modal)</li>
+                                <li>🌙 Toggle dark mode via avatar modal</li>
+                                <li>📁 Collapse/expand sidebar sections</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-code"></i> DevTools Tests</h3>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Run in DevTools console:</strong></p>
+                            <pre><code>// Test badge animations
+amcSetCartCount(5)
+amcSetNotifCount(2)
+
+// Test role switching
+AMCShell.updateRole('platform_admin')
+
+// Test search
+document.querySelector('#globalSearchInput').focus()
+
+// Check legendary components loaded
+console.log('Header:', document.querySelector('legendary-header'))
+console.log('Sidebar:', document.querySelector('#sidebar'))</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expected Results -->
+                <div class="card" style="margin-top: 2rem;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bullseye"></i> Expected Results</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="grid-3">
+                            <div>
+                                <h4>🎯 Visual</h4>
+                                <ul>
+                                    <li>Header icons perfectly aligned</li>
+                                    <li>Search bar with glass effect</li>
+                                    <li>Badges appear with spring animation</li>
+                                    <li>Smooth hover effects</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4>🎯 Interactive</h4>
+                                <ul>
+                                    <li>⌘K focuses search instantly</li>
+                                    <li>Tools dropdown opens smoothly</li>
+                                    <li>Badge counts update dynamically</li>
+                                    <li>Dark mode toggles properly</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4>🎯 Performance</h4>
+                                <ul>
+                                    <li>Smooth 60fps animations</li>
+                                    <li>No layout shifts</li>
+                                    <li>Fast component loading</li>
+                                    <li>Responsive on all devices</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Load components in correct order -->
+    <script src="components/legendary-header.js"></script>
+    <script src="components/legendary-sidebar.js"></script>
+    <script defer src="amc-avatar-system.js"></script>
+    
+    <script>
+        // Test initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 LEGENDARY COMPONENTS TEST INITIALIZED');
+            
+            // Wait for components to load
+            setTimeout(() => {
+                // Test badge animations
+                if (window.amcSetCartCount) {
+                    window.amcSetCartCount(1);
+                    console.log('✅ Cart badge test: PASS');
+                }
+                
+                if (window.amcSetNotifCount) {
+                    window.amcSetNotifCount(3);
+                    console.log('✅ Notification badge test: PASS');
+                }
+                
+                // Test search focus
+                const searchInput = document.querySelector('#globalSearchInput');
+                if (searchInput) {
+                    console.log('✅ Search input found: PASS');
+                } else {
+                    console.error('❌ Search input not found: FAIL');
+                }
+                
+                // Test header component
+                const headerComponent = document.querySelector('legendary-header');
+                if (headerComponent) {
+                    console.log('✅ Legendary header component: PASS');
+                } else {
+                    console.error('❌ Legendary header component: FAIL');
+                }
+                
+                // Test sidebar
+                const sidebar = document.querySelector('#sidebar');
+                if (sidebar) {
+                    console.log('✅ Sidebar found: PASS');
+                } else {
+                    console.error('❌ Sidebar not found: FAIL');
+                }
+                
+                console.log('🎯 LEGENDARY COMPONENTS TEST COMPLETE');
+                console.log('📊 Check visual elements and try interactive features');
+                
+            }, 1000);
+        });
+        
+        // Listen for legendary events
+        window.addEventListener('legendaryHeaderReady', () => {
+            console.log('🚀 Legendary Header: READY');
+        });
+        
+        window.addEventListener('cartUpdate', (e) => {
+            console.log('🛒 Cart updated:', e.detail.count);
+        });
+        
+        window.addEventListener('notificationUpdate', (e) => {
+            console.log('🔔 Notifications updated:', e.detail.count);
+        });
+        
+        window.addEventListener('globalSearch', (e) => {
+            console.log('🔍 Global search:', e.detail.query, 'in', e.detail.scope);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2034 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Company Settings [Client Admin]</title>
+    
+    <!-- Enterprise Sidebar System -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <script src="components/sidebar.js"></script>
+    
+    <script type="module">
+      import { protectPage } from "./auth.js";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        protectPage();       // ✅ Checks login and role properly
+        // Sidebar is now auto-initialized by components/sidebar.js
+      });
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+<style>
+        :root {
+            /* ── LAYERED BACKGROUND ARCHITECTURE (Light Mode Premium) ─────── */
+            --amc-body-bg-light: #f8fafc;         /* soft neutral layer */
+            --amc-surface-bg-light: #ffffff;      /* cards / containers */
+            --amc-table-bg-light: #fcfcfd;        /* table wrapper */
+            --amc-header-bg-light: #f3f4f6;       /* table header background */
+            --amc-sidebar-bg-light: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* sidebar gradient */
+            
+            /* Legacy variables (maintained for compatibility) */
+            --bg-primary: var(--amc-body-bg-light);
+            --bg-secondary: var(--amc-surface-bg-light);
+            --bg-tertiary: #e9ecef;
+            
+            /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────────── */
+            --text-headings: #111827;    /* headers: strong */
+            --text-primary: #374151;     /* body text: medium */
+            --text-secondary: #6b7280;   /* metadata: subtle */
+            --text-muted: #9ca3af;       /* ultra-subtle */
+            
+            --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #5a6268;
+
+            --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
+            
+            --border-primary: #e5e7eb; --border-secondary: #d1d5db; --border-color-light: #e9ecef;
+            --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+            --icon-available: var(--accent-primary); --icon-unavailable: #ced4da;
+            --shadow-primary: rgba(0, 0, 0, 0.08); --shadow-hover: rgba(0, 0, 0, 0.15);
+            --overlay-bg: rgba(0, 0, 0, 0.65);
+            --tag-bg: var(--bg-tertiary); --tag-text: var(--text-secondary);
+            --color-info: #17a2b8;
+            --color-warning: #ffc107;
+            --brand-band-light-bg: #212529; --brand-band-light-text: #f8f9fa;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --bg-image-placeholder: #e9ecef;
+            --font-family-main: 'Poppins', sans-serif;
+            --sidebar-width: 260px;
+            --header-height: 61px;
+            --footer-height: 60px;
+            --accent-primary-rgb: 13, 110, 253;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --highlight-color-rgb: 255, 193, 7;
+            --notification-error: #dc3545;
+            --accent-action-positive: #28a745;
+            --accent-action-positive-hover: #218838;
+            --accent-action-positive-rgb: 40, 167, 69;
+            --accent-action-danger: #dc3545;
+            --accent-action-danger-hover: #c82333;
+            --selection-dot-color: var(--accent-primary); /* Blue for selection */
+            
+            /* ENTERPRISE TYPOGRAPHY SYSTEM */
+            --font-display: 2rem;      /* Page titles (h1) */
+            --font-heading: 1.4rem;    /* Section headers */
+            --font-subheading: 1.1rem; /* Card headers */
+            --font-body: 0.95rem;      /* Body text */
+            --font-muted: 0.85rem;     /* Metadata / labels */
+        }
+
+        body.dark-mode {
+            --bg-primary: #121212; --bg-secondary: #1a1c1e; --bg-tertiary: #2a2d30;
+            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #545b62;
+            
+            --border-primary: #3a3a3a; --border-secondary: #444; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+            --icon-available: var(--accent-primary); --icon-unavailable: #555;
+            --shadow-primary: rgba(0, 0, 0, 0.25); --shadow-hover: rgba(0, 0, 0, 0.35);
+            --overlay-bg: rgba(0, 0, 0, 0.75);
+            --tag-bg: #4a4a4a; --tag-text: var(--text-primary);
+            --brand-band-light-bg: #f8f9fa; --brand-band-light-text: #212529;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --color-info: #36c4d9;
+            --color-warning: #ffd04a;
+            --bg-image-placeholder: #2c2c2c;
+            --accent-primary-rgb: 63, 145, 255;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --accent-action-positive: #20c997;
+            --accent-action-positive-hover: #1ba984;
+            --accent-action-positive-rgb: 32, 201, 151;
+            --accent-action-danger: #e74c3c;
+            --accent-action-danger-hover: #d63031;
+            --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
+            --sidebar-bg: #1a1c1e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--amc-body-bg-light); /* soft neutral layer */
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Light mode layered background system */
+        body:not(.dark-mode) {
+            background: var(--amc-body-bg-light);
+        }
+        
+        /* DARK MODE BODY BACKGROUND */
+        body.dark-mode {
+            background: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        a { color: var(--accent-primary); text-decoration: none; } a:hover { color: var(--accent-primary-hover); text-decoration: underline; }
+        .app-container { display: flex; flex-direction: column; flex-grow: 1; }
+        .app-body { display: flex; flex-grow: 1; transition: margin-left 0.3s ease; }
+        .app-header {
+            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%); /* subtle gradient for depth */
+            border-bottom: 1px solid #e5e7eb;
+            color: #1f2937; /* dark text for white background */
+            padding: 10px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10000;
+            height: var(--header-height);
+            width: 100%;
+        }
+        
+        .app-header .logo h1 {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0;
+            color: #1f2937; /* ensure logo is dark and visible in light mode */
+        }
+        
+        /* Dark mode header styling */
+        body.dark-mode .app-header {
+            background: linear-gradient(180deg, #1e2327 0%, #181b1f 100%); /* subtle gradient for depth */
+            border-bottom: 1px solid #3a3a3a;
+            color: #f0f0f0; /* light text for dark background */
+        }
+        
+        body.dark-mode .app-header .logo h1 {
+            color: #f0f0f0; /* ensure logo is light and visible in dark mode */
+        }
+        
+        .app-header .user-actions-group { display: flex; align-items: center; gap: 20px;}
+        .app-header .user-info { font-size: 0.9em; } .app-header .user-info span { opacity: 0.8; }
+        .app-header .logout-link { color: var(--header-link); text-decoration: none; font-size: 0.9em;}
+        .app-header .logout-link:hover { color: var(--header-text); } .app-header .logout-link i { margin-right: 5px; }
+
+        .cart-indicator, .notification-indicator { position: relative; display: inline-flex; align-items: center; cursor: pointer; color: var(--header-link); transition: color 0.2s ease; font-size: 1.1em; }
+        .cart-indicator:hover, .notification-indicator:hover { color: var(--header-text); }
+        .cart-badge, .notification-badge { position: absolute; top: -8px; right: -10px; background-color: var(--accent-primary); color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: bold; transform: scale(0); transition: transform 0.2s ease-out; }
+        .notification-badge { background-color: var(--notification-error); top: -5px; right: -8px; width: 16px; height: 16px;}
+        .cart-indicator.has-items .cart-badge, .notification-indicator.has-new .notification-badge { transform: scale(1); }
+        .cart-indicator.has-items > i.fa-shopping-cart { color: var(--highlight-color); animation: pulseCartIcon 1.5s infinite; }
+        @keyframes pulseCartIcon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .amc-header-right { display: flex; align-items: center; gap: 15px; }
+        .amc-menu-dots { background: none; border: none; color: var(--header-link); font-size: 1.2em; cursor: pointer; padding: 5px; }
+        .amc-menu-dots:hover { color: var(--header-text); }
+
+        .btn-icon { background:transparent; border:none; padding:5px 8px; margin-left:10px; cursor:pointer; }
+        .btn-icon i { color:var(--header-link); font-size:1.1em; }
+        .btn-icon:hover i { color: var(--header-text); }
+
+  :root{
+    /* adjust if your header height differs on this page */
+    --amc-header-h: 72px;
+    --amc-sidebar-expanded: 264px;
+    --amc-sidebar-collapsed: 72px;
+
+    /* colors (light) */
+    --amc-bg: #ffffff;
+    --amc-line: #E5E7EB;
+    --amc-text: #0f172a;
+    --amc-muted:#64748b;
+
+    /* colors (dark) */
+    --amc-bg-dark: #0f1115;
+    --amc-line-dark: rgba(255,255,255,.12);
+    --amc-text-dark:#e5e7eb;
+    --amc-muted-dark:#94a3b8;
+  }
+
+  /* Body layout variables (expanded by default) */
+  body{
+    --amc-sidebar-w: var(--amc-sidebar-expanded);
+    padding-top: var(--amc-header-h);
+  }
+  /* When collapsed (remembered in localStorage) */
+  body.amc-collapsed{ --amc-sidebar-w: var(--amc-sidebar-collapsed); }
+
+  /* Sidebar (fixed, left) */
+  .amc-sidebar{
+    position: fixed; top: var(--amc-header-h); left:0; bottom:0;
+    width: var(--amc-sidebar-w);
+    background: var(--amc-bg);
+    border-right: 1px solid var(--amc-line);
+    overflow: visible auto; /* FIXED: changed from hidden to visible for tooltips */
+    transition: width .18s ease;
+    z-index: 900;
+  }
+  /* Dark mode support - FIXED: Use dark-mode class */
+  body.dark-mode .amc-sidebar{
+    background: var(--sidebar-bg);
+    border-right-color: var(--border-color);
+    color: var(--text-primary);
+  }
+  
+  /* AVATAR DARK MODE SUPPORT - Enable role-based rings in dark mode */
+  body.dark-mode {
+    /* Avatar modal dark mode support */
+    --bg-secondary-dark: #1a1c1e;
+    --text-primary-dark: #e2e8f0;
+    --border-primary-dark: #374151;
+    --bg-tertiary-dark: #2a2d30;
+    --text-headings-dark: #f8f9fa;
+    --text-secondary-dark: #9ca3af;
+  }
+  
+  /* Apply dark mode class to avatar system */
+  body.dark-mode .avatar-modal {
+    background: var(--bg-secondary-dark, #2c2c2c);
+    color: var(--text-primary-dark, #e2e8f0);
+    border-color: var(--border-primary-dark, #374151);
+  }
+  
+  body.dark-mode .avatar-modal-header {
+    background: linear-gradient(135deg, var(--bg-secondary-dark, #2c2c2c) 0%, var(--bg-tertiary-dark, #374151) 100%);
+    border-color: var(--border-primary-dark, #374151);
+  }
+  
+  body.dark-mode .avatar-email {
+    color: var(--text-headings-dark, #f8f9fa);
+  }
+  
+  body.dark-mode .avatar-role {
+    color: var(--text-secondary-dark, #9ca3af);
+  }
+  
+  body.dark-mode .modal-btn {
+    color: var(--text-primary-dark, #e2e8f0);
+  }
+  
+  body.dark-mode .modal-btn:hover {
+    background: var(--bg-tertiary-dark, #374151);
+    color: var(--accent-primary, #3b82f6);
+  }
+  
+  body.dark-mode .modal-divider {
+    border-color: var(--border-primary-dark, #374151);
+  }
+  
+  /* Ensure avatar ring colors work in dark mode */
+  body.dark-mode .amc-avatar-ring {
+    background: var(--bg-secondary, #1a1c1e);
+    border-color: var(--avatar-ring, #3B82F6);
+  }
+
+  /* Sidebar sections rendered by sidebar-builder.js */
+  .sidebar-section{ padding: 14px 10px; margin-bottom: 14px; }
+  .sidebar-section-header{
+    margin: 16px 12px 6px 12px; font: 700 12px/1 Inter, ui-sans-serif, system-ui;
+    color: var(--amc-muted); text-transform: uppercase; letter-spacing: .4px;
+  }
+  
+  /* ENHANCED SIDEBAR SECTION TITLES - TYPOGRAPHY & COLORS */
+  .sidebar .section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 16px 12px 6px 12px;
+    font-family: Inter, ui-sans-serif, system-ui;
+    color: #9ca3af; /* unified neutral tone */
+  }
+  
+  /* COLORFUL SECTION TITLES */
+  .sidebar .section-title.core { color: #2563eb; }       /* vivid blue */
+  .sidebar .section-title.management { color: #059669; } /* vivid green */
+  .sidebar .section-title.analytics { color: #d97706; }  /* vivid orange */
+  .sidebar .section-title.admin { color: #dc2626; }      /* vivid red */
+  .sidebar-list{ list-style:none; margin:0; padding:4px; }
+  .sidebar-item{ margin: 2px 6px; }
+  .sidebar-link{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:10px;
+    color: inherit; text-decoration:none; font: 600 14px/1.2 Inter, ui-sans-serif, system-ui;
+  }
+  .sidebar-link:hover{ background: var(--sidebar-hover-bg); color: var(--text-primary); }
+  body.dark-mode .sidebar-link:hover{ background: var(--sidebar-hover-bg); color: var(--text-primary); }
+  .sidebar-link.active{ background: var(--sidebar-hover-bg); color: var(--sidebar-active-bar); border-left: 3px solid var(--sidebar-active-bar); }
+
+  /* Collapsed state: show only icons and hide text */
+  body.sidebar-collapsed .sidebar-section-header{ opacity: 0; }
+  body.sidebar-collapsed .sidebar-text{ opacity: 0; transform: translateX(-5px); }
+  body.sidebar-collapsed .sidebar-badge{ opacity: 0; }
+  body.sidebar-collapsed .sidebar-link{ justify-content: center; }
+
+  /* Main content shifts to the right of the sidebar */
+  .amc-main{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
+  .app-container{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
+
+/* === AMC Radar History HOTFIX (non-destructive) ========================= */
+/* 1) Kill the accidental header we injected in this page only */
+.amc-header-wrap{ display:none !important; }
+
+/* 2) Neutralize the generic sidebar skin so it can't override AMC */
+.sidebar, .sidebar-top, .sidebar-brand, .sidebar-menu,
+.sidebar .sidebar-link, .sidebar-toggle { all: unset; display: initial; }
+
+/* 3) Canonical AMC sidebar (driven by #sidebar that sidebar-builder.js fills) */
+:root{
+  --amc-header-h: 60px;         /* match the real header height on this page */
+  --amc-sidebar-expanded: 264px;
+  --amc-sidebar-collapsed: 72px;
+}
+
+/* page-wide width var + push the app container, not the header */
+body{ --amc-sidebar-w: var(--amc-sidebar-expanded); }
+body.amc-collapsed{ --amc-sidebar-w: var(--amc-sidebar-collapsed); }
+
+/* Restore AMC sidebar functionality but match automediacenter.html positioning */
+.app-container{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
+
+/* ENTERPRISE LAYOUT RHYTHM & ALIGNMENT */
+.main-content {
+    margin-left: 0;
+    max-width: 1500px; /* Increased from 1400px to accommodate wider table */
+    margin: 0 auto;
+    padding: 2rem; /* Enhanced padding for better content breathing room */
+    background-color: var(--bg-primary);
+    overflow-y: auto;
+    min-height: calc(100vh - var(--header-height) - var(--footer-height)); /* Ensure full height usage */
+}
+
+/* DARK MODE MAIN CONTENT */
+body.dark-mode .main-content {
+    background-color: var(--bg-primary) !important;
+}
+
+/* ENTERPRISE SIDEBAR SHELL - PREMIUM LIGHT MODE ELEVATION */
+#sidebar{
+  position: fixed; left: 0; top: var(--header-height); bottom: 0;
+  width: var(--amc-sidebar-w);
+  background: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* soft contrast gradient */
+  border-right: 1px solid #d1d5db; /* stronger border contrast */
+  overflow: visible auto; z-index: 950;
+  transition: width 0.18s ease, background 0.2s ease, box-shadow 0.2s ease;
+  padding-top: 8px;
+  box-shadow: inset -1px 0 0 rgba(0,0,0,0.05), 2px 0 8px rgba(0,0,0,0.06); /* enhanced panel depth */
+}
+body.dark-mode #sidebar{
+  background: var(--sidebar-bg); /* cooler anthracite grey */
+  border-right-color: var(--border-primary);
+  color: var(--text-primary);
+  box-shadow: inset -1px 0 0 rgba(255,255,255,0.03); /* subtle light inset for dark mode */
+}
+
+/* ENTERPRISE SIDEBAR SECTIONS - TIGHTER RHYTHM */
+#sidebar .sidebar-section{
+  padding: 0 10px; /* remove vertical padding */
+  margin-bottom: 14px; /* consistent spacing between sections */
+}
+
+/* ENTERPRISE SECTION HEADERS - REFINED HYBRID WITH ORANGE ACCENT */
+#sidebar .sidebar-section-header{
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: #9ca3af; /* neutral grey */
+  padding: 6px 12px;
+  margin-top: 16px; /* instead of ~32px */
+  margin-bottom: 4px; /* tighter below for better rhythm */
+  margin-left: 12px;
+  margin-right: 12px;
+  text-transform: uppercase;
+  background: rgba(0,0,0,0.08); /* darker tone for better definition in light mode */
+  border-left: 2px solid #f97316; /* orange accent strip */
+  border-radius: 4px;
+  padding-left: 10px; /* adjust for thinner accent bar */
+}
+
+/* Pull first section closer to top - ENTERPRISE SPACING */
+#sidebar .sidebar-section:first-child .sidebar-section-header {
+  margin-top: 4px; /* pull 'Core' closer to top */
+}
+
+/* Dark mode refined headers - enhanced visibility */
+body.dark-mode #sidebar .sidebar-section-header {
+  background: rgba(255, 255, 255, 0.05); /* subtle translucent bar for dark mode */
+  color: #9ca3af; /* consistent neutral grey */
+  border-left-color: #fb923c; /* lighter orange for dark mode visibility */
+}
+
+#sidebar .sidebar-list{ list-style:none; margin:0; padding:4px; }
+#sidebar .sidebar-item{ margin:2px 6px; }
+#sidebar .sidebar-link{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:10px; text-decoration:none;
+  color: var(--text-primary); font:600 14px/1.2 Inter, ui-sans-serif, system-ui;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+#sidebar .sidebar-link:hover{
+  background: #d1d5db; /* Darker hover for better visibility in light mode */
+  transform: translateX(2px); /* subtle slide effect */
+}
+body.dark-mode #sidebar .sidebar-link:hover{ background: var(--bg-tertiary); }
+#sidebar .sidebar-link.active{
+  background: rgba(11,116,255,0.08);
+  color: #0b74ff;
+  border-left: 3px solid #0b74ff;
+  padding-left: 11px;
+}
+
+/* icon/label wrappers (we add them in JS below) */
+#sidebar .i{ width:22px; text-align:center; font-size:18px; line-height:1; }
+#sidebar .t{ white-space:nowrap; }
+
+/* collapsed: hide headings + labels, keep icons only */
+body.amc-collapsed #sidebar .sidebar-section-header{ display:none; }
+body.amc-collapsed #sidebar .t{ display:none; }
+body.amc-collapsed #sidebar .sidebar-link{ justify-content:center; gap:0; }
+
+/* --- Minimalist hamburger toggle --- */
+.sidebar-header {
+  height: 28px; /* tighter */
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+#sidebarToggle {
+  all: unset;                       /* strip default button styles */
+  position: relative;               /* ensure tooltip positions correctly */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 4px 8px;
+}
+
+#sidebarToggle .hamburger {
+  position: relative;
+  width: 18px;
+  height: 2px;
+  background: var(--amc-sidebar-icon, #9ca3af);
+  border-radius: 1px;
+  transition: background 0.2s ease;
+}
+
+#sidebarToggle .hamburger::before,
+#sidebarToggle .hamburger::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 18px;
+  height: 2px;
+  background: inherit;
+  border-radius: 1px;
+  transition: background 0.2s ease;
+}
+
+#sidebarToggle .hamburger::before { top: -6px; }
+#sidebarToggle .hamburger::after { top: 6px; }
+
+#sidebarToggle:hover .hamburger,
+#sidebarToggle:hover .hamburger::before,
+#sidebarToggle:hover .hamburger::after {
+  background: var(--amc-accent, #0b74ff);  /* subtle hover colour only */
+}
+
+/* 🔧 SIMPLE WORKING TOOLTIP - NO CONFLICTS */
+
+button#sidebarToggle {
+  position: relative !important;
+}
+
+/* DYNAMIC HAMBURGER TOOLTIP - ADJUSTS BASED ON SIDEBAR STATE */
+button#sidebarToggle[data-tooltip]:hover::after {
+  content: attr(data-tooltip) !important;
+  position: fixed !important;
+  /* Dynamic positioning based on sidebar state */
+  left: var(--tooltip-left, 270px) !important;
+  top: 80px !important;
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  z-index: 99999 !important;
+  pointer-events: none !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  display: block !important;
+  opacity: 1 !important;
+}
+
+/* Expanded sidebar - tooltip close to button */
+body:not(.sidebar-collapsed) button#sidebarToggle[data-tooltip]:hover::after {
+  --tooltip-left: 270px;
+}
+
+/* Collapsed sidebar - tooltip close to button */
+body.sidebar-collapsed button#sidebarToggle[data-tooltip]:hover::after {
+  --tooltip-left: 80px;
+}
+
+/* Dark mode version */
+body.dark-mode button#sidebarToggle[data-tooltip]:hover::after {
+  background: #374151 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
+}
+
+        /* ── ENTERPRISE BUTTON SYSTEM ───────────────────────────────── */
+        .btn, .nav-link {
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.01em;
+            transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 44px; /* Touch-friendly minimum */
+        }
+        
+        /* Navigation links specific styling */
+        .nav-link {
+            padding: 10px 12px;
+            min-height: auto;
+        }
+        
+        .btn i {
+            font-size: 0.9em;
+            transition: transform 0.2s ease;
+        }
+        
+        /* PRIMARY BUTTON - ENTERPRISE BLUE */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #0056d3 100%);
+            color: #ffffff !important;
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background: #0a66d1; /* solid premium blue */
+            color: #ffffff !important; /* Force white text on hover */
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(11,116,255,0.3); /* refined shadow */
+            border-color: var(--accent-primary-hover);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+        }
+        
+        .btn-primary:hover i {
+            transform: scale(1.1);
+        }
+        
+        /* SECONDARY BUTTON */
+        .btn-secondary {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border-secondary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* DANGER BUTTON */
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-action-danger) 0%, #c82333 100%);
+            color: #ffffff !important;
+            border: 1px solid var(--accent-action-danger);
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, var(--accent-action-danger-hover) 0%, #b21e2f 100%);
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+        
+        /* WARNING BUTTON */
+        .btn-warning {
+            background: linear-gradient(135deg, var(--color-warning) 0%, #e0a800 100%);
+            color: #000000 !important;
+            border: 1px solid var(--color-warning);
+            box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #e0a800 0%, #cc9a00 100%);
+            color: #000000 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+        }
+        
+        /* DARK MODE BUTTON ADJUSTMENTS */
+        body.dark-mode .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #2563eb 100%);
+            box-shadow: 0 2px 4px rgba(63, 145, 255, 0.25);
+        }
+        
+        body.dark-mode .btn-primary:hover {
+            background: linear-gradient(135deg, var(--accent-primary-hover) 0%, #1d4ed8 100%);
+            box-shadow: 0 4px 12px rgba(63, 145, 255, 0.35);
+        }
+        
+        body.dark-mode .btn-secondary {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+        }
+        
+        body.dark-mode .btn-secondary:hover {
+            background-color: #374151;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        }
+        
+        /* SMALL BUTTON VARIANT */
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            min-height: 36px;
+        }
+        
+        /* ── PREMIUM CARD SYSTEM WITH LAYERED DEPTH ─────────────────── */
+        .card, .table-container {
+            background: var(--amc-surface-bg-light);
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+        
+        /* Dark mode card styling */
+        body.dark-mode .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+        
+        /* ── CARD HEADER WITH VISUAL HIERARCHY ─────────────────────── */
+        .card-header {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 1.5rem;
+            background: #f9fafb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-footer {
+            padding: 1rem 1.5rem;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body {
+            background: #ffffff;
+            padding: 1.5rem;
+        }
+        
+        /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────── */
+        .card-header h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin: 0;
+            color: var(--text-headings);
+        }
+        
+        /* DARK MODE SUPPORT FOR CARD HEADER */
+        body.dark-mode .card-header h2 {
+            color: var(--text-headings) !important;
+        }
+        
+        body.dark-mode .card-header, body.dark-mode .card-footer {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-primary);
+        }
+        
+        body.dark-mode .card-body {
+            background: var(--bg-secondary);
+        }
+        
+        /* ── PREMIUM CONTROL PANEL WITH ELEVATION ─────────────────── */
+        .controls-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--amc-surface-bg-light);
+            padding: 18px 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 12px;
+            border: 1px solid #e5e7eb;
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .controls-section:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+        }
+        
+        .controls-left h2.controls-title {
+            font-size: var(--font-heading);
+            font-weight: 600;
+            color: var(--text-headings);
+            margin: 0 0 4px 0;
+        }
+        
+        .controls-left p.controls-subtitle {
+            font-size: var(--font-muted);
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.4;
+        }
+        
+        .controls-right .btn {
+            font-size: 0.95rem;
+            padding: 10px 18px;
+            font-weight: 500;
+        }
+        
+        /* DARK MODE CONTROLS SECTION */
+        body.dark-mode .controls-section {
+            background: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+        
+        /* ---- FIX: Prevent container clipping below sticky header ---- */
+        .content-header {
+            position: relative;
+            margin-top: 0;
+            background: var(--bg-primary);
+            z-index: 100;
+            margin-bottom: 25px;
+            padding: 0 0 15px 0;
+            border-bottom: 1px solid var(--border-primary);
+        }
+        .content-header h1 {
+            font-size: var(--font-display);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #111827;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .content-header h1 i { color: var(--accent-primary); margin-right: 0; }
+        .content-header p {
+            font-size: var(--font-body);
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-width: 720px;
+            margin: 0;
+        }
+        
+        /* DARK MODE CONTENT HEADER */
+        body.dark-mode .content-header {
+            background: var(--bg-primary) !important;
+            border-bottom-color: var(--border-primary) !important;
+        }
+        
+        body.dark-mode .content-header h1 {
+            color: var(--text-headings) !important;
+        }
+        
+        body.dark-mode .content-header p {
+            color: var(--text-secondary) !important;
+        }
+        
+        /* SECTION DIVIDER */
+        .section-divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 16px 0;
+        }
+        
+        /* COMPREHENSIVE DARK MODE OVERRIDES */
+        body.dark-mode .section-divider {
+            background: var(--border-secondary) !important;
+            opacity: 0.3;
+        }
+        
+        /* FORCE DARK MODE FOR ALL CONTAINERS AND BACKGROUNDS */
+        body.dark-mode .card,
+        body.dark-mode .card-header,
+        body.dark-mode .card-body,
+        body.dark-mode .card-footer {
+            background: var(--bg-secondary) !important;
+            border-color: var(--border-primary) !important;
+        }
+        
+        /* FORCE DARK MODE FOR ALL MAIN CONTAINERS */
+        body.dark-mode .amc-content,
+        body.dark-mode .amc-main,
+        body.dark-mode .app-container,
+        body.dark-mode main {
+            background: var(--bg-primary) !important;
+        }
+        
+        /* FORM STYLING */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+        
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+        
+        /* Dark mode form controls */
+        body.dark-mode .form-control {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+            color: var(--text-primary);
+        }
+        
+        body.dark-mode .form-control:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(63, 145, 255, 0.1);
+        }
+        
+        /* STATUS BADGES */
+        .status-badge {
+            padding: 0.25em 0.6em;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            border-radius: 1rem;
+        }
+        .status-active { background-color: var(--accent-action-positive); color: #fff; }
+        .status-suspended { background-color: var(--color-warning); color: #000; }
+        .status-pending { background-color: var(--color-info); color: #fff; }
+        .status-cancelled { background-color: var(--accent-action-danger); color: #fff; }
+        .status-enterprise { background-color: #6f42c1; color: #fff; }
+        .status-pro { background-color: var(--accent-primary); color: #fff; }
+        .status-free { background-color: var(--accent-secondary-default); color: #fff; }
+        
+        /* COMPANY INFO STYLING */
+        .company-info {
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        /* SETTINGS GRID LAYOUT */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        /* TOGGLE SWITCH STYLING */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--accent-primary);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* MODAL SYSTEM */
+        .modal-backdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.75);
+            z-index: 1060;
+            display: none;
+            align-items: center; justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-backdrop.open {
+            display: flex !important;
+            opacity: 1;
+        }
+        .modal-content {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex; flex-direction: column;
+            max-height: 90vh;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .modal-backdrop.open .modal-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .modal-header {
+            display: flex; align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-secondary);
+            flex-shrink: 0;
+        }
+        .modal-header h3 {
+            font-size: 1.2em;
+            margin: 0;
+            color: var(--text-headings);
+            flex-grow: 1;
+        }
+        .modal-header .close-btn {
+            background: none; border: none;
+            font-size: 1.8em;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0 5px; line-height: 1;
+        }
+        .modal-header .close-btn:hover { color: var(--text-primary); }
+        .modal-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-secondary);
+            flex-shrink: 0;
+            background-color: var(--bg-secondary);
+            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* USAGE METRICS */
+        .usage-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-primary);
+        }
+        
+        .usage-metric:last-child {
+            border-bottom: none;
+        }
+        
+        .usage-metric-label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .usage-metric-value {
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+        
+        /* ANALYTICS CHART PLACEHOLDER */
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        body.dark-mode .chart-placeholder {
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+            border-color: var(--border-primary);
+        }
+        
+        /* RESPONSIVE TYPOGRAPHY */
+        @media (max-width: 1200px) {
+            :root {
+                --font-display: 1.75rem;
+                --font-heading: 1.25rem;
+                --font-subheading: 1rem;
+                --font-body: 0.9rem;
+                --font-muted: 0.8rem;
+            }
+            
+            .main-content {
+                padding: 30px 40px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .controls-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .controls-right {
+                width: 100%;
+            }
+            
+            .controls-right .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ── FOOTER STYLING (matching radar_history_enterprise.html) ─────────── */
+        .app-footer {
+            text-align: center;
+            padding: 15px 25px;
+            font-size: 0.85em;
+            background-color: var(--header-bg);
+            color: var(--header-link);
+            border-top: 1px solid var(--border-primary);
+        }
+        .app-footer nav {
+            margin-bottom: 8px;
+        }
+        .app-footer a {
+            color: var(--header-link);
+            margin: 0 8px;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Header at the very top, spanning full width -->
+    <header class="app-header">
+        <div class="logo"><h1>AutoMediaCenter</h1></div>
+        <div class="user-actions-group">
+            <div class="amc-header-right">
+                <div class="notification-indicator" id="notification-indicator" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">0</span>
+                </div>
+                <div class="cart-indicator" id="cart-indicator" title="View Cart (0 items)">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge">0</span>
+                </div>
+                <!-- Avatar will be auto-injected by amc-avatar-system.js -->
+                <button class="amc-menu-dots" title="More options">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="amc-app">
+        <!-- Enterprise Sidebar -->
+        <aside id="sidebar" class="amc-sidebar">
+            <!-- Content will be dynamically generated by components/sidebar.js -->
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="amc-content">
+            <div class="main-content">
+                <div class="content-header">
+                    <h1><i class="fas fa-cogs"></i> Company Settings</h1>
+                    <p>Configure your company profile, billing, access policies, and manage your organization.</p>
+                </div>
+                
+                <!-- ENTERPRISE CONTROL PANEL -->
+                <div class="controls-section">
+                    <div class="controls-left">
+                        <h2 class="controls-title">Organization Management</h2>
+                        <p class="controls-subtitle">Complete control over your company settings and policies</p>
+                    </div>
+                    <div class="controls-right">
+                        <a href="client-admin-dashboard.html" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- COMPANY PROFILE CARD -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-building" style="color: var(--accent-primary); margin-right: 8px;"></i>Company Profile</h2>
+                        <button class="btn btn-secondary btn-sm" id="editProfileBtn">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="settings-grid">
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Company Name</label>
+                                    <div id="companyName" class="company-info">Loading...</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Legal Name</label>
+                                    <div id="companyLegalName" class="company-info">Loading...</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Industry</label>
+                                    <div id="companyIndustry" class="company-info">Not specified</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Website</label>
+                                    <div id="companyWebsite" class="company-info">Not specified</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Primary Domain</label>
+                                    <div id="companyDomain" class="company-info">Loading...</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Contact Email</label>
+                                    <div id="companyEmail" class="company-info">Loading...</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Region</label>
+                                    <div id="companyRegion" class="company-info">Not specified</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Company Size</label>
+                                    <div id="companySize" class="company-info">Not specified</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PLAN & BILLING CARD -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-credit-card" style="color: var(--accent-primary); margin-right: 8px;"></i>Plan & Billing</h2>
+                        <button class="btn btn-secondary btn-sm" id="upgradePlanBtn">
+                            <i class="fas fa-arrow-up"></i> Upgrade Plan
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="settings-grid">
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Current Plan</label>
+                                    <div id="currentPlan" class="company-info">Loading...</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Billing Status</label>
+                                    <div id="billingStatus" class="company-info">Loading...</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Next Billing Date</label>
+                                    <div id="nextBillingDate" class="company-info">Not available</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Usage This Month</label>
+                                    <div class="usage-metric">
+                                        <span class="usage-metric-label">Users</span>
+                                        <span class="usage-metric-value" id="usageUsers">0 / 100</span>
+                                    </div>
+                                    <div class="usage-metric">
+                                        <span class="usage-metric-label">Storage</span>
+                                        <span class="usage-metric-value" id="usageStorage">0 GB / 1000 GB</span>
+                                    </div>
+                                    <div class="usage-metric">
+                                        <span class="usage-metric-label">API Calls</span>
+                                        <span class="usage-metric-value" id="usageApiCalls">0 / Unlimited</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACCESS POLICIES CARD -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-shield-alt" style="color: var(--accent-primary); margin-right: 8px;"></i>Access Policies</h2>
+                        <button class="btn btn-secondary btn-sm" id="saveAccessPoliciesBtn" style="display: none;">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="settings-grid">
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Invitation Approval</label>
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="requireInviteApproval">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                        <span>Require admin approval for all invitations</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Domain Restrictions</label>
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="restrictToDomain">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                        <span>Only allow invites from company domain</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Two-Factor Authentication</label>
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="require2FA">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                        <span>Require 2FA for all users</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Session Management</label>
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="enforceSessionTimeout">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                        <span>Auto-logout after 8 hours of inactivity</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">IP Restrictions</label>
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="enableIpRestrictions">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                        <span>Restrict access to specific IP ranges</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Audit Logging</label>
+                                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="enableAuditLogging" checked disabled>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                        <span>Enable comprehensive audit logging (Required)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMPANY ANALYTICS CARD -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-chart-line" style="color: var(--accent-primary); margin-right: 8px;"></i>Company Analytics</h2>
+                        <button class="btn btn-secondary btn-sm" id="exportAnalyticsBtn">
+                            <i class="fas fa-download"></i> Export Report
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="settings-grid">
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">User Activity (Last 30 Days)</label>
+                                    <div class="chart-placeholder">
+                                        <i class="fas fa-chart-area" style="margin-right: 8px;"></i>
+                                        Analytics Chart Coming Soon
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Key Metrics</label>
+                                    <div class="usage-metric">
+                                        <span class="usage-metric-label">Total Users</span>
+                                        <span class="usage-metric-value" id="totalUsers">0</span>
+                                    </div>
+                                    <div class="usage-metric">
+                                        <span class="usage-metric-label">Active Users (30d)</span>
+                                        <span class="usage-metric-value" id="activeUsers">0</span>
+                                    </div>
+                                    <div class="usage-metric">
+                                        <span class="usage-metric-label">Total Invitations</span>
+                                        <span class="usage-metric-value" id="totalInvitations">0</span>
+                                    </div>
+                                    <div class="usage-metric">
+                                        <span class="usage-metric-label">Storage Used</span>
+                                        <span class="usage-metric-value" id="storageUsed">0 GB</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMPANY OFFBOARDING CARD -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-exclamation-triangle" style="color: var(--accent-action-danger); margin-right: 8px;"></i>Company Management</h2>
+                        <span class="status-badge status-active" id="companyStatusBadge">ACTIVE</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="settings-grid">
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Company Status</label>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 8px 0;">
+                                        Your company is currently active. You can suspend or request cancellation if needed.
+                                    </p>
+                                    <div style="display: flex; gap: 12px; margin-top: 16px;">
+                                        <button class="btn btn-warning btn-sm" id="suspendCompanyBtn">
+                                            <i class="fas fa-pause"></i> Suspend Company
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" id="cancelCompanyBtn">
+                                            <i class="fas fa-times"></i> Request Cancellation
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Data Export</label>
+                                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 8px 0;">
+                                        Export all your company data for backup or migration purposes.
+                                    </p>
+                                    <button class="btn btn-secondary btn-sm" id="exportDataBtn" style="margin-top: 16px;">
+                                        <i class="fas fa-download"></i> Export Company Data
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="app-footer">
+                <nav><a href="#">About Us</a> | <a href="#">Help Center</a> | <a href="#">Terms</a> | <a href="#">Privacy</a></nav>
+                <p>© <span id="currentYearText">2025</span> AutoMediaCenter. All Rights Reserved.</p>
+            </footer>
+        </main>
+    </div>
+    
+    <!-- EDIT PROFILE MODAL -->
+    <div class="modal-backdrop" id="editProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Company Profile</h3>
+                <button class="close-btn" aria-label="Close modal">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm">
+                    <div class="settings-grid">
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label" for="editCompanyName">Company Name *</label>
+                                <input type="text" id="editCompanyName" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="editLegalName">Legal Name</label>
+                                <input type="text" id="editLegalName" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="editIndustry">Industry</label>
+                                <select id="editIndustry" class="form-control form-select">
+                                    <option value="">Select Industry</option>
+                                    <option value="technology">Technology</option>
+                                    <option value="healthcare">Healthcare</option>
+                                    <option value="finance">Finance</option>
+                                    <option value="education">Education</option>
+                                    <option value="retail">Retail</option>
+                                    <option value="manufacturing">Manufacturing</option>
+                                    <option value="media">Media & Entertainment</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="editWebsite">Website</label>
+                                <input type="url" id="editWebsite" class="form-control" placeholder="https://company.com">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label" for="editPrimaryDomain">Primary Domain</label>
+                                <input type="text" id="editPrimaryDomain" class="form-control" placeholder="company.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="editContactEmail">Contact Email *</label>
+                                <input type="email" id="editContactEmail" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="editRegion">Region</label>
+                                <select id="editRegion" class="form-control form-select">
+                                    <option value="">Select Region</option>
+                                    <option value="north-america">North America</option>
+                                    <option value="europe">Europe</option>
+                                    <option value="asia-pacific">Asia Pacific</option>
+                                    <option value="latin-america">Latin America</option>
+                                    <option value="middle-east-africa">Middle East & Africa</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="editCompanySize">Company Size</label>
+                                <select id="editCompanySize" class="form-control form-select">
+                                    <option value="">Select Size</option>
+                                    <option value="1-10">1-10 employees</option>
+                                    <option value="11-50">11-50 employees</option>
+                                    <option value="51-200">51-200 employees</option>
+                                    <option value="201-500">201-500 employees</option>
+                                    <option value="501-1000">501-1000 employees</option>
+                                    <option value="1000+">1000+ employees</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelProfileEditBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveProfileBtn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRM MODAL -->
+    <div class="modal-backdrop" id="confirmModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="confirmModalTitle">Confirm Action</h3>
+                <button class="close-btn" aria-label="Close modal">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalText">Are you sure you want to perform this action?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="confirmCancelBtn">Cancel</button>
+                <button class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Company Settings Portal JavaScript
+    document.addEventListener('DOMContentLoaded', () => {
+        // Authentication is handled server-side via adminRoutes.js middleware
+        let token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        let userString = localStorage.getItem('user') || localStorage.getItem('currentUser');
+        let user = null;
+        
+        if (userString) {
+            try {
+                user = JSON.parse(userString);
+            } catch (e) {
+                console.error("Error parsing user from localStorage", e);
+                user = { email: 'User', role: 'client_admin' }; // Fallback for display
+            }
+        }
+        
+        // Fallback user object for display purposes
+        if (!user) {
+            user = { email: 'User', role: 'client_admin' };
+        }
+
+        const ui = {
+            // Company profile elements
+            companyName: document.getElementById('companyName'),
+            companyLegalName: document.getElementById('companyLegalName'),
+            companyDomain: document.getElementById('companyDomain'),
+            companyEmail: document.getElementById('companyEmail'),
+            companyIndustry: document.getElementById('companyIndustry'),
+            companyWebsite: document.getElementById('companyWebsite'),
+            companyRegion: document.getElementById('companyRegion'),
+            companySize: document.getElementById('companySize'),
+            
+            // Plan & billing elements
+            currentPlan: document.getElementById('currentPlan'),
+            billingStatus: document.getElementById('billingStatus'),
+            nextBillingDate: document.getElementById('nextBillingDate'),
+            usageUsers: document.getElementById('usageUsers'),
+            usageStorage: document.getElementById('usageStorage'),
+            usageApiCalls: document.getElementById('usageApiCalls'),
+            
+            // Analytics elements
+            totalUsers: document.getElementById('totalUsers'),
+            activeUsers: document.getElementById('activeUsers'),
+            totalInvitations: document.getElementById('totalInvitations'),
+            storageUsed: document.getElementById('storageUsed'),
+            
+            // Status elements
+            companyStatusBadge: document.getElementById('companyStatusBadge'),
+            
+            // Buttons
+            editProfileBtn: document.getElementById('editProfileBtn'),
+            upgradePlanBtn: document.getElementById('upgradePlanBtn'),
+            saveAccessPoliciesBtn: document.getElementById('saveAccessPoliciesBtn'),
+            exportAnalyticsBtn: document.getElementById('exportAnalyticsBtn'),
+            suspendCompanyBtn: document.getElementById('suspendCompanyBtn'),
+            cancelCompanyBtn: document.getElementById('cancelCompanyBtn'),
+            exportDataBtn: document.getElementById('exportDataBtn'),
+            
+            // Modals
+            editProfileModal: document.getElementById('editProfileModal'),
+            confirmModal: document.getElementById('confirmModal'),
+            
+            // Form elements
+            editProfileForm: document.getElementById('editProfileForm'),
+            
+            currentYearText: document.getElementById('currentYearText'),
+        };
+
+        let currentCompany = null;
+
+        const setupUI = () => {
+            if (ui.currentYearText) ui.currentYearText.textContent = new Date().getFullYear();
+            
+            // Theme toggle functionality - now handled by avatar modal
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    document.body.classList.add('modal-dark');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    document.body.classList.remove('modal-dark');
+                }
+            };
+            
+            // Initialize theme - check saved preference or default to light
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+        };
+
+        const openModal = (modal) => {
+            modal.style.display = 'flex';
+            requestAnimationFrame(() => {
+                modal.classList.add('open');
+            });
+        };
+
+        const closeModal = (modal) => {
+            modal.classList.remove('open');
+            modal.addEventListener('transitionend', function handler(e) {
+                if (e.propertyName === 'opacity' && !modal.classList.contains('open')) {
+                    modal.style.display = 'none';
+                    modal.removeEventListener('transitionend', handler);
+                }
+            });
+        };
+
+        const fetchCompanyInfo = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/companies/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
+                
+                if (!response.ok) throw new Error(result.error || `Server Error: ${response.status}`);
+                
+                currentCompany = result.data;
+                renderCompanyInfo(currentCompany);
+            } catch (error) {
+                console.error('Error fetching company info:', error);
+                ui.companyName.textContent = 'Error loading company info';
+            }
+        };
+
+        const renderCompanyInfo = (company) => {
+            // Basic company info
+            ui.companyName.textContent = company.companyName || 'N/A';
+            ui.companyLegalName.textContent = company.legalName || 'N/A';
+            ui.companyDomain.textContent = company.primaryDomain || 'N/A';
+            ui.companyEmail.textContent = company.contactEmail || 'N/A';
+            ui.companyIndustry.textContent = company.industry || 'Not specified';
+            ui.companyWebsite.textContent = company.website || 'Not specified';
+            ui.companyRegion.textContent = company.region || 'Not specified';
+            ui.companySize.textContent = company.companySize || 'Not specified';
+            
+            // Plan & billing info
+            ui.currentPlan.innerHTML = `<span class="status-badge status-${company.plan || 'enterprise'}">${(company.plan || 'enterprise').toUpperCase()}</span>`;
+            ui.billingStatus.innerHTML = `<span class="status-badge status-${company.status || 'active'}">${(company.status || 'active').toUpperCase()}</span>`;
+            
+            // Usage metrics (mock data for now)
+            ui.usageUsers.textContent = `${company.userCount || 0} / ${company.settings?.maxUsers || 100}`;
+            ui.usageStorage.textContent = `${company.storageUsed || 0} GB / ${company.settings?.uploadLimitMB/1000 || 1000} GB`;
+            ui.usageApiCalls.textContent = `${company.apiCalls || 0} / Unlimited`;
+            
+            // Analytics (mock data for now)
+            ui.totalUsers.textContent = company.userCount || 0;
+            ui.activeUsers.textContent = company.activeUsers || 0;
+            ui.totalInvitations.textContent = company.totalInvitations || 0;
+            ui.storageUsed.textContent = `${company.storageUsed || 0} GB`;
+            
+            // Company status
+            const statusClass = company.status || 'active';
+            ui.companyStatusBadge.className = `status-badge status-${statusClass}`;
+            ui.companyStatusBadge.textContent = statusClass.toUpperCase();
+        };
+
+        const saveCompanyProfile = async (profileData) => {
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/companies/me', {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(profileData)
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) throw new Error(result.error || `Server Error: ${response.status}`);
+                
+                return result;
+            } catch (error) {
+                throw error;
+            }
+        };
+
+        const saveAccessPolicies = async (policies) => {
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/companies/me/policies', {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(policies)
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) throw new Error(result.error || `Server Error: ${response.status}`);
+                
+                return result;
+            } catch (error) {
+                throw error;
+            }
+        };
+
+        // Event Listeners
+        ui.editProfileBtn.addEventListener('click', () => {
+            if (currentCompany) {
+                document.getElementById('editCompanyName').value = currentCompany.companyName || '';
+                document.getElementById('editLegalName').value = currentCompany.legalName || '';
+                document.getElementById('editPrimaryDomain').value = currentCompany.primaryDomain || '';
+                document.getElementById('editContactEmail').value = currentCompany.contactEmail || '';
+                document.getElementById('editIndustry').value = currentCompany.industry || '';
+                document.getElementById('editWebsite').value = currentCompany.website || '';
+                document.getElementById('editRegion').value = currentCompany.region || '';
+                document.getElementById('editCompanySize').value = currentCompany.companySize || '';
+            }
+            openModal(ui.editProfileModal);
+        });
+
+        ui.upgradePlanBtn.addEventListener('click', () => {
+            // Change to primary color when clicked to show action
+            ui.upgradePlanBtn.className = 'btn btn-primary btn-sm';
+            ui.upgradePlanBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Contacting Support...';
+            
+            setTimeout(() => {
+                alert('Plan upgrade functionality coming soon! Contact support for immediate assistance.');
+                ui.upgradePlanBtn.className = 'btn btn-secondary btn-sm';
+                ui.upgradePlanBtn.innerHTML = '<i class="fas fa-arrow-up"></i> Upgrade Plan';
+            }, 1000);
+        });
+
+        // Track initial policy states to detect changes
+        let initialPolicies = {};
+        
+        const trackPolicyChanges = () => {
+            const currentPolicies = {
+                requireInviteApproval: document.getElementById('requireInviteApproval').checked,
+                restrictToDomain: document.getElementById('restrictToDomain').checked,
+                require2FA: document.getElementById('require2FA').checked,
+                enforceSessionTimeout: document.getElementById('enforceSessionTimeout').checked,
+                enableIpRestrictions: document.getElementById('enableIpRestrictions').checked,
+                enableAuditLogging: document.getElementById('enableAuditLogging').checked
+            };
+            
+            const hasChanges = Object.keys(currentPolicies).some(key =>
+                currentPolicies[key] !== initialPolicies[key]
+            );
+            
+            if (hasChanges) {
+                ui.saveAccessPoliciesBtn.style.display = 'inline-flex';
+                ui.saveAccessPoliciesBtn.className = 'btn btn-primary btn-sm';
+            } else {
+                ui.saveAccessPoliciesBtn.style.display = 'none';
+            }
+        };
+        
+        // Add change listeners to all policy toggles
+        ['requireInviteApproval', 'restrictToDomain', 'require2FA', 'enforceSessionTimeout', 'enableIpRestrictions', 'enableAuditLogging'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', trackPolicyChanges);
+            }
+        });
+
+        ui.saveAccessPoliciesBtn.addEventListener('click', async () => {
+            const policies = {
+                requireInviteApproval: document.getElementById('requireInviteApproval').checked,
+                restrictToDomain: document.getElementById('restrictToDomain').checked,
+                require2FA: document.getElementById('require2FA').checked,
+                enforceSessionTimeout: document.getElementById('enforceSessionTimeout').checked,
+                enableIpRestrictions: document.getElementById('enableIpRestrictions').checked,
+                enableAuditLogging: document.getElementById('enableAuditLogging').checked
+            };
+
+            try {
+                ui.saveAccessPoliciesBtn.disabled = true;
+                ui.saveAccessPoliciesBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                
+                await saveAccessPolicies(policies);
+                
+                // Update initial policies after successful save
+                initialPolicies = { ...policies };
+                
+                alert('Access policies saved successfully!');
+                trackPolicyChanges(); // Hide button after save
+            } catch (error) {
+                alert(`Error saving policies: ${error.message}`);
+            } finally {
+                ui.saveAccessPoliciesBtn.disabled = false;
+                ui.saveAccessPoliciesBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            }
+        });
+
+        ui.exportAnalyticsBtn.addEventListener('click', () => {
+            alert('Analytics export functionality coming soon!');
+        });
+
+        ui.exportDataBtn.addEventListener('click', () => {
+            alert('Data export functionality coming soon!');
+        });
+
+        // Company management actions
+        ui.suspendCompanyBtn.addEventListener('click', () => {
+            showConfirmModal(
+                'Suspend Company',
+                'Are you sure you want to suspend your company? This will temporarily disable access for all users.',
+                async () => {
+                    try {
+                        const response = await fetch('http://localhost:5000/api/v1/companies/me/suspend', {
+                            method: 'PATCH',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        
+                        if (!response.ok) throw new Error('Failed to suspend company');
+                        
+                        alert('Company suspended successfully. Contact support to reactivate.');
+                        location.reload();
+                    } catch (error) {
+                        alert(`Error suspending company: ${error.message}`);
+                    }
+                }
+            );
+        });
+
+        ui.cancelCompanyBtn.addEventListener('click', () => {
+            showConfirmModal(
+                'Request Cancellation',
+                'Are you sure you want to request company cancellation? This action cannot be undone and will permanently delete all data.',
+                async () => {
+                    try {
+                        const response = await fetch('http://localhost:5000/api/v1/companies/me/cancel', {
+                            method: 'PATCH',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        
+                        if (!response.ok) throw new Error('Failed to request cancellation');
+                        
+                        alert('Cancellation request submitted. Our team will contact you within 24 hours.');
+                        location.reload();
+                    } catch (error) {
+                        alert(`Error requesting cancellation: ${error.message}`);
+                    }
+                }
+            );
+        });
+
+        // Modal event listeners
+        document.getElementById('saveProfileBtn').addEventListener('click', async () => {
+            const form = ui.editProfileForm;
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const profileData = {
+                companyName: document.getElementById('editCompanyName').value,
+                legalName: document.getElementById('editLegalName').value,
+                primaryDomain: document.getElementById('editPrimaryDomain').value,
+                contactEmail: document.getElementById('editContactEmail').value,
+                industry: document.getElementById('editIndustry').value,
+                website: document.getElementById('editWebsite').value,
+                region: document.getElementById('editRegion').value,
+                companySize: document.getElementById('editCompanySize').value
+            };
+
+            try {
+                document.getElementById('saveProfileBtn').disabled = true;
+                document.getElementById('saveProfileBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                
+                const result = await saveCompanyProfile(profileData);
+                currentCompany = result.data;
+                renderCompanyInfo(currentCompany);
+                
+                closeModal(ui.editProfileModal);
+                alert('Company profile updated successfully!');
+            } catch (error) {
+                alert(`Error updating profile: ${error.message}`);
+            } finally {
+                document.getElementById('saveProfileBtn').disabled = false;
+                document.getElementById('saveProfileBtn').innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            }
+        });
+
+        document.getElementById('cancelProfileEditBtn').addEventListener('click', () => {
+            closeModal(ui.editProfileModal);
+        });
+
+        // Close modal when clicking backdrop or close button
+        [ui.editProfileModal, ui.confirmModal].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target.classList.contains('close-btn')) {
+                    closeModal(modal);
+                }
+            });
+        });
+
+        // Confirm modal functionality
+        let confirmCallback = null;
+        
+        const showConfirmModal = (title, text, callback) => {
+            document.getElementById('confirmModalTitle').textContent = title;
+            document.getElementById('confirmModalText').textContent = text;
+            confirmCallback = callback;
+            openModal(ui.confirmModal);
+        };
+
+        document.getElementById('confirmActionBtn').addEventListener('click', () => {
+            if (confirmCallback) {
+                confirmCallback();
+                confirmCallback = null;
+            }
+            closeModal(ui.confirmModal);
+        });
+
+        document.getElementById('confirmCancelBtn').addEventListener('click', () => {
+            confirmCallback = null;
+            closeModal(ui.confirmModal);
+        });
+
+        // Initialize the page
+        setupUI();
+        fetchCompanyInfo().then(() => {
+            // Set initial policy states after company info is loaded
+            initialPolicies = {
+                requireInviteApproval: document.getElementById('requireInviteApproval').checked,
+                restrictToDomain: document.getElementById('restrictToDomain').checked,
+                require2FA: document.getElementById('require2FA').checked,
+                enforceSessionTimeout: document.getElementById('enforceSessionTimeout').checked,
+                enableIpRestrictions: document.getElementById('enableIpRestrictions').checked,
+                enableAuditLogging: document.getElementById('enableAuditLogging').checked
+            };
+        });
+    });
+
+    // Load external scripts
+    document.addEventListener('DOMContentLoaded', () => {
+        // Load sidebar component
+        const sidebarScript = document.createElement('script');
+        sidebarScript.src = 'components/sidebar.js';
+        sidebarScript.onload = () => {
+            if (window.initializeSidebar) {
+                window.initializeSidebar('company-settings');
+            }
+        };
+        document.head.appendChild(sidebarScript);
+
+        // Load avatar system
+        const avatarScript = document.createElement('script');
+        avatarScript.src = 'amc-avatar-system.js';
+        document.head.appendChild(avatarScript);
+    });
+</script>
+</body>
+</html>

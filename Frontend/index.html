@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Global Automotive Press Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #808080;
+            --accent-primary: #ff6b35;
+            --accent-secondary: #00d4ff;
+            --accent-success: #00ff88;
+            --border-primary: #333333;
+            --shadow-primary: rgba(255, 107, 53, 0.2);
+            --shadow-secondary: rgba(0, 212, 255, 0.2);
+            --font-family-main: 'Poppins', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: var(--font-family-main); 
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary); 
+            line-height: 1.6; 
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: var(--accent-primary);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--accent-primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--shadow-primary);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--accent-primary), #ff8c42);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--shadow-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--text-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        .btn-hero {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 12px;
+        }
+
+        /* User Type Cards */
+        .user-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .user-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: left;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-primary);
+        }
+
+        .user-card:hover::before {
+            opacity: 1;
+        }
+
+        .user-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--accent-primary);
+        }
+
+        .user-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .user-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .user-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .user-features li {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-features li::before {
+            content: '✓';
+            color: var(--accent-success);
+            font-weight: bold;
+        }
+
+        /* Company Showcase */
+        .company-showcase {
+            padding: 6rem 2rem;
+            background: var(--bg-secondary);
+            margin-top: 6rem;
+        }
+
+        .showcase-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .showcase-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .showcase-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .company-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .company-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .company-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-secondary);
+            box-shadow: 0 8px 25px var(--shadow-secondary);
+        }
+
+        .company-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .company-brands {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-primary);
+            border-top: 1px solid var(--border-primary);
+            padding: 3rem 2rem 1rem;
+            margin-top: 6rem;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-text {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .user-types {
+                grid-template-columns: 1fr;
+            }
+            
+            .company-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent-primary);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">AutoMediaCenter</div>
+            <nav class="nav-menu">
+                <a href="#home">Home</a>
+                <a href="#companies">Companies</a>
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+            </nav>
+            <div class="auth-buttons">
+                <a href="login.html?type=press" class="btn btn-outline">
+                    <i class="fas fa-newspaper"></i>
+                    Press Login
+                </a>
+                <a href="register.html?type=journalist" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    Press Registration
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 class="hero-title">Global Automotive Press Hub</h1>
+            <p class="hero-subtitle">
+                The world's leading platform connecting automotive companies with journalists, content creators, and industry professionals. Access exclusive press releases, media assets, and breaking automotive news.
+            </p>
+            
+            <div class="hero-actions">
+                <a href="register.html" class="btn btn-primary btn-hero">
+                    <i class="fas fa-rocket"></i>
+                    Start Free Account
+                </a>
+                <a href="#companies" class="btn btn-outline btn-hero">
+                    <i class="fas fa-building"></i>
+                    Browse Companies
+                </a>
+            </div>
+
+            <!-- User Type Cards -->
+            <div class="user-types">
+                <div class="user-card">
+                    <div class="user-icon">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <h3 class="user-title">Journalists & Media</h3>
+                    <p class="user-description">
+                        Access breaking automotive news, press releases, and exclusive media assets from leading automotive brands worldwide.
+                    </p>
+                    <ul class="user-features">
+                        <li>Instant access to press releases</li>
+                        <li>High-resolution media downloads</li>
+                        <li>Brand-specific news feeds</li>
+                        <li>Embargo management system</li>
+                    </ul>
+                    <a href="register.html?type=journalist" class="btn btn-outline">
+                        <i class="fas fa-user-plus"></i>
+                        Join as Journalist
+                    </a>
+                </div>
+
+                <div class="user-card">
+                    <div class="user-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3 class="user-title">Automotive Companies</h3>
+                    <p class="user-description">
+                        Manage your brand's press presence, upload media assets, and distribute news to thousands of automotive journalists globally.
+                    </p>
+                    <ul class="user-features">
+                        <li>Multi-brand account management</li>
+                        <li>Team collaboration tools</li>
+                        <li>Analytics and reach metrics</li>
+                        <li>Embargo and scheduling controls</li>
+                    </ul>
+                    <a href="register.html?type=company" class="btn btn-primary">
+                        <i class="fas fa-briefcase"></i>
+                        Setup Company Account
+                    </a>
+                </div>
+
+                <div class="user-card">
+                    <div class="user-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="user-title">Content Creators</h3>
+                    <p class="user-description">
+                        Discover automotive stories, access exclusive content, and connect with brands for collaboration opportunities.
+                    </p>
+                    <ul class="user-features">
+                        <li>Exclusive content access</li>
+                        <li>Brand collaboration tools</li>
+                        <li>Content licensing options</li>
+                        <li>Creator verification program</li>
+                    </ul>
+                    <a href="register.html?type=creator" class="btn btn-outline">
+                        <i class="fas fa-video"></i>
+                        Join as Creator
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Company Showcase -->
+    <section class="company-showcase" id="companies">
+        <div class="showcase-container">
+            <h2 class="showcase-title">Trusted by Leading Automotive Brands</h2>
+            <p class="showcase-subtitle">
+                From luxury manufacturers to emerging EV brands, AutoMediaCenter serves as the central hub for automotive press communications worldwide.
+            </p>
+            
+            <div class="company-grid">
+                <div class="company-card">
+                    <div class="company-name">BMW Group</div>
+                    <div class="company-brands">BMW • BMW M • BMW Motorrad • MINI • Rolls-Royce</div>
+                </div>
+                <div class="company-card">
+                    <div class="company-name">Mercedes-Benz Group</div>
+                    <div class="company-brands">Mercedes-Benz • Mercedes-AMG • Mercedes-Maybach • Smart</div>
+                </div>
+                <div class="company-card">
+                    <div class="company-name">Volkswagen Group</div>
+                    <div class="company-brands">Volkswagen • Audi • Porsche • Bentley • Lamborghini</div>
+                </div>
+                <div class="company-card">
+                    <div class="company-name">Stellantis</div>
+                    <div class="company-brands">Jeep • Ram • Dodge • Chrysler • Fiat • Alfa Romeo</div>
+                </div>
+                <div class="company-card">
+                    <div class="company-name">BYD Auto</div>
+                    <div class="company-brands">BYD • Tang • Han • Qin • Song • Yuan</div>
+                </div>
+                <div class="company-card">
+                    <div class="company-name">Tesla</div>
+                    <div class="company-brands">Model S • Model 3 • Model X • Model Y • Cybertruck</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="register.html?type=company" class="btn btn-primary btn-hero">
+                    <i class="fas fa-plus"></i>
+                    Add Your Company
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <h3 class="feature-title">Global Reach</h3>
+                <p class="feature-description">
+                    Connect with automotive journalists and media professionals across 50+ countries, ensuring your news reaches the right audience worldwide.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3 class="feature-title">Real-Time Distribution</h3>
+                <p class="feature-description">
+                    Instant press release distribution with embargo management, ensuring your news breaks at exactly the right moment across all time zones.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-analytics"></i>
+                </div>
+                <h3 class="feature-title">Advanced Analytics</h3>
+                <p class="feature-description">
+                    Track engagement, downloads, and media coverage with comprehensive analytics to measure the impact of your press communications.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-title">Enterprise Security</h3>
+                <p class="feature-description">
+                    Bank-level security with role-based access control, ensuring sensitive information is protected while enabling seamless collaboration.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3 class="feature-title">Mobile Optimized</h3>
+                <p class="feature-description">
+                    Access and manage your press communications on any device with our fully responsive platform and mobile applications.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3 class="feature-title">24/7 Support</h3>
+                <p class="feature-description">
+                    Dedicated support team available around the clock to ensure your press communications never miss a beat.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">
+                AutoMediaCenter - Connecting the automotive world through seamless press communications
+            </p>
+            <div class="footer-links">
+                <a href="#about">About</a>
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+                <a href="#contact">Contact</a>
+                <a href="#api">API Documentation</a>
+            </div>
+            <p class="footer-text">
+                © 2025 AutoMediaCenter. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Analytics tracking
+        let sessionStartTime = Date.now();
+        
+        function trackEvent(eventType, data) {
+            // Only attempt analytics tracking if we're running on the backend server (port 5000)
+            // Skip analytics when using Python static server (port 5500) to avoid 501 errors
+            if (window.location.port === '5000') {
+                fetch('/api/v1/users/track-activity', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        eventType: eventType,
+                        eventData: data,
+                        pageUrl: window.location.href,
+                        timestamp: Date.now(),
+                        sessionId: sessionStorage.getItem('sessionId') || 'anonymous'
+                    })
+                }).catch(err => console.log('Analytics tracking failed:', err));
+            } else {
+                // Log analytics events to console when using static server
+                console.log('Analytics Event:', eventType, data);
+            }
+        }
+
+        // Track page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Generate session ID
+            if (!sessionStorage.getItem('sessionId')) {
+                sessionStorage.setItem('sessionId', 'landing_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9));
+            }
+
+            trackEvent('landing_page_load', {
+                referrer: document.referrer,
+                userAgent: navigator.userAgent,
+                viewport: {
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                }
+            });
+        });
+
+        // Track button clicks
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const buttonText = e.target.textContent.trim();
+                const buttonHref = e.target.href;
+                trackEvent('landing_button_click', {
+                    buttonText: buttonText,
+                    buttonHref: buttonHref,
+                    section: e.target.closest('section')?.id || 'unknown'
+                });
+            });
+        });
+
+        // Track scroll depth
+        let maxScrollDepth = 0;
+        window.addEventListener('scroll', () => {
+            const scrollDepth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+            if (scrollDepth > maxScrollDepth) {
+                maxScrollDepth = scrollDepth;
+                if (maxScrollDepth % 25 === 0) { // Track at 25%, 50%, 75%, 100%
+                    trackEvent('landing_scroll_depth', { depth: maxScrollDepth });
+                }
+            }
+        });
+
+        // Track time on page
+        window.addEventListener('beforeunload', () => {
+            const timeOnPage = Date.now() - sessionStartTime;
+            trackEvent('landing_page_unload', { 
+                timeOnPage: timeOnPage,
+                maxScrollDepth: maxScrollDepth
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Handle registration type parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const userType = urlParams.get('type');
+        if (userType) {
+            trackEvent('landing_user_type_interest', { userType: userType });
+        }
+    </script>
+</body>
+</html>

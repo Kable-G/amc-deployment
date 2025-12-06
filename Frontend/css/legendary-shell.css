@@ -1,0 +1,550 @@
+/**
+ * AutoMediaCenter Legendary Shell Styles
+ * Global layout system extracted from test_globalshell.html with all legendary improvements:
+ * - Premium light mode with enhanced contrast
+ * - Dark mode support with smooth transitions
+ * - Responsive layout system
+ * - Enterprise typography hierarchy
+ * - Global motion baseline
+ */
+
+:root {
+    /* ── LAYERED BACKGROUND ARCHITECTURE (Light Mode Premium) ─────── */
+    --amc-body-bg-light: #f8fafc;         /* soft neutral layer */
+    --amc-surface-bg-light: #ffffff;      /* cards / containers */
+    --amc-table-bg-light: #fcfcfd;        /* table wrapper */
+    --amc-header-bg-light: #f3f4f6;       /* table header background */
+    --amc-sidebar-bg-light: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* sidebar gradient */
+    
+    /* Legacy variables (maintained for compatibility) */
+    --bg-primary: var(--amc-body-bg-light);
+    --bg-secondary: var(--amc-surface-bg-light);
+    --bg-tertiary: #e9ecef;
+    
+    /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────────── */
+    --text-headings: #111827;    /* headers: strong */
+    --text-primary: #374151;     /* body text: medium */
+    --text-secondary: #6b7280;   /* metadata: subtle */
+    --text-muted: #9ca3af;       /* ultra-subtle */
+    
+    --accent-primary: #0d6efd; 
+    --accent-primary-hover: #0b5ed7;
+    
+    --accent-secondary-default: #6c757d;
+    --accent-secondary-default-hover: #5a6268;
+
+    --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
+    
+    --border-primary: #e5e7eb; 
+    --border-secondary: #d1d5db; 
+    --border-color-light: #e9ecef;
+    --header-bg: #1e2327; 
+    --header-text: #ffffff; 
+    --header-link: #adb5bd;
+    --icon-available: var(--accent-primary); 
+    --icon-unavailable: #ced4da;
+    --shadow-primary: rgba(0, 0, 0, 0.08); 
+    --shadow-hover: rgba(0, 0, 0, 0.15);
+    --overlay-bg: rgba(0, 0, 0, 0.65);
+    --tag-bg: var(--bg-tertiary); 
+    --tag-text: var(--text-secondary);
+    --color-info: #17a2b8;
+    --color-warning: #ffc107;
+    --brand-band-light-bg: #212529; 
+    --brand-band-light-text: #f8f9fa;
+    --brand-band-dark-bg: #343a40; 
+    --brand-band-dark-text: #f8f9fa;
+    --bg-image-placeholder: #e9ecef;
+    --font-family-main: 'Poppins', sans-serif;
+    --sidebar-width: 260px;
+    --header-height: 64px; /* Updated for premium header */
+    --footer-height: 60px;
+    --accent-primary-rgb: 13, 110, 253;
+    --accent-secondary-default-rgb: 108, 117, 125;
+    --highlight-color-rgb: 255, 193, 7;
+    --notification-error: #dc3545;
+    --accent-action-positive: #28a745;
+    --accent-action-positive-hover: #218838;
+    --accent-action-positive-rgb: 40, 167, 69;
+    --accent-action-danger: #dc3545;
+    --accent-action-danger-hover: #c82333;
+    --selection-dot-color: var(--accent-primary); /* Blue for selection */
+    
+    /* ENTERPRISE TYPOGRAPHY SYSTEM */
+    --font-display: 2rem;      /* Page titles (h1) */
+    --font-heading: 1.4rem;    /* Section headers */
+    --font-subheading: 1.1rem; /* Card headers */
+    --font-body: 0.95rem;      /* Body text */
+    --font-muted: 0.85rem;     /* Metadata / labels */
+}
+
+body.dark-mode {
+    --bg-primary: #121212; 
+    --bg-secondary: #1a1c1e; 
+    --bg-tertiary: #2a2d30;
+    --text-primary: #e0e0e0; 
+    --text-secondary: #adb5bd; 
+    --text-headings: #f8f9fa;
+    --accent-primary: #3f91ff; 
+    --accent-primary-hover: #5fa0ff;
+    
+    --accent-secondary-default: #6c757d;
+    --accent-secondary-default-hover: #545b62;
+    
+    --border-primary: #3a3a3a; 
+    --border-secondary: #444; 
+    --header-bg: #111; 
+    --header-text: #f0f0f0; 
+    --header-link: #999;
+    --icon-available: var(--accent-primary); 
+    --icon-unavailable: #555;
+    --shadow-primary: rgba(0, 0, 0, 0.25); 
+    --shadow-hover: rgba(0, 0, 0, 0.35);
+    --overlay-bg: rgba(0, 0, 0, 0.75);
+    --tag-bg: #4a4a4a; 
+    --tag-text: var(--text-primary);
+    --brand-band-light-bg: #f8f9fa; 
+    --brand-band-light-text: #212529;
+    --brand-band-dark-bg: #343a40; 
+    --brand-band-dark-text: #f8f9fa;
+    --color-info: #36c4d9;
+    --color-warning: #ffd04a;
+    --bg-image-placeholder: #2c2c2c;
+    --accent-primary-rgb: 63, 145, 255;
+    --accent-secondary-default-rgb: 108, 117, 125;
+    --accent-action-positive: #20c997;
+    --accent-action-positive-hover: #1ba984;
+    --accent-action-positive-rgb: 32, 201, 151;
+    --accent-action-danger: #e74c3c;
+    --accent-action-danger-hover: #d63031;
+    --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
+    --sidebar-bg: #1a1c1e;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* 🚀 INDUSTRY-BUSTING: Global Motion Baseline */
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: background, color, transform, box-shadow;
+}
+
+/* 🎯 TYPOGRAPHY UPGRADE: Variable font smoothing for retina displays */
+html {
+    font-smooth: always;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--amc-body-bg-light); /* soft neutral layer */
+    color: var(--text-primary);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Light mode layered background system */
+body:not(.dark-mode) {
+    background: var(--amc-body-bg-light);
+}
+
+/* DARK MODE BODY BACKGROUND */
+body.dark-mode {
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+a { 
+    color: var(--accent-primary); 
+    text-decoration: none; 
+} 
+
+a:hover { 
+    color: var(--accent-primary-hover); 
+    text-decoration: underline; 
+}
+
+.app-container { 
+    display: flex; 
+    flex-direction: column; 
+    flex-grow: 1; 
+}
+
+.app-body { 
+    display: flex; 
+    flex-grow: 1; 
+    transition: margin-left 0.3s ease; 
+}
+
+/* Body layout variables (expanded by default) */
+body {
+    --amc-sidebar-w: var(--amc-sidebar-expanded);
+    padding-top: var(--header-height); /* FIXED: Use same variable as header height */
+}
+
+/* When collapsed (remembered in localStorage) */
+body.amc-collapsed { 
+    --amc-sidebar-w: var(--amc-sidebar-collapsed); 
+}
+
+/* ENTERPRISE LAYOUT RHYTHM & ALIGNMENT */
+.main-content {
+    margin-left: 0;
+    max-width: 1500px; /* Increased from 1400px to accommodate wider table */
+    margin: 0 auto;
+    padding: 2rem; /* Enhanced padding for better content breathing room */
+    background-color: var(--bg-primary);
+    overflow-y: auto;
+    min-height: calc(100vh - var(--header-height) - var(--footer-height)); /* Ensure full height usage */
+}
+
+/* DARK MODE MAIN CONTENT */
+body.dark-mode .main-content {
+    background-color: var(--bg-primary) !important;
+}
+
+/* Main content shifts to the right of the sidebar */
+.amc-main { 
+    margin-left: var(--amc-sidebar-w); 
+    transition: margin-left .18s ease; 
+}
+
+.app-container { 
+    margin-left: var(--amc-sidebar-w); 
+    transition: margin-left .18s ease; 
+}
+
+/* ============ PREMIUM LIGHT MODE: AWARD-WINNING DESIGN ============ */
+
+/* 🎨 BODY: Crisp, high-contrast background */
+body:not(.dark-mode) {
+    background: #f8fafc !important; /* Softer than pure white, less eye strain */
+}
+
+/* 🎨 MAIN CONTENT: Subtle texture */
+body:not(.dark-mode) .main-content {
+    background: #ffffff !important;
+    
+    /* OPTIONAL: Add subtle noise texture for premium feel */
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.015) 1px, transparent 0) !important;
+    background-size: 20px 20px !important;
+}
+
+/* 🎨 CARDS: Elevated with subtle shadows */
+body:not(.dark-mode) .card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.06),
+        0 1px 2px rgba(0, 0, 0, 0.04),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5) !important;
+}
+
+body:not(.dark-mode) .card:hover {
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        0 2px 6px rgba(0, 0, 0, 0.04),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ============ CONTENT HEADER STYLING ============ */
+
+.content-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.content-header h1 {
+    font-size: var(--font-display);
+    font-weight: 700;
+    color: var(--text-headings);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.content-header h1 i {
+    color: var(--accent-primary);
+    font-size: 1.75rem;
+}
+
+.content-header p {
+    font-size: var(--font-body);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ============ CARD SYSTEM ============ */
+
+.card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: 12px;
+    box-shadow: var(--shadow-primary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-primary);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+}
+
+.card-header h2,
+.card-header h3 {
+    font-size: var(--font-heading);
+    font-weight: 600;
+    color: var(--text-headings);
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-header h2 i,
+.card-header h3 i {
+    color: var(--accent-primary);
+    font-size: 1.25rem;
+}
+
+.card-header span {
+    font-size: var(--font-body);
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-body ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.card-body li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-primary);
+    color: var(--text-primary);
+    font-size: var(--font-body);
+}
+
+.card-body li:last-child {
+    border-bottom: none;
+}
+
+.card-body li strong {
+    color: var(--text-headings);
+    font-weight: 600;
+}
+
+/* ============ CODE BLOCKS ============ */
+
+pre {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+code {
+    background: var(--bg-tertiary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+}
+
+/* ============ FORM ELEMENTS ============ */
+
+input[type="checkbox"] {
+    margin-right: 0.5rem;
+    accent-color: var(--accent-primary);
+}
+
+label {
+    display: flex;
+    align-items: center;
+    font-size: var(--font-body);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+label:hover {
+    color: var(--text-headings);
+}
+
+/* ============ GRID LAYOUTS ============ */
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+/* ============ RESPONSIVE DESIGN ============ */
+
+@media (max-width: 1024px) {
+    .main-content {
+        max-width: 100%;
+        padding: 1.5rem;
+    }
+    
+    .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 56px; /* Smaller header on mobile */
+    }
+    
+    .main-content {
+        padding: 1rem;
+    }
+    
+    .content-header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .card-header,
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 0.75rem;
+    }
+    
+    .content-header {
+        margin-bottom: 1rem;
+    }
+    
+    .content-header h1 {
+        font-size: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+/* ============ PRINT STYLES ============ */
+
+@media print {
+    body {
+        padding-top: 0;
+        background: white !important;
+        color: black !important;
+    }
+    
+    .app-header {
+        display: none;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 0;
+        max-width: none;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        break-inside: avoid;
+    }
+}
+
+/* ============ HIGH CONTRAST MODE ============ */
+
+@media (prefers-contrast: high) {
+    :root {
+        --border-primary: #000000;
+        --text-primary: #000000;
+        --text-headings: #000000;
+    }
+    
+    body.dark-mode {
+        --border-primary: #ffffff;
+        --text-primary: #ffffff;
+        --text-headings: #ffffff;
+    }
+}
+
+/* ============ REDUCED MOTION ============ */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============ FOCUS STATES FOR ACCESSIBILITY ============ */
+
+*:focus {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* ============ SELECTION STYLES ============ */
+
+::selection {
+    background: rgba(var(--accent-primary-rgb), 0.2);
+    color: var(--text-headings);
+}
+
+::-moz-selection {
+    background: rgba(var(--accent-primary-rgb), 0.2);
+    color: var(--text-headings);
+}

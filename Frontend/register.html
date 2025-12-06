@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Create Account</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-headings: #343a40;
+            --accent-primary: #0d6efd;
+            --accent-success: #28a745;
+            --accent-danger: #dc3545;
+            --accent-warning: #ffc107;
+            --border-primary: #dee2e6;
+            --shadow-primary: rgba(0, 0, 0, 0.08);
+            --font-family-main: 'Poppins', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: var(--font-family-main); 
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-tertiary) 100%);
+            color: var(--text-primary); 
+            line-height: 1.6; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background-color: var(--bg-secondary);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px var(--shadow-primary);
+            padding: 40px;
+            width: 100%;
+            max-width: 520px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-success));
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .register-title {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: var(--text-headings);
+            margin-bottom: 8px;
+        }
+
+        .register-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.05em;
+        }
+
+        .oauth-section {
+            margin-bottom: 30px;
+        }
+
+        .oauth-buttons {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .oauth-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border: 2px solid var(--border-primary);
+            border-radius: 8px;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .oauth-btn:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-primary);
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .oauth-btn i {
+            margin-right: 12px;
+            font-size: 1.2em;
+        }
+
+        .oauth-btn.google { border-color: #db4437; }
+        .oauth-btn.google:hover { border-color: #db4437; background-color: rgba(219, 68, 55, 0.05); }
+        .oauth-btn.microsoft { border-color: #00a1f1; }
+        .oauth-btn.microsoft:hover { border-color: #00a1f1; background-color: rgba(0, 161, 241, 0.05); }
+        .oauth-btn.linkedin { border-color: #0077b5; }
+        .oauth-btn.linkedin:hover { border-color: #0077b5; background-color: rgba(0, 119, 181, 0.05); }
+        .oauth-btn.github { border-color: #333; }
+        .oauth-btn.github:hover { border-color: #333; background-color: rgba(51, 51, 51, 0.05); }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--border-primary);
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text-headings);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-primary);
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background-color: var(--bg-secondary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--accent-danger);
+        }
+
+        .form-error {
+            color: var(--accent-danger);
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-input {
+            margin-right: 10px;
+            margin-top: 2px;
+        }
+
+        .checkbox-label {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .checkbox-label a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        .checkbox-label a:hover {
+            text-decoration: underline;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent-primary), #0b5ed7);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3);
+        }
+
+        .register-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-link {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.95em;
+        }
+
+        .login-link a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background-color: rgba(40, 167, 69, 0.1);
+            border: 1px solid var(--accent-success);
+            color: var(--accent-success);
+        }
+
+        .alert.error {
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 1px solid var(--accent-danger);
+            color: var(--accent-danger);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .password-strength {
+            margin-top: 8px;
+            font-size: 0.85em;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background-color: var(--bg-tertiary);
+            border-radius: 2px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .strength-weak { background-color: var(--accent-danger); width: 25%; }
+        .strength-fair { background-color: var(--accent-warning); width: 50%; }
+        .strength-good { background-color: var(--accent-primary); width: 75%; }
+        .strength-strong { background-color: var(--accent-success); width: 100%; }
+
+        @media (max-width: 576px) {
+            .register-container {
+                margin: 10px;
+                padding: 30px 25px;
+            }
+            
+            .register-title {
+                font-size: 1.8em;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            
+            .oauth-buttons {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <h1 class="register-title">Create Account</h1>
+            <p class="register-subtitle">Join AutoMediaCenter and access exclusive automotive content</p>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <!-- OAuth Registration Section -->
+        <div class="oauth-section">
+            <div class="oauth-buttons">
+                <a href="/api/v1/auth/google" class="oauth-btn google" id="google-register">
+                    <i class="fab fa-google"></i>
+                    Continue with Google
+                </a>
+                <a href="/api/v1/auth/microsoft" class="oauth-btn microsoft" id="microsoft-register">
+                    <i class="fab fa-microsoft"></i>
+                    Continue with Microsoft
+                </a>
+                <a href="/api/v1/auth/linkedin" class="oauth-btn linkedin" id="linkedin-register">
+                    <i class="fab fa-linkedin"></i>
+                    Continue with LinkedIn
+                </a>
+                <a href="/api/v1/auth/github" class="oauth-btn github" id="github-register">
+                    <i class="fab fa-github"></i>
+                    Continue with GitHub
+                </a>
+            </div>
+        </div>
+
+        <div class="divider">
+            <span>or register with email</span>
+        </div>
+
+        <!-- Email Registration Form -->
+        <form id="register-form" class="form-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName" class="form-label">First Name *</label>
+                    <input type="text" id="firstName" name="firstName" class="form-input" required>
+                    <div class="form-error" id="firstName-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="lastName" class="form-label">Last Name *</label>
+                    <input type="text" id="lastName" name="lastName" class="form-input" required>
+                    <div class="form-error" id="lastName-error"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">Email Address *</label>
+                <input type="email" id="email" name="email" class="form-input" required>
+                <div class="form-error" id="email-error"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Password *</label>
+                <input type="password" id="password" name="password" class="form-input" required>
+                <div class="password-strength" id="password-strength" style="display: none;">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strength-fill"></div>
+                    </div>
+                    <span id="strength-text">Password strength</span>
+                </div>
+                <div class="form-error" id="password-error"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword" class="form-label">Confirm Password *</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" required>
+                <div class="form-error" id="confirmPassword-error"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="company" class="form-label">Company/Organization</label>
+                    <input type="text" id="company" name="company" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="jobTitle" class="form-label">Job Title</label>
+                    <input type="text" id="jobTitle" name="jobTitle" class="form-input">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="industry" class="form-label">Industry</label>
+                <select id="industry" name="industry" class="form-input">
+                    <option value="">Select Industry</option>
+                    <option value="automotive">Automotive</option>
+                    <option value="media">Media & Publishing</option>
+                    <option value="marketing">Marketing & PR</option>
+                    <option value="technology">Technology</option>
+                    <option value="finance">Finance</option>
+                    <option value="consulting">Consulting</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms" name="terms" class="checkbox-input" required>
+                <label for="terms" class="checkbox-label">
+                    I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a> *
+                </label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="marketing" name="marketing" class="checkbox-input">
+                <label for="marketing" class="checkbox-label">
+                    I would like to receive marketing communications and updates about new features and content
+                </label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="analytics" name="analytics" class="checkbox-input" checked>
+                <label for="analytics" class="checkbox-label">
+                    I consent to the collection of usage analytics to improve the platform experience
+                </label>
+            </div>
+
+            <button type="submit" class="register-btn" id="register-btn">
+                Create Account
+            </button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="login.html">Sign in here</a>
+        </div>
+    </div>
+
+    <script>
+        // Analytics tracking
+        let sessionStartTime = Date.now();
+        let formInteractions = {};
+        
+        function trackEvent(eventType, data) {
+            fetch('/api/v1/users/track-activity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    eventType: eventType,
+                    eventData: data,
+                    pageUrl: window.location.href,
+                    timestamp: Date.now(),
+                    sessionId: sessionStorage.getItem('sessionId') || 'anonymous'
+                })
+            }).catch(err => console.log('Analytics tracking failed:', err));
+        }
+
+        // Password strength checker
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            let feedback = [];
+
+            if (password.length >= 8) strength += 1;
+            else feedback.push('At least 8 characters');
+
+            if (/[a-z]/.test(password)) strength += 1;
+            else feedback.push('Lowercase letter');
+
+            if (/[A-Z]/.test(password)) strength += 1;
+            else feedback.push('Uppercase letter');
+
+            if (/[0-9]/.test(password)) strength += 1;
+            else feedback.push('Number');
+
+            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+            else feedback.push('Special character');
+
+            return { strength, feedback };
+        }
+
+        // Update password strength indicator
+        function updatePasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthDiv = document.getElementById('password-strength');
+            const strengthFill = document.getElementById('strength-fill');
+            const strengthText = document.getElementById('strength-text');
+
+            if (password.length === 0) {
+                strengthDiv.style.display = 'none';
+                return;
+            }
+
+            strengthDiv.style.display = 'block';
+            const { strength, feedback } = checkPasswordStrength(password);
+
+            // Remove existing strength classes
+            strengthFill.className = 'strength-fill';
+
+            if (strength <= 2) {
+                strengthFill.classList.add('strength-weak');
+                strengthText.textContent = 'Weak password';
+            } else if (strength === 3) {
+                strengthFill.classList.add('strength-fair');
+                strengthText.textContent = 'Fair password';
+            } else if (strength === 4) {
+                strengthFill.classList.add('strength-good');
+                strengthText.textContent = 'Good password';
+            } else {
+                strengthFill.classList.add('strength-strong');
+                strengthText.textContent = 'Strong password';
+            }
+
+            if (feedback.length > 0) {
+                strengthText.textContent += ` (Missing: ${feedback.join(', ')})`;
+            }
+        }
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            const formData = new FormData(document.getElementById('register-form'));
+
+            // Clear previous errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.style.display = 'none';
+                error.textContent = '';
+            });
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            // Validate required fields
+            const requiredFields = ['firstName', 'lastName', 'email', 'password', 'confirmPassword'];
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                const error = document.getElementById(`${field}-error`);
+                
+                if (!input.value.trim()) {
+                    input.classList.add('error');
+                    error.textContent = 'This field is required';
+                    error.style.display = 'block';
+                    isValid = false;
+                }
+            });
+
+            // Validate email format
+            const email = document.getElementById('email').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && !emailRegex.test(email)) {
+                document.getElementById('email').classList.add('error');
+                document.getElementById('email-error').textContent = 'Please enter a valid email address';
+                document.getElementById('email-error').style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate password strength
+            const password = document.getElementById('password').value;
+            const { strength } = checkPasswordStrength(password);
+            if (password && strength < 3) {
+                document.getElementById('password').classList.add('error');
+                document.getElementById('password-error').textContent = 'Password is too weak. Please choose a stronger password.';
+                document.getElementById('password-error').style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate password confirmation
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (password && confirmPassword && password !== confirmPassword) {
+                document.getElementById('confirmPassword').classList.add('error');
+                document.getElementById('confirmPassword-error').textContent = 'Passwords do not match';
+                document.getElementById('confirmPassword-error').style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate terms acceptance
+            const terms = document.getElementById('terms').checked;
+            if (!terms) {
+                showAlert('You must agree to the Terms of Service and Privacy Policy', 'error');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert ${type}`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        // Handle form submission
+        async function handleRegistration(event) {
+            event.preventDefault();
+            
+            if (!validateForm()) {
+                trackEvent('registration_validation_failed', {
+                    errors: Array.from(document.querySelectorAll('.form-error[style*="block"]')).map(el => el.textContent)
+                });
+                return;
+            }
+
+            const registerBtn = document.getElementById('register-btn');
+            const originalText = registerBtn.textContent;
+            
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<div class="loading-spinner"></div>Creating Account...';
+
+            try {
+                const formData = new FormData(event.target);
+                const registrationData = {
+                    firstName: formData.get('firstName'),
+                    lastName: formData.get('lastName'),
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                    company: formData.get('company'),
+                    jobTitle: formData.get('jobTitle'),
+                    industry: formData.get('industry'),
+                    marketingConsent: formData.get('marketing') === 'on',
+                    analyticsConsent: formData.get('analytics') === 'on',
+                    registrationSource: 'email_form',
+                    formInteractions: formInteractions
+                };
+
+                const response = await fetch('/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(registrationData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    trackEvent('registration_success', {
+                        method: 'email',
+                        userLevel: result.user?.level,
+                        hasCompany: !!registrationData.company
+                    });
+
+                    showAlert('Account created successfully! Please check your email for verification.', 'success');
+                    
+                    // Store user data and redirect after delay
+                    if (result.token) {
+                        localStorage.setItem('token', result.token);
+                        localStorage.setItem('user', JSON.stringify(result.user));
+                        
+                        setTimeout(() => {
+                            if (result.user.level >= 2) {
+                                window.location.href = 'AssetDBmenu1.6.html';
+                            } else {
+                                window.location.href = 'automediacenter.html';
+                            }
+                        }, 2000);
+                    }
+                } else {
+                    trackEvent('registration_failed', {
+                        method: 'email',
+                        error: result.message
+                    });
+                    showAlert(result.message || 'Registration failed. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                trackEvent('registration_error', {
+                    method: 'email',
+                    error: error.message
+                });
+                showAlert('An error occurred during registration. Please try again.', 'error');
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.textContent = originalText;
+            }
+        }
+
+        // Track form interactions
+        function trackFormInteraction(fieldName, interactionType) {
+            if (!formInteractions[fieldName]) {
+                formInteractions[fieldName] = [];
+            }
+            formInteractions[fieldName].push({
+                type: interactionType,
+                timestamp: Date.now()
+            });
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Generate session ID
+            if (!sessionStorage.getItem('sessionId')) {
+                sessionStorage.setItem('sessionId', 'reg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9));
+            }
+
+            trackEvent('registration_page_load', {
+                referrer: document.referrer,
+                userAgent: navigator.userAgent
+            });
+
+            // Add event listeners
+            document.getElementById('password').addEventListener('input', updatePasswordStrength);
+            document.getElementById('register-form').addEventListener('submit', handleRegistration);
+
+            // Track form field interactions
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.addEventListener('focus', () => trackFormInteraction(input.name, 'focus'));
+                input.addEventListener('blur', () => trackFormInteraction(input.name, 'blur'));
+                input.addEventListener('input', () => trackFormInteraction(input.name, 'input'));
+            });
+
+            // Track OAuth button clicks
+            document.querySelectorAll('.oauth-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const provider = e.target.closest('.oauth-btn').id.replace('-register', '');
+                    trackEvent('oauth_registration_attempt', { provider });
+                });
+            });
+        });
+
+        // Track time on page
+        window.addEventListener('beforeunload', () => {
+            const timeOnPage = Date.now() - sessionStartTime;
+            trackEvent('registration_page_unload', { 
+                timeOnPage: timeOnPage,
+                formCompleted: document.getElementById('register-form').checkValidity()
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1080 @@
+b<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="module">
+      import { protectPage } from "./auth.js";
+      protectPage("client_admin");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Radar Analytics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script> 
+
+    <style>
+        :root {
+            --bg-primary: #f8f9fa; --bg-secondary: #ffffff; --bg-tertiary: #e9ecef;
+            --text-primary: #212529; --text-secondary: #6c757d; --text-headings: #343a40;
+            --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7; --accent-secondary: #6c757d; --accent-secondary-hover: #5c636a;
+            --border-primary: #dee2e6; --border-secondary: #e0e0e0; 
+            --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+            --color-info: #17a2b8; --color-warning: #ffc107; --color-danger: #dc3545; --color-success: #28a745;
+            --font-family-main: 'Poppins', sans-serif; 
+            --sidebar-width: 260px; --header-height: 61px; --footer-height: 60px;
+            --bg-card: var(--bg-secondary); --border-color: var(--border-primary); 
+        }
+
+        body.dark-mode {
+            --bg-primary: #1a1a1a; --bg-secondary: #2c2c2c; --bg-tertiary: #3a3a3a;
+            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff; --accent-secondary: #7a8691; --accent-secondary-hover: #909ca7;
+            --border-primary: #444; --border-secondary: #555; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+            --color-info: #36c4d9; --color-warning: #ffd04a; --color-danger: #bb2d3b; --color-success: #157347;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-family-main); background-color: var(--bg-primary); color: var(--text-primary); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; transition: background-color 0.3s ease, color 0.3s ease; }
+        a { color: var(--accent-primary); text-decoration: none; } a:hover { color: var(--accent-primary-hover); text-decoration: underline; }
+        .app-container { display: flex; flex-direction: column; flex-grow: 1; }
+        .app-body { display: flex; flex-grow: 1; transition: margin-left 0.3s ease; }
+        .app-header { background-color: var(--header-bg); color: var(--header-text); padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-primary); position: sticky; top: 0; z-index: 1020; height: var(--header-height); }
+        .app-header .logo h1 { font-size: 1.5em; font-weight: bold; margin: 0; }
+        .app-header .user-info { font-size: 0.9em; display: flex; align-items: center; } .app-header .user-info span { margin-right: 15px; opacity: 0.8; } .app-header .logout-link { color: var(--header-link); text-decoration: none; margin-left:15px; } .app-header .logout-link:hover { color: var(--header-text); text-decoration: none; } .app-header .logout-link i { margin-right: 5px; }
+        .app-header .btn-icon { background-color: transparent; border: none; padding: 5px 8px; margin-left: 10px; cursor:pointer; }
+        .app-header .btn-icon i { color: var(--header-link); font-size: 1.1em; }
+        .app-header .btn-icon:hover i { color: var(--header-text); }
+
+        .sidebar { width: var(--sidebar-width); background-color: var(--bg-secondary); border-right: 1px solid var(--border-secondary); display: flex; flex-direction: column; padding-top: 15px; flex-shrink: 0; transition: width 0.3s ease; position: sticky; top: var(--header-height); height: calc(100vh - var(--header-height) - var(--footer-height)); overflow-y: auto; z-index: 1010; }
+        .sidebar.collapsed { width: 70px; } .sidebar.collapsed .section-title, .sidebar.collapsed li a span, .sidebar.collapsed .sidebar-disclaimer { opacity: 0; visibility: hidden; white-space: nowrap; width: 0; } .sidebar.collapsed li a { justify-content: center; padding: 10px 0; } .sidebar.collapsed li a i.fa-fw { margin-right: 0; font-size: 1.2em; } .sidebar.collapsed .sidebar-header { justify-content: center; }
+        .sidebar-header { display: flex; justify-content: flex-end; padding: 0 15px 10px 15px; border-bottom: 1px solid var(--border-secondary); margin-bottom: 15px; }
+        #sidebar-toggle { background: none; border: none; color: var(--text-secondary); font-size: 1.2em; cursor: pointer; padding: 5px; } #sidebar-toggle:hover { color: var(--text-primary); }
+        .sidebar nav { flex-grow: 1; } .sidebar-section { margin-bottom: 20px; padding: 0 10px; transition: padding 0.3s ease; } .sidebar.collapsed .sidebar-section { padding: 0 5px; }
+        .sidebar .section-title { font-size: 0.7em; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; display: block; margin-bottom: 8px; padding: 0 10px; transition: opacity 0.2s ease; }
+        .sidebar ul { list-style: none; } .sidebar li a { display: flex; align-items: center; padding: 10px 15px; color: var(--text-primary); border-radius: 5px; margin-bottom: 3px; font-size: 0.95em; font-weight: 500; text-decoration: none; transition: background-color 0.2s ease, color 0.2s ease; white-space: nowrap; overflow: hidden; } .sidebar li a i.fa-fw { width: 1.5em; margin-right: 10px; text-align: center; color: var(--text-secondary); opacity: 0.8; flex-shrink: 0; transition: margin-right 0.3s ease, font-size 0.3s ease; } .sidebar li a span { transition: opacity 0.2s ease; }
+        .sidebar li a:hover { background-color: var(--bg-tertiary); color: var(--text-headings); text-decoration: none; } 
+        .sidebar li.active a { background-color: var(--accent-primary); color: #fff; font-weight: 600; } .sidebar li.active a:hover { background-color: var(--accent-primary-hover); } .sidebar li.active a i { opacity: 1; color: #fff;}
+        .sidebar-disclaimer { padding: 15px; font-size: 0.8em; color: var(--text-secondary); border-top: 1px solid var(--border-secondary); margin-top: auto; white-space: normal; } .sidebar.collapsed .sidebar-disclaimer { display: none; }
+
+        .main-content { flex-grow: 1; padding: 25px 30px; background-color: var(--bg-primary); transition: padding 0.3s ease; width: calc(100% - var(--sidebar-width)); overflow-y: auto; height: calc(100vh - var(--header-height) - var(--footer-height));} 
+        .sidebar.collapsed + .main-content { width: calc(100% - 70px); }
+        .content-header { display:flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border-primary); flex-wrap: wrap; } 
+        .content-header .header-title-group { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-bottom: 10px; }
+        .content-header .header-title-group h2 { font-size: 1.8em; font-weight: 600; color: var(--text-headings); margin:0; }
+        .content-header .header-title-group i { color: var(--accent-primary); font-size: 1.5em; }
+        .content-header .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .content-header .form-control, .content-header .btn {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-primary);
+            color: var(--text-primary);
+            font-size: 0.9em;
+            padding: .375rem .75rem; 
+        }
+        body.dark-mode .content-header .form-control, body.dark-mode .content-header .btn {
+             background-color: var(--bg-tertiary);
+             border-color: var(--border-secondary);
+             color: var(--text-primary);
+        }
+        body.dark-mode .content-header .form-control[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) brightness(0.9);
+        }
+        .content-header .form-control { min-width: 140px; }
+
+        .btn { padding: 10px 18px; font-size: 0.95em; border: 1px solid transparent; border-radius: 5px; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; font-weight: 500; text-decoration: none; white-space: nowrap; line-height: 1.4;} 
+        .btn i { margin-right: 6px; } 
+        .btn-primary { background-color: var(--accent-primary); color: #fff; border-color: var(--accent-primary); } 
+        .btn-primary:hover { background-color: var(--accent-primary-hover); border-color: var(--accent-primary-hover); text-decoration: none; color: #fff; } 
+        .btn-secondary { background-color: var(--bg-tertiary); color: var(--text-primary); border-color: var(--border-secondary); } 
+        .btn-secondary:hover { background-color: var(--border-secondary); text-decoration:none; color: var(--text-primary); }
+        .btn-sm { padding: 5px 10px; font-size: 0.8em; }
+        
+        .card { background-color: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 25px; overflow: hidden; display: flex; flex-direction: column;}
+        .card-header { padding: 15px 20px; background-color: var(--bg-tertiary); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;}
+        .card-header h3 { font-size: 1.1em; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 8px;}
+        .card-body { padding: 20px; flex-grow: 1; }
+        
+        .app-footer { background-color: var(--header-bg); color: var(--header-link); text-align: center; padding: 15px 25px; font-size: 0.85em; border-top: 1px solid var(--border-primary); height: var(--footer-height); flex-shrink:0; }
+        .app-footer nav a { color: var(--header-link); margin: 0 8px; } .app-footer nav a:hover { color: var(--header-text); } .app-footer p { margin-top: 8px; color: var(--header-link); }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 18px; 
+            margin-bottom: 28px;
+        }
+        .kpi-card {
+            background-color: var(--bg-secondary);
+            padding: 18px; 
+            border-radius: 8px;
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04); 
+            text-align: center;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 7px rgba(0,0,0,0.07);
+        }
+        body.dark-mode .kpi-card { box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+        body.dark-mode .kpi-card:hover { box-shadow: 0 3px 8px rgba(0,0,0,0.2); }
+        .kpi-card .kpi-value {
+            font-size: 2em; 
+            font-weight: 700; 
+            color: var(--accent-primary);
+            margin-bottom: 4px; 
+            line-height: 1.1;
+        }
+        .kpi-card .kpi-label {
+            font-size: 0.9em; 
+            color: var(--text-secondary);
+            font-weight: 500; 
+            margin-bottom: 6px; 
+        }
+        .kpi-card .kpi-change { 
+            font-size: 0.85em; 
+            font-weight: 500; 
+        }
+        .kpi-card .kpi-change.positive { color: var(--color-success); }
+        .kpi-card .kpi-change.negative { color: var(--color-danger); }
+        .kpi-card .kpi-change i { margin-right: 3px; }
+
+        .charts-grid, .additional-charts-grid { /* Grouped similar chart grids */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 18px; 
+            margin-bottom: 28px;
+        }
+        .chart-container .card-body {
+            min-height: 270px; 
+            max-height: 300px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative; 
+            padding: 15px; 
+        }
+         .chart-container .card-body canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .table-container .card-body { padding: 0; }
+        .table-container .table-responsive { max-height: 350px; overflow-y: auto;} /* For scrollable table body */
+        .table { width: 100%; margin-bottom: 0; border-collapse: collapse; table-layout: fixed;}
+        .table th, .table td { 
+            padding: .7rem .9rem; 
+            vertical-align: middle; 
+            border-top: 1px solid var(--border-color); font-size: 0.88em; 
+            color: var(--text-primary); 
+            overflow-wrap: break-word;
+        }
+        .table thead th { 
+            vertical-align: bottom; border-bottom: 2px solid var(--border-secondary); 
+            background-color: var(--bg-tertiary); font-weight: 600; 
+            text-align: left; color: var(--text-headings); 
+            position: sticky; top: 0; /* Sticky header for scrollable table */
+            z-index: 1;
+        }
+        body.dark-mode .table thead th {
+             background-color: var(--bg-tertiary) !important; /* Ensure sticky header bg in dark mode */
+        }
+        .table tbody tr:hover td { 
+            background-color: var(--bg-tertiary) !important; 
+        }
+        .table .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* Adjusting column widths for the new Rank column */
+        .table th.rank-col, .table td.rank-col { 
+            width: 60px; /* Increased slightly */
+            min-width: 60px; /* Added min-width */
+            text-align: center;
+            white-space: nowrap; /* Added to prevent wrapping */
+        }
+        .table th.truncate-title, .table td.truncate-title { max-width: 170px; } /* Adjusted other columns if needed */
+        .table th.truncate-brand, .table td.truncate-brand { max-width: 110px; } /* Adjusted other columns if needed */
+
+
+        body.dark-mode .table-container .table tbody tr td {
+            color: var(--text-primary) !important; 
+            background-color: var(--bg-secondary) !important;
+            border-top-color: var(--border-primary) !important;
+        }
+        body.dark-mode .table-container .table tbody tr:hover td { 
+            background-color: var(--bg-tertiary) !important;
+        }
+        body.dark-mode .table-container .table thead th { 
+            color: var(--text-headings) !important;
+            background-color: var(--bg-tertiary) !important;
+        }
+
+        /* Modal Styles (copied from radar_history for consistency) */
+        .detail-modal-backdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); 
+            z-index: 1040; display: none; /* Initially hidden */
+            align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+        }
+        .detail-modal-backdrop.open { opacity: 1; visibility: visible; transition: opacity 0.3s ease; display: flex !important; }
+        .detail-modal {
+            background-color: var(--bg-secondary); 
+            border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+            width: 90%; /* Default width */
+            overflow: hidden; display: flex; flex-direction: column;
+            max-height: 85vh; transform: scale(0.95); transition: transform 0.3s ease;
+            border: 1px solid var(--border-primary); 
+        }
+        .detail-modal-backdrop.open .detail-modal { transform: scale(1); }
+        .detail-modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; border-bottom: 1px solid var(--border-primary); 
+        }
+        .detail-modal-header h3 { margin: 0; font-size: 1.2em; font-weight: 600; color: var(--text-headings); }
+        .detail-modal-close-btn {
+            background: none; border: none; font-size: 1.7em; line-height: 1;
+            color: var(--text-secondary); cursor: pointer; padding: 0;
+            opacity: 0.7; transition: opacity 0.2s ease;
+        }
+        .detail-modal-close-btn:hover { opacity: 1; color: var(--text-primary); }
+        .detail-modal-body { padding: 20px; overflow-y: auto; font-size: 0.95em; flex-grow: 1; }
+        .detail-modal-footer {
+            padding: 15px 20px; border-top: 1px solid var(--border-primary); 
+            display: flex; justify-content: flex-end;
+            background-color: var(--bg-tertiary); flex-shrink: 0;
+        }
+
+
+        @media (max-width: 991px) { 
+            .content-header { flex-direction: column; align-items: stretch; gap: 15px;}
+            .content-header .header-title-group { align-self: flex-start;}
+            .content-header .header-controls { width: 100%; flex-direction: column; align-items: stretch;}
+            .content-header .header-controls .form-control, .content-header .header-controls .btn, 
+            .content-header .header-controls #customDateRangeContainer { width: 100%; margin-bottom: 10px;}
+            .content-header .header-controls #customDateRangeContainer { gap: 10px; flex-direction: column; } 
+            .content-header .header-controls #customDateRangeContainer input[type="date"] { width: 100%;}
+            .content-header .header-controls .btn { margin-bottom: 0;} 
+        }
+        @media (max-width: 768px) { 
+            .app-body { flex-direction: column;} 
+            .sidebar { width: 100%; height: auto; position: static; border-bottom: 1px solid var(--border-secondary); border-right: none; overflow-y: visible;} 
+            .main-content { width: 100% !important; height: auto; padding: 20px; overflow-y: visible;} 
+        }
+        @media (max-width: 500px) { 
+            .kpi-grid { grid-template-columns: 1fr; }
+            .charts-grid, .additional-charts-grid { grid-template-columns: 1fr; } 
+            .detail-modal { width: 95%; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+             <div class="logo"><h1>AutoMediaCenter</h1></div>
+             <div class="user-info">
+                 <div id="amc-profile-anchor"></div>
+                 <button class="btn btn-icon" id="darkModeToggleHeader" title="Toggle Dark Mode">
+                     <i class="fas fa-moon"></i>
+                 </button>
+            </div>
+        </header>
+
+        <div class="app-body">
+            <aside id="sidebar" class="sidebar"></aside>
+
+            <main class="main-content">
+                <div class="content-header">
+                    <div class="header-title-group">
+                        <i class="fas fa-chart-pie"></i>
+                        <h2>Radar Performance Analytics</h2>
+                    </div>
+                    <div class="header-controls">
+                        <select id="dateRangeFilter" class="form-control">
+                            <option value="7">Last 7 Days</option>
+                            <option value="30" selected>Last 30 Days</option>
+                            <option value="90">Last 90 Days</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                        <div id="customDateRangeContainer" style="display:none; gap: 10px; align-items: center;">
+                            <input type="date" id="analyticsStartDate" class="form-control">
+                            <span>to</span>
+                            <input type="date" id="analyticsEndDate" class="form-control">
+                        </div>
+                        <button id="applyAnalyticsFilterButton" class="btn btn-primary"><i class="fas fa-filter"></i> Apply</button>
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiTotalAlertsEl">0</div>
+                        <div class="kpi-label">Total Alerts Published</div>
+                        <div class="kpi-change positive" id="kpiAlertsChangeEl"><i class="fas fa-arrow-up"></i> 0%</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiTotalViewsEl">0</div>
+                        <div class="kpi-label">Total Alert Views</div>
+                        <div class="kpi-change positive" id="kpiViewsChangeEl"><i class="fas fa-arrow-up"></i> 0%</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiTotalEngagementsEl">0</div>
+                        <div class="kpi-label">Total Engagements</div>
+                        <div class="kpi-change negative" id="kpiEngagementsChangeEl"><i class="fas fa-arrow-down"></i> 0%</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiAvgEngagementRateEl">0.0%</div>
+                        <div class="kpi-label">Avg. Engagement Rate</div>
+                        <div class="kpi-change positive" id="kpiEngagementRateChangeEl"><i class="fas fa-arrow-up"></i> 0%</div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="card chart-container">
+                        <div class="card-header"><h3><i class="fas fa-chart-line"></i> Alert Views & Engagements Over Time</h3></div>
+                        <div class="card-body">
+                            <canvas id="viewsEngagementsChartEl"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-container">
+                        <div class="card-header"><h3><i class="fas fa-chart-pie"></i> Engagement Type Breakdown</h3></div>
+                        <div class="card-body">
+                            <canvas id="engagementTypeChartEl"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- New Charts Grid -->
+                <div class="additional-charts-grid">
+                    <div class="card chart-container">
+                        <div class="card-header"><h3><i class="far fa-calendar-alt"></i> Engagement by Day of Week</h3></div>
+                        <div class="card-body">
+                            <canvas id="engagementByDayOfWeekChartEl"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-container">
+                        <div class="card-header"><h3><i class="far fa-clock"></i> Engagement by Hour of Day</h3></div>
+                        <div class="card-body">
+                            <canvas id="engagementByHourOfDayChartEl"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="card chart-container"> <!-- Performance by Region might be a single wider chart -->
+                    <div class="card-header"><h3><i class="fas fa-globe-americas"></i> Performance by Region</h3></div>
+                    <div class="card-body">
+                        <canvas id="performanceByRegionChartEl"></canvas>
+                    </div>
+                </div>
+                <!-- End New Charts Grid -->
+                
+                <div class="card table-container">
+                    <div class="card-header"><h3><i class="fas fa-fire"></i> Top Performing Alerts (by Engagement Rate)</h3></div>
+                    <div class="card-body">
+                        <div class="table-responsive"> 
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="rank-col">Rank</th>
+                                        <th class="truncate-title">Title</th>
+                                        <th class="truncate-brand">Brand</th>
+                                        <th>Views</th>
+                                        <th>Engagements</th>
+                                        <th>Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="topAlertsTableBodyEl">
+                                    <tr><td colspan="6" style="text-align:center; padding:20px;">Loading data...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                 <div class="card chart-container" id="performanceByBrandCardContainer"> 
+                    <div class="card-header"><h3 id="performanceByBrandHeaderEl"><i class="fas fa-tags"></i> Performance by Brand</h3></div>
+                    <div class="card-body">
+                        <canvas id="performanceByBrandChartEl"></canvas>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <footer class="app-footer">
+             <nav> <a href="#">About Us</a> | <a href="#">Help Center</a> | <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a> </nav>
+             <p>© <span id="currentYear"></span> AutoMediaCenter. All rights reserved.</p>
+         </footer>
+    </div>
+
+    <!-- Analytics Detail Modal -->
+    <div class="detail-modal-backdrop" id="analyticsDetailModalBackdrop" style="display: none; justify-content: center; align-items: center;">
+        <div class="detail-modal" style="max-width: 800px; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="detail-modal-header">
+                <h3 id="analyticsDetailModalTitle">Detailed Analytics</h3>
+                <button class="detail-modal-close-btn" id="analyticsDetailModalCloseBtn" aria-label="Close modal">×</button>
+            </div>
+            <div class="detail-modal-body" id="analyticsDetailModalBody" style="overflow-y: auto; flex-grow: 1;">
+                <p style="text-align:center;">Loading details...</p>
+            </div>
+            <div class="detail-modal-footer" style="flex-shrink: 0;">
+                <button class="btn btn-secondary" id="analyticsDetailModalCloseBtnFooter">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    Chart.defaults.font.family = "'Poppins', sans-serif";
+    Chart.defaults.font.weight = '500';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Authentication is handled server-side via adminRoutes.js middleware
+        // Client-side authentication removed to prevent conflicts with localStorage tokens
+        let token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        let userString = localStorage.getItem('user') || localStorage.getItem('currentUser');
+        let user = null;
+        
+        if (userString) {
+            try {
+                user = JSON.parse(userString);
+            } catch (e) {
+                console.error("Error parsing user from localStorage", e);
+                user = { email: 'User', role: 'client_admin' }; // Fallback for display
+            }
+        }
+        
+        // Fallback user object for display purposes
+        if (!user) {
+            user = { email: 'User', role: 'client_admin' };
+        }
+
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const darkModeToggleHeader = document.getElementById('darkModeToggleHeader');
+        const body = document.body;
+        const currentYearSpan = document.getElementById('currentYear');
+        const userEmailDisplay = document.getElementById('user-email-display');
+        const logoutLink = document.querySelector('.app-header .logout-link');
+
+        let chartsInitialized = false;
+        let currentUserRole = user.role;
+        let currentDateFrom, currentDateTo; // Store current date range for modal calls
+
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                const icon = sidebarToggle.querySelector('i');
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                icon.className = isCollapsed ? 'fas fa-chevron-right fa-fw' : 'fas fa-bars fa-fw';
+                sidebarToggle.title = isCollapsed ? "Expand Sidebar" : "Collapse Sidebar";
+            });
+        }
+
+        function applyTheme(theme) {
+            const iconElement = darkModeToggleHeader?.querySelector('i');
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                if (iconElement) iconElement.className = 'fas fa-sun';
+                if (darkModeToggleHeader) darkModeToggleHeader.title = "Switch to Light Mode";
+            } else {
+                body.classList.remove('dark-mode');
+                if (iconElement) iconElement.className = 'fas fa-moon';
+                if (darkModeToggleHeader) darkModeToggleHeader.title = "Switch to Dark Mode";
+            }
+            if (typeof fetchAnalyticsData === 'function' && chartsInitialized) {
+                 setTimeout(fetchAnalyticsData, 100); 
+            }
+        }
+        
+        if (darkModeToggleHeader) {
+            const initialTheme = localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(initialTheme); 
+            darkModeToggleHeader.addEventListener('click', () => {
+                let newTheme = body.classList.contains('dark-mode') ? 'light' : 'dark';
+                applyTheme(newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+        } else { 
+            const initialTheme = localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(initialTheme);
+        }
+
+        if (currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
+        
+        if (logoutLink) {
+            logoutLink.addEventListener('click', (event) => {
+                event.preventDefault();
+                // Clear both old and new authentication systems
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('currentUser');
+                if(userEmailDisplay) userEmailDisplay.textContent = "Not Logged In";
+                window.location.href = 'AssetDBmenu1.6.html';
+            });
+        }
+
+        if (userEmailDisplay) {
+            userEmailDisplay.textContent = user.email;
+        }
+
+        const dateRangeFilterEl = document.getElementById('dateRangeFilter');
+        const customDateRangeContainerEl = document.getElementById('customDateRangeContainer');
+        const analyticsStartDateInputEl = document.getElementById('analyticsStartDate');
+        const analyticsEndDateInputEl = document.getElementById('analyticsEndDate');
+        const applyAnalyticsFilterButtonEl = document.getElementById('applyAnalyticsFilterButton');
+
+        const kpiTotalAlertsEl = document.getElementById('kpiTotalAlertsEl');
+        const kpiAlertsChangeEl = document.getElementById('kpiAlertsChangeEl');
+        const kpiTotalViewsEl = document.getElementById('kpiTotalViewsEl');
+        const kpiViewsChangeEl = document.getElementById('kpiViewsChangeEl');
+        const kpiTotalEngagementsEl = document.getElementById('kpiTotalEngagementsEl');
+        const kpiEngagementsChangeEl = document.getElementById('kpiEngagementsChangeEl');
+        const kpiAvgEngagementRateEl = document.getElementById('kpiAvgEngagementRateEl');
+        const kpiEngagementRateChangeEl = document.getElementById('kpiEngagementRateChangeEl');
+        
+        let viewsEngagementsChart, engagementTypeChart, performanceByBrandChart,
+            engagementByDayOfWeekChart, engagementByHourOfDayChart, performanceByRegionChart; 
+
+        if (dateRangeFilterEl) {
+            dateRangeFilterEl.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    if(customDateRangeContainerEl) customDateRangeContainerEl.style.display = 'flex';
+                    const today = new Date().toISOString().split('T')[0];
+                    if(analyticsEndDateInputEl) analyticsEndDateInputEl.value = today;
+                    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                    if(analyticsStartDateInputEl) analyticsStartDateInputEl.value = sevenDaysAgo;
+                } else {
+                    if(customDateRangeContainerEl) customDateRangeContainerEl.style.display = 'none';
+                }
+            });
+             if(customDateRangeContainerEl && dateRangeFilterEl.value !== 'custom') { 
+                customDateRangeContainerEl.style.display = 'none';
+            }
+        }
+        
+        function getChartColorsConfig(isDarkMode) {
+             const style = getComputedStyle(document.documentElement);
+             return { 
+                primary: style.getPropertyValue(isDarkMode ? '--accent-primary' : '--accent-primary').trim() || (isDarkMode ? 'rgba(63, 145, 255, 0.9)' : 'rgba(13, 110, 253, 0.9)'),
+                secondary: style.getPropertyValue(isDarkMode ? '--accent-secondary' : '--accent-secondary').trim() || (isDarkMode ? 'rgba(122, 134, 145, 0.8)' : 'rgba(108, 117, 125, 0.8)'),
+                success: style.getPropertyValue(isDarkMode ? '--color-success' : '--color-success').trim() || (isDarkMode ? 'rgba(40, 167, 69, 0.9)' : 'rgba(25, 135, 84, 0.9)'), 
+                warning: style.getPropertyValue(isDarkMode ? '--color-warning' : '--color-warning').trim() || (isDarkMode ? 'rgba(255, 193, 7, 0.9)' : 'rgba(255, 193, 7, 0.9)'),
+                info: style.getPropertyValue(isDarkMode ? '--color-info' : '--color-info').trim() || (isDarkMode ? 'rgba(23, 162, 184, 0.9)' : 'rgba(13, 202, 240, 0.9)'),
+                grid: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
+                text: style.getPropertyValue(isDarkMode ? '--text-primary' : '--text-secondary').trim() || (isDarkMode ? '#e0e0e0' : '#6c757d'),
+                chartBg: style.getPropertyValue(isDarkMode ? '--bg-secondary' : '--bg-secondary').trim() || (isDarkMode ? '#2c2c2c' : '#ffffff')
+            };
+        }
+
+        async function fetchAnalyticsData() {
+            const topAlertsTableBodyEl = document.getElementById('topAlertsTableBodyEl');
+
+            if (!token) {
+                if (userEmailDisplay) userEmailDisplay.textContent = "Not Logged In";
+                console.warn("User not authenticated. Cannot fetch analytics.");
+                if (topAlertsTableBodyEl) topAlertsTableBodyEl.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--text-secondary);">Please log in to view analytics.</td></tr>`;
+                if (viewsEngagementsChart) viewsEngagementsChart.destroy();
+                if (engagementTypeChart) engagementTypeChart.destroy();
+                if (performanceByBrandChart) performanceByBrandChart.destroy();
+                if (engagementByDayOfWeekChart) engagementByDayOfWeekChart.destroy();
+                if (engagementByHourOfDayChart) engagementByHourOfDayChart.destroy();
+                if (performanceByRegionChart) performanceByRegionChart.destroy();
+                chartsInitialized = false; 
+                return;
+            }
+
+            const range = dateRangeFilterEl ? dateRangeFilterEl.value : '30'; 
+            const today = new Date();
+            
+            if (range === 'custom') {
+                currentDateFrom = analyticsStartDateInputEl ? analyticsStartDateInputEl.value : null;
+                currentDateTo = analyticsEndDateInputEl ? analyticsEndDateInputEl.value : null;
+                if (!currentDateFrom || !currentDateTo) { alert("Please select both start and end dates for custom range."); return; }
+                if (new Date(currentDateFrom) > new Date(currentDateTo)) { alert("Start date cannot be after end date."); return; }
+            } else {
+                currentDateTo = today.toISOString().split('T')[0];
+                let pastDate = new Date(today);
+                pastDate.setDate(today.getDate() - parseInt(range) + 1); 
+                currentDateFrom = pastDate.toISOString().split('T')[0];
+            }
+
+            if (topAlertsTableBodyEl) topAlertsTableBodyEl.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">Loading analytics data... <i class="fas fa-spinner fa-spin"></i></td></tr>`;
+            else { console.error("topAlertsTableBodyEl not found.");}
+            
+            const isDarkMode = body.classList.contains('dark-mode'); 
+            const chartColors = getChartColorsConfig(isDarkMode); 
+            
+            try {
+                const apiUrl = `http://localhost:5000/api/v1/analytics/radar?dateFrom=${currentDateFrom}&dateTo=${currentDateTo}`;
+                
+                console.log(`Fetching analytics from: ${apiUrl}`); 
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json'}
+                });
+                console.log(`API Response Status: ${response.status}`); 
+                if (!response.ok) {
+                    const errorText = await response.text().catch(() => `Failed to read error response. Status: ${response.statusText}`);
+                    console.error("API Error Response Text:", errorText);
+                    throw new Error(`Could not load analytics. Server responded with ${response.status}. Details: ${errorText}`);
+                }
+                const result = await response.json();
+                console.log("API Response Data:", result); 
+
+                if (result.success && result.data) {
+                    updateKpisUI(result.data.kpis);
+                    renderViewsEngagementsChartUI(result.data.viewsOverTime, chartColors);
+                    renderEngagementTypeChartUI(result.data.engagementTypes, chartColors); // This will be updated
+                    renderTopAlertsTableUI(result.data.topAlerts);
+                    
+                    const performanceByBrandCardContainer = document.getElementById('performanceByBrandCardContainer');
+                    const performanceByBrandHeaderEl = document.getElementById('performanceByBrandHeaderEl');
+
+                    if (currentUserRole === 'client_user' || currentUserRole === 'client_admin') {
+                        if (performanceByBrandCardContainer) performanceByBrandCardContainer.style.display = 'none'; 
+                    } else if (currentUserRole === 'platform_admin') {
+                        if (performanceByBrandCardContainer) performanceByBrandCardContainer.style.display = 'block';
+                        if (performanceByBrandHeaderEl) performanceByBrandHeaderEl.innerHTML = '<i class="fas fa-sitemap"></i> Performance by Client Account';
+                        renderPerformanceByBrandChartUI(result.data.performanceByBrand, chartColors); 
+                    } else {
+                        if (performanceByBrandCardContainer) performanceByBrandCardContainer.style.display = 'none';
+                    }
+
+                    renderEngagementByDayOfWeekChartUI(result.data.engagementByDayOfWeek, chartColors);
+                    renderEngagementByHourOfDayChartUI(result.data.engagementByHourOfDay, chartColors);
+                    renderPerformanceByRegionChartUI(result.data.performanceByRegion, chartColors);
+
+                    chartsInitialized = true;
+                } else {
+                    const errorMessage = result.error || result.message || 'Failed to process analytics data from API response.';
+                    console.error("API Error (result not success or data missing):", errorMessage, result);
+                    throw new Error(errorMessage);
+                }
+            } catch (error) { 
+                console.error("Error in fetchAnalyticsData catch block:", error);
+                if (topAlertsTableBodyEl) topAlertsTableBodyEl.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--color-danger);">Could not load analytics: ${error.message}</td></tr>`;
+                if (viewsEngagementsChart) try { viewsEngagementsChart.destroy(); } catch (e) { console.warn("Error destroying viewsEngagementsChart", e); }
+                if (engagementTypeChart) try { engagementTypeChart.destroy(); } catch (e) { console.warn("Error destroying engagementTypeChart", e); }
+                if (performanceByBrandChart) try { performanceByBrandChart.destroy(); } catch (e) { console.warn("Error destroying performanceByBrandChart", e); }
+                if (engagementByDayOfWeekChart) try { engagementByDayOfWeekChart.destroy(); } catch (e) { console.warn("Error destroying engagementByDayOfWeekChart", e); }
+                if (engagementByHourOfDayChart) try { engagementByHourOfDayChart.destroy(); } catch (e) { console.warn("Error destroying engagementByHourOfDayChart", e); }
+                if (performanceByRegionChart) try { performanceByRegionChart.destroy(); } catch (e) { console.warn("Error destroying performanceByRegionChart", e); }
+                chartsInitialized = false; 
+            }
+        }
+
+        function updateKpisUI(kpis) { 
+            if (!kpis) { 
+                console.warn("KPI data is undefined, skipping KPI update.");
+                const kpiValueElements = [kpiTotalAlertsEl, kpiTotalViewsEl, kpiTotalEngagementsEl, kpiAvgEngagementRateEl];
+                const kpiChangeElements = [kpiAlertsChangeEl, kpiViewsChangeEl, kpiEngagementsChangeEl, kpiEngagementRateChangeEl];
+                kpiValueElements.forEach(el => { if(el) el.textContent = 'N/A'; });
+                kpiChangeElements.forEach(el => { if(el) el.textContent = '-'; });
+                return;
+            }
+            if(kpiTotalAlertsEl) kpiTotalAlertsEl.textContent = (kpis.totalAlertsPublished === undefined ? 0 : kpis.totalAlertsPublished).toLocaleString();
+            if(kpiAlertsChangeEl) {
+                const change = parseFloat(kpis.alertsChange) || 0;
+                kpiAlertsChangeEl.innerHTML = `<i class="fas ${change >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'}"></i> ${Math.abs(change)}%`;
+                kpiAlertsChangeEl.className = `kpi-change ${change >= 0 ? 'positive' : 'negative'}`;
+            }
+            if(kpiTotalViewsEl) kpiTotalViewsEl.textContent = (kpis.totalAlertViews === undefined ? 0 : kpis.totalAlertViews).toLocaleString();
+            if(kpiViewsChangeEl) {
+                const change = parseFloat(kpis.viewsChange) || 0;
+                kpiViewsChangeEl.innerHTML = `<i class="fas ${change >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'}"></i> ${Math.abs(change)}%`;
+                kpiViewsChangeEl.className = `kpi-change ${change >= 0 ? 'positive' : 'negative'}`;
+            }
+            if(kpiTotalEngagementsEl) kpiTotalEngagementsEl.textContent = (kpis.totalEngagements === undefined ? 0 : kpis.totalEngagements).toLocaleString();
+            if(kpiEngagementsChangeEl) {
+                const change = parseFloat(kpis.engagementsChange) || 0;
+                kpiEngagementsChangeEl.innerHTML = `<i class="fas ${change >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'}"></i> ${Math.abs(change)}%`;
+                kpiEngagementsChangeEl.className = `kpi-change ${change >= 0 ? 'positive' : 'negative'}`;
+            }
+            if(kpiAvgEngagementRateEl) kpiAvgEngagementRateEl.textContent = (kpis.avgEngagementRate === undefined ? '0.0' : kpis.avgEngagementRate) + '%';
+            if(kpiEngagementRateChangeEl) {
+                const change = parseFloat(kpis.engagementRateChange) || 0;
+                kpiEngagementRateChangeEl.innerHTML = `<i class="fas ${change >= 0 ? 'fa-arrow-up' : 'fa-arrow-down'}"></i> ${Math.abs(change)}%`;
+                kpiEngagementRateChangeEl.className = `kpi-change ${change >= 0 ? 'positive' : 'negative'}`;
+            }
+        }
+
+        function renderViewsEngagementsChartUI(data, colors) { 
+            const canvas = document.getElementById('viewsEngagementsChartEl');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (viewsEngagementsChart) viewsEngagementsChart.destroy();
+            const chartData = data && Array.isArray(data) ? data : []; 
+            viewsEngagementsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.map(item => item.date),
+                    datasets: [{
+                        label: 'Views', data: chartData.map(item => item.views || 0),
+                        borderColor: colors.primary, backgroundColor: Chart.helpers.color(colors.primary).alpha(0.1).rgbString(), 
+                        tension: 0.4, fill: true, yAxisID: 'yViews', 
+                        pointRadius: 1.5, pointHoverRadius: 4, borderWidth: 1.8 
+                    }, {
+                        label: 'Engagements', data: chartData.map(item => item.engagements || 0),
+                        borderColor: colors.success, backgroundColor: Chart.helpers.color(colors.success).alpha(0.1).rgbString(), 
+                        tension: 0.4, fill: 'origin', yAxisID: 'yEngagements', 
+                        pointRadius: 1.5, pointHoverRadius: 4, borderWidth: 1.8
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { type: 'time', time: { unit: 'day', tooltipFormat: 'MMM D', displayFormats: { day: 'MMM D' } }, grid: { color: colors.grid }, ticks: { color: colors.text, maxRotation: 0, autoSkipPadding: 15, font: { size: 10 } } },
+                        yViews: { position: 'left', beginAtZero: true, grid: { color: colors.grid }, ticks: { color: colors.text, stepSize: 50, font: { size: 10 } }, title: { display: true, text: 'Views', color: colors.text, font: {size: 11} } },
+                        yEngagements: { position: 'right', beginAtZero: true, grid: { drawOnChartArea: false }, ticks: { color: colors.text, stepSize: 10, font: {size: 10} }, title: { display: true, text: 'Engagements', color: colors.text, font: {size: 11} } }
+                    },
+                    plugins: { legend: { labels: { color: colors.text, usePointStyle: true, boxWidth: 6, padding: 10, font: {size: 11} } }, tooltip: { bodySpacing: 4, padding: 8, boxPadding: 3, intersect: false, mode: 'index', titleFont: {size: 12}, bodyFont: {size: 11} } }
+                }
+            });
+        }
+
+        function renderEngagementTypeChartUI(data, colors) { 
+            const canvas = document.getElementById('engagementTypeChartEl');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (engagementTypeChart) engagementTypeChart.destroy();
+            // MODIFICATION: Update chartData to include quickViewOpens
+            const chartData = data || { calendarAdds: 0, remindersSet: 0, follows: 0, quickViewOpens: 0 };
+            
+            engagementTypeChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    // MODIFICATION: Update labels
+                    labels: ['Calendar Adds', 'Reminders Set', 'Follows', 'Radar Details Opened'],
+                    datasets: [{
+                        label: 'Engagement Types',
+                        // MODIFICATION: Update data array
+                        data: [
+                            chartData.calendarAdds || 0, 
+                            chartData.remindersSet || 0, 
+                            chartData.follows || 0,
+                            chartData.quickViewOpens || 0 
+                        ],
+                        backgroundColor: [
+                            Chart.helpers.color(colors.primary).alpha(0.85).rgbString(), 
+                            Chart.helpers.color(colors.info).alpha(0.85).rgbString(), 
+                            // Chart.helpers.color(colors.success).alpha(0.85).rgbString(), // Original for Detail Clicks
+                            Chart.helpers.color(colors.warning).alpha(0.85).rgbString(), // Original for Follows
+                            Chart.helpers.color(colors.secondary).alpha(0.75).rgbString() // New color for Radar Details Opened
+                        ],
+                        borderColor: colors.chartBg, borderWidth: 2 
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%',
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const chartElement = elements[0];
+                            const index = chartElement.index;
+                            const engagementTypeName = engagementTypeChart.data.labels[index]; 
+                            let rawInteractionType = '';
+                            // MODIFICATION: Update switch or mapping for rawInteractionType
+                            switch(engagementTypeName) {
+                                case 'Calendar Adds': rawInteractionType = 'calendar_add'; break;
+                                case 'Reminders Set': rawInteractionType = 'reminder_set'; break;
+                                case 'Follows': rawInteractionType = 'follow_alert'; break;
+                                case 'Radar Details Opened': rawInteractionType = 'quick_view_open'; break; // Added
+                                default: console.warn("Unknown engagement type clicked:", engagementTypeName); return;
+                            }
+
+                            if (rawInteractionType) {
+                                openInteractionDetailModal(rawInteractionType, engagementTypeName, currentDateFrom, currentDateTo);
+                            }
+                        }
+                    },
+                    plugins: { legend: { position: 'bottom', labels: { color: colors.text, padding: 12, boxWidth:10, usePointStyle: true, font: {size: 11} } },
+                               tooltip: { callbacks: { label: ctx => `${ctx.label}: ${(ctx.parsed || 0).toLocaleString()}` }, boxPadding: 3 } }
+                }
+            });
+        }
+
+        function renderTopAlertsTableUI(alerts) { 
+            const tableBody = document.getElementById('topAlertsTableBodyEl');
+            if (!tableBody) return;
+            const chartData = alerts && Array.isArray(alerts) ? alerts : [];
+            if (chartData.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">No top alerts data for this period.</td></tr>`; return;
+            }
+            tableBody.innerHTML = chartData.map((alert, index) => ` 
+                <tr>
+                    <td class="rank-col">${index + 1}</td>
+                    <td class="truncate truncate-title" title="${alert.title}">${alert.title || 'N/A'}</td>
+                    <td class="truncate truncate-brand" title="${alert.brand}">${alert.brand || 'N/A'}</td>
+                    <td>${(alert.views || 0).toLocaleString()}</td>
+                    <td>${(alert.engagements || 0).toLocaleString()}</td>
+                    <td>${alert.rate || '0.0%'}</td>
+                </tr>`).join('');
+        }
+        
+        function renderPerformanceByBrandChartUI(data, colors) { 
+            const canvas = document.getElementById('performanceByBrandChartEl');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (performanceByBrandChart) performanceByBrandChart.destroy();
+            
+            let chartData = (data && Array.isArray(data) ? [...data] : []);
+            chartData.sort((a, b) => (b.engagements || 0) - (a.engagements || 0)); 
+            
+            let chartLabels = chartData.map(item => (currentUserRole === 'platform_admin' && item.clientName) ? item.clientName : (item.brand || 'Unknown'));
+            let chartEngagements = chartData.map(item => item.engagements || 0);
+
+            performanceByBrandChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Total Engagements', data: chartEngagements,
+                        backgroundColor: chartLabels.map((_, i) => Chart.helpers.color(colors.primary).alpha(0.85 - (i * 0.08)).rgbString()), 
+                        borderColor: colors.primary, borderWidth: 1, 
+                        barPercentage: 0.65, 
+                        categoryPercentage: 0.75 
+                    }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) { 
+                            const chartElement = elements[0];
+                            const index = chartElement.index;
+                            const categoryValue = performanceByBrandChart.data.labels[index]; 
+                            
+                            if (currentUserRole === 'client_user' || currentUserRole === 'client_admin') {
+                                if (categoryValue && categoryValue !== "Other Brands") { 
+                                    openInteractionDetailModal('brand_specific_alerts', categoryValue, currentDateFrom, currentDateTo);
+                                }
+                            } else if (currentUserRole === 'platform_admin') {
+                                 const clientNameForDrilldown = categoryValue;
+                                 const clientDataPoint = chartData.find(cd => (cd.clientName || cd.brand) === clientNameForDrilldown);
+                                 const clientIdForDrilldown = clientDataPoint ? clientDataPoint.clientId : null; 
+                                 if(clientIdForDrilldown){
+                                    openInteractionDetailModal('client_top_alerts', clientIdForDrilldown, currentDateFrom, currentDateTo, clientNameForDrilldown);
+                                 } else {
+                                    console.warn("Could not determine clientId for drilldown for client:", clientNameForDrilldown);
+                                 }
+                            }
+                        }
+                    },
+                    scales: { 
+                        x: { beginAtZero: true, grid: { color: colors.grid }, ticks: { color: colors.text, font: {size: 10} } }, 
+                        y: { grid: { color: colors.grid }, ticks: { color: colors.text, font: {size: 11} } } 
+                    },
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `Engagements: ${(ctx.parsed.x || 0).toLocaleString()}` }, boxPadding: 3 } }
+                }
+            });
+        }
+
+        function renderEngagementByDayOfWeekChartUI(data, colors) {
+            const canvas = document.getElementById('engagementByDayOfWeekChartEl');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (engagementByDayOfWeekChart) engagementByDayOfWeekChart.destroy();
+
+            const daysMap = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const labels = daysMap;
+            const viewsData = Array(7).fill(0);
+            const engagementsData = Array(7).fill(0);
+
+            if (data && Array.isArray(data)) {
+                data.forEach(item => {
+                    const dayIndex = item.dayOfWeekNumber - 1; 
+                    if (dayIndex >= 0 && dayIndex < 7) {
+                        viewsData[dayIndex] = item.views || 0;
+                        engagementsData[dayIndex] = item.engagements || 0;
+                    }
+                });
+            }
+            engagementByDayOfWeekChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Views', data: viewsData, backgroundColor: Chart.helpers.color(colors.primary).alpha(0.7).rgbString(), borderColor: colors.primary, borderWidth: 1 },
+                        { label: 'Engagements', data: engagementsData, backgroundColor: Chart.helpers.color(colors.success).alpha(0.7).rgbString(), borderColor: colors.success, borderWidth: 1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false,
+                    scales: { x: { grid: { color: colors.grid }, ticks: { color: colors.text, font: {size:11} } }, y: { beginAtZero: true, grid: { color: colors.grid }, ticks: { color: colors.text, font: {size:11} }, title: {display:true, text:'Count', color:colors.text} } },
+                    plugins: { legend: { labels: { color: colors.text, usePointStyle:true, boxWidth:8, padding:10, font:{size:11} } }, tooltip: {mode:'index', intersect:false} }
+                }
+            });
+        }
+
+        function renderEngagementByHourOfDayChartUI(data, colors) {
+            const canvas = document.getElementById('engagementByHourOfDayChartEl');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (engagementByHourOfDayChart) engagementByHourOfDayChart.destroy();
+
+            const labels = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`); 
+            const viewsData = Array(24).fill(0);
+            const engagementsData = Array(24).fill(0);
+
+            if (data && Array.isArray(data)) {
+                data.forEach(item => {
+                    if (item.hourOfDay >= 0 && item.hourOfDay < 24) {
+                        viewsData[item.hourOfDay] = item.views || 0;
+                        engagementsData[item.hourOfDay] = item.engagements || 0;
+                    }
+                });
+            }
+            engagementByHourOfDayChart = new Chart(ctx, {
+                type: 'line', 
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Views', data: viewsData, borderColor: colors.primary, backgroundColor: Chart.helpers.color(colors.primary).alpha(0.1).rgbString(), tension: 0.3, fill: true, pointRadius: 1, pointHoverRadius: 4 },
+                        { label: 'Engagements', data: engagementsData, borderColor: colors.success, backgroundColor: Chart.helpers.color(colors.success).alpha(0.1).rgbString(), tension: 0.3, fill: true, pointRadius: 1, pointHoverRadius: 4 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false,
+                    scales: { x: { grid: { color: colors.grid }, ticks: { color: colors.text, font: {size:10}, maxRotation: 70, minRotation: 70 } }, y: { beginAtZero: true, grid: { color: colors.grid }, ticks: { color: colors.text, font: {size:10} }, title: {display:true, text:'Count', color:colors.text} } },
+                    plugins: { legend: { labels: { color: colors.text, usePointStyle:true, boxWidth:8, padding:10, font:{size:11} } }, tooltip: {mode:'index', intersect:false} }
+                }
+            });
+        }
+
+        function renderPerformanceByRegionChartUI(data, colors) {
+            const canvas = document.getElementById('performanceByRegionChartEl');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (performanceByRegionChart) performanceByRegionChart.destroy();
+            
+            let chartData = (data && Array.isArray(data) ? [...data] : []).sort((a,b) => (b.engagements || 0) - (a.engagements || 0));
+            const topN = 7; 
+            let labels = [];
+            let engagementData = [];
+
+            if (chartData.length > topN) {
+                const topRegions = chartData.slice(0, topN);
+                const otherRegionsEngagements = chartData.slice(topN).reduce((sum, item) => sum + (item.engagements || 0), 0);
+                labels = topRegions.map(item => item.region || "Unknown");
+                engagementData = topRegions.map(item => item.engagements || 0);
+                if (otherRegionsEngagements > 0) {
+                    labels.push("Other Regions");
+                    engagementData.push(otherRegionsEngagements);
+                }
+            } else {
+                labels = chartData.map(item => item.region || "Unknown");
+                engagementData = chartData.map(item => item.engagements || 0);
+            }
+
+            performanceByRegionChart = new Chart(ctx, {
+                type: 'bar', 
+                data: {
+                    labels: labels,
+                    datasets: [{ label: 'Total Engagements', data: engagementData, backgroundColor: labels.map((_,i) => Chart.helpers.color(colors.info).alpha(0.85 - (i*0.05)).rgbString()), borderColor: colors.info, borderWidth: 1 }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    scales: { x: { beginAtZero: true, grid: { color: colors.grid }, ticks: { color: colors.text, font:{size:10} } }, y: { grid: { color: colors.grid }, ticks: { color: colors.text, font:{size:11} } } },
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `Engagements: ${(ctx.parsed.x || 0).toLocaleString()}` } } }
+                }
+            });
+        }
+
+        const analyticsDetailModalBackdrop = document.getElementById('analyticsDetailModalBackdrop');
+        const analyticsDetailModalTitle = document.getElementById('analyticsDetailModalTitle');
+        const analyticsDetailModalBody = document.getElementById('analyticsDetailModalBody');
+        const analyticsDetailModalCloseBtn = document.getElementById('analyticsDetailModalCloseBtn');
+        const analyticsDetailModalCloseBtnFooter = document.getElementById('analyticsDetailModalCloseBtnFooter');
+
+        function closeAnalyticsDetailModal() {
+            if (analyticsDetailModalBackdrop) {
+                analyticsDetailModalBackdrop.classList.remove('open'); 
+                setTimeout(() => { if(analyticsDetailModalBackdrop) analyticsDetailModalBackdrop.style.display = 'none'; }, 300); 
+            }
+        }
+
+        if(analyticsDetailModalCloseBtn) analyticsDetailModalCloseBtn.addEventListener('click', closeAnalyticsDetailModal);
+        if(analyticsDetailModalCloseBtnFooter) analyticsDetailModalCloseBtnFooter.addEventListener('click', closeAnalyticsDetailModal);
+        if(analyticsDetailModalBackdrop) {
+            analyticsDetailModalBackdrop.addEventListener('click', (event) => {
+                if (event.target === analyticsDetailModalBackdrop) closeAnalyticsDetailModal();
+            });
+        }
+
+        async function openInteractionDetailModal(interactionCategory, categoryValue, dateFrom, dateTo, displayNameForModal = categoryValue) {
+            if (!analyticsDetailModalBackdrop || !analyticsDetailModalTitle || !analyticsDetailModalBody) return;
+
+            let modalTitleText = `Details for: ${displayNameForModal}`; 
+            if (interactionCategory === 'client_top_alerts') {
+                modalTitleText = `Top Alerts for Client: ${displayNameForModal}`;
+            } else if (interactionCategory === 'brand_specific_alerts') {
+                modalTitleText = `Alerts for Brand Tag: ${displayNameForModal}`;
+            }
+            
+            analyticsDetailModalTitle.textContent = modalTitleText;
+            analyticsDetailModalBody.innerHTML = '<p style="text-align:center; padding:20px;">Loading details... <i class="fas fa-spinner fa-spin"></i></p>';
+            analyticsDetailModalBackdrop.style.display = 'flex';
+            setTimeout(() => { if(analyticsDetailModalBackdrop) analyticsDetailModalBackdrop.classList.add('open'); }, 10);
+
+            const token = localStorage.getItem('token');
+            let nameParam = (interactionCategory === 'client_top_alerts') ? 'clientId' : 'name';
+            let detailApiUrl = `http://localhost:5000/api/v1/analytics/radar/interaction-details?category=${encodeURIComponent(interactionCategory)}&${nameParam}=${encodeURIComponent(categoryValue)}&dateFrom=${dateFrom}&dateTo=${dateTo}`;
+            
+            console.log(`DEBUG: Modal API URL: ${detailApiUrl}`);
+
+            try {
+                const response = await fetch(detailApiUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({error: `HTTP Error ${response.status}`}));
+                    throw new Error(errData.error || `Failed to fetch details for ${displayNameForModal}`);
+                }
+                const result = await response.json();
+                console.log("DEBUG: Modal data received:", result);
+
+                if (result.success && result.data && Array.isArray(result.data)) {
+                    let tableHtml = `
+                        <div class="table-responsive" style="max-height: calc(80vh - 160px); overflow-y: auto;">
+                            <table class="table">
+                                <thead><tr><th class="rank-col">Rank</th><th class="truncate-title">Alert Title</th><th>Views</th><th>Engagements</th><th>Rate</th></tr></thead>
+                                <tbody>`;
+                    if (result.data.length === 0) {
+                        tableHtml += `<tr><td colspan="5" style="text-align:center;">No alerts found for "${displayNameForModal}" in this period.</td></tr>`;
+                    } else {
+                        result.data.sort((a, b) => {
+                            const rateA = parseFloat(a.rate) || 0;
+                            const rateB = parseFloat(b.rate) || 0;
+                            if (rateB !== rateA) return rateB - rateA;
+                            if ((b.engagements || 0) !== (a.engagements || 0)) return (b.engagements || 0) - (a.engagements || 0);
+                            return (b.views || 0) - (a.views || 0);
+                        });
+
+                        result.data.forEach((alert, index) => { 
+                            tableHtml += `<tr>
+                                <td class="rank-col">${index + 1}</td>
+                                <td class="truncate truncate-title" title="${alert.title}">${alert.title || 'N/A'}</td>
+                                <td>${(alert.views || 0).toLocaleString()}</td>
+                                <td>${(alert.engagements || 0).toLocaleString()}</td>
+                                <td>${alert.rate || '0.0%'}</td>
+                            </tr>`;
+                        });
+                    }
+                    tableHtml += `</tbody></table></div>`;
+                    analyticsDetailModalBody.innerHTML = tableHtml;
+                } else {
+                    analyticsDetailModalBody.innerHTML = `<p style="color:var(--color-danger);">Could not load details: ${result.message || 'No data array returned'}</p>`;
+                }
+            } catch (err) {
+                console.error("Error fetching interaction detail for modal:", err);
+                analyticsDetailModalBody.innerHTML = `<p style="color:var(--color-danger);">Error loading details: ${err.message}</p>`;
+            }
+        }
+
+        if (applyAnalyticsFilterButtonEl) {
+            applyAnalyticsFilterButtonEl.addEventListener('click', fetchAnalyticsData);
+        }
+        
+        if(dateRangeFilterEl) dateRangeFilterEl.value = '30'; 
+        if(customDateRangeContainerEl) customDateRangeContainerEl.style.display = 'none'; 
+        
+        fetchAnalyticsData(); 
+
+    });
+    </script>
+    <script type="module" src="sidebar-builder.js"></script>
+    <script defer src="amc-profile-avatar.js"></script>
+</body>
+</html>

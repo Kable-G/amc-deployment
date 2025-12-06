@@ -1,0 +1,363 @@
+/**
+ * AMC Avatar System - Premium Enterprise-Grade Styles
+ * Role-based halo rings, login pulse animation, Google-style modal
+ */
+
+/* Header Layout */
+.amc-header-right { 
+    display: flex; 
+    align-items: center; 
+    gap: 18px; 
+}
+
+.header-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: var(--text-primary, #1e293b);
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.header-icon:hover {
+    background-color: var(--bg-tertiary, #f1f5f9);
+    color: var(--accent-primary, #3b82f6);
+}
+
+/* Avatar Container */
+.amc-avatar {
+    width: 48px; 
+    height: 48px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.amc-avatar:hover {
+    transform: scale(1.05);
+}
+
+.amc-avatar-ring {
+    width: 48px; 
+    height: 48px;
+    border: 3px solid var(--avatar-ring, #3B82F6);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    transition: all 0.3s ease;
+    background: var(--bg-secondary, #ffffff);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.amc-avatar-ring:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    border-width: 4px;
+}
+
+.amc-avatar-icon { 
+    width: 36px; 
+    height: 36px; 
+    transition: all 0.2s ease;
+}
+
+/* Login Pulse Animation */
+.halo-pulse {
+    animation: haloPulse 1.2s ease-out;
+}
+
+@keyframes haloPulse {
+    0% { 
+        box-shadow: 0 0 0 0 var(--avatar-ring, #3B82F6);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.3);
+        transform: scale(1.1);
+    }
+    100% { 
+        box-shadow: 0 0 0 16px rgba(59, 130, 246, 0);
+        transform: scale(1);
+    }
+}
+
+/* Avatar Modal */
+.avatar-modal {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    width: 320px;
+    background: var(--bg-secondary, #ffffff);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+    border-radius: 16px;
+    z-index: 1100;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-primary, #e2e8f0);
+    overflow: hidden;
+    transform: translateY(-10px);
+    opacity: 0;
+}
+
+.avatar-modal:not(.hidden) {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.avatar-modal.hidden { 
+    display: none; 
+}
+
+.avatar-modal-content { 
+    padding: 0;
+}
+
+/* Modal Header */
+.avatar-modal-header {
+    padding: 24px 20px 16px 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-primary, #e2e8f0);
+    background: linear-gradient(135deg, var(--bg-secondary, #ffffff) 0%, var(--bg-tertiary, #f8fafc) 100%);
+}
+
+.avatar-modal-avatar { 
+    display: grid; 
+    place-items: center; 
+    margin-bottom: 12px; 
+}
+
+.avatar-modal-avatar .amc-avatar-icon {
+    width: 48px;
+    height: 48px;
+    border: 2px solid var(--avatar-ring, #3B82F6);
+    border-radius: 50%;
+    padding: 8px;
+    background: var(--bg-secondary, #ffffff);
+}
+
+.avatar-email { 
+    text-align: center; 
+    font-weight: 600; 
+    font-size: 1.1em;
+    color: var(--text-headings, #1e293b);
+    margin-bottom: 4px; 
+}
+
+.avatar-role {
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--text-secondary, #64748b);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Modal Section */
+.avatar-modal-section {
+    padding: 8px 0;
+}
+
+.modal-btn {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: 0.95em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-primary, #1e293b);
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.modal-btn:hover {
+    background: var(--bg-tertiary, #f1f5f9);
+    color: var(--accent-primary, #3b82f6);
+}
+
+.modal-btn i {
+    width: 16px;
+    text-align: center;
+    opacity: 0.7;
+}
+
+.modal-btn:hover i {
+    opacity: 1;
+}
+
+.modal-divider {
+    margin: 8px 20px;
+    border: none;
+    border-top: 1px solid var(--border-primary, #e2e8f0);
+}
+
+.modal-btn-danger {
+    color: var(--color-danger, #ef4444);
+}
+
+.modal-btn-danger:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger, #ef4444);
+}
+
+/* Dark Mode Support */
+body.modal-dark .avatar-modal { 
+    background: var(--bg-secondary-dark, #2c2c2c); 
+    color: var(--text-primary-dark, #e2e8f0);
+    border-color: var(--border-primary-dark, #374151);
+}
+
+body.modal-dark .avatar-modal-header {
+    background: linear-gradient(135deg, var(--bg-secondary-dark, #2c2c2c) 0%, var(--bg-tertiary-dark, #374151) 100%);
+    border-color: var(--border-primary-dark, #374151);
+}
+
+body.modal-dark .avatar-email {
+    color: var(--text-headings-dark, #f8f9fa);
+}
+
+body.modal-dark .avatar-role {
+    color: var(--text-secondary-dark, #9ca3af);
+}
+
+body.modal-dark .modal-btn {
+    color: var(--text-primary-dark, #e2e8f0);
+}
+
+body.modal-dark .modal-btn:hover {
+    background: var(--bg-tertiary-dark, #374151);
+    color: var(--accent-primary, #3b82f6);
+}
+
+body.modal-dark .modal-divider {
+    border-color: var(--border-primary-dark, #374151);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .avatar-modal {
+        right: 10px;
+        width: 300px;
+    }
+    
+    .amc-header-right {
+        gap: 12px;
+    }
+    
+    .header-icon {
+        font-size: 1.2rem;
+        padding: 6px;
+    }
+    
+    .amc-avatar {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .amc-avatar-ring {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .amc-avatar-icon {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .avatar-modal {
+        right: 5px;
+        left: 5px;
+        width: auto;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+}
+
+/* Role-specific color variations */
+.role-media-user {
+    --avatar-ring: #3B82F6;
+}
+
+.role-client-user {
+    --avatar-ring: #10B981;
+}
+
+.role-client-admin {
+    --avatar-ring: #F59E0B;
+}
+
+.role-platform-admin {
+    --avatar-ring: #EF4444;
+}
+
+/* Enhanced accessibility */
+.amc-avatar:focus-visible {
+    outline: 2px solid var(--accent-primary, #3b82f6);
+    outline-offset: 2px;
+}
+
+.modal-btn:focus-visible {
+    outline: 2px solid var(--accent-primary, #3b82f6);
+    outline-offset: -2px;
+}
+
+/* Animation for modal appearance */
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.avatar-modal:not(.hidden) {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+/* Loading state for avatar */
+.amc-avatar.loading .amc-avatar-ring {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .amc-avatar-ring {
+        border-width: 4px;
+    }
+    
+    .avatar-modal {
+        border-width: 2px;
+    }
+    
+    .modal-btn:hover {
+        background: var(--accent-primary, #3b82f6);
+        color: white;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .halo-pulse {
+        animation: none;
+    }
+    
+    .amc-avatar,
+    .amc-avatar-ring,
+    .avatar-modal,
+    .modal-btn {
+        transition: none;
+    }
+}

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script type="module">
+  import { protectPage } from "./auth.js";
+  // Allow any authenticated user - sidebar will show appropriate sections based on their role
+  protectPage("media_user"); // Minimum role required
+</script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AMC Header & Sidebar Template</title>
+
+<!-- ===== TRULY ISOLATED HEADER & SIDEBAR CSS - ZERO INTERFERENCE ===== -->
+<link rel="stylesheet" href="./css/sidebar.css" />
+<link rel="stylesheet" href="./amc-avatar-styles.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet" />
+
+<!-- Role shim (must be before sidebar/header scripts) -->
+<script type="module" src="./components/amc-role.js"></script>
+
+<style>
+  /* ========================================
+     COMPLETE HEADER & SIDEBAR STYLING
+     ZERO MAIN CONTENT INTERFERENCE GUARANTEED
+     ======================================== */
+
+  /* === HEADER COMPONENT === */
+  .app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    z-index: 10000;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.92) 100%);
+    backdrop-filter: blur(24px) saturate(180%);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02), inset 0 -1px 0 rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px 0 32px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Dark mode header */
+  body.dark-mode .app-header {
+    background: linear-gradient(180deg, rgba(17, 24, 39, 0.95) 0%, rgba(17, 24, 39, 0.92) 100%);
+    border-bottom-color: rgba(55, 65, 81, 0.6);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Header logo */
+  .app-header .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    position: relative;
+  }
+
+  .app-header .logo h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin: 0;
+    color: #0f172a;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .app-header .logo:hover h1 {
+    color: #0f172a;
+    text-shadow: 0 0 10px rgba(37, 99, 235, 0.4), 0 0 20px rgba(37, 99, 235, 0.2), 0 0 30px rgba(37, 99, 235, 0.1);
+    transform: translateX(2px);
+  }
+
+  body.dark-mode .app-header .logo h1 {
+    color: #f8fafc;
+  }
+
+  body.dark-mode .app-header .logo:hover h1 {
+    color: #f8fafc;
+    text-shadow: 0 0 10px rgba(96, 165, 250, 0.5), 0 0 20px rgba(96, 165, 250, 0.3), 0 0 30px rgba(96, 165, 250, 0.1);
+  }
+
+  /* Header right section */
+  .amc-header-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+    height: 100% !important;
+  }
+
+  /* Header icons */
+  .cart-indicator,
+  .notification-indicator,
+  .tools-toggle-btn {
+    width: 40px !important;
+    height: 40px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative;
+    border-radius: 8px;
+    cursor: pointer;
+    background: transparent;
+    color: #64748b;
+    border: none;
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .cart-indicator:hover,
+  .notification-indicator:hover,
+  .tools-toggle-btn:hover {
+    background: rgba(241, 245, 249, 0.8);
+    color: #0f172a;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .cart-indicator i,
+  .notification-indicator i,
+  .tools-toggle-btn i {
+    font-size: 18px;
+    font-family: "Font Awesome 6 Free" !important;
+  }
+
+  body.dark-mode .cart-indicator:hover,
+  body.dark-mode .notification-indicator:hover,
+  body.dark-mode .tools-toggle-btn:hover {
+    background: rgba(51, 65, 85, 0.8);
+    color: #f1f5f9;
+  }
+
+  /* Avatar container */
+  .amc-avatar-container {
+    width: 40px !important;
+    height: 40px !important;
+    margin-left: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .amc-avatar-container:hover {
+    transform: translateY(-1px) scale(1.05);
+  }
+
+  .amc-avatar-ring {
+    width: 40px !important;
+    height: 40px !important;
+    border-width: 2.5px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 3px rgba(255, 255, 255, 0.8);
+  }
+
+  body.dark-mode .amc-avatar-ring {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(17, 24, 39, 0.8);
+  }
+
+  /* === SIDEBAR COMPONENT === */
+  /* Sidebar uses existing sidebar.css for full functionality */
+  /* Only add positioning overrides here */
+  .amc-sidebar,
+  #sidebar {
+    position: fixed !important;
+    top: 64px !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    z-index: 950 !important;
+  }
+
+  /* Ensure sidebar text is visible in dark mode */
+  body.dark-mode .sidebar-link {
+    color: #e6edf3 !important;
+  }
+  
+  body.dark-mode .sidebar-section-header {
+    color: #7d8590 !important;
+  }
+  
+  body.dark-mode .sidebar-text {
+    color: #e6edf3 !important;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 768px) {
+    .app-header {
+      height: 56px;
+      padding: 0 16px;
+    }
+    
+    #sidebar,
+    .amc-sidebar {
+      top: 56px !important;
+    }
+  }
+
+  /* === ZERO MAIN CONTENT INTERFERENCE === */
+  /* This template provides ONLY header and sidebar components */
+  /* Your existing page layouts, grids, typography, and styling remain 100% untouched */
+</style>
+</head>
+
+<body>
+  <!-- ===== HEADER & SIDEBAR COMPONENTS ONLY ===== -->
+  <!-- These components will work exactly as they do in production AMC pages -->
+  <amc-header></amc-header>
+  <aside id="sidebar" class="amc-sidebar"></aside>
+
+  <!-- ===== YOUR MAIN CONTENT GOES HERE ===== -->
+  <!-- Replace this comment with your existing page content -->
+  <!-- The header and sidebar will not interfere with your layouts -->
+
+  <!-- UNIVERSAL ROLE PROTECTION - PREVENT COMPONENTS FROM CORRUPTING ANY ROLE -->
+  <script>
+    // PROTECT ANY AUTHENTICATED ROLE FROM BEING CORRUPTED TO media_user
+    (function() {
+      console.log("🛡️ PROTECTING AUTHENTICATED ROLE FROM COMPONENT CORRUPTION...");
+      
+      // Get current user data
+      let userString = localStorage.getItem('user');
+      if (userString) {
+        try {
+          let user = JSON.parse(userString);
+          const originalRole = user.role;
+          const originalEmail = user.email;
+          
+          if (originalRole && originalRole !== 'media_user') {
+            console.log(`🔒 LOCKING ${originalRole.toUpperCase()} ROLE - PREVENTING CORRUPTION`);
+            
+            // Override localStorage setItem to prevent corruption
+            const originalSetItem = localStorage.setItem;
+            localStorage.setItem = function(key, value) {
+              if ((key === 'user' || key === 'currentUser') && value) {
+                try {
+                  const newUser = JSON.parse(value);
+                  // If components try to downgrade role to media_user, block it
+                  if (newUser.role === 'media_user' && originalRole !== 'media_user') {
+                    console.log(`🛡️ BLOCKED ATTEMPT TO CORRUPT ${originalRole.toUpperCase()} ROLE TO MEDIA_USER!`);
+                    // Force keep original role
+                    newUser.role = originalRole;
+                    newUser.email = originalEmail;
+                    value = JSON.stringify(newUser);
+                  }
+                } catch(e) {}
+              }
+              return originalSetItem.call(this, key, value);
+            };
+            
+            console.log(`✅ ${originalRole.toUpperCase()} ROLE PROTECTION ACTIVE`);
+          } else {
+            console.log("ℹ️ User is media_user or no role - no protection needed");
+          }
+        } catch(e) {
+          console.error("❌ Error setting up role protection:", e);
+        }
+      } else {
+        console.log("⚠️ No user data found - no protection needed");
+      }
+    })();
+  </script>
+  
+  <!-- ===== EXACT JAVASCRIPT FROM WORKING SYSTEM ===== -->
+  <script defer src="./components/amc-header.js"></script>
+  
+  <!-- Avatar System - matching existing pages (EXACT COPY from working template) -->
+  <script defer src="./amc-avatar-system.js"></script>
+  <script defer src="./components/globalshell.js"></script>
+  <script defer src="./components/sidebar.js"></script>
+  <script defer src="./kebab-portal-NO-HOVER.js"></script>
+
+  <!-- Fallback: try common sidebar init hooks -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const el = document.getElementById('sidebar');
+      if (!el) return;
+      if (window.buildSidebar && !el.dataset.amcBuilt) { try { window.buildSidebar(el); } catch(e){} }
+      else if (window.initSidebar && !el.dataset.amcBuilt) { try { window.initSidebar(el); } catch(e){} }
+      else if (window.Sidebar?.init && !el.dataset.amcBuilt) { try { window.Sidebar.init(el); } catch(e){} }
+    });
+  </script>
+
+  <!-- Kebab portal target (shared by table pages) -->
+  <div id="kebab-portal" style="position:fixed; inset:0; pointer-events:none; z-index:2147483646;"></div>
+
+</body>
+</html>

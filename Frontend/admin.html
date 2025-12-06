@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - AutoMediaCenter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-primary: #ff6b35;
+            --accent-secondary: #00d4ff;
+            --accent-admin: #ff3366;
+            --border-primary: #333333;
+            --shadow-primary: rgba(255, 107, 53, 0.2);
+            --font-family-main: 'Poppins', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: var(--font-family-main); 
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary); 
+            line-height: 1.6; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .portal-icon {
+            font-size: 4rem;
+            color: var(--accent-admin);
+            margin-bottom: 1.5rem;
+        }
+
+        .portal-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .portal-description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            font-size: 1.1rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-admin {
+            background: linear-gradient(45deg, var(--accent-admin), #ff5577);
+            color: white;
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 51, 102, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent-admin);
+            color: var(--accent-admin);
+        }
+
+        .btn-outline:hover {
+            background: var(--accent-admin);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--accent-primary);
+        }
+
+        .divider {
+            margin: 2rem 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--border-primary);
+        }
+
+        .divider span {
+            background: var(--bg-secondary);
+            padding: 0 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .admin-note {
+            background: var(--bg-primary);
+            border: 1px solid var(--accent-admin);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .admin-note strong {
+            color: var(--accent-admin);
+        }
+
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid var(--accent-admin);
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: var(--accent-admin);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        Back to Home
+    </a>
+
+    <div class="container">
+        <div class="logo">AutoMediaCenter</div>
+        
+        <div class="security-badge">
+            <i class="fas fa-shield-alt"></i>
+            Secure Admin Access
+        </div>
+        
+        <div class="portal-icon">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        
+        <h1 class="portal-title">Admin Portal</h1>
+        
+        <p class="portal-description">
+            Access the administrative dashboard to manage users, monitor system analytics, oversee content moderation, and configure platform settings.
+        </p>
+
+        <div style="margin-top: 2rem;">
+            <a href="login.html?portal=admin" class="btn btn-admin">
+                <i class="fas fa-key"></i>
+                Admin Sign In
+            </a>
+            
+            <div class="divider">
+                <span>Authorized Personnel Only</span>
+            </div>
+            
+            <a href="register.html?type=admin" class="btn btn-outline">
+                <i class="fas fa-user-plus"></i>
+                Request Admin Access
+            </a>
+        </div>
+
+        <div class="admin-note">
+            <strong>Security Notice:</strong><br>
+            Admin access is restricted to authorized AutoMediaCenter personnel only. All login attempts are monitored and logged for security purposes. Unauthorized access attempts will be reported.
+        </div>
+    </div>
+
+    <script>
+        // Track admin portal access
+        fetch('/api/v1/users/track-activity', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                eventType: 'admin_portal_access',
+                eventData: {
+                    referrer: document.referrer,
+                    userAgent: navigator.userAgent,
+                    url: window.location.href,
+                    securityLevel: 'high'
+                },
+                pageUrl: window.location.href,
+                timestamp: Date.now(),
+                sessionId: sessionStorage.getItem('sessionId') || 'anonymous'
+            })
+        }).catch(err => console.log('Analytics tracking failed:', err));
+    </script>
+</body>
+</html>

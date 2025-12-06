@@ -1,0 +1,1569 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="module">
+      import { protectPage } from "./auth.js";
+      protectPage("client_admin");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - AI Analytics Intelligence</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ✅ GLOBAL CSS - REPLACES ALL OLD STYLES -->
+    <link rel="stylesheet" href="css/amc-globalshell.css">
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+    <!-- Advanced Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    
+    <!-- AI Analytics Specific Styles -->
+    <style>
+        /* AI Theme Colors */
+        :root {
+            --ai-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --ai-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --ai-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --ai-warning: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --ai-danger: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --ai-neural: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            
+            --ai-primary-solid: #6366f1;
+            --ai-secondary-solid: #8b5cf6;
+            --ai-success-solid: #10b981;
+            --ai-warning-solid: #f59e0b;
+            --ai-danger-solid: #ef4444;
+            --ai-info-solid: #06b6d4;
+            
+            --ai-glow: 0 0 20px rgba(102, 102, 241, 0.3);
+            --ai-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Particle Background */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* Neural Network Header */
+        .ai-neural-header {
+            background: var(--ai-primary);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-neural-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="neural" patternUnits="userSpaceOnUse" width="20" height="20"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/><line x1="10" y1="10" x2="30" y2="10" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/><line x1="10" y1="10" x2="10" y2="30" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23neural)"/></svg>') repeat;
+            animation: neuralFlow 20s linear infinite;
+        }
+
+        @keyframes neuralFlow {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(-20px) translateY(-20px); }
+        }
+
+        .ai-neural-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .ai-neural-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffffff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .ai-neural-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin-bottom: 2rem;
+        }
+
+        /* Real-time Stats */
+        .ai-realtime-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .ai-stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--ai-transition);
+        }
+
+        .ai-stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .ai-stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ffffff, #f8fafc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .ai-stat-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        .ai-stat-trend {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            opacity: 0.7;
+        }
+
+        /* Control Panel */
+        .ai-control-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-control-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--ai-primary);
+        }
+
+        .ai-control-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .ai-control-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .ai-control-icon {
+            width: 3rem;
+            height: 3rem;
+            background: var(--ai-primary);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .ai-controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ai-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .ai-control-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .ai-select, .ai-input {
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-primary);
+            border-radius: 0.5rem;
+            background: var(--bg-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--ai-transition);
+            color: var(--text-primary);
+        }
+
+        .ai-select:focus, .ai-input:focus {
+            outline: none;
+            border-color: var(--ai-primary-solid);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Advanced Buttons */
+        .ai-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            background: var(--ai-primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--ai-transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .ai-button:hover::before {
+            left: 100%;
+        }
+
+        .ai-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .ai-button.secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-primary);
+        }
+
+        .ai-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .ai-button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* AI Query Interface */
+        .ai-query-interface {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-primary);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .ai-query-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ai-query-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--border-primary);
+            border-radius: 1rem;
+            font-size: 1rem;
+            background: var(--bg-primary);
+            transition: var(--ai-transition);
+            color: var(--text-primary);
+        }
+
+        .ai-query-input:focus {
+            outline: none;
+            border-color: var(--ai-primary-solid);
+            box-shadow: var(--ai-glow);
+        }
+
+        .ai-query-suggestions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .ai-suggestion-chip {
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--ai-transition);
+            color: var(--text-primary);
+        }
+
+        .ai-suggestion-chip:hover {
+            background: var(--ai-primary-solid);
+            color: white;
+        }
+
+        /* Intelligence Grid */
+        .ai-intelligence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .ai-intelligence-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: var(--ai-transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-intelligence-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--ai-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .ai-intelligence-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .ai-intelligence-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .ai-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .ai-card-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .ai-card-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            background: var(--ai-primary);
+        }
+
+        .ai-card-icon.neural { background: var(--ai-neural); }
+        .ai-card-icon.performance { background: var(--ai-success); }
+        .ai-card-icon.security { background: var(--ai-danger); }
+        .ai-card-icon.predictive { background: var(--ai-warning); }
+
+        .ai-confidence-badge {
+            padding: 0.25rem 0.75rem;
+            background: var(--ai-success-solid);
+            color: white;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .ai-insight-summary {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        /* Advanced Metrics */
+        .ai-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .ai-metric-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-primary);
+            transition: var(--ai-transition);
+        }
+
+        .ai-metric-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .ai-metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--ai-primary-solid);
+            margin-bottom: 0.25rem;
+        }
+
+        .ai-metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        /* Recommendations */
+        .ai-recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-tertiary);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-primary);
+            transition: var(--ai-transition);
+        }
+
+        .ai-recommendation-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .ai-recommendation-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .ai-recommendation-content {
+            flex: 1;
+        }
+
+        .ai-recommendation-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .ai-recommendation-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .ai-recommendation-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Activity Stream */
+        .ai-activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(99, 102, 241, 0.05) 100%);
+            transition: var(--ai-transition);
+            animation: slideInRight 0.5s ease;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .ai-activity-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .ai-activity-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .ai-activity-content {
+            flex-grow: 1;
+        }
+
+        .ai-activity-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+
+        .ai-activity-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.125rem;
+        }
+
+        .ai-activity-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .ai-intelligence-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-controls-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .ai-neural-title {
+                font-size: 2rem;
+            }
+
+            .ai-realtime-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .ai-button-group {
+                flex-direction: column;
+            }
+
+            .ai-intelligence-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ai-control-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .ai-realtime-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Notification System */
+        .ai-notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-primary);
+            border-radius: 0.5rem;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            z-index: 10000;
+            max-width: 400px;
+            animation: slideInRight 0.3s ease;
+        }
+
+        .ai-notification.success {
+            border-color: var(--ai-success-solid);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+        }
+
+        .ai-notification.error {
+            border-color: var(--ai-danger-solid);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+        }
+
+        /* Pulse animation for live indicators */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+
+    <!-- AMC Header Component -->
+    <amc-header></amc-header>
+
+    <div class="amc-app">
+        <!-- Enterprise Sidebar -->
+        <aside id="sidebar" class="amc-sidebar">
+            <!-- Content will be dynamically generated by components/sidebar.js -->
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="amc-page ai-analytics-page" role="main">
+            <div class="amc-page__container">
+                <!-- Neural Network Header -->
+                <div class="ai-neural-header">
+                    <div class="ai-neural-content">
+                        <h1 class="ai-neural-title">
+                            <i class="fas fa-brain"></i> AI Analytics Intelligence
+                        </h1>
+                        <p class="ai-neural-subtitle">
+                            Revolutionary AI-powered analytics that leverages machine learning, predictive modeling, and real-time intelligence to deliver insights that transform your business operations and strategic decision-making.
+                        </p>
+                        
+                        <div class="ai-realtime-stats">
+                            <div class="ai-stat-card">
+                                <div class="ai-stat-value" id="aiInsightsGenerated">1,247</div>
+                                <div class="ai-stat-label">AI Insights Generated</div>
+                                <div class="ai-stat-trend" id="insightsTrend">↗ +23% this week</div>
+                            </div>
+                            <div class="ai-stat-card">
+                                <div class="ai-stat-value" id="confidenceScore">94.7%</div>
+                                <div class="ai-stat-label">Average Confidence</div>
+                                <div class="ai-stat-trend" id="confidenceTrend">↗ +2.1% improvement</div>
+                            </div>
+                            <div class="ai-stat-card">
+                                <div class="ai-stat-value" id="activeRecommendations">12</div>
+                                <div class="ai-stat-label">Active Recommendations</div>
+                                <div class="ai-stat-trend" id="recommendationsTrend">3 high priority</div>
+                            </div>
+                            <div class="ai-stat-card">
+                                <div class="ai-stat-value" id="predictiveAccuracy">89.3%</div>
+                                <div class="ai-stat-label">Predictive Accuracy</div>
+                                <div class="ai-stat-trend" id="accuracyTrend">↗ +5.2% this month</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Control Panel -->
+                <div class="ai-control-panel">
+                    <div class="ai-control-header">
+                        <div class="ai-control-title">
+                            <div class="ai-control-icon">
+                                <i class="fas fa-sliders-h"></i>
+                            </div>
+                            AI Intelligence Control Center
+                        </div>
+                        <div class="ai-button-group">
+                            <button class="ai-button" onclick="generateAIReport()" id="generateBtn">
+                                <i class="fas fa-magic"></i> Generate AI Analysis
+                            </button>
+                            <button class="ai-button secondary" onclick="refreshInsights()" id="refreshBtn">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-controls-grid">
+                        <div class="ai-control-group">
+                            <label class="ai-control-label">Time Range</label>
+                            <select class="ai-select" id="timeRange">
+                                <option value="1h">Last Hour</option>
+                                <option value="24h">Last 24 Hours</option>
+                                <option value="7d">7 Days</option>
+                                <option value="30d" selected>30 Days</option>
+                                <option value="90d">90 Days</option>
+                                <option value="1y">1 Year</option>
+                            </select>
+                        </div>
+                        <div class="ai-control-group">
+                            <label class="ai-control-label">Analysis Type</label>
+                            <select class="ai-select" id="analysisType">
+                                <option value="comprehensive">Comprehensive Analysis</option>
+                                <option value="behavior">Behavior Intelligence</option>
+                                <option value="performance">Performance Intelligence</option>
+                                <option value="security">Security Intelligence</option>
+                                <option value="predictive">Predictive Intelligence</option>
+                                <option value="neural">Neural Network Analysis</option>
+                            </select>
+                        </div>
+                        <div class="ai-control-group">
+                            <label class="ai-control-label">Report Type</label>
+                            <select class="ai-select" id="reportType">
+                                <option value="comprehensive">Full Intelligence Report</option>
+                                <option value="executive">Executive Summary</option>
+                                <option value="technical">Technical Deep Dive</option>
+                                <option value="trends">Trend Analysis</option>
+                                <option value="alerts">Security Alerts</option>
+                            </select>
+                        </div>
+                        <div class="ai-control-group">
+                            <label class="ai-control-label">AI Model</label>
+                            <select class="ai-select" id="aiModel">
+                                <option value="gpt4">GPT-4 Turbo</option>
+                                <option value="claude">Claude 3.5 Sonnet</option>
+                                <option value="gemini">Gemini Pro</option>
+                                <option value="ensemble" selected>Ensemble (All Models)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Query Interface -->
+                <div class="ai-query-interface">
+                    <div class="ai-query-header">
+                        <div class="ai-control-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <input type="text" class="ai-query-input" id="aiQueryInput" placeholder="Ask AI anything about your analytics data..." />
+                        <button class="ai-button" onclick="processAIQuery()" id="queryBtn">
+                            <i class="fas fa-paper-plane"></i> Ask AI
+                        </button>
+                    </div>
+                    
+                    <div class="ai-query-suggestions">
+                        <div class="ai-suggestion-chip" onclick="setQuery('What are the top performance trends this month?')">Performance Trends</div>
+                        <div class="ai-suggestion-chip" onclick="setQuery('Identify potential security risks in user behavior')">Security Analysis</div>
+                        <div class="ai-suggestion-chip" onclick="setQuery('Predict user engagement for next quarter')">Predictive Insights</div>
+                        <div class="ai-suggestion-chip" onclick="setQuery('Analyze conversion funnel optimization opportunities')">Conversion Analysis</div>
+                        <div class="ai-suggestion-chip" onclick="setQuery('Generate executive summary of key metrics')">Executive Summary</div>
+                    </div>
+                </div>
+
+                <!-- Intelligence Grid -->
+                <div class="ai-intelligence-grid">
+                    <!-- Neural Network Analysis -->
+                    <div class="ai-intelligence-card">
+                        <div class="ai-card-header">
+                            <div class="ai-card-title">
+                                <div class="ai-card-icon neural">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                Neural Network Analysis
+                            </div>
+                            <div class="ai-confidence-badge">96.2%</div>
+                        </div>
+                        <div class="ai-insight-summary">
+                            Advanced neural network processing has identified 3 critical patterns in user behavior that correlate with 89% accuracy to conversion events. The model suggests implementing targeted interventions during peak engagement windows.
+                        </div>
+                        <div class="ai-metrics-grid">
+                            <div class="ai-metric-item">
+                                <div class="ai-metric-value">3</div>
+                                <div class="ai-metric-label">Key Patterns</div>
+                            </div>
+                            <div class="ai-metric-item">
+                                <div class="ai-metric-value">89%</div>
+                                <div class="ai-metric-label">Accuracy</div>
+                            </div>
+                            <div class="ai-metric-item">
+                                <div class="ai-metric-value">12.3%</div>
+                                <div class="ai-metric-label">Improvement</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Intelligence -->
+                    <div class="ai-intelligence-card">
+                        <div class="ai-card-header">
+                            <div class="ai-card-title">
+                                <div class="ai-card-icon performance">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                Performance Intelligence
+                            </div>
+                            <div class="ai-confidence-badge">92.8%</div>
+                        </div>
+                        <div class="ai-insight-summary">
+                            System performance analysis reveals optimal load balancing opportunities. AI recommends scaling infrastructure during predicted peak hours to maintain sub-200ms response times across all endpoints.
+                        </div>
+                        <div class="ai-metrics-grid">
+                            <div class="ai-metric-item">
+                                <div class="ai-metric-value">156ms</div>
+                                <div class="ai-metric-label">Avg Response</div>
+                            </div>
+                            <div class="ai-metric-item">
+                                <div class="ai-metric-value">99.7%</div>
+                                <div class="ai-metric-label">Uptime</div>
+                            </div>
+                            <div class="ai-metric-item">
+                                <div class="ai-metric-value">23%</div>
+                                <div class="ai-metric-label">Efficiency Gain</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Intelligence -->
+                    <div class="ai-intelligence-card">
+                        <div class="ai-card-header">
+                            <div class="ai-card-title">
+                                <div class="ai-card-icon security">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                Security Intelligence
+                            </div>
+                            <div class="ai-confidence-badge">98.1%</div>
+                        </div>
+                        <div class="ai-insight-summary">
+                            Advanced threat detection algorithms have identified 2 potential security anomalies requiring immediate attention. All systems remain secure with enhanced monitoring protocols active.
+                        </div>
+                        <div class="ai-metrics-grid">
+                            <div class="ai-metric-item">
+                                <div class="ai-metric-value">2</div>
+                                <div class="ai-metric-label">Anomalies</div>
+                            </div>
+                            <div class="ai-metric-item">
+                                <div class="ai-metric-value">0</div>
+                                <div class="ai-metric-label">Breaches</div>
+                            </div>
+                            <div class="ai-metric-item">
+                                <div class="ai-metric-value">100%</div>
+                                <div class="ai-metric-label">Protection</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Predictive Intelligence -->
+                    <div class="ai-intelligence-card">
+                        <div class="ai-card-header">
+                            <div class="ai-card-title">
+                                <div class="ai-card-icon predictive">
+                                    <i class="fas fa-crystal-ball"></i>
+                                </div>
+                                Predictive Intelligence
+                            </div>
+                            <div class="ai-confidence-badge">91.4%</div>
+                        </div>
+                        <div class="ai-insight-summary">
+                            Machine learning models predict a 34% increase in user engagement over the next 30 days, with peak activity expected during weekends. Resource allocation recommendations have been generated.
+                        </div>
+                        <div class="ai-metrics-grid">
+                            <div class="ai-metric-item">
+                                <div class="ai-metric-value">+34%</div>
+                                <div class="ai-metric-label">Growth</div>
+                            </div>
+                            <div class="ai-metric-item">
+                                <div class="ai-metric-value">30d</div>
+                                <div class="ai-metric-label">Forecast</div>
+                            </div>
+                            <div class="ai-metric-item">
+                                <div class="ai-metric-value">5</div>
+                                <div class="ai-metric-label">Recommendations</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Recommendations -->
+                <div class="ai-intelligence-card" style="margin-bottom: 2rem;">
+                    <div class="ai-card-header">
+                        <div class="ai-card-title">
+                            <div class="ai-card-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            AI-Powered Recommendations
+                        </div>
+                        <div class="ai-confidence-badge">95.3%</div>
+                    </div>
+                    
+                    <div id="aiRecommendations">
+                        <div class="ai-recommendation-item">
+                            <div class="ai-recommendation-icon" style="background: var(--ai-success);">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="ai-recommendation-content">
+                                <div class="ai-recommendation-title">Optimize Peak Hour Performance</div>
+                                <div class="ai-recommendation-description">
+                                    AI analysis suggests implementing auto-scaling between 2-4 PM daily to handle 67% traffic increase. Expected performance improvement: 23%.
+                                </div>
+                                <div class="ai-recommendation-meta">
+                                    <span><i class="fas fa-clock"></i> High Priority</span>
+                                    <span><i class="fas fa-chart-bar"></i> +23% Performance</span>
+                                    <span><i class="fas fa-dollar-sign"></i> $2,400/month savings</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ai-recommendation-item">
+                            <div class="ai-recommendation-icon" style="background: var(--ai-warning);">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="ai-recommendation-content">
+                                <div class="ai-recommendation-title">Enhance User Engagement Strategy</div>
+                                <div class="ai-recommendation-description">
+                                    Behavioral analysis indicates 34% higher conversion rates when users interact with personalized content. Implement dynamic content recommendations.
+                                </div>
+                                <div class="ai-recommendation-meta">
+                                    <span><i class="fas fa-star"></i> Medium Priority</span>
+                                    <span><i class="fas fa-percentage"></i> +34% Conversion</span>
+                                    <span><i class="fas fa-calendar"></i> 2-week implementation</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ai-recommendation-item">
+                            <div class="ai-recommendation-icon" style="background: var(--ai-danger);">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="ai-recommendation-content">
+                                <div class="ai-recommendation-title">Strengthen Security Protocols</div>
+                                <div class="ai-recommendation-description">
+                                    Anomaly detection identified unusual access patterns from 3 IP ranges. Recommend implementing enhanced authentication for these regions.
+                                </div>
+                                <div class="ai-recommendation-meta">
+                                    <span><i class="fas fa-exclamation-triangle"></i> Critical</span>
+                                    <span><i class="fas fa-lock"></i> Security Enhancement</span>
+                                    <span><i class="fas fa-clock"></i> Immediate action required</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-time Activity Stream -->
+                <div class="ai-intelligence-card">
+                    <div class="ai-card-header">
+                        <div class="ai-card-title">
+                            <div class="ai-card-icon">
+                                <i class="fas fa-stream"></i>
+                            </div>
+                            Real-time AI Activity Stream
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 8px; height: 8px; background: var(--ai-success-solid); border-radius: 50%; animation: pulse 2s infinite;"></div>
+                            <span style="font-size: 0.75rem; color: var(--text-secondary);">Live</span>
+                        </div>
+                    </div>
+                    
+                    <div id="aiActivityStream" style="max-height: 400px; overflow-y: auto;">
+                        <!-- Activity items will be dynamically populated -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <nav>
+            <a href="#">About Us</a> |
+            <a href="#">Help Center</a> |
+            <a href="#">Terms of Service</a> |
+            <a href="#">Privacy Policy</a>
+        </nav>
+        <p>© <span id="currentYearText"></span> AutoMediaCenter. All rights reserved.</p>
+    </footer>
+
+    <!-- Advanced JavaScript -->
+    <script>
+        // Global AI Analytics State
+        let aiAnalyticsState = {
+            isConnected: false,
+            lastUpdate: null,
+            activeModel: 'ensemble',
+            confidenceThreshold: 0.85,
+            realTimeEnabled: true,
+            notifications: []
+        };
+
+        // WebSocket Connection for Real-time Updates
+        let aiWebSocket = null;
+
+        // Initialize AI Analytics Dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🤖 AI Analytics Dashboard Initializing...');
+            
+            // Initialize authentication
+            initializeAuth();
+            
+            // Initialize particle background
+            initializeParticles();
+            
+            // Initialize real-time connections
+            initializeWebSocket();
+            
+            // Initialize UI components
+            initializeUI();
+            
+            // Start real-time updates
+            startRealTimeUpdates();
+            
+            // Load initial data
+            loadInitialData();
+            
+            console.log('✅ AI Analytics Dashboard Ready');
+        });
+
+        // Authentication
+        function initializeAuth() {
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            if (!token) {
+                console.error('🚨 No authentication token found');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Set current year
+            document.getElementById('currentYearText').textContent = new Date().getFullYear();
+            
+            // Apply theme
+            const theme = localStorage.getItem('theme') || 'light';
+            document.body.classList.toggle('dark-mode', theme === 'dark');
+            document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
+        }
+
+        // Particle Background
+        function initializeParticles() {
+            if (typeof particlesJS !== 'undefined') {
+                particlesJS('particles-js', {
+                    particles: {
+                        number: { value: 50, density: { enable: true, value_area: 800 } },
+                        color: { value: '#6366f1' },
+                        shape: { type: 'circle' },
+                        opacity: { value: 0.3, random: true },
+                        size: { value: 3, random: true },
+                        line_linked: { enable: true, distance: 150, color: '#6366f1', opacity: 0.2, width: 1 },
+                        move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+                    },
+                    interactivity: {
+                        detect_on: 'canvas',
+                        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                        modes: { grab: { distance: 400, line_linked: { opacity: 1 } }, bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 }, repulse: { distance: 200, duration: 0.4 }, push: { particles_nb: 4 }, remove: { particles_nb: 2 } }
+                    },
+                    retina_detect: true
+                });
+            }
+        }
+
+        // WebSocket Connection
+        function initializeWebSocket() {
+            try {
+                aiWebSocket = new WebSocket('ws://localhost:5000/ai-analytics');
+                
+                aiWebSocket.onopen = function() {
+                    console.log('🔗 AI Analytics WebSocket Connected');
+                    aiAnalyticsState.isConnected = true;
+                    showNotification('AI Analytics Connected', 'success');
+                };
+                
+                aiWebSocket.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    handleRealTimeUpdate(data);
+                };
+                
+                aiWebSocket.onclose = function() {
+                    console.log('🔌 AI Analytics WebSocket Disconnected');
+                    aiAnalyticsState.isConnected = false;
+                    // Attempt reconnection after 5 seconds
+                    setTimeout(initializeWebSocket, 5000);
+                };
+                
+                aiWebSocket.onerror = function(error) {
+                    console.error('❌ WebSocket Error:', error);
+                };
+            } catch (error) {
+                console.error('❌ WebSocket Connection Failed:', error);
+            }
+        }
+
+        // UI Initialization
+        function initializeUI() {
+            // Add event listeners for controls
+            document.getElementById('timeRange').addEventListener('change', handleControlChange);
+            document.getElementById('analysisType').addEventListener('change', handleControlChange);
+            document.getElementById('reportType').addEventListener('change', handleControlChange);
+            document.getElementById('aiModel').addEventListener('change', handleControlChange);
+            
+            // AI Query input
+            const queryInput = document.getElementById('aiQueryInput');
+            queryInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    processAIQuery();
+                }
+            });
+        }
+
+        // Real-time Updates
+        function startRealTimeUpdates() {
+            // Update stats every 30 seconds
+            setInterval(updateRealTimeStats, 30000);
+            
+            // Update activity stream every 10 seconds
+            setInterval(updateActivityStream, 10000);
+            
+            // Initial updates
+            updateRealTimeStats();
+            updateActivityStream();
+        }
+
+        // Load Initial Data
+        async function loadInitialData() {
+            try {
+                showLoading('Initializing AI Analytics...');
+                
+                // Simulate loading time for dramatic effect
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Load AI insights
+                await loadAIInsights();
+                
+                // Load recommendations
+                await loadRecommendations();
+                
+                hideLoading();
+                showNotification('AI Analytics Loaded Successfully', 'success');
+            } catch (error) {
+                console.error('❌ Failed to load initial data:', error);
+                showError('Failed to initialize AI Analytics');
+                hideLoading();
+            }
+        }
+
+        // Control Change Handler
+        function handleControlChange() {
+            const timeRange = document.getElementById('timeRange').value;
+            const analysisType = document.getElementById('analysisType').value;
+            const reportType = document.getElementById('reportType').value;
+            const aiModel = document.getElementById('aiModel').value;
+            
+            console.log('🔄 Controls changed:', { timeRange, analysisType, reportType, aiModel });
+            
+            // Update AI model state
+            aiAnalyticsState.activeModel = aiModel;
+            
+            // Refresh data with new parameters
+            refreshInsights();
+        }
+
+        // Generate AI Report
+        async function generateAIReport() {
+            const btn = document.getElementById('generateBtn');
+            const originalText = btn.innerHTML;
+            
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+                btn.disabled = true;
+                
+                showNotification('AI is analyzing your data...', 'info');
+                
+                // Simulate AI processing time
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                
+                // Generate report based on current settings
+                const report = await generateIntelligenceReport();
+                
+                showNotification('AI Report Generated Successfully', 'success');
+                
+                // Update UI with new insights
+                updateInsightsDisplay(report);
+                
+            } catch (error) {
+                console.error('❌ Failed to generate AI report:', error);
+                showNotification('Failed to generate AI report', 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Refresh Insights
+        async function refreshInsights() {
+            const btn = document.getElementById('refreshBtn');
+            const originalText = btn.innerHTML;
+            
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+                btn.disabled = true;
+                
+                await loadAIInsights();
+                await loadRecommendations();
+                updateRealTimeStats();
+                
+                showNotification('Insights refreshed successfully', 'success');
+                
+            } catch (error) {
+                console.error('❌ Failed to refresh insights:', error);
+                showNotification('Failed to refresh insights', 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Process AI Query
+        async function processAIQuery() {
+            const input = document.getElementById('aiQueryInput');
+            const query = input.value.trim();
+            
+            if (!query) {
+                showNotification('Please enter a query', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('queryBtn');
+            const originalText = btn.innerHTML;
+            
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                btn.disabled = true;
+                
+                showNotification('AI is processing your query...', 'info');
+                
+                // Simulate AI processing
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Generate AI response
+                const response = await generateAIResponse(query);
+                
+                // Display response
+                displayAIResponse(response);
+                
+                // Clear input
+                input.value = '';
+                
+                showNotification('AI query processed successfully', 'success');
+                
+            } catch (error) {
+                console.error('❌ Failed to process AI query:', error);
+                showNotification('Failed to process AI query', 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Set Query from Suggestion
+        function setQuery(query) {
+            document.getElementById('aiQueryInput').value = query;
+            processAIQuery();
+        }
+
+        // Update Real-time Stats
+        function updateRealTimeStats() {
+            // Simulate real-time data updates
+            const stats = {
+                insights: Math.floor(Math.random() * 100) + 1200,
+                confidence: (Math.random() * 5 + 90).toFixed(1),
+                recommendations: Math.floor(Math.random() * 8) + 8,
+                accuracy: (Math.random() * 10 + 85).toFixed(1)
+            };
+            
+            // Update with smooth animations
+            animateValue('aiInsightsGenerated', parseInt(document.getElementById('aiInsightsGenerated').textContent.replace(',', '')), stats.insights, 2000);
+            animateValue('confidenceScore', parseFloat(document.getElementById('confidenceScore').textContent), stats.confidence, 2000, '%');
+            animateValue('activeRecommendations', parseInt(document.getElementById('activeRecommendations').textContent), stats.recommendations, 2000);
+            animateValue('predictiveAccuracy', parseFloat(document.getElementById('predictiveAccuracy').textContent), stats.accuracy, 2000, '%');
+            
+            aiAnalyticsState.lastUpdate = new Date();
+        }
+
+        // Update Activity Stream
+        function updateActivityStream() {
+            const activities = [
+                { icon: 'fa-brain', color: 'var(--ai-neural)', title: 'Neural network analysis completed', meta: 'Pattern recognition: 96.2% accuracy', time: 'Just now' },
+                { icon: 'fa-shield-alt', color: 'var(--ai-danger)', title: 'Security anomaly detected', meta: 'IP range: 192.168.1.0/24', time: '2 min ago' },
+                { icon: 'fa-chart-line', color: 'var(--ai-success)', title: 'Performance optimization identified', meta: 'Potential 23% improvement', time: '5 min ago' },
+                { icon: 'fa-users', color: 'var(--ai-warning)', title: 'User behavior pattern updated', meta: 'Engagement prediction: +34%', time: '8 min ago' },
+                { icon: 'fa-robot', color: 'var(--ai-primary)', title: 'AI model training completed', meta: 'Ensemble accuracy: 94.7%', time: '12 min ago' }
+            ];
+            
+            const container = document.getElementById('aiActivityStream');
+            container.innerHTML = '';
+            
+            activities.forEach((activity, index) => {
+                setTimeout(() => {
+                    const item = document.createElement('div');
+                    item.className = 'ai-activity-item';
+                    item.innerHTML = `
+                        <div class="ai-activity-icon" style="background: ${activity.color};">
+                            <i class="fas ${activity.icon}"></i>
+                        </div>
+                        <div class="ai-activity-content">
+                            <div class="ai-activity-title">${activity.title}</div>
+                            <div class="ai-activity-meta">${activity.meta}</div>
+                        </div>
+                        <div class="ai-activity-time">${activity.time}</div>
+                    `;
+                    container.appendChild(item);
+                }, index * 200);
+            });
+        }
+
+        // Handle Real-time Updates from WebSocket
+        function handleRealTimeUpdate(data) {
+            console.log('📡 Real-time update received:', data);
+            
+            switch (data.type) {
+                case 'stats_update':
+                    updateRealTimeStats();
+                    break;
+                case 'new_insight':
+                    addNewInsight(data.insight);
+                    break;
+                case 'security_alert':
+                    showSecurityAlert(data.alert);
+                    break;
+                case 'recommendation':
+                    addNewRecommendation(data.recommendation);
+                    break;
+            }
+        }
+
+        // Load AI Insights
+        async function loadAIInsights() {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Update confidence badges with random values for demo
+            const badges = document.querySelectorAll('.ai-confidence-badge');
+            badges.forEach(badge => {
+                const confidence = (Math.random() * 10 + 85).toFixed(1);
+                badge.textContent = confidence + '%';
+            });
+        }
+
+        // Load Recommendations
+        async function loadRecommendations() {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // Recommendations are already in HTML, just simulate loading
+            console.log('📋 Recommendations loaded');
+        }
+
+        // Generate Intelligence Report
+        async function generateIntelligenceReport() {
+            // Simulate AI processing
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            return {
+                summary: 'Comprehensive AI analysis completed with 94.7% confidence',
+                insights: [
+                    'User engagement patterns show 34% increase potential',
+                    'Security protocols require enhancement in 3 areas',
+                    'Performance optimization can yield 23% improvement'
+                ],
+                recommendations: [
+                    'Implement auto-scaling during peak hours',
+                    'Deploy enhanced authentication protocols',
+                    'Optimize database query performance'
+                ]
+            };
+        }
+
+        // Generate AI Response
+        async function generateAIResponse(query) {
+            // Simulate AI processing based on query
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            const responses = {
+                'performance': 'Based on current analytics, your system performance is optimal with 156ms average response time. I recommend implementing auto-scaling during peak hours (2-4 PM) to handle the 67% traffic increase and achieve 23% performance improvement.',
+                'security': 'Security analysis shows 2 anomalies detected from specific IP ranges. All systems remain secure with 100% protection rate. I recommend implementing enhanced authentication for the flagged regions.',
+                'trends': 'Current trends indicate 34% growth in user engagement over the next 30 days, with peak activity expected during weekends. Resource allocation should be adjusted accordingly.',
+                'default': 'AI analysis complete. Your query has been processed with 94.7% confidence. Based on current data patterns, I recommend focusing on performance optimization and user engagement strategies.'
+            };
+            
+            // Simple keyword matching for demo
+            const lowerQuery = query.toLowerCase();
+            if (lowerQuery.includes('performance')) return responses.performance;
+            if (lowerQuery.includes('security')) return responses.security;
+            if (lowerQuery.includes('trend')) return responses.trends;
+            
+            return responses.default;
+        }
+
+        // Display AI Response
+        function displayAIResponse(response) {
+            // Create a temporary modal or notification to show AI response
+            const notification = document.createElement('div');
+            notification.className = 'ai-notification success';
+            notification.innerHTML = `
+                <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                    <div style="background: var(--ai-primary); color: white; width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">AI Response</div>
+                        <div style="line-height: 1.6;">${response}</div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 10 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 10000);
+        }
+
+        // Utility Functions
+        function showLoading(message) {
+            console.log('⏳ Loading:', message);
+        }
+
+        function hideLoading() {
+            console.log('✅ Loading complete');
+        }
+
+        function showError(message) {
+            showNotification(message, 'error');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `ai-notification ${type}`;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        function animateValue(elementId, start, end, duration, suffix = '') {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const startTime = performance.now();
+            const startValue = parseFloat(start) || 0;
+            const endValue = parseFloat(end) || 0;
+            const difference = endValue - startValue;
+            
+            function updateValue(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function for smooth animation
+                const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+                const currentValue = startValue + (difference * easeOutCubic);
+                
+                // Format the value
+                let displayValue;
+                if (suffix === '%') {
+                    displayValue = currentValue.toFixed(1) + suffix;
+                } else if (currentValue >= 1000) {
+                    displayValue = Math.floor(currentValue).toLocaleString();
+                } else {
+                    displayValue = Math.floor(currentValue).toString();
+                }
+                
+                element.textContent = displayValue;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateValue);
+                }
+            }
+            
+            requestAnimationFrame(updateValue);
+        }
+
+        // Additional helper functions for future expansion
+        function updateInsightsDisplay(report) {
+            console.log('📊 Updating insights display:', report);
+        }
+
+        function addNewInsight(insight) {
+            console.log('💡 New insight:', insight);
+        }
+
+        function showSecurityAlert(alert) {
+            showNotification(`Security Alert: ${alert.message}`, 'error');
+        }
+
+        function addNewRecommendation(recommendation) {
+            console.log('📋 New recommendation:', recommendation);
+        }
+    </script>
+
+    <!-- ✅ ADD COMPONENT SCRIPTS -->
+    <script src="components/amc-header.js"></script>
+    <script src="components/sidebar.js"></script>
+    
+    <!-- Premium Avatar System -->
+    <script defer src="amc-avatar-system.js"></script>
+</body>
+</html>

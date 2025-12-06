@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company-User Diagnostic Tool</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #374151;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #111827;
+            margin-bottom: 30px;
+        }
+        .company-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #3B82F6;
+        }
+        .company-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .company-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+        }
+        .company-id {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #6B7280;
+            background: #F3F4F6;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .user-count {
+            background: #3B82F6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .users-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+        }
+        .user-item {
+            background: #F9FAFB;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #10B981;
+        }
+        .user-email {
+            font-weight: 500;
+            color: #059669;
+        }
+        .user-role {
+            font-size: 0.875rem;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+        .orphaned-users {
+            background: #FEF2F2;
+            border-left-color: #EF4444;
+        }
+        .orphaned-users .company-name {
+            color: #DC2626;
+        }
+        .orphaned-users .user-item {
+            background: #FEE2E2;
+            border-left-color: #EF4444;
+        }
+        .orphaned-users .user-email {
+            color: #DC2626;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6B7280;
+        }
+        .error {
+            background: #FEF2F2;
+            color: #DC2626;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .summary {
+            background: #EFF6FF;
+            border: 1px solid #DBEAFE;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .summary h2 {
+            color: #1E40AF;
+            margin-top: 0;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1E40AF;
+        }
+        .stat-label {
+            color: #6B7280;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏢 Company-User Association Diagnostic</h1>
+        
+        <div id="loading" class="loading">
+            <p>Loading company and user data...</p>
+        </div>
+        
+        <div id="error" class="error" style="display: none;">
+            <h3>Error Loading Data</h3>
+            <p id="error-message"></p>
+        </div>
+        
+        <div id="summary" class="summary" style="display: none;">
+            <h2>📊 Summary</h2>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="total-companies">0</div>
+                    <div class="stat-label">Total Companies</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="total-users">0</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="associated-users">0</div>
+                    <div class="stat-label">Company Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="orphaned-users">0</div>
+                    <div class="stat-label">Orphaned Users</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function loadData() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                
+                if (!token) {
+                    throw new Error('No authentication token found. Please login first.');
+                }
+
+                // Load companies
+                console.log('Loading companies...');
+                const companiesResponse = await fetch('http://localhost:5000/api/v1/companies', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!companiesResponse.ok) {
+                    throw new Error(`Companies API error: ${companiesResponse.status}`);
+                }
+
+                const companiesData = await companiesResponse.json();
+                const companies = companiesData.companies || companiesData.data || companiesData;
+                console.log('Companies loaded:', companies.length);
+
+                // Load users
+                console.log('Loading users...');
+                const usersResponse = await fetch('http://localhost:5000/api/v1/user-management/admin/users', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!usersResponse.ok) {
+                    throw new Error(`Users API error: ${usersResponse.status}`);
+                }
+
+                const usersData = await usersResponse.json();
+                const users = usersData.users || usersData;
+                console.log('Users loaded:', users.length);
+
+                // Process data
+                displayResults(companies, users);
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error-message').textContent = error.message;
+            }
+        }
+
+        function displayResults(companies, users) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('summary').style.display = 'block';
+
+            // Create company lookup
+            const companyLookup = {};
+            companies.forEach(company => {
+                companyLookup[company._id] = company;
+            });
+
+            // Group users by company
+            const companyUsers = {};
+            const orphanedUsers = [];
+            let associatedUserCount = 0;
+
+            users.forEach(user => {
+                if (user.role === 'platform_admin') {
+                    // Platform admins don't belong to companies
+                    return;
+                }
+                
+                if (user.role === 'media_user' && !user.clientId) {
+                    // Media users without company association are normal
+                    return;
+                }
+
+                if (user.clientId) {
+                    if (companyLookup[user.clientId]) {
+                        // Valid company association
+                        if (!companyUsers[user.clientId]) {
+                            companyUsers[user.clientId] = [];
+                        }
+                        companyUsers[user.clientId].push(user);
+                        associatedUserCount++;
+                    } else {
+                        // Orphaned user - has clientId but company doesn't exist
+                        orphanedUsers.push(user);
+                    }
+                }
+            });
+
+            // Update summary stats
+            document.getElementById('total-companies').textContent = companies.length;
+            document.getElementById('total-users').textContent = users.length;
+            document.getElementById('associated-users').textContent = associatedUserCount;
+            document.getElementById('orphaned-users').textContent = orphanedUsers.length;
+
+            // Display results
+            const resultsDiv = document.getElementById('results');
+            let html = '';
+
+            // Show companies with users
+            companies.forEach(company => {
+                const companyUsersList = companyUsers[company._id] || [];
+                const companyName = company.name || company.companyName || company.clientName || company.legalName || 'Unnamed Company';
+                
+                html += `
+                    <div class="company-card">
+                        <div class="company-header">
+                            <div>
+                                <div class="company-name">${companyName}</div>
+                                <div class="company-id">${company._id}</div>
+                            </div>
+                            <div class="user-count">${companyUsersList.length} users</div>
+                        </div>
+                        <div class="users-list">
+                `;
+
+                if (companyUsersList.length === 0) {
+                    html += '<div class="user-item"><div class="user-email">No users associated</div></div>';
+                } else {
+                    companyUsersList.forEach(user => {
+                        html += `
+                            <div class="user-item">
+                                <div class="user-email">${user.email}</div>
+                                <div class="user-role">${formatRole(user.role)} • ${user.firstName || ''} ${user.lastName || ''}</div>
+                            </div>
+                        `;
+                    });
+                }
+
+                html += '</div></div>';
+            });
+
+            // Show orphaned users
+            if (orphanedUsers.length > 0) {
+                html += `
+                    <div class="company-card orphaned-users">
+                        <div class="company-header">
+                            <div>
+                                <div class="company-name">⚠️ Orphaned Users (Missing Company)</div>
+                                <div class="company-id">Data Integrity Issue</div>
+                            </div>
+                            <div class="user-count">${orphanedUsers.length} users</div>
+                        </div>
+                        <div class="users-list">
+                `;
+
+                orphanedUsers.forEach(user => {
+                    html += `
+                        <div class="user-item">
+                            <div class="user-email">${user.email}</div>
+                            <div class="user-role">${formatRole(user.role)} • Missing Company ID: ${user.clientId}</div>
+                        </div>
+                    `;
+                });
+
+                html += '</div></div>';
+            }
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function formatRole(role) {
+            const roleMap = {
+                'media_user': 'Media User',
+                'client_user': 'Client User',
+                'client_admin': 'Client Admin',
+                'platform_admin': 'Platform Admin'
+            };
+            return roleMap[role] || role;
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>

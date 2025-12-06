@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMC API Diagnostic Tool</title>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .test-btn {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .test-btn:hover {
+            background: #0056b3;
+        }
+        
+        .test-btn.success {
+            background: #28a745;
+        }
+        
+        .test-btn.danger {
+            background: #dc3545;
+        }
+        
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .result.success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .result.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-indicator.success {
+            background: #28a745;
+        }
+        
+        .status-indicator.error {
+            background: #dc3545;
+        }
+        
+        .status-indicator.warning {
+            background: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 AMC API Diagnostic Tool</h1>
+            <p>Test API connectivity and find valid press release UUIDs</p>
+        </div>
+        
+        <div class="section">
+            <h3>1. API Configuration Check</h3>
+            <p>Current API Base URL: <code id="api-base-url">Loading...</code></p>
+            <button class="test-btn" onclick="testApiConnection()">Test API Connection</button>
+            <button class="test-btn" onclick="checkAuthStatus()">Check Authentication</button>
+            <div id="api-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="section">
+            <h3>2. Find Valid Press Releases</h3>
+            <p>Try to fetch a list of available press releases:</p>
+            <button class="test-btn" onclick="fetchReleasesList()">Fetch Releases List</button>
+            <button class="test-btn" onclick="fetchRecentReleases()">Fetch Recent Releases</button>
+            <div id="releases-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="section">
+            <h3>3. Test Specific UUID</h3>
+            <div class="input-group">
+                <label for="test-uuid">Enter UUID to test:</label>
+                <input type="text" id="test-uuid" placeholder="e.g., 0bd4d4c7-1234-5678-9abc-def012345678">
+            </div>
+            <button class="test-btn" onclick="testSpecificUUID()">Test This UUID</button>
+            <button class="test-btn" onclick="testWithOriginalPage()">Test with Original Page</button>
+            <div id="uuid-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="section">
+            <h3>4. Backend Status</h3>
+            <div id="backend-status">
+                <p><span class="status-indicator warning"></span>Checking backend status...</p>
+            </div>
+            <button class="test-btn" onclick="checkBackendHealth()">Check Backend Health</button>
+            <div id="backend-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="section">
+            <h3>5. Quick Actions</h3>
+            <button class="test-btn success" onclick="openOriginalPage()">Open Original amc-release-detail.html</button>
+            <button class="test-btn" onclick="openModifiedPage()">Open Modified Page</button>
+            <button class="test-btn" onclick="openDemoPage()">Open Demo Page</button>
+        </div>
+    </div>
+
+    <script>
+        // Get API base URL from the same source as the original page
+        const API_BASE_URL = window.location.protocol + '//' + window.location.hostname + ':5000';
+        document.getElementById('api-base-url').textContent = API_BASE_URL;
+        
+        async function testApiConnection() {
+            showResult('api-result', 'Testing API connection...', '');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/health`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult('api-result', `✅ API Connection Successful\nStatus: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    showResult('api-result', `❌ API Connection Failed\nStatus: ${response.status}\nStatusText: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                showResult('api-result', `❌ API Connection Error\nError: ${error.message}\n\nPossible issues:\n- Backend server not running\n- Wrong port (expected :5000)\n- CORS issues\n- Network connectivity`, 'error');
+            }
+        }
+        
+        async function checkAuthStatus() {
+            showResult('api-result', 'Checking authentication status...', '');
+            
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            
+            if (!token) {
+                showResult('api-result', '⚠️ No authentication token found\n\nYou may need to:\n1. Log in to the system first\n2. Use the original page to authenticate\n3. Check if authentication is required', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/v1/auth/verify`, {
+                    method: 'GET',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json' 
+                    }
+                });
+                
+                if (response.ok) {
+                    showResult('api-result', `✅ Authentication Valid\nToken found and verified`, 'success');
+                } else {
+                    showResult('api-result', `❌ Authentication Failed\nStatus: ${response.status}\nToken may be expired or invalid`, 'error');
+                }
+            } catch (error) {
+                showResult('api-result', `❌ Auth Check Error\nError: ${error.message}`, 'error');
+            }
+        }
+        
+        async function fetchReleasesList() {
+            showResult('releases-result', 'Fetching releases list...', '');
+            
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/v1/center/releases`, { headers });
+                
+                if (response.ok) {
+                    const responseData = await response.json();
+                    const releases = responseData.success && responseData.data && responseData.data.releases ? responseData.data.releases : [];
+                    let result = `✅ Found ${releases.length || 0} releases\n\n`;
+                    
+                    if (releases.length > 0) {
+                        result += 'Available UUIDs:\n';
+                        releases.slice(0, 10).forEach((release, index) => {
+                            result += `${index + 1}. ${release.uuid || release._id} - ${release.title || 'No title'}\n`;
+                        });
+                        
+                        if (releases.length > 10) {
+                            result += `\n... and ${releases.length - 10} more releases`;
+                        }
+                        
+                        // Auto-populate first UUID
+                        if (releases[0] && (releases[0].uuid || releases[0]._id)) {
+                            document.getElementById('test-uuid').value = releases[0].uuid || releases[0]._id;
+                        }
+                    }
+                    
+                    showResult('releases-result', result, 'success');
+                } else {
+                    showResult('releases-result', `❌ Failed to fetch releases\nStatus: ${response.status}\nStatusText: ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                showResult('releases-result', `❌ Error fetching releases\nError: ${error.message}`, 'error');
+            }
+        }
+        
+        async function fetchRecentReleases() {
+            showResult('releases-result', 'Fetching recent releases...', '');
+            
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/v1/center/releases?limit=5&sort=createdAt`, { headers });
+                
+                if (response.ok) {
+                    const responseData = await response.json();
+                    const releases = responseData.success && responseData.data && responseData.data.releases ? responseData.data.releases : [];
+                    let result = `✅ Found ${releases.length || 0} recent releases\n\n`;
+                    
+                    if (releases.length > 0) {
+                        releases.forEach((release, index) => {
+                            result += `${index + 1}. UUID: ${release.uuid || release._id}\n`;
+                            result += `   Title: ${release.title || 'No title'}\n`;
+                            result += `   Date: ${release.createdAt || release.releaseDate || 'Unknown'}\n\n`;
+                        });
+                        
+                        // Auto-populate first UUID
+                        if (releases[0] && (releases[0].uuid || releases[0]._id)) {
+                            document.getElementById('test-uuid').value = releases[0].uuid || releases[0]._id;
+                        }
+                    }
+                    
+                    showResult('releases-result', result, 'success');
+                } else {
+                    showResult('releases-result', `❌ Failed to fetch recent releases\nStatus: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                showResult('releases-result', `❌ Error fetching recent releases\nError: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testSpecificUUID() {
+            const uuid = document.getElementById('test-uuid').value.trim();
+            
+            if (!uuid) {
+                showResult('uuid-result', '❌ Please enter a UUID to test', 'error');
+                return;
+            }
+            
+            showResult('uuid-result', `Testing UUID: ${uuid}...`, '');
+            
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/v1/center/releases/${uuid}`, { headers });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    let result = `✅ UUID is valid!\n\n`;
+                    result += `Title: ${data.title || 'No title'}\n`;
+                    result += `UUID: ${data.uuid || data._id}\n`;
+                    result += `Created: ${data.createdAt || 'Unknown'}\n`;
+                    result += `Has PDF: ${data.releaseDocs && data.releaseDocs.find(d => d.mimetype === 'application/pdf') ? 'Yes' : 'No'}\n`;
+                    result += `Images: ${data.images ? data.images.length : 0}\n`;
+                    result += `Videos: ${data.videos ? data.videos.length : 0}\n\n`;
+                    result += `🚀 Ready to test with modified page!`;
+                    
+                    showResult('uuid-result', result, 'success');
+                } else {
+                    showResult('uuid-result', `❌ UUID not found\nStatus: ${response.status}\nThis UUID doesn't exist in the database`, 'error');
+                }
+            } catch (error) {
+                showResult('uuid-result', `❌ Error testing UUID\nError: ${error.message}`, 'error');
+            }
+        }
+        
+        async function checkBackendHealth() {
+            showResult('backend-result', 'Checking backend health...', '');
+            
+            try {
+                // Test multiple endpoints
+                const tests = [
+                    { name: 'Health Check', url: `${API_BASE_URL}/api/health` },
+                    { name: 'API Status', url: `${API_BASE_URL}/api/status` },
+                    { name: 'Root Endpoint', url: `${API_BASE_URL}/` }
+                ];
+                
+                let results = 'Backend Health Check Results:\n\n';
+                
+                for (const test of tests) {
+                    try {
+                        const response = await fetch(test.url, { method: 'GET' });
+                        results += `✅ ${test.name}: ${response.status} ${response.statusText}\n`;
+                    } catch (error) {
+                        results += `❌ ${test.name}: ${error.message}\n`;
+                    }
+                }
+                
+                showResult('backend-result', results, 'success');
+                updateBackendStatus('success', 'Backend is responding');
+                
+            } catch (error) {
+                showResult('backend-result', `❌ Backend Health Check Failed\nError: ${error.message}`, 'error');
+                updateBackendStatus('error', 'Backend not responding');
+            }
+        }
+        
+        function testWithOriginalPage() {
+            const uuid = document.getElementById('test-uuid').value.trim();
+            if (uuid) {
+                window.open(`amc-release-detail.html?uuid=${uuid}`, '_blank');
+            } else {
+                alert('Please enter a UUID first');
+            }
+        }
+        
+        function openOriginalPage() {
+            window.open('amc-release-detail.html', '_blank');
+        }
+        
+        function openModifiedPage() {
+            const uuid = document.getElementById('test-uuid').value.trim();
+            if (uuid) {
+                window.open(`amc-release-modified.html?uuid=${uuid}`, '_blank');
+            } else {
+                window.open('amc-release-modified.html', '_blank');
+            }
+        }
+        
+        function openDemoPage() {
+            window.open('amc-release-demo.html', '_blank');
+        }
+        
+        function showResult(elementId, message, type = '') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${type}`;
+            element.style.display = 'block';
+        }
+        
+        function updateBackendStatus(status, message) {
+            const statusEl = document.getElementById('backend-status');
+            statusEl.innerHTML = `<p><span class="status-indicator ${status}"></span>${message}</p>`;
+        }
+        
+        // Auto-check API on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testApiConnection();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

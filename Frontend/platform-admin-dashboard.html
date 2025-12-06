@@ -1,0 +1,2522 @@
+rea
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Platform Admin Dashboard [Enterprise]</title>
+    
+    <!-- Enterprise Sidebar System -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <script src="components/sidebar.js"></script>
+    
+    <script type="module">
+      import { protectPage } from "./auth.js";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        protectPage("platform_admin");  // 🔒 SECURITY: Require platform_admin role
+        // Sidebar is now auto-initialized by components/sidebar.js
+      });
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+<style>
+        :root {
+            /* ── LAYERED BACKGROUND ARCHITECTURE (Light Mode Premium) ─────── */
+            --amc-body-bg-light: #f8fafc;         /* soft neutral layer */
+            --amc-surface-bg-light: #ffffff;      /* cards / containers */
+            --amc-table-bg-light: #fcfcfd;        /* table wrapper */
+            --amc-header-bg-light: #f3f4f6;       /* table header background */
+            --amc-sidebar-bg-light: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* sidebar gradient */
+            
+            /* Legacy variables (maintained for compatibility) */
+            --bg-primary: var(--amc-body-bg-light);
+            --bg-secondary: var(--amc-surface-bg-light);
+            --bg-tertiary: #e9ecef;
+            
+            /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────────── */
+            --text-headings: #111827;    /* headers: strong */
+            --text-primary: #374151;     /* body text: medium */
+            --text-secondary: #6b7280;   /* metadata: subtle */
+            --text-muted: #9ca3af;       /* ultra-subtle */
+            
+            --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #5a6268;
+
+            --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
+            
+            --border-primary: #e5e7eb; --border-secondary: #d1d5db; --border-color-light: #e9ecef;
+            --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+            --icon-available: var(--accent-primary); --icon-unavailable: #ced4da;
+            --shadow-primary: rgba(0, 0, 0, 0.08); --shadow-hover: rgba(0, 0, 0, 0.15);
+            --overlay-bg: rgba(0, 0, 0, 0.65);
+            --tag-bg: var(--bg-tertiary); --tag-text: var(--text-secondary);
+            --color-info: #17a2b8;
+            --color-warning: #ffc107;
+            --brand-band-light-bg: #212529; --brand-band-light-text: #f8f9fa;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --bg-image-placeholder: #e9ecef;
+            --font-family-main: 'Poppins', sans-serif;
+            --sidebar-width: 260px;
+            --header-height: 61px;
+            --footer-height: 60px;
+            --accent-primary-rgb: 13, 110, 253;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --highlight-color-rgb: 255, 193, 7;
+            --notification-error: #dc3545;
+            --accent-action-positive: #28a745;
+            --accent-action-positive-hover: #218838;
+            --accent-action-positive-rgb: 40, 167, 69;
+            --accent-action-danger: #dc3545;
+            --accent-action-danger-hover: #c82333;
+            --selection-dot-color: var(--accent-primary); /* Blue for selection */
+            
+            /* ENTERPRISE TYPOGRAPHY SYSTEM */
+            --font-display: 2rem;      /* Page titles (h1) */
+            --font-heading: 1.4rem;    /* Section headers */
+            --font-subheading: 1.1rem; /* Card headers */
+            --font-body: 0.95rem;      /* Body text */
+            --font-muted: 0.85rem;     /* Metadata / labels */
+        }
+
+        body.dark-mode {
+            --bg-primary: #121212; --bg-secondary: #1a1c1e; --bg-tertiary: #2a2d30;
+            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #545b62;
+            
+            --border-primary: #3a3a3a; --border-secondary: #444; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+            --icon-available: var(--accent-primary); --icon-unavailable: #555;
+            --shadow-primary: rgba(0, 0, 0, 0.25); --shadow-hover: rgba(0, 0, 0, 0.35);
+            --overlay-bg: rgba(0, 0, 0, 0.75);
+            --tag-bg: #4a4a4a; --tag-text: var(--text-primary);
+            --brand-band-light-bg: #f8f9fa; --brand-band-light-text: #212529;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --color-info: #36c4d9;
+            --color-warning: #ffd04a;
+            --bg-image-placeholder: #2c2c2c;
+            --accent-primary-rgb: 63, 145, 255;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --accent-action-positive: #20c997;
+            --accent-action-positive-hover: #1ba984;
+            --accent-action-positive-rgb: 32, 201, 151;
+            --accent-action-danger: #e74c3c;
+            --accent-action-danger-hover: #d63031;
+            --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
+            --sidebar-bg: #1a1c1e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--amc-body-bg-light); /* soft neutral layer */
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Light mode layered background system */
+        body:not(.dark-mode) {
+            background: var(--amc-body-bg-light);
+        }
+        
+        /* DARK MODE BODY BACKGROUND */
+        body.dark-mode {
+            background: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        a { color: var(--accent-primary); text-decoration: none; } a:hover { color: var(--accent-primary-hover); text-decoration: underline; }
+        .app-container { display: flex; flex-direction: column; flex-grow: 1; }
+        .app-body { display: flex; flex-grow: 1; transition: margin-left 0.3s ease; }
+        .app-header {
+            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%); /* subtle gradient for depth */
+            border-bottom: 1px solid #e5e7eb;
+            color: #1f2937; /* dark text for white background */
+            padding: 10px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10000;
+            height: var(--header-height);
+            width: 100%;
+        }
+        
+        .app-header .logo h1 {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0;
+            color: #1f2937; /* ensure logo is dark and visible in light mode */
+        }
+        
+        /* Dark mode header styling */
+        body.dark-mode .app-header {
+            background: linear-gradient(180deg, #1e2327 0%, #181b1f 100%); /* subtle gradient for depth */
+            border-bottom: 1px solid #3a3a3a;
+            color: #f0f0f0; /* light text for dark background */
+        }
+        
+        body.dark-mode .app-header .logo h1 {
+            color: #f0f0f0; /* ensure logo is light and visible in dark mode */
+        }
+        
+        .app-header .user-actions-group { display: flex; align-items: center; gap: 20px;}
+        .app-header .user-info { font-size: 0.9em; } .app-header .user-info span { opacity: 0.8; }
+        .app-header .logout-link { color: var(--header-link); text-decoration: none; font-size: 0.9em;}
+        .app-header .logout-link:hover { color: var(--header-text); } .app-header .logout-link i { margin-right: 5px; }
+
+        .cart-indicator, .notification-indicator { position: relative; display: inline-flex; align-items: center; cursor: pointer; color: var(--header-link); transition: color 0.2s ease; font-size: 1.1em; }
+        .cart-indicator:hover, .notification-indicator:hover { color: var(--header-text); }
+        .cart-badge, .notification-badge { position: absolute; top: -8px; right: -10px; background-color: var(--accent-primary); color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: bold; transform: scale(0); transition: transform 0.2s ease-out; }
+        .notification-badge { background-color: var(--notification-error); top: -5px; right: -8px; width: 16px; height: 16px;}
+        .cart-indicator.has-items .cart-badge, .notification-indicator.has-new .notification-badge { transform: scale(1); }
+        .cart-indicator.has-items > i.fa-shopping-cart { color: var(--highlight-color); animation: pulseCartIcon 1.5s infinite; }
+        @keyframes pulseCartIcon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .amc-header-right { display: flex; align-items: center; gap: 15px; }
+        .amc-menu-dots { background: none; border: none; color: var(--header-link); font-size: 1.2em; cursor: pointer; padding: 5px; }
+        .amc-menu-dots:hover { color: var(--header-text); }
+
+        .btn-icon { background:transparent; border:none; padding:5px 8px; margin-left:10px; cursor:pointer; }
+        .btn-icon i { color:var(--header-link); font-size:1.1em; }
+        .btn-icon:hover i { color: var(--header-text); }
+
+  :root{
+    /* adjust if your header height differs on this page */
+    --amc-header-h: 72px;
+    --amc-sidebar-expanded: 264px;
+    --amc-sidebar-collapsed: 72px;
+
+    /* colors (light) */
+    --amc-bg: #ffffff;
+    --amc-line: #E5E7EB;
+    --amc-text: #0f172a;
+    --amc-muted:#64748b;
+
+    /* colors (dark) */
+    --amc-bg-dark: #0f1115;
+    --amc-line-dark: rgba(255,255,255,.12);
+    --amc-text-dark:#e5e7eb;
+    --amc-muted-dark:#94a3b8;
+  }
+
+  /* Body layout variables (expanded by default) */
+  body{
+    --amc-sidebar-w: var(--amc-sidebar-expanded);
+    padding-top: var(--amc-header-h);
+  }
+  /* When collapsed (remembered in localStorage) */
+  body.amc-collapsed{ --amc-sidebar-w: var(--amc-sidebar-collapsed); }
+
+  /* Sidebar (fixed, left) */
+  .amc-sidebar{
+    position: fixed; top: var(--amc-header-h); left:0; bottom:0;
+    width: var(--amc-sidebar-w);
+    background: var(--amc-bg);
+    border-right: 1px solid var(--amc-line);
+    overflow: visible auto; /* FIXED: changed from hidden to visible for tooltips */
+    transition: width .18s ease;
+    z-index: 900;
+  }
+  /* Dark mode support - FIXED: Use dark-mode class */
+  body.dark-mode .amc-sidebar{
+    background: var(--sidebar-bg);
+    border-right-color: var(--border-color);
+    color: var(--text-primary);
+  }
+  
+  /* AVATAR DARK MODE SUPPORT - Enable role-based rings in dark mode */
+  body.dark-mode {
+    /* Avatar modal dark mode support */
+    --bg-secondary-dark: #1a1c1e;
+    --text-primary-dark: #e2e8f0;
+    --border-primary-dark: #374151;
+    --bg-tertiary-dark: #2a2d30;
+    --text-headings-dark: #f8f9fa;
+    --text-secondary-dark: #9ca3af;
+  }
+  
+  /* Apply dark mode class to avatar system */
+  body.dark-mode .avatar-modal {
+    background: var(--bg-secondary-dark, #2c2c2c);
+    color: var(--text-primary-dark, #e2e8f0);
+    border-color: var(--border-primary-dark, #374151);
+  }
+  
+  body.dark-mode .avatar-modal-header {
+    background: linear-gradient(135deg, var(--bg-secondary-dark, #2c2c2c) 0%, var(--bg-tertiary-dark, #374151) 100%);
+    border-color: var(--border-primary-dark, #374151);
+  }
+  
+  body.dark-mode .avatar-email {
+    color: var(--text-headings-dark, #f8f9fa);
+  }
+  
+  body.dark-mode .avatar-role {
+    color: var(--text-secondary-dark, #9ca3af);
+  }
+  
+  body.dark-mode .modal-btn {
+    color: var(--text-primary-dark, #e2e8f0);
+  }
+  
+  body.dark-mode .modal-btn:hover {
+    background: var(--bg-tertiary-dark, #374151);
+    color: var(--accent-primary, #3b82f6);
+  }
+  
+  body.dark-mode .modal-divider {
+    border-color: var(--border-primary-dark, #374151);
+  }
+  
+  /* Ensure avatar ring colors work in dark mode */
+  body.dark-mode .amc-avatar-ring {
+    background: var(--bg-secondary, #1a1c1e);
+    border-color: var(--avatar-ring, #3B82F6);
+  }
+
+  /* Sidebar sections rendered by sidebar-builder.js */
+  .sidebar-section{ padding: 14px 10px; margin-bottom: 14px; }
+  .sidebar-section-header{
+    margin: 16px 12px 6px 12px; font: 700 12px/1 Inter, ui-sans-serif, system-ui;
+    color: var(--amc-muted); text-transform: uppercase; letter-spacing: .4px;
+  }
+  
+  /* ENHANCED SIDEBAR SECTION TITLES - TYPOGRAPHY & COLORS */
+  .sidebar .section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 16px 12px 6px 12px;
+    font-family: Inter, ui-sans-serif, system-ui;
+    color: #9ca3af; /* unified neutral tone */
+  }
+  
+  /* COLORFUL SECTION TITLES */
+  .sidebar .section-title.core { color: #2563eb; }       /* vivid blue */
+  .sidebar .section-title.management { color: #059669; } /* vivid green */
+  .sidebar .section-title.analytics { color: #d97706; }  /* vivid orange */
+  .sidebar .section-title.admin { color: #dc2626; }      /* vivid red */
+  .sidebar-list{ list-style:none; margin:0; padding:4px; }
+  .sidebar-item{ margin: 2px 6px; }
+  .sidebar-link{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:10px;
+    color: inherit; text-decoration:none; font: 600 14px/1.2 Inter, ui-sans-serif, system-ui;
+  }
+  .sidebar-link:hover{ background: var(--sidebar-hover-bg); color: var(--text-primary); }
+  body.dark-mode .sidebar-link:hover{ background: var(--sidebar-hover-bg); color: var(--text-primary); }
+  .sidebar-link.active{ background: var(--sidebar-hover-bg); color: var(--sidebar-active-bar); border-left: 3px solid var(--sidebar-active-bar); }
+
+  /* Collapsed state: show only icons and hide text */
+  body.sidebar-collapsed .sidebar-section-header{ opacity: 0; }
+  body.sidebar-collapsed .sidebar-text{ opacity: 0; transform: translateX(-5px); }
+  body.sidebar-collapsed .sidebar-badge{ opacity: 0; }
+  body.sidebar-collapsed .sidebar-link{ justify-content: center; }
+
+  /* Main content shifts to the right of the sidebar */
+  .amc-main{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
+  .app-container{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
+
+/* === AMC Platform Admin Dashboard HOTFIX (non-destructive) ========================= */
+/* 1) Kill the accidental header we injected in this page only */
+.amc-header-wrap{ display:none !important; }
+
+/* 2) Neutralize the generic sidebar skin so it can't override AMC */
+.sidebar, .sidebar-top, .sidebar-brand, .sidebar-menu,
+.sidebar .sidebar-link, .sidebar-toggle { all: unset; display: initial; }
+
+/* 3) Canonical AMC sidebar (driven by #sidebar that sidebar-builder.js fills) */
+:root{
+  --amc-header-h: 60px;         /* match the real header height on this page */
+  --amc-sidebar-expanded: 264px;
+  --amc-sidebar-collapsed: 72px;
+}
+
+/* page-wide width var + push the app container, not the header */
+body{ --amc-sidebar-w: var(--amc-sidebar-expanded); }
+body.amc-collapsed{ --amc-sidebar-w: var(--amc-sidebar-collapsed); }
+
+/* Restore AMC sidebar functionality but match automediacenter.html positioning */
+.app-container{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
+
+/* ENTERPRISE LAYOUT RHYTHM & ALIGNMENT */
+.main-content {
+    margin-left: 0;
+    max-width: 1500px; /* Increased from 1400px to accommodate wider table */
+    margin: 0 auto;
+    padding: 2rem; /* Enhanced padding for better content breathing room */
+    background-color: var(--bg-primary);
+    overflow-y: auto;
+    min-height: calc(100vh - var(--header-height) - var(--footer-height)); /* Ensure full height usage */
+}
+
+/* DARK MODE MAIN CONTENT */
+body.dark-mode .main-content {
+    background-color: var(--bg-primary) !important;
+}
+
+/* ENTERPRISE SIDEBAR SHELL - PREMIUM LIGHT MODE ELEVATION */
+#sidebar{
+  position: fixed; left: 0; top: var(--header-height); bottom: 0;
+  width: var(--amc-sidebar-w);
+  background: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* soft contrast gradient */
+  border-right: 1px solid #d1d5db; /* stronger border contrast */
+  overflow: visible auto; z-index: 950;
+  transition: width 0.18s ease, background 0.2s ease, box-shadow 0.2s ease;
+  padding-top: 8px;
+  box-shadow: inset -1px 0 0 rgba(0,0,0,0.05), 2px 0 8px rgba(0,0,0,0.06); /* enhanced panel depth */
+}
+body.dark-mode #sidebar{
+  background: var(--sidebar-bg); /* cooler anthracite grey */
+  border-right-color: var(--border-primary);
+  color: var(--text-primary);
+  box-shadow: inset -1px 0 0 rgba(255,255,255,0.03); /* subtle light inset for dark mode */
+}
+
+/* ENTERPRISE SIDEBAR SECTIONS - TIGHTER RHYTHM */
+#sidebar .sidebar-section{
+  padding: 0 10px; /* remove vertical padding */
+  margin-bottom: 14px; /* consistent spacing between sections */
+}
+
+/* ENTERPRISE SECTION HEADERS - REFINED HYBRID WITH ORANGE ACCENT */
+#sidebar .sidebar-section-header{
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: #9ca3af; /* neutral grey */
+  padding: 6px 12px;
+  margin-top: 16px; /* instead of ~32px */
+  margin-bottom: 4px; /* tighter below for better rhythm */
+  margin-left: 12px;
+  margin-right: 12px;
+  text-transform: uppercase;
+  background: rgba(0,0,0,0.08); /* darker tone for better definition in light mode */
+  border-left: 2px solid #f97316; /* orange accent strip */
+  border-radius: 4px;
+  padding-left: 10px; /* adjust for thinner accent bar */
+}
+
+/* Pull first section closer to top - ENTERPRISE SPACING */
+#sidebar .sidebar-section:first-child .sidebar-section-header {
+  margin-top: 4px; /* pull 'Core' closer to top */
+}
+
+/* Dark mode refined headers - enhanced visibility */
+body.dark-mode #sidebar .sidebar-section-header {
+  background: rgba(255, 255, 255, 0.05); /* subtle translucent bar for dark mode */
+  color: #9ca3af; /* consistent neutral grey */
+  border-left-color: #fb923c; /* lighter orange for dark mode visibility */
+}
+
+#sidebar .sidebar-list{ list-style:none; margin:0; padding:4px; }
+#sidebar .sidebar-item{ margin:2px 6px; }
+#sidebar .sidebar-link{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px; border-radius:10px; text-decoration:none;
+  color: var(--text-primary); font:600 14px/1.2 Inter, ui-sans-serif, system-ui;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+#sidebar .sidebar-link:hover{
+  background: #d1d5db; /* Darker hover for better visibility in light mode */
+  transform: translateX(2px); /* subtle slide effect */
+}
+body.dark-mode #sidebar .sidebar-link:hover{ background: var(--bg-tertiary); }
+#sidebar .sidebar-link.active{
+  background: rgba(11,116,255,0.08);
+  color: #0b74ff;
+  border-left: 3px solid #0b74ff;
+  padding-left: 11px;
+}
+
+/* icon/label wrappers (we add them in JS below) */
+#sidebar .i{ width:22px; text-align:center; font-size:18px; line-height:1; }
+#sidebar .t{ white-space:nowrap; }
+
+/* collapsed: hide headings + labels, keep icons only */
+body.amc-collapsed #sidebar .sidebar-section-header{ display:none; }
+body.amc-collapsed #sidebar .t{ display:none; }
+body.amc-collapsed #sidebar .sidebar-link{ justify-content:center; gap:0; }
+
+/* --- Minimalist hamburger toggle --- */
+.sidebar-header {
+  height: 28px; /* tighter */
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+#sidebarToggle {
+  all: unset;                       /* strip default button styles */
+  position: relative;               /* ensure tooltip positions correctly */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: 4px 8px;
+}
+
+#sidebarToggle .hamburger {
+  position: relative;
+  width: 18px;
+  height: 2px;
+  background: var(--amc-sidebar-icon, #9ca3af);
+  border-radius: 1px;
+  transition: background 0.2s ease;
+}
+
+#sidebarToggle .hamburger::before,
+#sidebarToggle .hamburger::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 18px;
+  height: 2px;
+  background: inherit;
+  border-radius: 1px;
+  transition: background 0.2s ease;
+}
+
+#sidebarToggle .hamburger::before { top: -6px; }
+#sidebarToggle .hamburger::after { top: 6px; }
+
+#sidebarToggle:hover .hamburger,
+#sidebarToggle:hover .hamburger::before,
+#sidebarToggle:hover .hamburger::after {
+  background: var(--amc-accent, #0b74ff);  /* subtle hover colour only */
+}
+
+/* 🔧 SIMPLE WORKING TOOLTIP - NO CONFLICTS */
+
+button#sidebarToggle {
+  position: relative !important;
+}
+
+/* DYNAMIC HAMBURGER TOOLTIP - ADJUSTS BASED ON SIDEBAR STATE */
+button#sidebarToggle[data-tooltip]:hover::after {
+  content: attr(data-tooltip) !important;
+  position: fixed !important;
+  /* Dynamic positioning based on sidebar state */
+  left: var(--tooltip-left, 270px) !important;
+  top: 80px !important;
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  z-index: 99999 !important;
+  pointer-events: none !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  display: block !important;
+  opacity: 1 !important;
+}
+
+/* Expanded sidebar - tooltip close to button */
+body:not(.sidebar-collapsed) button#sidebarToggle[data-tooltip]:hover::after {
+  --tooltip-left: 270px;
+}
+
+/* Collapsed sidebar - tooltip close to button */
+body.sidebar-collapsed button#sidebarToggle[data-tooltip]:hover::after {
+  --tooltip-left: 80px;
+}
+
+/* Dark mode version */
+body.dark-mode button#sidebarToggle[data-tooltip]:hover::after {
+  background: #374151 !important;
+  color: #f9fafb !important;
+  border-color: #4b5563 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
+}
+
+        /* ── ENTERPRISE BUTTON SYSTEM ───────────────────────────────── */
+        .btn, .nav-link {
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.01em;
+            transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 44px; /* Touch-friendly minimum */
+        }
+        
+        /* Navigation links specific styling */
+        .nav-link {
+            padding: 10px 12px;
+            min-height: auto;
+        }
+        
+        .btn i {
+            margin: 0; /* Remove margin, use gap instead */
+            font-size: 0.9em;
+            transition: transform 0.2s ease;
+        }
+        
+        /* PRIMARY BUTTON - ENTERPRISE BLUE */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #0056d3 100%);
+            color: #ffffff !important;
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background: #0a66d1; /* solid premium blue */
+            color: #ffffff !important; /* Force white text on hover */
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(11,116,255,0.3); /* refined shadow */
+            border-color: var(--accent-primary-hover);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+        }
+        
+        .btn-primary:hover i {
+            transform: scale(1.1);
+        }
+        
+        /* SECONDARY BUTTON */
+        .btn-secondary {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border-secondary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* DANGER BUTTON */
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-action-danger) 0%, #c82333 100%);
+            color: #ffffff !important;
+            border: 1px solid var(--accent-action-danger);
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, var(--accent-action-danger-hover) 0%, #b21e2f 100%);
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        /* PREMIUM CARD SYSTEM WITH LAYERED DEPTH */
+        .card, .table-container {
+            background: var(--amc-surface-bg-light); /* cards / containers layer */
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+        
+        /* Dark mode card styling */
+        body.dark-mode .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+
+        /* CARD HEADER WITH VISUAL HIERARCHY */
+        .card-header {
+            border-bottom: 1px solid #e5e7eb; /* clear structural separation */
+            padding: 1rem 1.5rem; /* consistent spacing */
+            background: #f9fafb; /* soft header background for structure */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-footer {
+            padding: 1rem 1.5rem;
+            background: #f9fafb; /* match header background */
+            border-top: 1px solid #e5e7eb; /* consistent with header */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body {
+            background: #ffffff; /* pure white for content area */
+            padding: 1.5rem; /* generous content padding */
+        }
+
+        /* ENTERPRISE TYPOGRAPHY HIERARCHY */
+        .card-header h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin: 0;
+            color: var(--text-headings); /* strong hierarchy */
+        }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-primary);
+            border: 1px solid var(--border-primary);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .stat-icon.companies { background: var(--accent-primary); }
+        .stat-icon.users { background: var(--accent-action-positive); }
+        .stat-icon.pending { background: var(--color-warning); }
+        .stat-icon.revenue { background: var(--accent-action-danger); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .stat-change {
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive { color: var(--accent-action-positive); }
+        .stat-change.negative { color: var(--accent-action-danger); }
+
+        /* CONTENT HEADER */
+        .content-header {
+            position: relative;
+            margin-top: 0;
+            background: var(--bg-primary);
+            z-index: 100;
+            margin-bottom: 25px;
+            padding: 0 0 15px 0;
+            border-bottom: 1px solid var(--border-primary);
+        }
+        .content-header h1 {
+            font-size: var(--font-display);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #111827;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .content-header h1 i { color: var(--accent-primary); margin-right: 0; }
+        .content-header p {
+            font-size: var(--font-body);
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-width: 720px;
+            margin: 0;
+        }
+
+        /* CONTROLS SECTION */
+        .controls-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--amc-surface-bg-light);
+            padding: 18px 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 12px;
+            border: 1px solid #e5e7eb;
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .controls-section:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        /* TABLE STYLING */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+            background: var(--amc-table-bg-light);
+        }
+
+        .table thead th {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            background: var(--amc-header-bg-light);
+            padding: 14px 20px 16px 20px;
+            text-align: left;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s ease;
+        }
+
+        .table td {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #374151;
+            padding: 14px 20px;
+            border-left: 1px solid var(--border-secondary);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:nth-child(odd) {
+            background: #ffffff !important;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background: #f9fafb !important;
+        }
+
+        .table tbody tr:hover {
+            background: #f1f5f9 !important;
+            cursor: pointer;
+            box-shadow: inset 2px 0 0 var(--accent-primary);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* STATUS BADGES */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-action-positive);
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--color-warning);
+        }
+
+        .status-badge.suspended {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--accent-action-danger);
+        }
+
+        .status-badge.cancelled {
+            background: rgba(100, 116, 139, 0.1);
+            color: var(--accent-secondary-default);
+        }
+
+        /* ACTION BUTTONS */
+        .action-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-trigger {
+            padding: 0.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            color: var(--text-secondary);
+        }
+
+        .action-trigger:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .action-dropdown {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            min-width: 160px;
+            z-index: 50;
+            display: none;
+        }
+
+        .action-dropdown.show {
+            display: block;
+        }
+
+        .action-item {
+            padding: 0.75rem 1rem;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-item:hover {
+            background: var(--bg-primary);
+        }
+
+        .action-item.danger {
+            color: var(--accent-action-danger);
+        }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            padding: 0.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            border-radius: 0.25rem;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-primary);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            background: var(--bg-secondary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-primary);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* DARK MODE OVERRIDES */
+        body.dark-mode .card-header,
+        body.dark-mode .card-footer {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+        }
+
+        body.dark-mode .card-body {
+            background: var(--bg-secondary);
+        }
+
+        body.dark-mode .content-header {
+            background: var(--bg-primary);
+            border-bottom-color: var(--border-primary);
+        }
+
+        body.dark-mode .content-header h1 {
+            color: var(--text-headings);
+        }
+
+        body.dark-mode .content-header p {
+            color: var(--text-secondary);
+        }
+
+        body.dark-mode .controls-section {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+        }
+
+        body.dark-mode .table {
+            background: var(--bg-secondary);
+        }
+
+        body.dark-mode .table thead th {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        body.dark-mode .table tbody tr:nth-child(odd) {
+            background: var(--bg-secondary) !important;
+        }
+
+        body.dark-mode .table tbody tr:nth-child(even) {
+            background: var(--bg-tertiary) !important;
+        }
+
+        body.dark-mode .table tbody tr:hover {
+            background: rgba(var(--accent-primary-rgb), 0.08) !important;
+        }
+
+        body.dark-mode .table td {
+            color: var(--text-primary);
+            border-color: var(--border-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Enterprise Sidebar -->
+    <div id="sidebar" class="amc-sidebar">
+        <!-- Sidebar content will be populated by sidebar-builder.js -->
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <h1><i class="fas fa-cogs"></i> AutoMediaCenter</h1>
+            </div>
+            <div class="amc-header-right">
+                <!-- Avatar System Integration -->
+                <div id="amc-avatar-container"></div>
+                
+                <!-- Dark Mode Toggle -->
+                <button class="btn-icon" id="darkModeToggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Content Header -->
+            <div class="content-header">
+                <h1><i class="fas fa-shield-alt"></i> Platform Admin Dashboard</h1>
+                <p>Manage enterprise clients, monitor system health, and oversee platform operations. Complete control center for AutoMediaCenter platform administration.</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon companies">
+                            <i class="fas fa-building"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalCompanies">0</div>
+                    <div class="stat-label">Total Companies</div>
+                    <div class="stat-change positive" id="companiesChange">+0 this month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon users">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-change positive" id="usersChange">+0 this month</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="pendingCompanies">0</div>
+                    <div class="stat-label">Pending Approvals</div>
+                    <div class="stat-change" id="pendingChange">0 awaiting review</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon revenue">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="monthlyRevenue">$0</div>
+                    <div class="stat-label">Monthly Revenue</div>
+                    <div class="stat-change positive" id="revenueChange">+0% vs last month</div>
+                </div>
+            </div>
+
+            <!-- Company Management Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-building"></i> Company Management</h2>
+                    <button class="btn btn-primary" onclick="showCreateCompanyModal()">
+                        <i class="fas fa-plus"></i> Create Company
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Controls Section -->
+                    <div class="controls-section">
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <input type="text" id="searchCompanies" placeholder="Search companies..."
+                                   style="padding: 0.5rem; border: 1px solid var(--border-primary); border-radius: 0.5rem; min-width: 300px;">
+                            <select id="statusFilter" style="padding: 0.5rem; border: 1px solid var(--border-primary); border-radius: 0.5rem;">
+                                <option value="">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                            <select id="planFilter" style="padding: 0.5rem; border: 1px solid var(--border-primary); border-radius: 0.5rem;">
+                                <option value="">All Plans</option>
+                                <option value="free">Free</option>
+                                <option value="pro">Pro</option>
+                                <option value="enterprise">Enterprise</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" onclick="refreshCompanies()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+
+                    <!-- Companies Table -->
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Company</th>
+                                    <th>Contact Email</th>
+                                    <th>Status</th>
+                                    <th>Plan</th>
+                                    <th>Users</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="companiesTableBody">
+                                <!-- Companies will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Invitations Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-envelope"></i> Pending Invitations</h2>
+                    <button class="btn btn-secondary" onclick="refreshInvitations()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="pendingInvitationsContainer">
+                        <!-- Pending invitations will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-history"></i> Recent Activity</h2>
+                    <button class="btn btn-secondary" onclick="viewFullAuditLog()">
+                        <i class="fas fa-external-link-alt"></i> View Full Log
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="recentActivity">
+                        <!-- Recent activity will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Company Modal -->
+    <div class="modal-overlay" id="createCompanyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Company</h3>
+                <button class="modal-close" onclick="hideCreateCompanyModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createCompanyForm">
+                    <div class="form-group">
+                        <label class="form-label">Company Name *</label>
+                        <input type="text" class="form-input" id="companyName" required placeholder="Acme Corporation">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Legal Name</label>
+                        <input type="text" class="form-input" id="legalName" placeholder="Acme Corporation LLC">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Person *</label>
+                        <input type="text" class="form-input" id="contactPerson" required placeholder="Jane Smith">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Email *</label>
+                        <input type="email" class="form-input" id="contactEmail" required placeholder="jane@acme.com">
+                        <small style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+                            This person will receive the invitation and become the Client Admin
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Phone</label>
+                        <input type="tel" class="form-input" id="contactPhone" placeholder="+1 (555) 123-4567">
+                        <small style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+                            Optional: Primary contact phone number
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Company Website</label>
+                        <input type="url" class="form-input" id="companyWebsite" placeholder="https://acme.com">
+                        <small style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+                            Optional: Company website URL
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Plan Type *</label>
+                        <select class="form-input" id="plan" required>
+                            <option value="free">Free (5 users, 100MB uploads)</option>
+                            <option value="pro">Pro (25 users, 1GB uploads)</option>
+                            <option value="enterprise" selected>Enterprise (Unlimited users, 10GB uploads)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Max Users</label>
+                        <input type="number" class="form-input" id="maxUsers" value="100" min="1" max="10000">
+                        <small style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+                            Maximum number of users this company can have
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Upload Limit (MB)</label>
+                        <input type="number" class="form-input" id="uploadLimit" value="1000" min="10" max="50000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Additional Settings</label>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+                                <input type="checkbox" id="embargoAccess" checked>
+                                <span>Embargo Access (restricted content)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+                                <input type="checkbox" id="analyticsAccess" checked>
+                                <span>Analytics Access</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideCreateCompanyModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="createAndInviteCompany()" id="createCompanyBtn">
+                    <i class="fas fa-paper-plane"></i> Create & Send Invitation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Company Details Modal -->
+    <div class="modal-overlay" id="companyDetailsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="companyDetailsTitle">Company Details</h3>
+                <button class="modal-close" onclick="hideCompanyDetailsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="companyDetailsBody">
+                <!-- Company details will be populated here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideCompanyDetailsModal()">Close</button>
+                <button class="btn btn-primary" onclick="editCurrentCompany()" id="editCompanyBtn">
+                    <i class="fas fa-edit"></i> Edit Company
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Company Modal -->
+    <div class="modal-overlay" id="editCompanyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Company</h3>
+                <button class="modal-close" onclick="hideEditCompanyModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editCompanyForm">
+                    <div class="form-group">
+                        <label class="form-label">Company Name *</label>
+                        <input type="text" class="form-input" id="editCompanyName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Legal Name</label>
+                        <input type="text" class="form-input" id="editLegalName">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Email *</label>
+                        <input type="email" class="form-input" id="editContactEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Primary Domain</label>
+                        <input type="text" class="form-input" id="editPrimaryDomain" placeholder="example.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-input" id="editStatus">
+                            <option value="pending">Pending</option>
+                            <option value="active">Active</option>
+                            <option value="suspended">Suspended</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Plan Type</label>
+                        <select class="form-input" id="editPlan">
+                            <option value="free">Free</option>
+                            <option value="pro">Pro</option>
+                            <option value="enterprise">Enterprise</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Max Users</label>
+                        <input type="number" class="form-input" id="editMaxUsers" min="1" max="10000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Upload Limit (MB)</label>
+                        <input type="number" class="form-input" id="editUploadLimit" min="10" max="50000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Settings</label>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+                                <input type="checkbox" id="editEmbargoAccess">
+                                <span>Embargo Access</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+                                <input type="checkbox" id="editAnalyticsAccess">
+                                <span>Analytics Access</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideEditCompanyModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveCompanyChanges()" id="saveCompanyBtn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Avatar System -->
+    <script src="amc-avatar-system.js"></script>
+
+    <script>
+        // Global state
+        let companies = [];
+        let currentUser = null;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize avatar system
+            if (typeof initializeAvatarSystem === 'function') {
+                initializeAvatarSystem();
+            }
+
+            // Initialize dark mode toggle
+            initializeDarkMode();
+
+            // Load initial data
+            await loadDashboardData();
+            await loadCompanies();
+            await loadPendingInvitations();
+
+            // Set up event listeners
+            setupEventListeners();
+        });
+
+        // Dark mode functionality
+        function initializeDarkMode() {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+
+            darkModeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('darkMode', isDark);
+                darkModeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+        }
+
+        // Load dashboard statistics
+        async function loadDashboardData() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                // FIXED: Use correct audit endpoint for platform stats
+                const response = await fetch('http://localhost:5000/api/v1/audit/platform/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const stats = await response.json();
+                    updateDashboardStats(stats);
+                } else {
+                    console.error('Failed to load dashboard stats - endpoint may not be implemented yet');
+                    // Set default stats for now
+                    updateDashboardStats({
+                        totalCompanies: 0,
+                        totalUsers: 0,
+                        pendingCompanies: 0,
+                        monthlyRevenue: 0
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                // Set default stats on error
+                updateDashboardStats({
+                    totalCompanies: 0,
+                    totalUsers: 0,
+                    pendingCompanies: 0,
+                    monthlyRevenue: 0
+                });
+            }
+        }
+
+        // Update dashboard statistics
+        function updateDashboardStats(stats) {
+            document.getElementById('totalCompanies').textContent = stats.totalCompanies || 0;
+            document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+            document.getElementById('pendingCompanies').textContent = stats.pendingCompanies || 0;
+            document.getElementById('monthlyRevenue').textContent = `$${(stats.monthlyRevenue || 0).toLocaleString()}`;
+
+            // Update change indicators
+            document.getElementById('companiesChange').textContent = `+${stats.companiesChange || 0} this month`;
+            document.getElementById('usersChange').textContent = `+${stats.usersChange || 0} this month`;
+            document.getElementById('pendingChange').textContent = `${stats.pendingCompanies || 0} awaiting review`;
+            document.getElementById('revenueChange').textContent = `+${stats.revenueChange || 0}% vs last month`;
+        }
+
+        // Load companies
+        async function loadCompanies() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                // FIXED: Use correct companies endpoint
+                const response = await fetch('http://localhost:5000/api/v1/companies', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    companies = result.companies || result;
+                    renderCompaniesTable();
+                } else {
+                    console.error('Failed to load companies');
+                    companies = [];
+                    renderCompaniesTable();
+                }
+            } catch (error) {
+                console.error('Error loading companies:', error);
+                companies = [];
+                renderCompaniesTable();
+            }
+        }
+
+        // Load pending invitations using new admin endpoint
+        async function loadPendingInvitations() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                console.log('🔍 DEBUG: Loading pending invitations from admin endpoint');
+                
+                // Use new admin invites endpoint
+                const response = await fetch('http://localhost:5000/api/v1/admin/invites', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const invitations = await response.json();
+                    console.log('🔍 DEBUG: Admin endpoint returned:', invitations.length, 'invitations');
+                    
+                    // Add email status for display (with mock data for now)
+                    const invitationsWithEmailStatus = invitations.map(invite => ({
+                        ...invite,
+                        emailStatus: invite.emailStatus || 'sent', // Default to sent for existing invites
+                        emailAttempts: invite.emailAttempts || 1,
+                        companyName: invite.clientId?.clientName || invite.companyName || 'Unknown Company'
+                    }));
+                    
+                    renderPendingInvitations(invitationsWithEmailStatus);
+                } else {
+                    console.log('🔍 DEBUG: Admin endpoint failed, showing mock data');
+                    // Show mock data with email status examples
+                    const mockInvitations = [
+                        {
+                            _id: 'mock-1',
+                            email: 'user1@acme.com',
+                            companyName: 'Acme Corp',
+                            role: 'client_user',
+                            status: 'pending',
+                            emailStatus: 'sent',
+                            emailAttempts: 1,
+                            createdAt: new Date().toISOString(),
+                            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+                        },
+                        {
+                            _id: 'mock-2',
+                            email: 'user2@testcompany.com',
+                            companyName: 'Test Company Ltd',
+                            role: 'client_user',
+                            status: 'pending',
+                            emailStatus: 'failed',
+                            emailAttempts: 3,
+                            emailError: 'SMTP connection timeout',
+                            createdAt: new Date().toISOString(),
+                            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+                        },
+                        {
+                            _id: 'mock-3',
+                            email: 'user3@testcli.com',
+                            companyName: 'Test Company CLI',
+                            role: 'client_admin',
+                            status: 'pending',
+                            emailStatus: 'pending',
+                            emailAttempts: 0,
+                            createdAt: new Date().toISOString(),
+                            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+                        }
+                    ];
+                    
+                    renderPendingInvitations(mockInvitations);
+                }
+                
+            } catch (error) {
+                console.error('Error loading pending invitations:', error);
+                renderPendingInvitations([]);
+            }
+        }
+
+        // Render email status with appropriate styling and icons
+        function renderEmailStatus(invitation) {
+            const emailStatus = invitation.emailStatus || 'pending';
+            const emailAttempts = invitation.emailAttempts || 0;
+            const emailError = invitation.emailError;
+            
+            switch (emailStatus) {
+                case 'sent':
+                    return `
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="status-badge" style="background: rgba(16, 185, 129, 0.1); color: var(--accent-action-positive);">
+                                <i class="fas fa-check-circle" style="margin-right: 0.25rem;"></i>
+                                SENT
+                            </span>
+                            ${emailAttempts > 1 ? `<small style="color: var(--text-secondary);">(${emailAttempts} attempts)</small>` : ''}
+                        </div>
+                    `;
+                case 'failed':
+                    return `
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="status-badge" style="background: rgba(239, 68, 68, 0.1); color: var(--accent-action-danger);"
+                                  title="${emailError || 'Email delivery failed'}">
+                                <i class="fas fa-exclamation-triangle" style="margin-right: 0.25rem;"></i>
+                                FAILED
+                            </span>
+                            <small style="color: var(--text-secondary);">(${emailAttempts} attempts)</small>
+                        </div>
+                    `;
+                case 'pending':
+                default:
+                    return `
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="status-badge" style="background: rgba(245, 158, 11, 0.1); color: var(--color-warning);">
+                                <i class="fas fa-clock" style="margin-right: 0.25rem;"></i>
+                                PENDING
+                            </span>
+                            ${emailAttempts > 0 ? `<small style="color: var(--text-secondary);">(${emailAttempts} attempts)</small>` : ''}
+                        </div>
+                    `;
+            }
+        }
+
+        // Render pending invitations
+        function renderPendingInvitations(invitations) {
+            const container = document.getElementById('pendingInvitationsContainer');
+            
+            console.log('🔍 DEBUG: renderPendingInvitations called with:', invitations);
+            console.log('🔍 DEBUG: Container found:', !!container);
+            
+            if (!invitations || invitations.length === 0) {
+                console.log('🔍 DEBUG: No invitations to display');
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                        <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>No pending invitations found</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Check backend logs for invitation data</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            console.log('🔍 DEBUG: Rendering', invitations.length, 'invitations');
+
+            container.innerHTML = `
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Email Status</th>
+                                <th>Sent</th>
+                                <th>Expires</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${invitations.map(invitation => {
+                                const expiresAt = new Date(invitation.expiresAt);
+                                const now = new Date();
+                                const timeLeft = expiresAt - now;
+                                const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+                                const isExpired = timeLeft <= 0;
+                                
+                                return `
+                                    <tr>
+                                        <td>
+                                            <div style="font-weight: 600;">${invitation.companyName || 'Unknown Company'}</div>
+                                        </td>
+                                        <td>${invitation.email}</td>
+                                        <td>
+                                            <span style="text-transform: capitalize; color: var(--accent-primary);">
+                                                ${invitation.role.replace('_', ' ')}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            ${renderEmailStatus(invitation)}
+                                        </td>
+                                        <td>${new Date(invitation.createdAt).toLocaleDateString()}</td>
+                                        <td>
+                                            <span class="${isExpired ? 'text-danger' : hoursLeft < 24 ? 'text-warning' : 'text-success'}">
+                                                ${isExpired ? 'Expired' : hoursLeft < 24 ? `${hoursLeft}h left` : `${Math.floor(hoursLeft/24)}d left`}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div style="display: flex; gap: 0.5rem;">
+                                                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;"
+                                                        onclick="resendInvitation('${invitation._id}')">
+                                                    <i class="fas fa-redo"></i> Resend
+                                                </button>
+                                                <button class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;"
+                                                        onclick="revokeInvitation('${invitation._id}')">
+                                                    <i class="fas fa-times"></i> Revoke
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Render companies table
+        function renderCompaniesTable() {
+            const tbody = document.getElementById('companiesTableBody');
+            const searchTerm = document.getElementById('searchCompanies').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const planFilter = document.getElementById('planFilter').value;
+
+            // Filter companies
+            let filteredCompanies = companies.filter(company => {
+                const matchesSearch = (company.companyName || company.name || '').toLowerCase().includes(searchTerm) ||
+                                    company.contactEmail.toLowerCase().includes(searchTerm);
+                const matchesStatus = !statusFilter || company.status === statusFilter;
+                const matchesPlan = !planFilter || (company.planType || company.plan) === planFilter;
+                
+                return matchesSearch && matchesStatus && matchesPlan;
+            });
+
+            tbody.innerHTML = filteredCompanies.map(company => `
+                <tr onclick="showCompanyDetails('${company._id}')">
+                    <td>
+                        <div>
+                            <div style="font-weight: 600;">${company.companyName || company.name}</div>
+                            ${company.legalName ? `<div style="font-size: 0.8rem; color: var(--text-secondary);">${company.legalName}</div>` : ''}
+                        </div>
+                    </td>
+                    <td>${company.contactEmail}</td>
+                    <td><span class="status-badge ${company.status}">${company.status.toUpperCase()}</span></td>
+                    <td><span style="text-transform: capitalize;">${company.planType || company.plan || 'Undefined'}</span></td>
+                    <td>${company.userCount || 0}</td>
+                    <td>${new Date(company.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <div class="action-menu">
+                            <button class="action-trigger" onclick="event.stopPropagation(); toggleActionMenu(this)">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="action-dropdown">
+                                <button class="action-item" onclick="event.stopPropagation(); showCompanyDetails('${company._id}')">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                                <button class="action-item" onclick="event.stopPropagation(); editCompany('${company._id}')">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="action-item" onclick="event.stopPropagation(); sendCompanyInvitation('${company._id}', '${company.contactEmail}', '${company.companyName || company.name}')">
+                                    <i class="fas fa-paper-plane"></i> Send Invitation
+                                </button>
+                                ${company.status === 'pending' ? `
+                                    <button class="action-item" onclick="event.stopPropagation(); approveCompany('${company._id}')">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                ` : ''}
+                                ${company.status === 'active' ? `
+                                    <button class="action-item" onclick="event.stopPropagation(); suspendCompany('${company._id}')">
+                                        <i class="fas fa-pause"></i> Suspend
+                                    </button>
+                                ` : ''}
+                                ${company.status === 'suspended' ? `
+                                    <button class="action-item" onclick="event.stopPropagation(); reactivateCompany('${company._id}')">
+                                        <i class="fas fa-play"></i> Reactivate
+                                    </button>
+                                ` : ''}
+                                <button class="action-item danger" onclick="event.stopPropagation(); deleteCompany('${company._id}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Event listeners
+        function setupEventListeners() {
+            document.getElementById('searchCompanies').addEventListener('input', renderCompaniesTable);
+            document.getElementById('statusFilter').addEventListener('change', renderCompaniesTable);
+            document.getElementById('planFilter').addEventListener('change', renderCompaniesTable);
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.action-menu')) {
+                    document.querySelectorAll('.action-dropdown').forEach(dropdown => {
+                        dropdown.classList.remove('show');
+                    });
+                }
+            });
+        }
+
+        // Modal functions
+        function showCreateCompanyModal() {
+            document.getElementById('createCompanyModal').classList.add('show');
+        }
+
+        function hideCreateCompanyModal() {
+            document.getElementById('createCompanyModal').classList.remove('show');
+            document.getElementById('createCompanyForm').reset();
+        }
+
+        function showCompanyDetailsModal() {
+            document.getElementById('companyDetailsModal').classList.add('show');
+        }
+
+        function hideCompanyDetailsModal() {
+            document.getElementById('companyDetailsModal').classList.remove('show');
+        }
+
+        function showEditCompanyModal() {
+            document.getElementById('editCompanyModal').classList.add('show');
+        }
+
+        function hideEditCompanyModal() {
+            document.getElementById('editCompanyModal').classList.remove('show');
+            document.getElementById('editCompanyForm').reset();
+        }
+
+        // Company management functions
+        async function createAndInviteCompany() {
+            const form = document.getElementById('createCompanyForm');
+            const btn = document.getElementById('createCompanyBtn');
+            
+            // Validate required fields
+            const companyName = document.getElementById('companyName').value.trim();
+            const contactPerson = document.getElementById('contactPerson').value.trim();
+            const contactEmail = document.getElementById('contactEmail').value.trim();
+            const plan = document.getElementById('plan').value;
+            
+            if (!companyName || !contactPerson || !contactEmail || !plan) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(contactEmail)) {
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+
+            // Show loading state
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating & Sending Invitation...';
+            
+            // Extract first name from contact person for personalized email greeting
+            const extractFirstName = (fullName) => {
+                if (!fullName) return "";
+                return fullName.trim().split(/\s+/)[0]; // Split by whitespace and take first part
+            };
+
+            const companyData = {
+                companyName: companyName,
+                legalName: document.getElementById('legalName').value.trim(),
+                contactPerson: contactPerson,
+                contactEmail: contactEmail,
+                contactPhone: document.getElementById('contactPhone').value.trim(),
+                companyWebsite: document.getElementById('companyWebsite').value.trim(),
+                planType: plan,
+                settings: {
+                    maxUsers: parseInt(document.getElementById('maxUsers').value) || 100,
+                    uploadLimitMB: parseInt(document.getElementById('uploadLimit').value) || 1000,
+                    embargoAccess: document.getElementById('embargoAccess').checked,
+                    analyticsAccess: document.getElementById('analyticsAccess').checked
+                }
+            };
+
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                
+                // DEBUG: Log token and request details
+                console.log('🔍 DEBUG: Auth token:', token ? 'Present' : 'Missing');
+                console.log('🔍 DEBUG: Token source:', localStorage.getItem('token') ? 'token' : localStorage.getItem('authToken') ? 'authToken' : 'none');
+                console.log('🔍 DEBUG: Making request to /api/companies/invite');
+                console.log('🔍 DEBUG: Request data:', companyData);
+                
+                // FIXED: Use the correct endpoint that creates company AND sends invitation
+                const inviteResponse = await fetch('http://localhost:5000/api/v1/companies/invite', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(companyData)
+                });
+
+                console.log('🔍 DEBUG: Response status:', inviteResponse.status);
+                console.log('🔍 DEBUG: Response headers:', [...inviteResponse.headers.entries()]);
+
+                if (!inviteResponse.ok) {
+                    console.log('🔍 DEBUG: Response not OK, trying to parse error');
+                    const responseText = await inviteResponse.text();
+                    console.log('🔍 DEBUG: Raw response text:', responseText);
+                    
+                    let error;
+                    try {
+                        error = JSON.parse(responseText);
+                    } catch (e) {
+                        error = { message: `Server returned ${inviteResponse.status}: ${responseText}` };
+                    }
+                    throw new Error(error.message || 'Failed to create company and send invitation');
+                }
+
+                console.log('🔍 DEBUG: Response OK, parsing JSON');
+                const result = await inviteResponse.json();
+                console.log('🔍 DEBUG: Parsed result:', result);
+                
+                // Show success message with invitation token for testing
+                showNotification(`Company created successfully! Invitation sent to ${contactEmail}`, 'success');
+                
+                // Log the invitation token to console for testing without emails
+                console.log('🎯 INVITATION TOKEN FOR TESTING:', result.invite.inviteLink);
+                console.log('📧 Copy this URL to test invitation acceptance:', result.invite.inviteLink);
+
+                // Refresh data and close modal
+                hideCreateCompanyModal();
+                await loadCompanies();
+                await loadDashboardData();
+
+            } catch (error) {
+                console.error('Error creating company:', error);
+                showNotification(error.message || 'Error creating company', 'error');
+            } finally {
+                // Reset button state
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Create & Send Invitation';
+            }
+        }
+
+        // Legacy function for backward compatibility
+        async function createCompany() {
+            await createAndInviteCompany();
+        }
+
+        async function showCompanyDetails(companyId) {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                // FIXED: Use correct companies endpoint
+                const response = await fetch(`http://localhost:5000/api/v1/companies/${companyId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const company = result.company || result;
+                    displayCompanyDetails(company);
+                    showCompanyDetailsModal();
+                } else {
+                    showNotification('Failed to load company details', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading company details:', error);
+                showNotification('Error loading company details', 'error');
+            }
+        }
+
+        // Global variable to store current company being viewed/edited
+        let currentCompany = null;
+
+        function displayCompanyDetails(company) {
+            currentCompany = company; // Store for editing
+            document.getElementById('companyDetailsTitle').textContent = company.companyName || company.name;
+            document.getElementById('companyDetailsBody').innerHTML = `
+                <div style="display: grid; gap: 1rem;">
+                    <div><strong>Legal Name:</strong> ${company.legalName || 'Not specified'}</div>
+                    <div><strong>Contact Email:</strong> ${company.contactEmail}</div>
+                    <div><strong>Primary Domain:</strong> ${company.primaryDomain || 'Not specified'}</div>
+                    <div><strong>Status:</strong> <span class="status-badge ${company.status || 'pending'}">${(company.status || 'pending').toUpperCase()}</span></div>
+                    <div><strong>Plan:</strong> ${company.planType || company.plan || 'Undefined'}</div>
+                    <div><strong>Created:</strong> ${new Date(company.createdAt).toLocaleString()}</div>
+                    <div><strong>Last Updated:</strong> ${new Date(company.updatedAt).toLocaleString()}</div>
+                    <div><strong>Settings:</strong>
+                        <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                            <li>Max Users: ${company.settings?.maxUsers || 100}</li>
+                            <li>Upload Limit: ${company.settings?.uploadLimitMB || 1000}MB</li>
+                            <li>Embargo Access: ${company.settings?.embargoAccess ? 'Yes' : 'No'}</li>
+                            <li>Analytics Access: ${company.settings?.analyticsAccess ? 'Yes' : 'No'}</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Edit company functions
+        function editCurrentCompany() {
+            if (!currentCompany) return;
+            
+            // Populate edit form with current company data
+            document.getElementById('editCompanyName').value = currentCompany.companyName || currentCompany.name || '';
+            document.getElementById('editLegalName').value = currentCompany.legalName || '';
+            document.getElementById('editContactEmail').value = currentCompany.contactEmail || '';
+            document.getElementById('editPrimaryDomain').value = currentCompany.primaryDomain || '';
+            document.getElementById('editStatus').value = currentCompany.status || 'pending';
+            document.getElementById('editPlan').value = currentCompany.planType || currentCompany.plan || 'enterprise';
+            document.getElementById('editMaxUsers').value = currentCompany.settings?.maxUsers || 100;
+            document.getElementById('editUploadLimit').value = currentCompany.settings?.uploadLimitMB || 1000;
+            document.getElementById('editEmbargoAccess').checked = currentCompany.settings?.embargoAccess || false;
+            document.getElementById('editAnalyticsAccess').checked = currentCompany.settings?.analyticsAccess || false;
+            
+            // Hide details modal and show edit modal
+            hideCompanyDetailsModal();
+            showEditCompanyModal();
+        }
+
+        async function saveCompanyChanges() {
+            if (!currentCompany) return;
+
+            const btn = document.getElementById('saveCompanyBtn');
+            const originalText = btn.innerHTML;
+            
+            // Show loading state
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            const updatedData = {
+                name: document.getElementById('editCompanyName').value.trim(),
+                legalName: document.getElementById('editLegalName').value.trim(),
+                contactEmail: document.getElementById('editContactEmail').value.trim(),
+                primaryDomain: document.getElementById('editPrimaryDomain').value.trim(),
+                status: document.getElementById('editStatus').value,
+                planType: document.getElementById('editPlan').value,
+                settings: {
+                    maxUsers: parseInt(document.getElementById('editMaxUsers').value) || 100,
+                    uploadLimitMB: parseInt(document.getElementById('editUploadLimit').value) || 1000,
+                    embargoAccess: document.getElementById('editEmbargoAccess').checked,
+                    analyticsAccess: document.getElementById('editAnalyticsAccess').checked
+                }
+            };
+
+            // Validate required fields
+            if (!updatedData.name || !updatedData.contactEmail) {
+                showNotification('Please fill in all required fields', 'error');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                // FIXED: Use correct companies endpoint with full URL
+                const response = await fetch(`http://localhost:5000/api/v1/companies/${currentCompany._id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+
+                if (response.ok) {
+                    const updatedCompany = await response.json();
+                    
+                    // Update current company data
+                    currentCompany = updatedCompany;
+                    
+                    // Refresh the companies list and dashboard
+                    await loadCompanies();
+                    await loadDashboardData();
+                    
+                    // Close edit modal
+                    hideEditCompanyModal();
+                    
+                    // Show success notification
+                    showNotification('Company updated successfully', 'success');
+                    
+                    // Update the details modal if it's still open
+                    displayCompanyDetails(updatedCompany);
+                    showCompanyDetailsModal();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.message || 'Failed to update company', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating company:', error);
+                showNotification('Error updating company', 'error');
+            } finally {
+                // Reset button state
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        // Action menu toggle
+        function toggleActionMenu(button) {
+            const dropdown = button.nextElementSibling;
+            const isOpen = dropdown.classList.contains('show');
+            
+            // Close all dropdowns
+            document.querySelectorAll('.action-dropdown').forEach(d => d.classList.remove('show'));
+            
+            // Toggle current dropdown
+            if (!isOpen) {
+                dropdown.classList.add('show');
+            }
+        }
+
+        // Company actions
+        async function approveCompany(companyId) {
+            await updateCompanyStatus(companyId, 'active');
+        }
+
+        async function suspendCompany(companyId) {
+            await updateCompanyStatus(companyId, 'suspended');
+        }
+
+        async function reactivateCompany(companyId) {
+            await updateCompanyStatus(companyId, 'active');
+        }
+
+        async function updateCompanyStatus(companyId, status) {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                // FIXED: Use correct companies endpoint
+                const response = await fetch(`http://localhost:5000/api/v1/companies/${companyId}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status })
+                });
+
+                if (response.ok) {
+                    await loadCompanies();
+                    await loadDashboardData();
+                    showNotification(`Company ${status} successfully`, 'success');
+                } else {
+                    const error = await response.json();
+                    showNotification(error.message || 'Failed to update company', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating company:', error);
+                showNotification('Error updating company', 'error');
+            }
+        }
+
+        async function deleteCompany(companyId) {
+            if (!confirm('Are you sure you want to delete this company? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                console.log('🔍 DEBUG: Deleting company:', companyId);
+                
+                const response = await fetch(`http://localhost:5000/api/v1/companies/${companyId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('🔍 DEBUG: Delete response status:', response.status);
+                console.log('🔍 DEBUG: Delete response ok:', response.ok);
+
+                // Parse response regardless of status to get proper error messages
+                let result;
+                try {
+                    result = await response.json();
+                    console.log('🔍 DEBUG: Parsed response:', result);
+                } catch (parseError) {
+                    console.error('🔍 DEBUG: Failed to parse response:', parseError);
+                    result = { success: false, message: 'Invalid server response' };
+                }
+
+                // Check if deletion was successful (either response.ok OR result.success)
+                if (response.ok && result.success !== false) {
+                    console.log('🔍 DEBUG: Delete confirmed successful');
+                    
+                    // IMMEDIATE UI UPDATE: Remove the company from local array first
+                    const originalLength = companies.length;
+                    companies = companies.filter(company => company._id !== companyId);
+                    console.log('🔍 DEBUG: Removed company from local array:', originalLength, '->', companies.length);
+                    
+                    // Force immediate table re-render
+                    renderCompaniesTable();
+                    console.log('🔍 DEBUG: Table re-rendered immediately');
+                    
+                    // Show success notification
+                    showNotification(result.message || 'Company deleted successfully', 'success');
+                    
+                    // Then refresh data from server to ensure consistency
+                    console.log('🔍 DEBUG: Refreshing from server...');
+                    try {
+                        await Promise.all([
+                            loadCompanies(),
+                            loadDashboardData()
+                        ]);
+                        console.log('🔍 DEBUG: Server refresh complete');
+                    } catch (refreshError) {
+                        console.error('🔍 DEBUG: Server refresh failed:', refreshError);
+                        // Don't show error for refresh failure since deletion succeeded
+                    }
+                } else {
+                    // Deletion failed
+                    console.error('🔍 DEBUG: Delete failed - Status:', response.status, 'Result:', result);
+                    const errorMessage = result.error || result.message || `Server returned ${response.status}`;
+                    showNotification(errorMessage, 'error');
+                }
+            } catch (error) {
+                console.error('🔍 DEBUG: Network/fetch error deleting company:', error);
+                showNotification('Network error while deleting company', 'error');
+            }
+        }
+
+        // Utility functions
+        function refreshCompanies() {
+            loadCompanies();
+            loadDashboardData();
+        }
+
+        function refreshInvitations() {
+            loadPendingInvitations();
+        }
+
+        // Invitation management functions
+        async function resendInvitation(invitationId) {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                // Use new admin invite resend endpoint
+                const response = await fetch(`http://localhost:5000/api/v1/admin/invite/${invitationId}/resend`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    showNotification('Invitation email resent successfully', 'success');
+                    await loadPendingInvitations();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.message || 'Failed to resend invitation', 'error');
+                }
+            } catch (error) {
+                console.error('Error resending invitation:', error);
+                showNotification('Error resending invitation', 'error');
+            }
+        }
+
+        async function revokeInvitation(invitationId) {
+            if (!confirm('Are you sure you want to revoke this invitation? The recipient will no longer be able to accept it.')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                // Use new admin invite revoke endpoint
+                const response = await fetch(`http://localhost:5000/api/v1/admin/invite/${invitationId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    showNotification('Invitation revoked successfully', 'success');
+                    await loadPendingInvitations();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.message || 'Failed to revoke invitation', 'error');
+                }
+            } catch (error) {
+                console.error('Error revoking invitation:', error);
+                showNotification('Error revoking invitation', 'error');
+            }
+        }
+
+        // Send invitation for existing company
+        async function sendCompanyInvitation(companyId, contactEmail, companyName) {
+            // Validate email first
+            if (!contactEmail || contactEmail.trim() === '') {
+                showNotification('Email is required', 'error');
+                return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(contactEmail.trim())) {
+                showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+
+            if (!confirm(`Send invitation email to ${contactEmail} for ${companyName}?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                console.log('🔍 DEBUG: Sending invitation for existing company:', companyId);
+                console.log('🔍 DEBUG: Target email address:', contactEmail);
+                
+                // Get company details first to get the current contact email
+                const companyResponse = await fetch(`http://localhost:5000/api/v1/companies/${companyId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (companyResponse.ok) {
+                    const companyResult = await companyResponse.json();
+                    const company = companyResult.company || companyResult;
+                    
+                    console.log('🔍 DEBUG: Company contact email:', company.contactEmail);
+                    console.log('🔍 DEBUG: Requested email:', contactEmail);
+                    
+                    // ALWAYS create a new invitation with the current company contact email
+                    // This ensures we use the updated email address, not the old invitation record
+                    console.log('🔍 DEBUG: Creating new invitation with updated email address');
+                    
+                    const newInviteData = {
+                        companyName: companyName,
+                        legalName: company.legalName || companyName,
+                        contactPerson: company.contactPerson || 'Admin',
+                        contactEmail: company.contactEmail, // Use the company's current contact email
+                        primaryDomain: company.primaryDomain || '',
+                        planType: company.planType || 'enterprise',
+                        settings: company.settings || {
+                            maxUsers: 100,
+                            uploadLimitMB: 1000,
+                            embargoAccess: true,
+                            analyticsAccess: true
+                        }
+                    };
+                    
+                    console.log('🔍 DEBUG: New invite data:', newInviteData);
+                    
+                    const response = await fetch(`http://localhost:5000/api/v1/companies/invite`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(newInviteData)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('🔍 DEBUG: New invitation created successfully:', result);
+                        
+                        showNotification(`Invitation sent successfully to ${company.contactEmail}`, 'success');
+                        
+                        // Log the invitation token to console for testing
+                        if (result.invite && result.invite.inviteLink) {
+                            console.log('🎯 INVITATION TOKEN FOR TESTING:', result.invite.inviteLink);
+                            console.log('📧 Copy this URL to test invitation acceptance:', result.invite.inviteLink);
+                        }
+                        
+                        // Refresh pending invitations
+                        await loadPendingInvitations();
+                    } else {
+                        const errorText = await response.text();
+                        let error;
+                        try {
+                            error = JSON.parse(errorText);
+                        } catch (e) {
+                            error = { message: `Server error: ${response.status}` };
+                        }
+                        console.error('🔍 DEBUG: Failed to create new invitation:', error);
+                        
+                        // Check if it's a duplicate company error
+                        if (error.message && error.message.includes('already exists')) {
+                            showNotification('Company invitation already exists. Please check pending invitations.', 'warning');
+                        } else {
+                            showNotification(error.message || 'Failed to send invitation', 'error');
+                        }
+                    }
+                } else {
+                    console.error('🔍 DEBUG: Failed to load company details');
+                    showNotification('Failed to load company details', 'error');
+                }
+            } catch (error) {
+                console.error('Error sending company invitation:', error);
+                showNotification('Error sending invitation', 'error');
+            }
+        }
+
+        function viewFullAuditLog() {
+            // Navigate to full audit log page
+            window.location.href = '/audit-log.html';
+        }
+
+        function editCompany(companyId) {
+            // Find the company in our current list and show edit modal
+            const company = companies.find(c => c._id === companyId);
+            if (company) {
+                currentCompany = company;
+                editCurrentCompany();
+            } else {
+                // If not found in current list, fetch it
+                showCompanyDetails(companyId).then(() => {
+                    if (currentCompany) {
+                        editCurrentCompany();
+                    }
+                });
+            }
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+
+            // Set background color based on type
+            switch (type) {
+                case 'success':
+                    notification.style.background = 'var(--accent-action-positive)';
+                    break;
+                case 'error':
+                    notification.style.background = 'var(--accent-action-danger)';
+                    break;
+                default:
+                    notification.style.background = 'var(--accent-primary)';
+            }
+
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,842 @@
+
+/* ============ LEGENDARY SIDEBAR CSS ============ */
+/* Complete sidebar styling extracted from test_globalshell.html */
+
+/* ============ SIDEBAR VARIABLES ============ */
+:root {
+    /* FIXED: Use consistent header height - 61px matches actual header */
+    --amc-header-h: 61px;
+    --amc-sidebar-expanded: 264px;
+    --amc-sidebar-collapsed: 72px;
+
+    /* colors (light) */
+    --amc-bg: #ffffff;
+    --amc-line: #E5E7EB;
+    --amc-text: #0f172a;
+    --amc-muted: #64748b;
+
+    /* colors (dark) */
+    --amc-bg-dark: #0f1115;
+    --amc-line-dark: rgba(255,255,255,.12);
+    --amc-text-dark: #e5e7eb;
+    --amc-muted-dark: #94a3b8;
+}
+
+/* Body layout variables (expanded by default) */
+body {
+    --amc-sidebar-w: var(--amc-sidebar-expanded);
+    padding-top: var(--header-height); /* FIXED: Use same variable as header height */
+}
+
+/* When collapsed (remembered in localStorage) */
+body.amc-collapsed { 
+    --amc-sidebar-w: var(--amc-sidebar-collapsed); 
+}
+
+/* ============ MAIN SIDEBAR CONTAINER ============ */
+
+/* Sidebar (fixed, left) */
+.amc-sidebar {
+    position: fixed; 
+    top: var(--amc-header-h); 
+    left: 0; 
+    bottom: 0;
+    width: var(--amc-sidebar-w);
+    background: var(--amc-bg);
+    border-right: 1px solid var(--amc-line);
+    overflow: visible auto; /* FIXED: changed from hidden to visible for tooltips */
+    transition: width .18s ease;
+    z-index: 900;
+}
+
+/* Dark mode support - FIXED: Use dark-mode class */
+body.dark-mode .amc-sidebar {
+    background: var(--sidebar-bg);
+    border-right-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Main content shifts to the right of the sidebar */
+.amc-main { 
+    margin-left: var(--amc-sidebar-w); 
+    transition: margin-left .18s ease; 
+}
+
+.app-container { 
+    margin-left: var(--amc-sidebar-w); 
+    transition: margin-left .18s ease; 
+}
+
+/* ============ ENTERPRISE SIDEBAR SHELL - PREMIUM LIGHT MODE ELEVATION ============ */
+
+#sidebar {
+    position: fixed !important;
+    left: 0 !important;
+    top: 61px !important; /* FORCE: Exact pixel value */
+    bottom: 0 !important;
+    width: var(--amc-sidebar-w) !important;
+    background: linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f8f9fb 30%,
+        #f1f5f9 100%
+    ) !important;
+    border-right: 1px solid #d1d5db !important;
+    overflow: visible auto !important;
+    z-index: 950 !important;
+    transition: width 0.18s ease, background 0.2s ease, box-shadow 0.2s ease !important;
+    padding-top: 0px !important; /* FORCE: No top padding */
+    margin-top: 0px !important; /* FORCE: No top margin */
+    box-shadow: inset -1px 0 0 rgba(0,0,0,0.05), 2px 0 8px rgba(0,0,0,0.06) !important;
+}
+
+/* 🌟 GLOW MARKER: 2px cyan vertical line that follows cursor */
+#sidebar::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: var(--glow-y, -20px);
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(180deg, transparent 0%, #06b6d4 50%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), top 0.1s ease-out;
+    pointer-events: none;
+    z-index: 10;
+}
+
+#sidebar:hover::before {
+    opacity: 0.8;
+}
+
+/* 🌙 DARK MODE: Gradient-layered depth map (Anthracite → Carbon → Jet) */
+body.dark-mode #sidebar {
+    background: linear-gradient(180deg, #1f2937 0%, #1a1c1e 70%, #111827 100%);
+    border-right-color: var(--border-primary);
+    color: var(--text-primary);
+    box-shadow: inset -1px 0 0 rgba(255,255,255,0.03);
+}
+
+body.dark-mode #sidebar::before {
+    background: linear-gradient(180deg, transparent 0%, #3f91ff 50%, transparent 100%);
+}
+
+/* ============ HAMBURGER TOGGLE BUTTON ============ */
+
+.sidebar-header {
+    height: 28px; /* tighter */
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+#sidebarToggle {
+    all: unset;                       /* strip default button styles */
+    position: relative;               /* ensure tooltip positions correctly */
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: 4px 8px;
+}
+
+#sidebarToggle .hamburger {
+    position: relative;
+    width: 18px;
+    height: 2px;
+    background: var(--amc-sidebar-icon, #9ca3af);
+    border-radius: 1px;
+    transition: background 0.2s ease;
+}
+
+#sidebarToggle .hamburger::before,
+#sidebarToggle .hamburger::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 18px;
+    height: 2px;
+    background: inherit;
+    border-radius: 1px;
+    transition: background 0.2s ease;
+}
+
+#sidebarToggle .hamburger::before { top: -6px; }
+#sidebarToggle .hamburger::after { top: 6px; }
+
+#sidebarToggle:hover .hamburger,
+#sidebarToggle:hover .hamburger::before,
+#sidebarToggle:hover .hamburger::after {
+    background: var(--amc-accent, #0b74ff);  /* subtle hover colour only */
+}
+
+/* ============ HAMBURGER TOOLTIP SYSTEM ============ */
+
+button#sidebarToggle {
+    position: relative !important;
+}
+
+/* DYNAMIC HAMBURGER TOOLTIP - ADJUSTS BASED ON SIDEBAR STATE */
+button#sidebarToggle[data-tooltip]:hover::after {
+    content: attr(data-tooltip) !important;
+    position: fixed !important;
+    /* Dynamic positioning based on sidebar state */
+    left: var(--tooltip-left, 270px) !important;
+    top: 80px !important;
+    background: #ffffff !important;
+    color: #1f2937 !important;
+    border: 1px solid #e5e7eb !important;
+    padding: 8px 12px !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    z-index: 99999 !important;
+    pointer-events: none !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    display: block !important;
+    opacity: 1 !important;
+}
+
+/* Expanded sidebar - tooltip close to button */
+body:not(.sidebar-collapsed) button#sidebarToggle[data-tooltip]:hover::after {
+    --tooltip-left: 270px;
+}
+
+/* Collapsed sidebar - tooltip close to button */
+body.sidebar-collapsed button#sidebarToggle[data-tooltip]:hover::after {
+    --tooltip-left: 80px;
+}
+
+/* Dark mode version */
+body.dark-mode button#sidebarToggle[data-tooltip]:hover::after {
+    background: #374151 !important;
+    color: #f9fafb !important;
+    border-color: #4b5563 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
+}
+
+/* ============ SIDEBAR SECTIONS ============ */
+
+/* ENTERPRISE SIDEBAR SECTIONS - TIGHTER RHYTHM */
+#sidebar .sidebar-section {
+    padding: 0 10px; /* remove vertical padding */
+    margin-bottom: 14px; /* consistent spacing between sections */
+}
+
+/* ENTERPRISE SECTION HEADERS - ENHANCED VISIBILITY */
+#sidebar .sidebar-section-header {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    color: #4b5563; /* ENHANCED: Stronger grey for better hierarchy */
+    padding: 6px 12px;
+    margin-top: 16px; /* instead of ~32px */
+    margin-bottom: 4px; /* tighter below for better rhythm */
+    margin-left: 12px;
+    margin-right: 12px;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.08); /* darker tone for better definition in light mode */
+    border-left: 2px solid #f97316; /* orange accent strip */
+    border-radius: 4px;
+    padding-left: 10px; /* adjust for thinner accent bar */
+}
+
+/* Pull first section closer to top - ENTERPRISE SPACING */
+#sidebar .sidebar-section:first-child .sidebar-section-header {
+    margin-top: 4px; /* pull 'Core' closer to top */
+}
+
+/* Dark mode refined headers - enhanced visibility */
+body.dark-mode #sidebar .sidebar-section-header {
+    background: rgba(255, 255, 255, 0.05); /* subtle translucent bar for dark mode */
+    color: #9ca3af; /* keep lighter grey for dark mode contrast */
+    border-left-color: #fb923c; /* lighter orange for dark mode visibility */
+}
+
+/* ============ CONTEXTUAL THEMES: Section headers with color-coded gradients ============ */
+
+#sidebar .sidebar-section:nth-child(1) .sidebar-section-header {
+    border-left-color: #1d4ed8; /* ENHANCED: Richer blue (+15% saturation) */
+    border-left-width: 3px; /* Slightly thicker for more impact */
+    background: linear-gradient(90deg, rgba(29, 78, 216, 0.14) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+#sidebar .sidebar-section:nth-child(2) .sidebar-section-header {
+    border-left-color: #047857; /* ENHANCED: Deeper green (+12% depth) */
+    border-left-width: 3px;
+    background: linear-gradient(90deg, rgba(4, 120, 87, 0.14) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+#sidebar .sidebar-section:nth-child(3) .sidebar-section-header {
+    border-left-color: #c2410c; /* ENHANCED: Warmer orange (+20% richness) */
+    border-left-width: 3px;
+    background: linear-gradient(90deg, rgba(194, 65, 12, 0.14) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+#sidebar .sidebar-section:nth-child(4) .sidebar-section-header {
+    border-left-color: #b91c1c; /* ENHANCED: Stronger red (+15% intensity) */
+    border-left-width: 3px;
+    background: linear-gradient(90deg, rgba(185, 28, 28, 0.14) 0%, rgba(0,0,0,0.08) 100%);
+}
+
+/* 🌙 DARK MODE CONTEXTUAL THEMES */
+body.dark-mode #sidebar .sidebar-section:nth-child(1) .sidebar-section-header {
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, rgba(255,255,255,0.05) 100%);
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(2) .sidebar-section-header {
+    background: linear-gradient(90deg, rgba(5, 150, 105, 0.15) 0%, rgba(255,255,255,0.05) 100%);
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(3) .sidebar-section-header {
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.15) 0%, rgba(255,255,255,0.05) 100%);
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(4) .sidebar-section-header {
+    background: linear-gradient(90deg, rgba(220, 38, 38, 0.15) 0%, rgba(255,255,255,0.05) 100%);
+}
+
+/* ============ SIDEBAR LISTS AND LINKS ============ */
+
+#sidebar .sidebar-list { 
+    list-style: none; 
+    margin: 0; 
+    padding: 4px; 
+}
+
+#sidebar .sidebar-item { 
+    margin: 2px 6px; 
+}
+
+#sidebar .sidebar-link {
+    display: flex; 
+    align-items: center; 
+    gap: 10px;
+    padding: 10px 12px; 
+    border-radius: 10px; 
+    text-decoration: none;
+    color: var(--text-primary); 
+    font: 600 14px/1.2 Inter, ui-sans-serif, system-ui;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* 🌟 HOVER LIFT: Fluid and tactile like Proton/Notion */
+#sidebar .sidebar-link:hover {
+    background: #d1d5db;
+    transform: translateY(-2px) translateX(2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+body.dark-mode #sidebar .sidebar-link:hover {
+    background: var(--bg-tertiary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+/* 🔥 ACTIVE STATE ANIMATION: Blue vertical glow bar */
+#sidebar .sidebar-link.active {
+    background: rgba(11,116,255,0.08);
+    color: #0b74ff;
+    padding-left: 11px;
+    position: relative;
+}
+
+#sidebar .sidebar-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, transparent 0%, #0b74ff 20%, #0b74ff 80%, transparent 100%);
+    transform: scaleY(0);
+    transform-origin: center;
+    animation: activeGlow 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes activeGlow {
+    0% { transform: scaleY(0); opacity: 0; }
+    100% { transform: scaleY(1); opacity: 1; }
+}
+
+/* icon/label wrappers */
+#sidebar .i { 
+    width: 22px; 
+    text-align: center; 
+    font-size: 18px; 
+    line-height: 1; 
+}
+
+#sidebar .t { 
+    white-space: nowrap; 
+}
+
+/* ============ COLLAPSED SIDEBAR STATES ============ */
+
+/* collapsed: hide headings + labels, keep icons only */
+body.amc-collapsed #sidebar .sidebar-section-header { 
+    display: none; 
+}
+
+body.amc-collapsed #sidebar .t { 
+    display: none; 
+}
+
+body.amc-collapsed #sidebar .sidebar-link { 
+    justify-content: center; 
+    gap: 0; 
+}
+
+/* ============ COLLAPSED SIDEBAR: PERFECTLY CENTERED BARS ============ */
+
+/* Hide section items by default when sidebar is collapsed */
+body.amc-collapsed #sidebar .sidebar-section .sidebar-list,
+body.sidebar-collapsed #sidebar .sidebar-section .sidebar-list {
+    display: none;
+}
+
+/* Show section items only when section is expanded (not collapsed) */
+body.amc-collapsed #sidebar .sidebar-section:not(.collapsed) .sidebar-list,
+body.sidebar-collapsed #sidebar .sidebar-section:not(.collapsed) .sidebar-list {
+    display: block;
+}
+
+/* Hide expanded headers completely when sidebar is collapsed */
+body.amc-collapsed #sidebar .sidebar-section-header,
+body.sidebar-collapsed #sidebar .sidebar-section-header {
+    display: none !important;
+}
+
+/* ============ COLLAPSED SECTION BARS ============ */
+
+/* Base styling for all collapsed bars */
+body.amc-collapsed #sidebar .collapsed-section-bar,
+body.sidebar-collapsed #sidebar .collapsed-section-bar {
+    display: block !important;
+    
+    /* Centering */
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-bottom: 4px !important;
+    
+    /* Width & styling */
+    width: 48px;
+    height: 20px;
+    background: linear-gradient(90deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.04) 100%);
+    border-radius: 6px;
+    border-left-width: 3px;
+    border-left-style: solid;
+    padding: 0;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        0 1px 3px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1000;
+}
+
+/* PROGRESSIVE OFFSETS: Each section gets increasing margin-top */
+
+/* Section 1: Core (Blue) - smallest offset */
+body.amc-collapsed #sidebar .sidebar-section:nth-child(1) .collapsed-section-bar,
+body.sidebar-collapsed #sidebar .sidebar-section:nth-child(1) .collapsed-section-bar {
+    margin-top: 4px !important;
+}
+
+/* Section 2: Management (Green) - medium offset */
+body.amc-collapsed #sidebar .sidebar-section:nth-child(2) .collapsed-section-bar,
+body.sidebar-collapsed #sidebar .sidebar-section:nth-child(2) .collapsed-section-bar {
+    margin-top: 18px !important;
+}
+
+/* Section 3: Analytics (Orange) - larger offset */
+body.amc-collapsed #sidebar .sidebar-section:nth-child(3) .collapsed-section-bar,
+body.sidebar-collapsed #sidebar .sidebar-section:nth-child(3) .collapsed-section-bar {
+    margin-top: 20px !important;
+}
+
+/* Section 4: Admin (Red) - largest offset */
+body.amc-collapsed #sidebar .sidebar-section:nth-child(4) .collapsed-section-bar,
+body.sidebar-collapsed #sidebar .sidebar-section:nth-child(4) .collapsed-section-bar {
+    margin-top: 22px !important;
+}
+
+/* ============ EXACT COLOR MATCHING ============ */
+
+/* Core - Blue */
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="core"],
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="core"] {
+    border-left-color: #1d4ed8 !important;
+    background: linear-gradient(90deg, rgba(29, 78, 216, 0.14) 0%, rgba(0,0,0,0.08) 100%) !important;
+}
+
+/* Management - Green */
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="management"],
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="management"] {
+    border-left-color: #047857 !important;
+    background: linear-gradient(90deg, rgba(4, 120, 87, 0.14) 0%, rgba(0,0,0,0.08) 100%) !important;
+}
+
+/* Analytics - Orange */
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="analytics"],
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="analytics"] {
+    border-left-color: #c2410c !important;
+    background: linear-gradient(90deg, rgba(194, 65, 12, 0.14) 0%, rgba(0,0,0,0.08) 100%) !important;
+}
+
+/* Admin - Red */
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="admin"],
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="admin"] {
+    border-left-color: #b91c1c !important;
+    background: linear-gradient(90deg, rgba(185, 28, 28, 0.14) 0%, rgba(0,0,0,0.08) 100%) !important;
+}
+
+/* Right-edge colored indicators */
+body.amc-collapsed #sidebar .collapsed-section-bar::after,
+body.sidebar-collapsed #sidebar .collapsed-section-bar::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 2px;
+    bottom: 2px;
+    width: 2px;
+    border-radius: 0 4px 4px 0;
+    opacity: 0.8;
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="core"]::after,
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="core"]::after {
+    background: #1d4ed8;
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="management"]::after,
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="management"]::after {
+    background: #047857;
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="analytics"]::after,
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="analytics"]::after {
+    background: #c2410c;
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar[data-section="admin"]::after,
+body.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="admin"]::after {
+    background: #b91c1c;
+}
+
+/* ============ DARK MODE COLLAPSED BARS ============ */
+
+body.dark-mode.amc-collapsed #sidebar .collapsed-section-bar,
+body.dark-mode.sidebar-collapsed #sidebar .collapsed-section-bar {
+    background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 1px 3px rgba(0,0,0,0.15) !important;
+}
+
+body.dark-mode.amc-collapsed #sidebar .collapsed-section-bar[data-section="core"],
+body.dark-mode.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="core"] {
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, rgba(255,255,255,0.05) 100%) !important;
+}
+
+body.dark-mode.amc-collapsed #sidebar .collapsed-section-bar[data-section="management"],
+body.dark-mode.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="management"] {
+    background: linear-gradient(90deg, rgba(5, 150, 105, 0.15) 0%, rgba(255,255,255,0.05) 100%) !important;
+}
+
+body.dark-mode.amc-collapsed #sidebar .collapsed-section-bar[data-section="analytics"],
+body.dark-mode.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="analytics"] {
+    background: linear-gradient(90deg, rgba(217, 119, 6, 0.15) 0%, rgba(255,255,255,0.05) 100%) !important;
+}
+
+body.dark-mode.amc-collapsed #sidebar .collapsed-section-bar[data-section="admin"],
+body.dark-mode.sidebar-collapsed #sidebar .collapsed-section-bar[data-section="admin"] {
+    background: linear-gradient(90deg, rgba(220, 38, 38, 0.15) 0%, rgba(255,255,255,0.05) 100%) !important;
+}
+
+/* Dark mode right-edge glow */
+body.dark-mode.amc-collapsed #sidebar .collapsed-section-bar::after,
+body.dark-mode.sidebar-collapsed #sidebar .collapsed-section-bar::after {
+    opacity: 1 !important;
+    box-shadow: 0 0 6px currentColor !important;
+}
+
+/* ============ HOVER & ACTIVE STATES ============ */
+
+body.amc-collapsed #sidebar .collapsed-section-bar:hover,
+body.sidebar-collapsed #sidebar .collapsed-section-bar:hover {
+    transform: translateX(2px);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.15),
+        0 2px 6px rgba(0,0,0,0.12) !important;
+}
+
+body.dark-mode.amc-collapsed #sidebar .collapsed-section-bar:hover,
+body.dark-mode.sidebar-collapsed #sidebar .collapsed-section-bar:hover {
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        0 2px 8px rgba(0,0,0,0.25) !important;
+}
+
+body.amc-collapsed #sidebar .collapsed-section-bar:active,
+body.sidebar-collapsed #sidebar .collapsed-section-bar:active {
+    transform: translateX(1px) scale(0.98);
+}
+
+/* ============ SIDEBAR TOOLTIP SYSTEM ============ */
+
+.sidebar-tooltip {
+    position: fixed;
+    background: #ffffff;
+    color: #1f2937;
+    border: 1px solid #e5e7eb;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    pointer-events: none;
+    
+    /* INSTANT appearance - no transition needed */
+    opacity: 1;
+    
+    /* Optional: Add smooth positioning */
+    transition: none; /* Remove any transition for instant appearance */
+}
+
+/* Dark mode */
+body.dark-mode .sidebar-tooltip {
+    background: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* ============ CHEVRON COLORS - PURE CSS ============ */
+
+/* Light Mode Chevron Colors - Rich, saturated colors */
+#sidebar .sidebar-section:nth-child(1) .section-toggle {
+    color: #1d4ed8; /* Rich blue */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+#sidebar .sidebar-section:nth-child(2) .section-toggle {
+    color: #047857; /* Deep green */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+#sidebar .sidebar-section:nth-child(3) .section-toggle {
+    color: #c2410c; /* Warm orange */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+#sidebar .sidebar-section:nth-child(4) .section-toggle {
+    color: #b91c1c; /* Strong red */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Dark Mode Chevron Colors - ENHANCED LUMINOSITY (+40% brightness) */
+body.dark-mode #sidebar .sidebar-section:nth-child(1) .section-toggle {
+    color: #60a5fa !important; /* ENHANCED: Brighter blue (+40% luminosity) */
+    text-shadow: 0 0 8px rgba(96, 165, 250, 0.4); /* Subtle glow */
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(2) .section-toggle {
+    color: #34d399 !important; /* ENHANCED: Brighter green (+40% luminosity) */
+    text-shadow: 0 0 8px rgba(52, 211, 153, 0.4); /* Subtle glow */
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(3) .section-toggle {
+    color: #fb923c !important; /* ENHANCED: Brighter orange (+35% luminosity) */
+    text-shadow: 0 0 8px rgba(251, 146, 60, 0.4); /* Subtle glow */
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(4) .section-toggle {
+    color: #f87171 !important; /* ENHANCED: Brighter red (+40% luminosity) */
+    text-shadow: 0 0 8px rgba(248, 113, 113, 0.4); /* Subtle glow */
+}
+
+/* ENHANCED: Stronger glow on hover for dark mode */
+body.dark-mode #sidebar .sidebar-section:nth-child(1) .section-toggle:hover {
+    text-shadow: 0 0 12px rgba(96, 165, 250, 0.6);
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(2) .section-toggle:hover {
+    text-shadow: 0 0 12px rgba(52, 211, 153, 0.6);
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(3) .section-toggle:hover {
+    text-shadow: 0 0 12px rgba(251, 146, 60, 0.6);
+}
+
+body.dark-mode #sidebar .sidebar-section:nth-child(4) .section-toggle:hover {
+    text-shadow: 0 0 12px rgba(248, 113, 113, 0.6);
+}
+
+/* ============ PREMIUM LIGHT MODE ENHANCEMENTS ============ */
+
+/* 🎨 SIDEBAR: Enhanced rich gradient with better contrast - OVERRIDE EXTERNAL CSS */
+body:not(.dark-mode) #sidebar,
+body:not(.dark-mode) .amc-sidebar {
+    background: linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f8f9fb 30%,
+        #f1f5f9 100%
+    ) !important;
+    
+    /* Enhanced visual depth */
+    border-right: 1px solid #cbd5e1 !important;
+    box-shadow:
+        inset -1px 0 0 rgba(255, 255, 255, 0.8),
+        2px 0 8px rgba(0, 0, 0, 0.04),
+        4px 0 16px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* FORCE OVERRIDE: Target the CSS variable directly */
+body:not(.dark-mode) {
+    --sidebar-bg: linear-gradient(180deg, #ffffff 0%, #f8f9fb 30%, #f1f5f9 100%) !important;
+}
+
+/* 🎨 SECTION HEADERS: Vibrant colored accents */
+body:not(.dark-mode) #sidebar .sidebar-section-header {
+    background: rgba(255, 255, 255, 0.8) !important;
+    color: #334155 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+    
+    /* ADDED: Subtle inner shadow for depth */
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 🎨 COLLAPSED BARS: VIVID COLORS - MATCH DARK MODE INTENSITY */
+
+/* Core (Blue) - ENHANCED SATURATION */
+body:not(.dark-mode) #sidebar .collapsed-section-bar[data-section="core"] {
+    border-left-color: #2563eb !important;
+    background: linear-gradient(
+        90deg,
+        rgba(37, 99, 235, 0.18) 0%,
+        rgba(37, 99, 235, 0.08) 100%
+    ) !important;
+    
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 2px 4px rgba(37, 99, 235, 0.15),
+        0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Management (Green) - ENHANCED SATURATION */
+body:not(.dark-mode) #sidebar .collapsed-section-bar[data-section="management"] {
+    border-left-color: #059669 !important;
+    background: linear-gradient(
+        90deg,
+        rgba(5, 150, 105, 0.18) 0%,
+        rgba(5, 150, 105, 0.08) 100%
+    ) !important;
+    
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 2px 4px rgba(5, 150, 105, 0.15),
+        0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Analytics (Orange) - ENHANCED SATURATION */
+body:not(.dark-mode) #sidebar .collapsed-section-bar[data-section="analytics"] {
+    border-left-color: #ea580c !important;
+    background: linear-gradient(
+        90deg,
+        rgba(234, 88, 12, 0.18) 0%,
+        rgba(234, 88, 12, 0.08) 100%
+    ) !important;
+    
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 2px 4px rgba(234, 88, 12, 0.15),
+        0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Admin (Red) - ENHANCED SATURATION */
+body:not(.dark-mode) #sidebar .collapsed-section-bar[data-section="admin"] {
+    border-left-color: #dc2626 !important;
+    background: linear-gradient(
+        90deg,
+        rgba(220, 38, 38, 0.18) 0%,
+        rgba(220, 38, 38, 0.08) 100%
+    ) !important;
+    
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 2px 4px rgba(220, 38, 38, 0.15),
+        0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 🎨 SECTION HEADER COLORED ACCENTS - VIVID */
+body:not(.dark-mode) #sidebar .sidebar-section:nth-child(1) .sidebar-section-header {
+    border-left-color: #2563eb !important;
+    border-left-width: 4px !important;
+    background: linear-gradient(
+        90deg,
+        rgba(37, 99, 235, 0.12) 0%,
+        rgba(255, 255, 255, 0.8) 100%
+    ) !important;
+}
+
+body:not(.dark-mode) #sidebar .sidebar-section:nth-child(2) .sidebar-section-header {
+    border-left-color: #059669 !important;
+    border-left-width: 4px !important;
+    background: linear-gradient(
+        90deg,
+        rgba(5, 150, 105, 0.12) 0%,
+        rgba(255, 255, 255, 0.8) 100%
+    ) !important;
+}
+
+body:not(.dark-mode) #sidebar .sidebar-section:nth-child(3) .sidebar-section-header {
+    border-left-color: #ea580c !important;
+    border-left-width: 4px !important;
+    background: linear-gradient(
+        90deg,
+        rgba(234, 88, 12, 0.12) 0%,
+        rgba(255, 255, 255, 0.8) 100%
+    ) !important;
+}
+
+body:not(.dark-mode) #sidebar .sidebar-section:nth-child(4) .sidebar-section-header {
+    border-left-color: #dc2626 !important;
+    border-left-width: 4px !important;
+    background: linear-gradient(
+        90deg,
+        rgba(220, 38, 38, 0.12) 0%,
+        rgba(255, 255, 255, 0.8) 100%
+    ) !important;
+}
+
+/* 🎨 SIDEBAR LINKS: Enhanced hover states */
+body:not(.dark-mode) #sidebar .sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.9) !important;
+    transform: translateY(-1px) translateX(2px) !important;
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* 🎨 ACTIVE LINK: Vibrant blue highlight */
+body:not(.dark-mode) #sidebar .sidebar-link.active {
+    background: rgba(37, 99, 235, 0.12) !important;
+    color: #1e40af !important;
+    
+    box-shadow:
+        inset 3px 0 0 #2563eb,
+        0 1px 3px rgba(37, 99, 235, 0.1) !important;
+}

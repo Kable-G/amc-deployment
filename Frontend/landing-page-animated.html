@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Where Automotive Stories Begin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-light: #ffffff;
+            --bg-dark: #0f0f0f;
+            --text-light: #1e1e1e;
+            --text-dark: #ffffff;
+            --text-secondary-light: #6b7280;
+            --text-secondary-dark: #9ca3af;
+            --border-light: #e5e7eb;
+            --border-dark: #374151;
+            --accent-blue: #0061ff;
+            --accent-blue-hover: #0052d9;
+            --card-bg-light: #f8fafc;
+            --card-bg-dark: #1a1a1a;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-dark: rgba(0, 0, 0, 0.3);
+            --gradient-primary: linear-gradient(135deg, #0061ff 0%, #0052d9 100%);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .header {
+            background: rgba(15, 15, 15, 0.95);
+            border-bottom-color: var(--border-dark);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        body.dark-mode .logo {
+            color: var(--text-dark);
+        }
+
+        /* Fixed Logo - 4 Equal Rectangles */
+        .logo-icon {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            width: 24px;
+            height: 16px;
+        }
+
+        .logo-rect {
+            width: 10px;
+            height: 6px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .logo-rect.filled {
+            background: var(--text-light);
+        }
+
+        .logo-rect.outline {
+            border: 1.5px solid var(--text-light);
+            background: transparent;
+        }
+
+        body.dark-mode .logo-rect.filled {
+            background: var(--text-dark);
+        }
+
+        body.dark-mode .logo-rect.outline {
+            border-color: var(--text-dark);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .control-button {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-secondary-light);
+            transition: all 0.2s ease;
+        }
+
+        body.dark-mode .control-button {
+            color: var(--text-secondary-dark);
+        }
+
+        .control-button:hover {
+            background: var(--card-bg-light);
+            color: var(--text-light);
+        }
+
+        body.dark-mode .control-button:hover {
+            background: var(--card-bg-dark);
+            color: var(--text-dark);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 6rem 2rem 2rem;
+            position: relative;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            width: 100%;
+        }
+
+        .hero-content {
+            max-width: 600px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            color: var(--text-light);
+            letter-spacing: -0.02em;
+        }
+
+        body.dark-mode .hero-title {
+            color: var(--text-dark);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary-light);
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        body.dark-mode .hero-subtitle {
+            color: var(--text-secondary-dark);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 97, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 97, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-light);
+            padding: 1rem 2rem;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .btn-secondary {
+            color: var(--text-dark);
+            border-color: var(--border-dark);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        /* Google-Inspired Dashboard Mockup */
+        .dashboard-mockup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .mockup-container {
+            background: var(--bg-light);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 650px;
+            box-shadow: 0 8px 32px var(--shadow-light);
+            overflow: hidden;
+        }
+
+        body.dark-mode .mockup-container {
+            background: var(--bg-dark);
+            border-color: var(--border-dark);
+            box-shadow: 0 8px 32px var(--shadow-dark);
+        }
+
+        /* Browser-style Header */
+        .mockup-browser-header {
+            background: var(--card-bg-light);
+            border-bottom: 1px solid var(--border-light);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        body.dark-mode .mockup-browser-header {
+            background: var(--card-bg-dark);
+            border-bottom-color: var(--border-dark);
+        }
+
+        .browser-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .browser-dot.red { background: #ff5f57; }
+        .browser-dot.yellow { background: #ffbd2e; }
+        .browser-dot.green { background: #28ca42; }
+
+        .browser-url-bar {
+            flex: 1;
+            background: var(--bg-light);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 6px 16px;
+            margin-left: 16px;
+            font-size: 0.9rem;
+            color: var(--text-secondary-light);
+        }
+
+        body.dark-mode .browser-url-bar {
+            background: var(--bg-dark);
+            border-color: var(--border-dark);
+            color: var(--text-secondary-dark);
+        }
+
+        /* App Header */
+        .mockup-app-header {
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border-light);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        body.dark-mode .mockup-app-header {
+            background: var(--bg-dark);
+            border-bottom-color: var(--border-dark);
+        }
+
+        .mockup-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        body.dark-mode .mockup-logo {
+            color: var(--text-dark);
+        }
+
+        .mockup-logo-icon {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            width: 20px;
+            height: 14px;
+        }
+
+        .mockup-logo-rect {
+            width: 9px;
+            height: 6px;
+            border-radius: 1px;
+        }
+
+        .mockup-logo-rect.filled {
+            background: var(--accent-blue);
+        }
+
+        .mockup-logo-rect.outline {
+            border: 1px solid var(--accent-blue);
+            background: transparent;
+        }
+
+        .mockup-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .mockup-search {
+            background: var(--card-bg-light);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 8px 16px;
+            width: 200px;
+            font-size: 0.9rem;
+            color: var(--text-secondary-light);
+        }
+
+        body.dark-mode .mockup-search {
+            background: var(--card-bg-dark);
+            border-color: var(--border-dark);
+            color: var(--text-secondary-dark);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Main Content Layout */
+        .mockup-main {
+            display: flex;
+            min-height: 400px;
+        }
+
+        /* Sidebar */
+        .mockup-sidebar {
+            width: 200px;
+            background: var(--card-bg-light);
+            border-right: 1px solid var(--border-light);
+            padding: 16px 0;
+        }
+
+        body.dark-mode .mockup-sidebar {
+            background: var(--card-bg-dark);
+            border-right-color: var(--border-dark);
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary-light);
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode .sidebar-item {
+            color: var(--text-secondary-dark);
+        }
+
+        .sidebar-item.active {
+            background: rgba(26, 115, 232, 0.1);
+            color: var(--accent-blue);
+            border-right: 3px solid var(--accent-blue);
+        }
+
+        .sidebar-item:not(.active):hover {
+            background: var(--bg-light);
+        }
+
+        body.dark-mode .sidebar-item:not(.active):hover {
+            background: var(--bg-dark);
+        }
+
+        .sidebar-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+        }
+
+        .sidebar-icon.blue { background-color: var(--accent-blue); }
+        .sidebar-icon.gray { background-color: var(--text-secondary-light); }
+
+        body.dark-mode .sidebar-icon.gray { 
+            background-color: var(--text-secondary-dark); 
+        }
+
+        /* Content Area */
+        .mockup-content {
+            flex: 1;
+            padding: 24px;
+            background: var(--bg-light);
+        }
+
+        body.dark-mode .mockup-content {
+            background: var(--bg-dark);
+        }
+
+        .content-header {
+            margin-bottom: 20px;
+        }
+
+        .content-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        body.dark-mode .content-title {
+            color: var(--text-dark);
+        }
+
+        .content-subtitle {
+            color: var(--text-secondary-light);
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode .content-subtitle {
+            color: var(--text-secondary-dark);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        /* Google-Style Media Cards - Colors Fill Half */
+        .media-card {
+            background: var(--bg-light);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            height: 160px;
+        }
+
+        body.dark-mode .media-card {
+            background: var(--bg-dark);
+            border-color: var(--border-dark);
+        }
+
+        .media-card:hover {
+            box-shadow: 0 4px 12px var(--shadow-light);
+            transform: translateY(-1px);
+        }
+
+        body.dark-mode .media-card:hover {
+            box-shadow: 0 4px 12px var(--shadow-dark);
+        }
+
+        /* Color fills half the card */
+        .card-color-section {
+            height: 50%;
+            width: 100%;
+            position: relative;
+        }
+
+        .card-color-section.blue { background: linear-gradient(135deg, #1a73e8, #4285f4); }
+        .card-color-section.green { background: linear-gradient(135deg, #34a853, #0f9d58); }
+        .card-color-section.purple { background: linear-gradient(135deg, #9c27b0, #673ab7); }
+        .card-color-section.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
+        .card-color-section.red { background: linear-gradient(135deg, #ea4335, #d32f2f); }
+        .card-color-section.teal { background: linear-gradient(135deg, #00bcd4, #0097a7); }
+
+        .card-content-section {
+            height: 50%;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title-bar {
+            height: 4px;
+            background: var(--text-secondary-light);
+            border-radius: 2px;
+            width: 75%;
+            margin-bottom: 6px;
+        }
+
+        body.dark-mode .card-title-bar {
+            background: var(--text-secondary-dark);
+        }
+
+        .card-subtitle-bar {
+            height: 3px;
+            background: var(--border-light);
+            border-radius: 2px;
+            width: 50%;
+        }
+
+        body.dark-mode .card-subtitle-bar {
+            background: var(--border-dark);
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .card-date {
+            font-size: 0.7rem;
+            color: var(--text-secondary-light);
+        }
+
+        body.dark-mode .card-date {
+            color: var(--text-secondary-dark);
+        }
+
+        .card-type {
+            font-size: 0.7rem;
+            background: var(--card-bg-light);
+            color: var(--text-secondary-light);
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        body.dark-mode .card-type {
+            background: var(--card-bg-dark);
+            color: var(--text-secondary-dark);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: var(--card-bg-light);
+        }
+
+        body.dark-mode .features {
+            background: var(--card-bg-dark);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .features-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        body.dark-mode .features-title {
+            color: var(--text-dark);
+        }
+
+        .features-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary-light);
+            margin-bottom: 4rem;
+        }
+
+        body.dark-mode .features-subtitle {
+            color: var(--text-secondary-dark);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-light);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .feature-card {
+            background: var(--bg-dark);
+            border-color: var(--border-dark);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px var(--shadow-light);
+        }
+
+        body.dark-mode .feature-card:hover {
+            box-shadow: 0 20px 40px var(--shadow-dark);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        body.dark-mode .feature-title {
+            color: var(--text-dark);
+        }
+
+        .feature-description {
+            color: var(--text-secondary-light);
+            line-height: 1.6;
+        }
+
+        body.dark-mode .feature-description {
+            color: var(--text-secondary-dark);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-light);
+            border-top: 1px solid var(--border-light);
+            padding: 3rem 2rem 2rem;
+        }
+
+        body.dark-mode .footer {
+            background: var(--bg-dark);
+            border-top-color: var(--border-dark);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h4 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        body.dark-mode .footer-section h4 {
+            color: var(--text-dark);
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary-light);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        body.dark-mode .footer-links a {
+            color: var(--text-secondary-dark);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .footer-bottom {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-light);
+            text-align: center;
+            color: var(--text-secondary-light);
+        }
+
+        body.dark-mode .footer-bottom {
+            border-top-color: var(--border-dark);
+            color: var(--text-secondary-dark);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
+            }
+
+            .hero-title {
+                font-size: 2.8rem;
+            }
+
+            .content-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .mockup-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0.75rem 1rem;
+            }
+
+            .logo {
+                font-size: 1.1rem;
+                gap: 0.5rem;
+            }
+
+            .logo-icon {
+                width: 20px;
+                height: 14px;
+            }
+
+            .hero {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .hero-title {
+                font-size: 2.2rem;
+                line-height: 1.2;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .mockup-container {
+                padding: 1rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features {
+                padding: 4rem 1rem;
+            }
+
+            .features-title {
+                font-size: 2rem;
+            }
+
+            .footer {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="#" class="logo">
+            <div class="logo-icon">
+                <div class="logo-rect filled"></div>
+                <div class="logo-rect filled"></div>
+                <div class="logo-rect filled"></div>
+                <div class="logo-rect outline"></div>
+            </div>
+            AutoMediaCenter
+        </a>
+        <div class="header-controls">
+            <button class="control-button" id="themeToggle" title="Toggle theme">
+                <i class="fas fa-sun"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">Where automotive stories begin.</h1>
+                <p class="hero-subtitle">
+                    AutoMediaCenter delivers all your global automotive media needs — 
+                    accessible, searchable, and ready to download.
+                </p>
+                <div class="hero-buttons">
+                    <a href="register.html" class="btn-primary">
+                        <i class="fas fa-rocket"></i>
+                        Create an account
+                    </a>
+                    <a href="login-dropbox-style.html" class="btn-secondary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign in
+                    </a>
+                </div>
+            </div>
+
+            <div class="dashboard-mockup">
+                <div class="mockup-container">
+                    <!-- Browser Header -->
+                    <div class="mockup-browser-header">
+                        <div class="browser-dots">
+                            <div class="browser-dot red"></div>
+                            <div class="browser-dot yellow"></div>
+                            <div class="browser-dot green"></div>
+                        </div>
+                        <div class="browser-url-bar">automediacenter.com</div>
+                    </div>
+
+                    <!-- App Header -->
+                    <div class="mockup-app-header">
+                        <div class="mockup-logo">
+                            <div class="mockup-logo-icon">
+                                <div class="mockup-logo-rect filled"></div>
+                                <div class="mockup-logo-rect filled"></div>
+                                <div class="mockup-logo-rect filled"></div>
+                                <div class="mockup-logo-rect outline"></div>
+                            </div>
+                            AutoMediaCenter
+                        </div>
+                        <div class="mockup-controls">
+                            <input type="text" class="mockup-search" placeholder="Search releases..." readonly>
+                            <div class="user-avatar">U</div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="mockup-main">
+                        <!-- Sidebar -->
+                        <div class="mockup-sidebar">
+                            <div class="sidebar-item active">
+                                <div class="sidebar-icon blue"></div>
+                                <span>All Releases</span>
+                            </div>
+                            <div class="sidebar-item">
+                                <div class="sidebar-icon gray"></div>
+                                <span>Press Releases</span>
+                            </div>
+                            <div class="sidebar-item">
+                                <div class="sidebar-icon gray"></div>
+                                <span>Images</span>
+                            </div>
+                            <div class="sidebar-item">
+                                <div class="sidebar-icon gray"></div>
+                                <span>Videos</span>
+                            </div>
+                            <div class="sidebar-item">
+                                <div class="sidebar-icon gray"></div>
+                                <span>Documents</span>
+                            </div>
+                        </div>
+
+                        <!-- Content Area -->
+                        <div class="mockup-content">
+                            <div class="content-header">
+                                <h3 class="content-title">Latest Releases</h3>
+                                <p class="content-subtitle">109 releases available</p>
+                            </div>
+
+                            <div class="content-grid">
+                                <!-- Row 1 -->
+                                <div class="media-card">
+                                    <div class="card-color-section blue"></div>
+                                    <div class="card-content-section">
+                                        <div>
+                                            <div class="card-title-bar"></div>
+                                            <div class="card-subtitle-bar"></div>
+                                        </div>
+                                        <div class="card-meta">
+                                            <span class="card-date">Sep 19</span>
+                                            <span class="card-type">BMW</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="media-card">
+                                    <div class="card-color-section green"></div>
+                                    <div class="card-content-section">
+                                        <div>
+                                            <div class="card-title-bar"></div>
+                                            <div class="card-subtitle-bar"></div>
+                                        </div>
+                                        <div class="card-meta">
+                                            <span class="card-date">Sep 18</span>
+                                            <span class="card-type">Mercedes</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="media-card">

@@ -1,0 +1,955 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Accept Invitation [Enterprise]</title>
+    
+    <!-- Enterprise Sidebar System -->
+    <link rel="stylesheet" href="css/sidebar.css">
+    <script src="components/sidebar.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+<style>
+        :root {
+            /* ── LAYERED BACKGROUND ARCHITECTURE (Light Mode Premium) ─────── */
+            --amc-body-bg-light: #f8fafc;         /* soft neutral layer */
+            --amc-surface-bg-light: #ffffff;      /* cards / containers */
+            --amc-table-bg-light: #fcfcfd;        /* table wrapper */
+            --amc-header-bg-light: #f3f4f6;       /* table header background */
+            --amc-sidebar-bg-light: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* sidebar gradient */
+            
+            /* Legacy variables (maintained for compatibility) */
+            --bg-primary: var(--amc-body-bg-light);
+            --bg-secondary: var(--amc-surface-bg-light);
+            --bg-tertiary: #e9ecef;
+            
+            /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────────── */
+            --text-headings: #111827;    /* headers: strong */
+            --text-primary: #374151;     /* body text: medium */
+            --text-secondary: #6b7280;   /* metadata: subtle */
+            --text-muted: #9ca3af;       /* ultra-subtle */
+            
+            --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #5a6268;
+
+            --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
+            
+            --border-primary: #e5e7eb; --border-secondary: #d1d5db; --border-color-light: #e9ecef;
+            --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
+            --icon-available: var(--accent-primary); --icon-unavailable: #ced4da;
+            --shadow-primary: rgba(0, 0, 0, 0.08); --shadow-hover: rgba(0, 0, 0, 0.15);
+            --overlay-bg: rgba(0, 0, 0, 0.65);
+            --tag-bg: var(--bg-tertiary); --tag-text: var(--text-secondary);
+            --color-info: #17a2b8;
+            --color-warning: #ffc107;
+            --brand-band-light-bg: #212529; --brand-band-light-text: #f8f9fa;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --bg-image-placeholder: #e9ecef;
+            --font-family-main: 'Poppins', sans-serif;
+            --sidebar-width: 260px;
+            --header-height: 61px;
+            --footer-height: 60px;
+            --accent-primary-rgb: 13, 110, 253;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --highlight-color-rgb: 255, 193, 7;
+            --notification-error: #dc3545;
+            --accent-action-positive: #28a745;
+            --accent-action-positive-hover: #218838;
+            --accent-action-positive-rgb: 40, 167, 69;
+            --accent-action-danger: #dc3545;
+            --accent-action-danger-hover: #c82333;
+            --selection-dot-color: var(--accent-primary); /* Blue for selection */
+            
+            /* ENTERPRISE TYPOGRAPHY SYSTEM */
+            --font-display: 2rem;      /* Page titles (h1) */
+            --font-heading: 1.4rem;    /* Section headers */
+            --font-subheading: 1.1rem; /* Card headers */
+            --font-body: 0.95rem;      /* Body text */
+            --font-muted: 0.85rem;     /* Metadata / labels */
+        }
+
+        body.dark-mode {
+            --bg-primary: #121212; --bg-secondary: #1a1c1e; --bg-tertiary: #2a2d30;
+            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
+            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff;
+            
+            --accent-secondary-default: #6c757d;
+            --accent-secondary-default-hover: #545b62;
+            
+            --border-primary: #3a3a3a; --border-secondary: #444; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
+            --icon-available: var(--accent-primary); --icon-unavailable: #555;
+            --shadow-primary: rgba(0, 0, 0, 0.25); --shadow-hover: rgba(0, 0, 0, 0.35);
+            --overlay-bg: rgba(0, 0, 0, 0.75);
+            --tag-bg: #4a4a4a; --tag-text: var(--text-primary);
+            --brand-band-light-bg: #f8f9fa; --brand-band-light-text: #212529;
+            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
+            --color-info: #36c4d9;
+            --color-warning: #ffd04a;
+            --bg-image-placeholder: #2c2c2c;
+            --accent-primary-rgb: 63, 145, 255;
+            --accent-secondary-default-rgb: 108, 117, 125;
+            --accent-action-positive: #20c997;
+            --accent-action-positive-hover: #1ba984;
+            --accent-action-positive-rgb: 32, 201, 151;
+            --accent-action-danger: #e74c3c;
+            --accent-action-danger-hover: #d63031;
+            --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
+            --sidebar-bg: #1a1c1e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--amc-body-bg-light); /* soft neutral layer */
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Light mode layered background system */
+        body:not(.dark-mode) {
+            background: var(--amc-body-bg-light);
+        }
+        
+        /* DARK MODE BODY BACKGROUND */
+        body.dark-mode {
+            background: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+        a { color: var(--accent-primary); text-decoration: none; } a:hover { color: var(--accent-primary-hover); text-decoration: underline; }
+        .app-container { display: flex; flex-direction: column; flex-grow: 1; }
+        .app-body { display: flex; flex-grow: 1; transition: margin-left 0.3s ease; }
+        .app-header {
+            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%); /* subtle gradient for depth */
+            border-bottom: 1px solid #e5e7eb;
+            color: #1f2937; /* dark text for white background */
+            padding: 10px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10000;
+            height: var(--header-height);
+            width: 100%;
+        }
+        
+        .app-header .logo h1 {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0;
+            color: #1f2937; /* ensure logo is dark and visible in light mode */
+        }
+        
+        /* Dark mode header styling */
+        body.dark-mode .app-header {
+            background: linear-gradient(180deg, #1e2327 0%, #181b1f 100%); /* subtle gradient for depth */
+            border-bottom: 1px solid #3a3a3a;
+            color: #f0f0f0; /* light text for dark background */
+        }
+        
+        body.dark-mode .app-header .logo h1 {
+            color: #f0f0f0; /* ensure logo is light and visible in dark mode */
+        }
+        
+        .app-header .user-actions-group { display: flex; align-items: center; gap: 20px;}
+        .app-header .user-info { font-size: 0.9em; } .app-header .user-info span { opacity: 0.8; }
+        .app-header .logout-link { color: var(--header-link); text-decoration: none; font-size: 0.9em;}
+        .app-header .logout-link:hover { color: var(--header-text); } .app-header .logout-link i { margin-right: 5px; }
+
+        .cart-indicator, .notification-indicator { position: relative; display: inline-flex; align-items: center; cursor: pointer; color: var(--header-link); transition: color 0.2s ease; font-size: 1.1em; }
+        .cart-indicator:hover, .notification-indicator:hover { color: var(--header-text); }
+        .cart-badge, .notification-badge { position: absolute; top: -8px; right: -10px; background-color: var(--accent-primary); color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: bold; transform: scale(0); transition: transform 0.2s ease-out; }
+        .notification-badge { background-color: var(--notification-error); top: -5px; right: -8px; width: 16px; height: 16px;}
+        .cart-indicator.has-items .cart-badge, .notification-indicator.has-new .notification-badge { transform: scale(1); }
+        .cart-indicator.has-items > i.fa-shopping-cart { color: var(--highlight-color); animation: pulseCartIcon 1.5s infinite; }
+        @keyframes pulseCartIcon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .amc-header-right { display: flex; align-items: center; gap: 15px; }
+        .amc-menu-dots { background: none; border: none; color: var(--header-link); font-size: 1.2em; cursor: pointer; padding: 5px; }
+        .amc-menu-dots:hover { color: var(--header-text); }
+
+        .btn-icon { background:transparent; border:none; padding:5px 8px; margin-left:10px; cursor:pointer; }
+        .btn-icon i { color:var(--header-link); font-size:1.1em; }
+        .btn-icon:hover i { color: var(--header-text); }
+
+        /* MAIN CONTENT LAYOUT */
+        .main-content {
+            margin-left: 0;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: var(--bg-primary);
+            overflow-y: auto;
+            min-height: calc(100vh - var(--header-height) - var(--footer-height));
+            padding-top: calc(var(--header-height) + 2rem);
+        }
+
+        /* DARK MODE MAIN CONTENT */
+        body.dark-mode .main-content {
+            background-color: var(--bg-primary) !important;
+        }
+
+        /* ── ENTERPRISE BUTTON SYSTEM ───────────────────────────────── */
+        .btn {
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.01em;
+            transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 44px;
+        }
+        
+        .btn i {
+            font-size: 0.9em;
+            transition: transform 0.2s ease;
+        }
+        
+        /* PRIMARY BUTTON - ENTERPRISE BLUE */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #0056d3 100%);
+            color: #ffffff !important;
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background: #0a66d1;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(11,116,255,0.3);
+            border-color: var(--accent-primary-hover);
+        }
+        
+        .btn-primary:hover i {
+            transform: scale(1.1);
+        }
+        
+        /* SECONDARY BUTTON */
+        .btn-secondary {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border-secondary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* DANGER BUTTON */
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-action-danger) 0%, #c82333 100%);
+            color: #ffffff !important;
+            border: 1px solid var(--accent-action-danger);
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, var(--accent-action-danger-hover) 0%, #b21e2f 100%);
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        /* ── PREMIUM CARD SYSTEM WITH LAYERED DEPTH ─────────────────── */
+        .card {
+            background: var(--amc-surface-bg-light);
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+        
+        /* Dark mode card styling */
+        body.dark-mode .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+        
+        .card-header {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 1.5rem;
+            background: #f9fafb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body {
+            background: #ffffff;
+            padding: 1.5rem;
+        }
+        
+        .card-header h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin: 0;
+            color: var(--text-headings);
+        }
+        
+        /* DARK MODE SUPPORT FOR CARD HEADER */
+        body.dark-mode .card-header h2 {
+            color: var(--text-headings) !important;
+        }
+        
+        body.dark-mode .card-header {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-primary);
+        }
+        
+        body.dark-mode .card-body {
+            background: var(--bg-secondary);
+        }
+
+        /* FORM STYLING */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+
+        .form-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Dark mode form controls */
+        body.dark-mode .form-control {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+            color: var(--text-primary);
+        }
+        
+        body.dark-mode .form-control:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(63, 145, 255, 0.1);
+        }
+
+        /* PASSWORD INPUT STYLING */
+        .password-input-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .password-toggle:hover {
+            color: var(--text-primary);
+        }
+
+        /* INVITATION INFO STYLING */
+        .invitation-info {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #0056d3 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .invitation-info h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .invitation-info p {
+            margin: 0.25rem 0;
+            opacity: 0.9;
+        }
+
+        .invite-expiry {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        .invite-expiry.expired {
+            background: rgba(220, 53, 69, 0.2);
+        }
+
+        /* LOADING AND ERROR STATES */
+        .loading-state, .error-state, .success-state {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .loading-state i {
+            font-size: 3rem;
+            color: var(--accent-primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: var(--accent-action-danger);
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .success-message {
+            color: var(--accent-action-positive);
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.2);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* FOOTER STYLING */
+        .app-footer { 
+            text-align: center; 
+            padding: 15px 25px; 
+            font-size: 0.85em; 
+            background-color: var(--header-bg); 
+            color: var(--header-link); 
+            border-top: 1px solid var(--border-primary); 
+        }
+        .app-footer nav { 
+            margin-bottom: 8px; 
+        } 
+        .app-footer a { 
+            color: var(--header-link); 
+            margin: 0 8px;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+                padding-top: calc(var(--header-height) + 1rem);
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header at the very top, spanning full width -->
+    <header class="app-header">
+        <div class="logo"><h1>AutoMediaCenter</h1></div>
+        <div class="user-actions-group">
+            <div class="amc-header-right">
+                <div class="notification-indicator" id="notification-indicator" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">0</span>
+                </div>
+                <div class="cart-indicator" id="cart-indicator" title="View Cart (0 items)">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge">0</span>
+                </div>
+                <!-- Avatar will be auto-injected by amc-avatar-system.js -->
+                <button class="amc-menu-dots" title="More options">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- LOADING STATE -->
+            <div id="loadingState" class="loading-state">
+                <i class="fas fa-spinner"></i>
+                <h3 style="margin-top: 1rem; color: var(--text-headings);">Validating Invitation...</h3>
+                <p style="color: var(--text-secondary);">Please wait while we verify your invitation link.</p>
+            </div>
+
+            <!-- ERROR STATE -->
+            <div id="errorState" class="error-state" style="display: none;">
+                <div id="errorMessage"></div>
+            </div>
+
+            <!-- SUCCESS STATE -->
+            <div id="successState" class="success-state" style="display: none;">
+                <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--accent-action-positive); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-headings); margin-bottom: 1rem;">Welcome to AutoMediaCenter!</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Your account has been created successfully. You'll be redirected to your dashboard in a moment.
+                </p>
+                <div class="success-message">
+                    <strong>Next Steps:</strong> You can now access all company features and invite team members.
+                </div>
+            </div>
+
+            <!-- INVITATION FORM -->
+            <div id="inviteForm" style="display: none;">
+                <!-- Invitation Info Card -->
+                <div class="invitation-info">
+                    <h3><i class="fas fa-building"></i> You're Invited!</h3>
+                    <p><strong id="companyName">Loading...</strong> has been registered to join AutoMediaCenter.</p>
+                    <p>Your pending status level: <strong id="inviteRole">Loading...</strong></p>
+                    <p>Once your registration is accepted, you'll have full upload rights and access to a full suite of AutoMediaCenter services.</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">Invitation sent to: <strong id="inviteEmail">Loading...</strong></p>
+                    <div id="inviteExpiry" class="invite-expiry">
+                        <i class="fas fa-clock"></i> Loading...
+                    </div>
+                </div>
+
+                <!-- Account Creation Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-user-plus" style="color: var(--accent-primary); margin-right: 8px;"></i>Create Your Account</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="acceptForm">
+                            <div class="form-group">
+                                <label for="fullName" class="form-label">Full Name *</label>
+                                <input type="text" id="fullName" name="name" class="form-control" required 
+                                       placeholder="Enter your full name">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" id="email" name="email" class="form-control" required readonly
+                                       placeholder="Your email address">
+                                <small class="form-text">This must match the email address the invitation was sent to.</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password" class="form-label">Create Password *</label>
+                                <div class="password-input-container">
+                                    <input type="password" id="password" name="password" class="form-control" required 
+                                           placeholder="Create a secure password" minlength="8">
+                                    <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <small class="form-text">Password must be at least 8 characters long.</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirmPassword" class="form-label">Confirm Password *</label>
+                                <div class="password-input-container">
+                                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required 
+                                           placeholder="Confirm your password" minlength="8">
+                                    <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="formError" class="error-message" style="display: none;"></div>
+
+                            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                                <button type="submit" id="submitBtn" class="btn btn-primary" style="flex: 1;">
+                                    <i class="fas fa-user-plus"></i> Create Account & Join Company
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="app-footer">
+            <nav><a href="#">About Us</a> | <a href="#">Help Center</a> | <a href="#">Terms</a> | <a href="#">Privacy</a></nav>
+            <p>© <span id="currentYearText">2025</span> AutoMediaCenter. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+<script>
+    // Company Invitation Acceptance JavaScript
+    document.addEventListener('DOMContentLoaded', async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        
+        if (!token) {
+            showError('No invitation token provided. Please check your invitation link.');
+            return;
+        }
+
+        // 🔐 SECURITY: Clear existing authentication to prevent conflicts
+        // This ensures the invitation process is independent of current login status
+        localStorage.removeItem('token');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        
+        // Show a notice if user was previously logged in
+        const wasLoggedIn = localStorage.getItem('wasLoggedIn');
+        if (wasLoggedIn) {
+            console.log('Previous session cleared for invitation acceptance');
+            localStorage.removeItem('wasLoggedIn');
+        }
+
+        // Initialize UI
+        setupUI();
+        
+        // 🔐 SECURITY: Validate invitation token before showing form
+        await validateAndLoadInvitation(token);
+    });
+
+    const ui = {
+        loadingState: document.getElementById('loadingState'),
+        errorState: document.getElementById('errorState'),
+        successState: document.getElementById('successState'),
+        inviteForm: document.getElementById('inviteForm'),
+        acceptForm: document.getElementById('acceptForm'),
+        submitBtn: document.getElementById('submitBtn'),
+        companyName: document.getElementById('companyName'),
+        inviteEmail: document.getElementById('inviteEmail'),
+        inviteRole: document.getElementById('inviteRole'),
+        inviteExpiry: document.getElementById('inviteExpiry'),
+        errorMessage: document.getElementById('errorMessage'),
+        formError: document.getElementById('formError'),
+        currentYearText: document.getElementById('currentYearText')
+    };
+
+    const setupUI = () => {
+        if (ui.currentYearText) ui.currentYearText.textContent = new Date().getFullYear();
+        
+        // Theme toggle functionality - now handled by avatar modal
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.body.classList.add('modal-dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.body.classList.remove('modal-dark');
+            }
+        };
+        
+        // Initialize theme - check saved preference or default to light
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+    };
+
+    const showError = (message) => {
+        ui.loadingState.style.display = 'none';
+        ui.inviteForm.style.display = 'none';
+        ui.errorState.style.display = 'block';
+        ui.errorMessage.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--accent-action-danger); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-headings); margin-bottom: 1rem;">Error</h3>
+                <p style="color: var(--text-secondary);">${message}</p>
+            </div>
+        `;
+    };
+
+    const showFormError = (message) => {
+        ui.formError.textContent = message;
+        ui.formError.style.display = 'block';
+        setTimeout(() => {
+            ui.formError.style.display = 'none';
+        }, 5000);
+    };
+
+    const validateAndLoadInvitation = async (token) => {
+        try {
+            // 🔐 SECURITY: Validate invitation token first
+            const response = await fetch(`http://localhost:5000/api/v1/companies/validate-invite/${token}`);
+            const data = await response.json();
+            
+            if (!response.ok) {
+                // Handle different error types with specific UI states
+                switch (data.errorType) {
+                    case 'EXPIRED':
+                        showExpiredState(data.expiredAt);
+                        break;
+                    case 'ALREADY_USED':
+                        showAlreadyUsedState();
+                        break;
+                    case 'NOT_FOUND':
+                        showNotFoundState();
+                        break;
+                    case 'COMPANY_INACTIVE':
+                        showCompanyInactiveState();
+                        break;
+                    default:
+                        showError(data.error || 'Invalid invitation link');
+                }
+                return;
+            }
+            
+            if (data.success) {
+                populateInvitationInfo(data.invitation);
+                ui.loadingState.style.display = 'none';
+                ui.inviteForm.style.display = 'block';
+            } else {
+                showError(data.error || 'Failed to load invitation information');
+            }
+        } catch (error) {
+            console.error('Error validating invitation:', error);
+            showError('Failed to connect to server. Please check your internet connection and try again.');
+        }
+    };
+
+    const showExpiredState = (expiredAt) => {
+        ui.loadingState.style.display = 'none';
+        ui.errorState.style.display = 'block';
+        ui.errorMessage.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-clock" style="font-size: 3rem; color: var(--color-warning); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-headings); margin-bottom: 1rem;">Invitation Expired</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    This invitation expired on ${new Date(expiredAt).toLocaleDateString()}.
+                </p>
+                <button class="btn btn-primary" onclick="requestNewInvite()">
+                    <i class="fas fa-envelope"></i> Request New Invitation
+                </button>
+            </div>
+        `;
+    };
+
+    const showAlreadyUsedState = () => {
+        ui.loadingState.style.display = 'none';
+        ui.errorState.style.display = 'block';
+        ui.errorMessage.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--accent-action-positive); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-headings); margin-bottom: 1rem;">Already Accepted</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    This invitation has already been used. If you're having trouble accessing your account, please contact support.
+                </p>
+                <a href="landing-page-twitter-style.html" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Go to Login
+                </a>
+            </div>
+        `;
+    };
+
+    const showNotFoundState = () => {
+        ui.loadingState.style.display = 'none';
+        ui.errorState.style.display = 'block';
+        ui.errorMessage.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-question-circle" style="font-size: 3rem; color: var(--accent-secondary-default); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-headings); margin-bottom: 1rem;">Invitation Not Found</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    This invitation link is invalid or may have been removed. Please check the link or contact the person who invited you.
+                </p>
+                <button class="btn btn-secondary" onclick="requestNewInvite()">
+                    <i class="fas fa-envelope"></i> Request New Invitation
+                </button>
+            </div>
+        `;
+    };
+
+    const showCompanyInactiveState = () => {
+        ui.loadingState.style.display = 'none';
+        ui.errorState.style.display = 'block';
+        ui.errorMessage.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-building" style="font-size: 3rem; color: var(--accent-secondary-default); margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-headings); margin-bottom: 1rem;">Company Inactive</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    This company is no longer accepting new members. Please contact support for assistance.
+                </p>
+                <a href="mailto:support@automediacenter.com" class="btn btn-secondary">
+                    <i class="fas fa-envelope"></i> Contact Support
+                </a>
+            </div>
+        `;
+    };
+
+    const requestNewInvite = () => {
+        alert('Please contact your company administrator to send you a new invitation.');
+    };
+
+    const populateInvitationInfo = (invitation) => {
+        ui.companyName.textContent = invitation.company.name;
+        ui.inviteEmail.textContent = invitation.email;
+        ui.inviteRole.textContent = invitation.role === 'client_admin' ? 'Company Administrator' : 'Company User';
+        
+        // 🔐 SECURITY: Pre-populate email field and make it readonly
+        document.getElementById('email').value = invitation.email;
+        
+        // Calculate days until expiry
+        const expiryDate = new Date(invitation.expiresAt);
+        const now = new Date();
+        const daysUntilExpiry = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
+        
+        if (daysUntilExpiry > 0) {
+            ui.inviteExpiry.innerHTML = `<i class="fas fa-clock"></i> Expires in ${daysUntilExpiry} day${daysUntilExpiry !== 1 ? 's' : ''}`;
+            ui.inviteExpiry.className = 'invite-expiry';
+        } else {
+            ui.inviteExpiry.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Expired`;
+            ui.inviteExpiry.className = 'invite-expiry expired';
+        }
+    };
+
+    // Form submission handler
+    ui.acceptForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(ui.acceptForm);
+        const name = formData.get('name');
+        const email = formData.get('email');
+        const password = formData.get('password');
+        const confirmPassword = formData.get('confirmPassword');
+        
+        // Validate passwords match
+        if (password !== confirmPassword) {
+            showFormError('Passwords do not match');
+            return;
+        }
+        
+        // Validate password strength
+        if (password.length < 8) {
+            showFormError('Password must be at least 8 characters long');
+            return;
+        }
+        
+        try {
+            ui.submitBtn.disabled = true;
+            ui.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+            
+            // Get token from URL params
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            
+            if (!token) {
+                showFormError('Invalid invitation link - no token found');
+                return;
+            }
+            
+            // 🔐 SECURITY: Include email for ownership validation
+            const response = await fetch(`http://localhost:5000/api/v1/companies/accept-invite/${token}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to accept invitation');
+            }
+            
+            if (data.success) {
+                // Store authentication token
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
+                // Show success state
+                ui.inviteForm.style.display = 'none';
+                ui.successState.style.display = 'block';
+                
+                // Auto-redirect after 3 seconds
+                setTimeout(() => {
+                    window.location.href = 'client-admin-dashboard.html';
+                }, 3000);
+            } else {
+                throw new Error(data.error || 'Failed to accept invitation');
+            }
+            
+        } catch (error) {
+            console.error('Error accepting invitation:', error);
+            showFormError(error.message || 'Failed to create account. Please try again.');
+        } finally {
+            ui.submitBtn.disabled = false;
+            ui.submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account & Join Company';
+        }
+    });
+
+    // Password toggle functionality
+    window.togglePassword = (fieldId) => {
+        const field = document.getElementById(fieldId);
+        const toggle = field.nextElementSibling.querySelector('i');
+        
+        if (field.type === 'password') {
+            field.type = 'text';
+            toggle.classList.remove('fa-eye');
+            toggle.classList.add('fa-eye-slash');
+        } else {
+            field.type = 'password';
+            toggle.classList.remove('fa-eye-slash');
+            toggle.classList.add('fa-eye');
+        }
+    };
+</script>
+
+<!-- Load external scripts -->
+<script defer src="amc-avatar-system.js"></script>
+</body>
+</html>

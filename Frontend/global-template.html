@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AMC Global Template - Header & Sidebar Only</title>
+
+<!-- ===== HEADER & SIDEBAR ONLY CSS - NO MAIN PAGE INTERFERENCE ===== -->
+<link rel="stylesheet" href="./css/amc-header-sidebar-clean.css" />
+<link rel="stylesheet" href="./amc-avatar-styles.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet" />
+
+<!-- Role shim (must be before sidebar/header scripts) -->
+<script type="module" src="./components/amc-role.js"></script>
+
+<style>
+  /* ONLY suppress any giant avatar fallback visuals - NO BODY RULES */
+  .amc-avatar-backdrop, .amc-avatar-fallback, .amc-avatar-silhouette { display:none !important; }
+</style>
+</head>
+
+<body>
+  <!-- Header + Sidebar (populated by your components) -->
+  <amc-header></amc-header>
+  <aside id="sidebar" class="amc-sidebar"></aside>
+
+  <!-- Kebab portal target (shared by table pages) -->
+  <div id="kebab-portal" style="position:fixed; inset:0; pointer-events:none; z-index:2147483646;"></div>
+
+  <!-- ===== EXACT JS FROM AMC-SYSTEM-CHECK3.HTML ===== -->
+  <script defer src="./components/amc-header.js"></script>
+  
+  <script>
+    // AMC role compatibility bridge for legacy readers (avatar/sidebar):
+    (function () {
+      // Prefer AMC.role (from amc-role.js), else look at the common override, else fall back
+      const resolvedRole =
+        (window.AMC && AMC.role) ||
+        sessionStorage.getItem("amcRoleOverride") ||
+        localStorage.getItem("amc-role") ||
+        "media_user";
+
+      // Gather whichever user blob we already have and normalize it
+      const raw =
+        localStorage.getItem("user") ||
+        localStorage.getItem("currentUser") ||
+        localStorage.getItem("amcUser") ||
+        localStorage.getItem("amc_current_user");
+
+      let u = {};
+      try { u = raw ? JSON.parse(raw) : {}; } catch(e) { u = {}; }
+      // write a plain 'role' field the avatar script actually reads
+      u.role = resolvedRole;
+
+      // Mirror to both keys the avatar looks up today
+      localStorage.setItem("user", JSON.stringify(u));
+      localStorage.setItem("currentUser", JSON.stringify(u));
+    })();
+  </script>
+  
+  <!-- Now load the avatar system so it picks up the normalized role -->
+  <script defer src="./amc-avatar-system.js"></script>
+  <script defer src="./components/globalshell.js"></script>
+  <script defer src="./components/sidebar.js"></script>
+  <script defer src="./kebab-portal-NO-HOVER.js"></script>
+
+  <!-- Fallback: try common sidebar init hooks if your builder expects it -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const el = document.getElementById('sidebar');
+      if (!el) return;
+      if (window.buildSidebar && !el.dataset.amcBuilt) { try { window.buildSidebar(el); } catch(e){} }
+      else if (window.initSidebar && !el.dataset.amcBuilt) { try { window.initSidebar(el); } catch(e){} }
+      else if (window.Sidebar?.init && !el.dataset.amcBuilt) { try { window.Sidebar.init(el); } catch(e){} }
+    });
+  </script>
+
+  <!-- Authentication Script (from amc-header-sidebar-complete.html) -->
+  <script src="auth.js"></script>
+  
+  <!-- Sidebar Toggle Script (from amc-header-sidebar-complete.html) -->
+  <script>
+    function toggleSidebar() {
+      document.body.classList.toggle('sidebar-collapsed');
+    }
+    
+    // Mobile sidebar toggle
+    function toggleMobileSidebar() {
+      document.body.classList.toggle('sidebar-open');
+    }
+    
+    // Close mobile sidebar when clicking overlay
+    document.addEventListener('click', function(e) {
+      if (window.innerWidth <= 1024 && document.body.classList.contains('sidebar-open')) {
+        if (!e.target.closest('.amc-sidebar') && !e.target.closest('.sidebar-toggle')) {
+          document.body.classList.remove('sidebar-open');
+        }
+      }
+    });
+    
+    // Initialize authentication and avatar system
+    document.addEventListener('DOMContentLoaded', function() {
+      // Protect the page (from amc-header-sidebar-complete.html)
+      if (typeof protectPage === 'function') {
+        protectPage();
+      }
+      
+      // Initialize avatar system
+      if (typeof initializeAvatarSystem === 'function') {
+        initializeAvatarSystem();
+      }
+    });
+  </script>
+
+</body>
+</html>

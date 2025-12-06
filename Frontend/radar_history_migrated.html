@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="module">
+      import { protectPage } from "./auth.js";
+      protectPage("client_user");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Manage Radar Alerts</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- ✅ GLOBAL CSS - REPLACES ALL OLD STYLES -->
+    <link rel="stylesheet" href="css/amc-globalshell.css">
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    
+    <!-- Page-specific styles -->
+    <style>
+    /* —— PAGE RAIL SYSTEM - NO MORE POSITIONING HACKS —— */
+
+    .app-footer {
+        flex-shrink: 0;
+        margin-top: auto;
+        background: var(--header-bg);
+        color: var(--header-link);
+        text-align: center;
+        padding: 15px 25px;
+        font-size: 0.85em;
+        border-top: 1px solid var(--border-primary);
+    }
+    
+    .app-footer nav a {
+        color: var(--header-link);
+        margin: 0 8px;
+        text-decoration: none;
+    }
+    
+    .app-footer nav a:hover {
+        color: var(--header-text);
+    }
+
+    /* ===== Radar History: table layout & alignment ===== */
+    .radar-history .releases-table {
+      table-layout: fixed;            /* fixes header/body alignment */
+      width: 100%;
+      border-collapse: separate;      /* we draw our own separators */
+      border-spacing: 0;
+    }
+
+    /* Normalize paddings so header/body line up exactly */
+    .radar-history .releases-table th,
+    .radar-history .releases-table td {
+      box-sizing: border-box;
+      padding: 12px 16px;             /* identical both sides */
+      vertical-align: middle;
+    }
+
+    /* Fixed widths for the "edge" columns so the rest flows cleanly */
+    .radar-history .col-teaser  { width: 96px;  }  /* 72px img + 24px breathing room */
+    .radar-history .col-actions { width: 56px;  }
+
+    /* Put the vertical separators on every cell except the last one */
+    .radar-history .releases-table th:not(:last-child),
+    .radar-history .releases-table td:not(:last-child) {
+        border-right: 1px solid var(--amc-border, rgba(255,255,255,0.08));
+    }
+
+    /* Teaser cell: add right padding so the separator doesn't ride the image edge */
+    .radar-history .col-teaser {
+        padding-left: 20px;             /* equal space before */
+        padding-right: 20px;            /* space after so separator never overlaps */
+    }
+
+    /* Center the thumbnail *and* reserve space even if the image fails */
+    .radar-history .teaser-wrap {
+        display: grid;
+        place-items: center;            /* perfect centering */
+        width: 56px;                    /* visual print size */
+        height: 36px;
+        border-radius: 6px;
+        overflow: hidden;
+        background: var(--amc-card, rgba(255,255,255,0.04)); /* placeholder bg */
+    }
+
+    .radar-history .teaser-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    /* ============================================
+       MODAL Z-INDEX FIXES
+       ============================================ */
+    .detail-modal-backdrop,
+    .confirm-modal-backdrop {
+        z-index: 10050 !important;
+        position: fixed !important;
+        inset: 0 !important;
+    }
+    
+    .detail-modal,
+    .confirm-modal {
+        z-index: 10051 !important;
+    }
+    
+    /* ============================================
+       FILTER CONTROLS
+       ============================================ */
+    .filter-controls {
+        margin-bottom: 25px;
+        padding: 15px;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        display: flex;
+        gap: 15px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    
+    .filter-controls .form-group {
+        margin-bottom: 0;
+        flex: 1 1 180px;
+    }
+    
+    .filter-controls label {
+        font-size: 0.85em;
+        margin-bottom: 0.3rem;
+        display: block;
+        color: var(--text-secondary);
+    }
+    
+    .filter-controls .form-control {
+        width: 100%;
+        padding: .5rem .75rem;
+        font-size: 0.9em;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: .25rem;
+    }
+    
+    .filter-controls .btn-stack {
+        display: flex;
+        gap: 10px;
+        align-self: flex-end;
+        margin-top: 1.2em;
+    }
+    
+    /* ============================================
+       BUTTONS
+       ============================================ */
+    .btn {
+        padding: 10px 18px;
+        font-size: 0.95em;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+    }
+    
+    .btn i { margin-right: 6px; }
+    
+    .btn-primary {
+        background-color: var(--accent-primary);
+        color: #fff;
+    }
+    
+    .btn-secondary {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+    }
+    
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+    }
+    
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.85em;
+    }
+    
+    /* ============================================
+       STATUS BADGES
+       ============================================ */
+    .status-badge {
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 600;
+        color: #fff;
+    }
+    
+    .status-badge.active { background-color: #28a745; }
+    .status-badge.draft { background-color: #ffc107; color: #333; }
+    .status-badge.archived { background-color: #dc3545; }
+    
+    /* ============================================
+       CARDS
+       ============================================ */
+    .card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        margin-bottom: 25px;
+    }
+    
+    .card-header {
+        padding: 15px 20px;
+        background: var(--bg-tertiary);
+        border-bottom: 1px solid var(--border-primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-header h2 {
+        font-size: 1.1em;
+        margin: 0;
+    }
+    
+    .card-body {
+        padding: 20px;
+    }
+    
+    .card-body.no-padding {
+        padding: 0;
+    }
+    
+    .card-footer {
+        padding: 15px 20px;
+        background: var(--bg-tertiary);
+        border-top: 1px solid var(--border-primary);
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .card:last-of-type {
+        margin-bottom: 40px;
+    }
+    
+    /* ============================================
+       PAGINATION
+       ============================================ */
+    .pagination-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    /* ============================================
+       MODALS
+       ============================================ */
+    .detail-modal-backdrop,
+    .confirm-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .detail-modal-backdrop.open,
+    .confirm-modal-backdrop.open {
+        display: flex;
+        opacity: 1;
+    }
+    
+    .detail-modal,
+    .confirm-modal {
+        background: var(--bg-secondary);
+        border-radius: 8px;
+        border: 1px solid var(--border-primary);
+        transform: scale(0.95);
+        transition: transform 0.3s;
+    }
+    
+    .detail-modal-backdrop.open .detail-modal,
+    .confirm-modal-backdrop.open .confirm-modal {
+        transform: scale(1);
+    }
+    
+    .detail-modal {
+        max-width: 1200px;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .confirm-modal {
+        max-width: 450px;
+    }
+    
+    .detail-modal-header,
+    .confirm-modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-primary);
+        background: var(--bg-tertiary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .detail-modal-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
+    
+    .confirm-modal-body {
+        padding: 25px 20px;
+        text-align: center;
+    }
+    
+    .detail-modal-footer,
+    .confirm-modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid var(--border-primary);
+        background: var(--bg-tertiary);
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    
+    .detail-modal-close-btn,
+    .confirm-modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 1.7em;
+        cursor: pointer;
+        color: var(--text-secondary);
+    }
+
+    /* Kebab button */
+    .kebab-btn{
+        background:transparent;
+        border:none;
+        cursor:pointer;
+        padding:6px 8px;
+        border-radius:8px;
+    }
+    .kebab-btn i{ color: var(--text-secondary); }
+    .kebab-btn:hover i{ color: var(--text-primary); }
+
+    /* Floating panel */
+    .kebab-float{
+      position: fixed;
+      min-width: 176px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-primary, #e5e7eb);   /* fallback for light */
+      box-shadow: 0 18px 48px var(--shadow-primary, rgba(0,0,0,.25));
+      border-radius: 12px;
+      padding: 6px;
+      pointer-events: auto;
+    }
+
+    /* Items: stronger base tint (both themes), clear hover */
+    .kebab-item{
+      display:block; width:100%; text-align:left;
+      background: transparent; border: none;
+      color: var(--text-primary);
+      padding: 9px 12px; border-radius: 8px; cursor: pointer;
+    }
+
+    .kebab-item[data-action="view"]   { background: rgba(16,185,129,.30); }
+    .kebab-item[data-action="edit"]   { background: rgba(59,130,246,.30); }
+    .kebab-item[data-action="delete"] { background: rgba(239,68,68,.30);  }
+
+    .kebab-item[data-action="view"]:hover   { background:#10b981; color:#fff; }
+    .kebab-item[data-action="edit"]:hover   { background:#3b82f6; color:#fff; }
+    .kebab-item[data-action="delete"]:hover { background:#ef4444; color:#fff; }
+
+    /* In light mode the base wash can be a hair lighter, but still visible */
+    [data-theme="light"] .kebab-item[data-action="view"]   { background: rgba(16,185,129,.22); }
+    [data-theme="light"] .kebab-item[data-action="edit"]   { background: rgba(59,130,246,.22); }
+    [data-theme="light"] .kebab-item[data-action="delete"] { background: rgba(239,68,68,.22); }
+
+    .kebab-item + .kebab-item { margin-top: 6px; }
+</style>
+</head>
+<body>
+    <!-- AMC Header Component -->
+    <amc-header></amc-header>
+
+    <div class="amc-app">
+        <!-- Enterprise Sidebar -->
+        <aside id="sidebar" class="amc-sidebar"></aside>
+        
+        <!-- Main Content -->
+        <main class="amc-page radar-history">
+            <div class="amc-page__container">
+
+                <header class="amc-page__header">
+                    <h1 class="amc-page__title">
+                        <i class="fas fa-satellite-dish" aria-hidden="true"></i>
+                        Manage AutoMediaRadar
+                    </h1>
+                    <p class="amc-page__sub">
+                        Review, edit or delete your existing Radar alerts.
+                    </p>
+                </header>
+
+                <!-- filters / tools -->
+                <section class="amc-page__tools">
+                    <div class="filter-controls">
+                        <div class="form-group"><label for="filterSearch">Search Title</label><input type="search" class="form-control" id="filterSearch" placeholder="Enter title..."></div>
+                        <div class="form-group"><label for="filterBrand">Brand</label><input type="text" class="form-control" id="filterBrand" placeholder="Enter brand..."></div>
+                        <div class="form-group">
+                            <label for="filterStatus">Status</label>
+                            <select id="filterStatus" class="form-control">
+                                <option value="">All Statuses</option>
+                                <option value="active">Active</option>
+                                <option value="draft">Draft</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+                        <div class="btn-stack">
+                            <button class="btn btn-primary" id="applyFilters"><i class="fas fa-filter"></i> Apply</button>
+                            <button class="btn btn-secondary" id="clearFilters"><i class="fas fa-times"></i> Clear</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- main body (the table card) -->
+                <section class="amc-page__body">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Your Radar Alerts</h2>
+                            <span id="totalItemsInfo"></span>
+                        </div>
+                        <div class="card-body no-padding">
+                            <div class="table-responsive">
+                                <table class="releases-table">
+                                    <colgroup>
+                                        <col style="width:76px">      <!-- Teaser -->
+                                        <col>                         <!-- Title (flexible) -->
+                                        <col style="width:220px">     <!-- Company -->
+                                        <col style="width:120px">     <!-- Status -->
+                                        <col style="width:170px">     <!-- Alert Date -->
+                                        <col style="width:150px">     <!-- Created On -->
+                                        <col style="width:260px">     <!-- Created By -->
+                                        <col style="width:64px">      <!-- Actions -->
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th class="col-teaser">Teaser</th>
+                                            <th class="col-title">Title</th>
+                                            <th class="col-company">Company</th>
+                                            <th class="col-status">Status</th>
+                                            <th class="col-alert">Alert Date</th>
+                                            <th class="col-created">Created On</th>
+                                            <th class="col-uploader">Created By</th>
+                                            <th class="col-actions">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="alertsTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <span id="paginationSummary"></span>
+                            <div class="pagination-controls">
+                                <button class="btn btn-secondary btn-sm" id="prevPageButton" disabled><i class="fas fa-chevron-left"></i></button>
+                                <span id="pageInfo">Page 1 of 1</span>
+                                <button class="btn btn-secondary btn-sm" id="nextPageButton" disabled><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <nav>
+            <a href="#">About Us</a> |
+            <a href="#">Help Center</a> |
+            <a href="#">Terms of Service</a> |
+            <a href="#">Privacy Policy</a>
+        </nav>
+        <p>© <span id="currentYearText"></span> AutoMediaCenter. All rights reserved.</p>
+    </footer>
+    
+    <div class="detail-modal-backdrop" id="viewDetailModal">
+        <div class="detail-modal">
+            <div class="detail-modal-header">
+                <h3 id="viewDetailModalTitle">Alert Details</h3>
+                <button class="detail-modal-close-btn" aria-label="Close">×</button>
+            </div>
+            <div class="detail-modal-body" id="viewDetailModalBody">
+                <p style="text-align:center;">Loading details...</p>
+            </div>
+            <div class="detail-modal-footer">
+                <button class="btn btn-secondary detail-modal-close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="confirm-modal-backdrop" id="deleteConfirmModalBackdrop">
+        <div class="confirm-modal">
+            <div class="confirm-modal-header"><h3 id="deleteConfirmModalTitle">Confirm Deletion</h3></div>
+            <div class="confirm-modal-body"><p id="deleteConfirmModalText">Are you sure?</p></div>
+            <div class="confirm-modal-footer">
+                <button class="btn btn-secondary" id="deleteConfirmCancel">Cancel</button>
+                <button class="btn btn-danger" id="deleteConfirmButton">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Authentication is handled server-side via adminRoutes.js middleware
+    // Client-side authentication removed to prevent conflicts with localStorage tokens
+    let token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    let userString = localStorage.getItem('user') || localStorage.getItem('currentUser');
+    let user = null;
+    
+    console.log('🔍 DEBUG: Token found:', token ? 'Present' : 'Missing');
+    console.log('🔍 DEBUG: User string found:', userString ? 'Present' : 'Missing');
+    
+    if (userString) {
+        try {
+            user = JSON.parse(userString);
+            console.log('🔍 DEBUG: Parsed user:', user);
+        } catch (e) {
+            console.error("Error parsing user from localStorage", e);
+            user = { email: 'User', role: 'client_admin' }; // Fallback for display
+        }
+    }
+    
+    // Fallback user object for display purposes
+    if (!user) {
+        user = { email: 'User', role: 'client_admin' };
+    }
+    
+    // Check if we have authentication - if not, redirect to login
+    if (!token) {
+        console.error('🚨 No authentication token found - redirecting to login');
+        alert('Please log in to access this page');
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    // --- UI Elements ---
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const userEmailDisplay = document.getElementById('user-email-display');
+    const darkModeToggleBtnHeader = document.getElementById('darkModeToggleHeader');
+    const alertsTableBody = document.getElementById('alertsTableBody');
+    const prevPageButton = document.getElementById('prevPageButton');
+    const nextPageButton = document.getElementById('nextPageButton');
+    const pageInfo = document.getElementById('pageInfo');
+    const totalItemsInfo = document.getElementById('totalItemsInfo');
+    const paginationSummary = document.getElementById('paginationSummary');
+    const applyFiltersButton = document.getElementById('applyFilters');
+    const clearFiltersButton = document.getElementById('clearFilters');
+    const filterSearchInput = document.getElementById('filterSearch');
+    const filterBrandInput = document.getElementById('filterBrand');
+    const filterStatusInput = document.getElementById('filterStatus');
+    const viewDetailModal = document.getElementById('viewDetailModal');
+    const viewDetailModalTitle = document.getElementById('viewDetailModalTitle');
+    const viewDetailModalBody = document.getElementById('viewDetailModalBody');
+    const deleteConfirmModalBackdrop = document.getElementById('deleteConfirmModalBackdrop');
+    const deleteConfirmModalText = document.getElementById('deleteConfirmModalText');
+    const deleteConfirmButton = document.getElementById('deleteConfirmButton');
+    
+    // --- State ---
+    let currentPage = 1; let totalPages = 1; let totalItems = 0; const limitPerPage = 20;
+    
+    // --- UI Functions ---
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            console.log('🔧 Sidebar toggle clicked, collapsed:', sidebar.classList.contains('collapsed'));
+        });
+    }
+    const applyTheme = (theme) => {
+        document.body.classList.toggle('dark-mode', theme === 'dark');
+        // NEW: also drive the attribute the CSS looks at
+        document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
+    };
+    if (darkModeToggleBtnHeader) { darkModeToggleBtnHeader.addEventListener('click', () => { const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark'; applyTheme(newTheme); localStorage.setItem('theme', newTheme); }); }
+    
+    // On load
+    applyTheme(localStorage.getItem('theme') || 'light');
+    document.getElementById('currentYearText').textContent = new Date().getFullYear();
+    
+    // Fix user email display - element might not exist
+    if (userEmailDisplay) {
+        userEmailDisplay.textContent = user.email;
+    }
+    
+    // Fix logout link - element might not exist
+    const logoutLink = document.querySelector('.logout-link');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+    }
+    
+    // --- Main Fetch Function ---
+    async function fetchRadarAlerts(page = 1, search = '', brand = '', status = '') {
+        console.log('🔍 DEBUG: fetchRadarAlerts called with:', { page, search, brand, status });
+        console.log('🔍 DEBUG: Token being used:', token ? 'Present' : 'Missing');
+        
+        alertsTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">Loading... <i class="fas fa-spinner fa-spin"></i></td></tr>`;
+        let queryParams = `?page=${page}&limit=${limitPerPage}&title=${encodeURIComponent(search)}&brand=${encodeURIComponent(brand)}&status=${encodeURIComponent(status)}`;
+        const apiUrl = `http://localhost:5000/api/v1/radar/all-alerts${queryParams}`;
+        
+        console.log('🔍 DEBUG: Making request to:', apiUrl);
+        console.log('🔍 DEBUG: Request headers:', { 'Authorization': `Bearer ${token ? token.substring(0, 20) + '...' : 'MISSING'}` });
+        
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            console.log('🔍 DEBUG: Response status:', response.status);
+            console.log('🔍 DEBUG: Response ok:', response.ok);
+            
+            const result = await response.json();
+            console.log('🔍 DEBUG: Response data:', result);
+            
+            if (!response.ok) {
+                console.error('🚨 API Error:', result);
+                throw new Error(result.error || `HTTP ${response.status}: Failed to fetch data`);
+            }
+            
+            console.log('✅ SUCCESS: Alerts fetched:', result.data.alerts.length);
+            renderRadarAlertsTable(result.data.alerts);
+            currentPage = result.data.currentPage;
+            totalPages = result.data.totalPages;
+            totalItems = result.data.totalAlerts;
+            totalItemsInfo.textContent = `Total Alerts: ${totalItems}`;
+            updatePaginationControls();
+        } catch (error) {
+            console.error('🚨 FETCH ERROR:', error);
+            alertsTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--color-danger); padding:20px;">Error: ${error.message}<br><small>Check browser console for details</small></td></tr>`;
+        }
+    }
+
+    // --- Table Rendering ---
+    function renderRadarAlertsTable(alerts) {
+        const tableBody = document.getElementById('alertsTableBody');
+        tableBody.innerHTML = '';
+        if (!alerts || alerts.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">No alerts found matching your criteria.</td></tr>`;
+            return;
+        }
+        alerts.forEach(alert => {
+            const sanitizedTitle = (alert.title || 'this alert').replace(/"/g, '"');
+            const teaserHtml = alert.teaserImagePath ?
+                `<div class="teaser-wrap"><img src="http://localhost:5000${alert.teaserImagePath}" alt="Teaser"></div>` :
+                `<div class="teaser-wrap"><i class="far fa-image"></i></div>`;
+            
+            const alertDate = alert.eventDateTime ? new Date(alert.eventDateTime).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric'}) : '--/--/----';
+            const createdDate = alert.createdAt ? new Date(alert.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric'}) : '--/--/----';
+
+            // Determine actual status
+            let displayStatus = alert.computedStatus || alert.status || 'Unknown';
+            let statusClass = displayStatus.toLowerCase();
+            
+            // Get uploader email with fallback
+            const uploaderEmail = alert.user?.email || 'Unknown';
+            
+            // Get company name with fallback for different model references
+            let companyName = 'N/A';
+            
+            // First try: Get from alert's clientId (Client model - has clientName field)
+            if (alert.clientId?.clientName) {
+                companyName = alert.clientId.clientName;
+            }
+            // Fallback: Get from user's clientId (Company model - has name field)
+            else if (alert.user?.clientId?.name) {
+                companyName = alert.user.clientId.name;
+            }
+            
+            const row = `<tr data-id="${alert.uuid}">
+                <td class="col-teaser">${teaserHtml}</td>
+                <td class="col-title"><span class="truncate">${alert.title || 'N/A'}</span></td>
+                <td class="col-company"><span class="truncate">${companyName}</span></td>
+                <td class="col-status"><span class="status-pill ${statusClass}">${displayStatus}</span></td>
+                <td class="col-alert">${alertDate}</td>
+                <td class="col-created">${createdDate}</td>
+                <td class="col-uploader"><a href="mailto:${uploaderEmail}" class="email">${uploaderEmail}</a></td>
+                <td class="col-actions">
+                    <div class="kebab-wrap">
+                        <button class="kebab-btn" aria-haspopup="true" aria-expanded="false" aria-controls="menu-${alert.uuid}">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div id="menu-${alert.uuid}" class="kebab-menu" role="menu" hidden>
+                            <button type="button" class="kebab-item" data-action="view" data-uuid="${alert.uuid}" data-title="${sanitizedTitle}">View</button>
+                            <button type="button" class="kebab-item" data-action="edit" data-uuid="${alert.uuid}" data-title="${sanitizedTitle}">Edit</button>
+                            <button type="button" class="kebab-item" data-action="delete" data-uuid="${alert.uuid}" data-title="${sanitizedTitle}">Delete</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
+            tableBody.insertAdjacentHTML('before
