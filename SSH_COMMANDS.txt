@@ -1,0 +1,69 @@
+# SSH Commands to Check Your AWS Server
+# Run these in your local terminal (Command Prompt, PowerShell, or Git Bash)
+
+# The PEM key file is already created: amc-server.pem (in c:/Users/Administrator/Documents/2025/amc/Backend)
+
+# ============================================================================
+# STEP 1: Save your PEM key
+# ============================================================================
+# 1. Create a new file called "amc-server.pem" in a folder
+# 2. Paste the private key content (including -----BEGIN RSA PRIVATE KEY-----)
+# 3. Save the file
+
+# ============================================================================
+# STEP 2: Fix PEM key permissions (IMPORTANT!)
+# ============================================================================
+
+# If using Git Bash on Windows or Mac/Linux:
+cd c:/Users/Administrator/Documents/2025/amc/Backend
+chmod 400 amc-server.pem
+
+# If using Windows Command Prompt, right-click the file → Properties → Security
+# Remove inherited permissions, then give your user Full Control
+
+# ============================================================================
+# STEP 3: SSH into your server
+# ============================================================================
+
+ssh -i "amc-server.pem" ec2-user@ec2-44-200-25-168.compute-1.amazonaws.com
+
+# ============================================================================
+# STEP 4: Once connected, run these commands to check the server
+# ============================================================================
+
+# Check what's in the current directory
+ls -la
+
+# Check if Node.js is installed
+node --version
+
+# Check PM2 status (is the app running?)
+pm2 status
+
+# Check what's running on port 3000
+netstat -tlnp | grep 3000
+
+# Check if Backend folder exists
+ls -la Backend/
+
+# Check environment variables
+env | grep -E "NODE_ENV|MONGODB|JWT|PORT"
+
+# Check Node processes
+ps aux | grep node
+
+# ============================================================================
+# STEP 5: Check the application files
+# ============================================================================
+
+# If Backend folder exists, check its contents
+cd Backend
+ls -la
+
+# Check package.json
+cat package.json
+
+# ============================================================================
+# AFTER CHECKING: Exit the server
+# ============================================================================
+exit

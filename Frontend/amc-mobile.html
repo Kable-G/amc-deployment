@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoMediaCenter – Mobile</title>
+
+  <link rel="stylesheet" href="amc-mobile.css" />
+</head>
+<body>
+
+<!-- MOBILE SIDEBAR OVERLAY (hidden until opened) -->
+<div id="mobileSidebarOverlay"></div>
+
+<!-- MOBILE SIDEBAR DRAWER -->
+<div id="mobileSidebar">
+  <div class="sidebar-header">MENU</div>
+
+  <ul class="sidebar-links">
+    <li>AutoMediaCenter</li>
+    <li>AutoMediaRadar</li>
+    <li>AutoMediaLive</li>
+    <li>AutoMediaVault</li>
+
+    <hr />
+
+    <li>Manage Releases</li>
+    <li>Company Dashboard</li>
+    <li>Manage Vault Assets</li>
+
+    <hr />
+
+    <li>Analytics</li>
+    <li>User Settings</li>
+  </ul>
+</div>
+
+<!-- MOBILE HEADER -->
+<header class="amc-mobile-header">
+  <div class="amc-header-left">
+    <div id="burgerMenu" onclick="openSidebar()">☰</div>
+    <span class="amc-logo">AUTOMEDIACENTER</span>
+  </div>
+
+  <div class="amc-header-right">
+    <button class="amc-icon-btn">🔔</button>
+    <button class="amc-icon-btn">🛒</button>
+    <button class="amc-icon-btn">⋮</button>
+    <img src="avatar.jpg" class="amc-avatar" alt="User Avatar">
+  </div>
+</header>
+
+<!-- PAGE WRAPPER -->
+<main class="amc-page">
+
+  <h1 class="amc-page-title">MEDIA RELEASES</h1>
+
+  <!-- SEARCH + SORT BAR -->
+  <div class="amc-search-row">
+    <input type="text" placeholder="Search" class="amc-search-input" />
+    <button class="amc-sort-btn">⇅</button>
+  </div>
+
+  <!-- MEDIA CARD -->
+  <article class="amc-mobile-card">
+
+    <div class="amc-card-photo"></div>
+
+    <div class="amc-card-body">
+      <div class="amc-company">BMW</div>
+
+      <div class="amc-heading">
+        New X5 Plug-in Hybrid unveiled with major battery improvements
+      </div>
+
+      <div class="amc-card-meta">
+        <div class="amc-icons">
+          <div class="icon"></div>
+          <div class="icon"></div>
+          <div class="icon"></div>
+          <div class="icon"></div>
+        </div>
+
+        <div class="amc-date-box">
+          <div class="date">12 Dec 2025</div>
+          <div class="time">13:02 CET</div>
+        </div>
+      </div>
+    </div>
+
+  </article>
+
+</main>
+
+<script src="amc-mobile.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!-- LOCATION: Backend/Frontend -->
+<header class="mobile-header">
+    <div class="header-left">
+        <button class="mobile-hamburger" id="hamburgerBtn" aria-label="Open menu">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    
+    <div class="header-center">
+        <button class="mobile-logo" id="mobileLogo" aria-label="Scroll to top">AutoMediaCenter</button>
+    </div>
+    
+    <div class="header-right">
+        <button class="header-icon-btn" id="notificationBtn" aria-label="Notifications">
+            <i class="fas fa-bell"></i>
+            <span class="badge" id="notificationBadge" style="display: none;">0</span>
+        </button>
+        
+        <div class="amc-avatar role-media-user" id="avatarContainer">
+            <i class="far fa-user-circle"></i>
+        </div>
+    </div>
+</header>
+
+<!-- Avatar Modal (Launcher) -->
+<div class="avatar-modal hidden" id="avatarModal">
+    <div class="avatar-modal-header">
+        <div class="avatar-modal-avatar">
+            <i class="far fa-user-circle" id="modalAvatarIcon"></i>
+        </div>
+        <div class="avatar-email" id="modalEmail">user@example.com</div>
+        <div class="avatar-role" id="modalRole">Media User</div>
+    </div>
+    
+    <!-- Quick Access Icons -->
+    <div class="modal-quick-access">
+        <button class="quick-access-btn" id="quickAccessCart">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+            <span class="quick-access-badge hidden" id="quickAccessCartBadge">0</span>
+        </button>
+        <button class="quick-access-btn" id="quickAccessTools">
+            <i class="fas fa-wrench"></i>
+            <span>Tools</span>
+        </button>
+    </div>
+    
+    <!-- Profile Actions -->
+    <div class="avatar-modal-section">
+        <button class="modal-btn" id="themeToggleBtn">
+            <i class="fas fa-moon"></i>
+            <span class="theme-toggle-text">Dark Mode</span>
+            <span class="theme-toggle-indicator">☀️</span>
+        </button>
+        <button class="modal-btn" id="settingsBtn">
+            <i class="fas fa-cog"></i>
+            <span>User Settings</span>
+        </button>
+        <button class="modal-btn" id="contentSettingsBtn">
+            <i class="fas fa-sliders-h"></i>
+            <span>Content Settings</span>
+        </button>
+        <hr class="modal-divider">
+        <button class="modal-btn modal-btn-danger" id="signOutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sign Out</span>
+        </button>
+    </div>
+</div>
+
+<!-- Cart Modal (Slides in from right) -->
+<div class="cart-modal" id="cartModal">
+    <div class="cart-modal-header">
+        <h2 class="cart-modal-title">
+            <i class="fas fa-shopping-cart"></i>
+            Cart
+        </h2>
+        <button class="cart-modal-close" id="cartModalClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="cart-modal-content" id="cartModalContent">
+        <div class="cart-empty">
+            <i class="fas fa-shopping-cart"></i>
+            <p>Your cart is empty</p>
+        </div>
+    </div>
+    <div class="cart-modal-footer hidden" id="cartModalFooter">
+        <button class="cart-checkout-btn" id="cartCheckoutBtn">
+            <i class="fas fa-check"></i>
+            Checkout (<span id="cartItemCount">0</span> items)
+        </button>
+    </div>
+</div>
+
+<!-- Tools Dropdown -->
+<div class="tools-dropdown hidden" id="toolsDropdown">
+    <div class="tools-dropdown-header">
+        <h3 class="tools-dropdown-title">
+            <i class="fas fa-wrench"></i>
+            Tools
+        </h3>
+        <button class="tools-dropdown-close" id="toolsDropdownClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="tools-dropdown-content">
+        <div class="tool-item" id="toolUnitConverter">
+            <i class="fas fa-calculator"></i>
+            <span>Unit Converter</span>
+        </div>
+        <div class="tool-item" id="toolCurrencyConverter">
+            <i class="fas fa-dollar-sign"></i>
+            <span>Currency Converter</span>
+        </div>
+        <div class="tool-item" id="toolTimezoneConverter">
+            <i class="fas fa-clock"></i>
+            <span>Timezone Converter</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AutoMediaRadar Mobile</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            --bg-primary: #f3f4f6;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f9fafb;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-headings: #0f172a;
+            --border-primary: #e2e8f0;
+            --border-card: #d1d5db;
+            --accent-primary: #3b82f6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --card-hover-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        body.dark-mode {
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a1f2e;
+            --bg-tertiary: #161b26;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-headings: #f1f5f9;
+            --border-primary: #2d3748;
+            --border-card: #374151;
+            --card-hover-shadow: 0 4px 20px rgba(59,130,246,0.3);
+        }
+        
+        /* ===== BASE RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 16px;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        /* ===== MOBILE HEADER ===== */
+        .mobile-header {
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            z-index: 1000;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            width: 60px;
+        }
+        
+        .header-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 60px;
+            justify-content: flex-end;
+        }
+        
+        .mobile-hamburger {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        .mobile-hamburger:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .mobile-logo {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-headings);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        .mobile-logo:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .header-icon-btn {
+            position: relative;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        .header-icon-btn:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .header-icon-btn .badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--accent-danger);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+        }
+        
+        /* ===== AVATAR ===== */
+        .amc-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .amc-avatar:active {
+            transform: scale(0.95);
+        }
+        
+        /* ===== AVATAR MODAL ===== */
+        .avatar-modal {
+            position: fixed;
+            top: 64px;
+            right: 12px;
+            width: 280px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            z-index: 2000;
+            opacity: 0;
+            transform: translateY(-10px) scale(0.95);
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+        
+        .avatar-modal.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: all;
+        }
+        
+        .avatar-modal.hidden {
+            display: none;
+        }
+        
+        .avatar-modal-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-primary);
+        }
+        
+        .avatar-modal-avatar {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+        }
+        
+        .avatar-email {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .avatar-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .avatar-modal-section {
+            padding: 8px;
+        }
+        
+        .modal-btn {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 14px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        .modal-btn:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .modal-btn i {
+            width: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        
+        .modal-btn-danger {
+            color: var(--accent-danger);
+        }
+        
+        .modal-btn-danger i {
+            color: var(--accent-danger);
+        }
+        
+        .modal-divider {
+            border: none;
+            height: 1px;
+            background: var(--border-primary);
+            margin: 8px 0;
+        }
+        
+        .theme-toggle-indicator {
+            margin-left: auto;
+        }
+        
+        /* ===== MOBILE DRAWER ===== */
+        .mobile-drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100%;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-primary);
+            z-index: 3000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .mobile-drawer.active {
+            transform: translateX(0);
+        }
+        
+        .drawer-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .drawer-content {
+            padding: 60px 20px 20px;
+        }
+        
+        .drawer-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .drawer-backdrop.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* ===== MAIN CONTENT ===== */
+        .mobile-main {
+            padding-top: 0;
+            min-height: calc(100vh - 56px);
+        }
+        
+        .page-header {
+            padding: 20px 16px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+        }
+        
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-headings);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .page-header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* ===== SEARCH BAR ===== */
+        .search-bar {
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            position: sticky;
+            top: 56px;
+            z-index: 100;
+        }
+        
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .search-input {
+            flex: 1;
+            height: 44px;
+            padding: 0 16px;
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background: var(--bg-secondary);
+        }
+        
+        .search-input.searching {
+            border-color: var(--accent-success);
+        }
+        
+        .search-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: var(--accent-primary);
+            color: white;
+            font-size: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .search-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* ===== CARD GRID ===== */
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            padding: 16px;
+        }
+        
+        /* ===== RADAR CARD ===== */
+        .radar-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        
+        .radar-card:active {
+            transform: scale(0.98);
+            box-shadow: var(--card-hover-shadow);
+        }
+        
+        .card-image {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        
+
+.card-image{ position: relative; overflow: hidden; }
+
+.image-actions{
+  position:absolute;
+  left:0; right:0; bottom:0;
+  padding:14px 14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:center;
+  justify-content:flex-end;
+  background:linear-gradient(to top, rgba(0,0,0,.78), rgba(0,0,0,0));
+  opacity:0;
+  transform:translateY(10px);
+  pointer-events:none;
+  transition:opacity .18s ease, transform .18s ease;
+  z-index:3;
+}
+
+.radar-card.is-expanded .image-actions{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+
+.image-action-btn{
+  width:min(260px, 86%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  border:0;
+  border-radius:12px;
+  padding:12px 14px;
+  font-weight:700;
+  cursor:pointer;
+  background:rgba(52, 132, 255, .92);
+  color:#fff;
+  box-shadow:0 10px 24px rgba(0,0,0,.35);
+  backdrop-filter: blur(8px);
+}
+
+.image-action-btn i{ font-size:16px; }
+
+.image-action-btn--reminder{ background:rgba(34, 197, 94, .92); }
+.image-action-btn--follow{ background:rgba(148, 163, 184, .9); color:#0b1220; }
+
+.image-action-btn:active{ transform:scale(.99); }
+
+.card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .card-image .placeholder-icon {
+            font-size: 48px;
+            color: var(--text-secondary);
+            opacity: 0.3;
+        }
+        
+        /* ===== COUNTDOWN OVERLAY ===== */
+        .countdown-overlay {
+            position: absolute;
+            bottom: 12px;
+    left: 12px;
+    top: auto;
+    right: auto;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 10;
+        }
+        
+        .urgency-critical {
+            background: rgba(239, 68, 68, 0.95);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .urgency-soon {
+            background: rgba(251, 146, 60, 0.95);
+        }
+        
+        .urgency-medium {
+            background: rgba(59, 130, 246, 0.95);
+        }
+        
+        .urgency-past {
+            background: rgba(107, 114, 128, 0.95);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        /* ===== BRAND BAND ===== */
+        .brand-band {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* ===== CARD CONTENT ===== */
+        .card-content {
+            padding: 16px;
+        
+    display: flex;
+    flex-direction: column;
+}
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-headings);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+        
+        .card-meta {
+    display: none; /* replaced by right-aligned meta block */
+}
+
+.card-meta-right {
+    margin-top: auto;
+    align-self: flex-end;
+    text-align: right;
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.card-meta-right .meta-date,
+.card-meta-right .meta-time {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.card-meta-right i {
+    opacity: 0.7;
+}
+
+/* .card-meta replaced by .card-meta-right */
+
+        
+        .card-date, .card-time {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .card-date i, .card-time i {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        /* ===== CARD ACTIONS (MOBILE) ===== */
+        .card-actions{display:none !important;}
+        
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 8px;
+            background: var(--bg-tertiary);
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.95);
+            background: var(--accent-primary);
+            color: white;
+        }
+        
+        .action-btn i {
+            font-size: 18px;
+        }
+        
+        .action-btn.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+        
+        /* ===== LOADING & EMPTY STATES ===== */
+        .loading-container, .empty-state {
+            grid-column: 1 / -1;
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        
+        .loading-spinner {
+            font-size: 32px;
+            animation: spin 1s linear infinite;
+            color: var(--accent-primary);
+            margin-bottom: 16px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: var(--text-secondary);
+            opacity: 0.3;
+            margin-bottom: 16px;
+        }
+        
+        .empty-state p {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+        
+        /* ===== LANDSCAPE LAYOUT ===== */
+        @media (orientation: landscape) and (max-width: 1024px) {
+            .mobile-main {
+                display: grid;
+                grid-template-columns: 1fr min(420px, 48vw);
+                grid-template-areas:
+                    "header search"
+                    "cards cards";
+                gap: 0;
+            }
+            
+            .page-header {
+                grid-area: header;
+                border-right: 1px solid var(--border-primary);
+            }
+            
+            .search-bar {
+                grid-area: search;
+                position: static;
+            }
+            
+            .card-grid {
+                grid-area: cards;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 16px;
+            }
+            
+            .search-input {
+                height: 40px;
+            }
+            
+            .search-btn {
+                height: 40px;
+                width: 40px;
+            }
+        }
+        
+        /* ===== TABLET PORTRAIT ===== */
+        @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+            .card-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 20px;
+                padding: 20px;
+            }
+        }
+        
+        /* ===== TABLET LANDSCAPE ===== */
+        @media (min-width: 1024px) and (max-width: 1366px) {
+            .card-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 24px;
+                padding: 24px;
+            }
+        }
+        
+        /* ===== UTILITIES ===== */
+        .hidden {
+            display: none !important;
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    
+/* Collapsible actions: show only after tap on smaller screens (keeps cards compact) */
+@media (max-width: 900px) {
+  .card-actions{
+    max-height: 0;
+    padding: 0 12px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: max-height .25s ease, opacity .2s ease, transform .2s ease, padding .2s ease;
+    pointer-events: none;
+    border-top: 0;
+  }
+  
+}
+
+
+
+/* ===== DESKTOP-PARITY CARD STYLING ===== */
+.card-bottom-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-secondary);
+}
+
+.countdown-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.countdown-badge.urgency-soon {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.countdown-badge.urgency-medium {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.countdown-badge.urgency-far {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+.countdown-badge.urgency-past {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.countdown-badge i {
+    margin-right: 4px;
+}
+
+.drop-time {
+    font-size: 0.8em;
+    color: var(--text-secondary);
+    text-align: right;
+    line-height: 1.35;
+    flex-shrink: 0;
+}
+
+.drop-time i {
+    margin-right: 5px;
+    opacity: 0.7;
+    color: var(--icon-available);
+}
+
+.drop-time .date-line {
+    display: block;
+}
+
+.drop-time .time-line {
+    display: block;
+}
+
+/* Brand band - Match AutoMediaCenter styling exactly */
+.brand-band {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-align: left;
+    background-color: var(--brand-band-light-bg, #212529);
+    color: var(--brand-band-light-text, #f8f9fa);
+    border-bottom: 1px solid var(--border-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.dark-mode .brand-band {
+    background-color: var(--brand-band-dark-bg, #343a40);
+    color: var(--brand-band-dark-text, #f8f9fa);
+    border-bottom-color: var(--border-secondary);
+}
+
+/* Card Content */
+.card-content {
+    padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-headings);
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: calc(1.45em * 3);
+    transition: color 0.2s ease;
+}
+
+/* Hide legacy countdown overlay */
+.countdown-overlay {
+    display: none !important;
+}
+
+/* Hide legacy card meta */
+.card-meta-right {
+    display: none !important;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Mobile Header -->
+<header class="mobile-header">
+    <div class="header-left">
+        <button class="mobile-hamburger" id="hamburgerBtn" aria-label="Open menu">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    
+    <div class="header-center">
+        <button class="mobile-logo" id="mobileLogo" aria-label="Scroll to top">AutoMediaRadar</button>
+    </div>
+    
+    <div class="header-right">
+        <button class="header-icon-btn" id="notificationBtn" aria-label="Notifications">
+            <i class="fas fa-bell"></i>
+            <span class="badge hidden" id="notificationBadge">0</span>
+        </button>
+        
+        <div class="amc-avatar role-media-user" id="avatarContainer">
+            <i class="far fa-user-circle"></i>
+        </div>
+    </div>
+</header>
+
+<!-- Avatar Modal -->
+<div class="avatar-modal hidden" id="avatarModal">
+    <div class="avatar-modal-header">
+        <div class="avatar-modal-avatar">
+            <i class="far fa-user-circle" id="modalAvatarIcon"></i>
+        </div>
+        <div class="avatar-email" id="modalEmail">user@example.com</div>
+        <div class="avatar-role" id="modalRole">Media User</div>
+    </div>
+    
+    <div class="avatar-modal-section">
+        <button class="modal-btn" id="themeToggleBtn">
+            <i class="fas fa-moon"></i>
+            <span class="theme-toggle-text">Dark Mode</span>
+            <span class="theme-toggle-indicator">☀️</span>
+        </button>
+        <button class="modal-btn" id="settingsBtn">
+            <i class="fas fa-cog"></i>
+            <span>User Settings</span>
+        </button>
+        <hr class="modal-divider">
+        <button class="modal-btn modal-btn-danger" id="signOutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sign Out</span>
+        </button>
+    </div>
+</div>
+
+<!-- Mobile Drawer -->
+<nav class="mobile-drawer" id="mobileDrawer">
+    <button class="drawer-close" id="drawerCloseBtn" aria-label="Close menu">
+        <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="drawer-content" id="drawerContent">
+        <h3 style="margin-bottom: 16px; color: var(--text-headings);">Navigation</h3>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="modal-btn">
+                <i class="fas fa-newspaper"></i>
+                <span>Media Releases</span>
+            </button>
+            <button class="modal-btn">
+                <i class="fas fa-radar"></i>
+                <span>Radar Alerts</span>
+            </button>
+            <button class="modal-btn">
+                <i class="fas fa-archive"></i>
+                <span>Media Vault</span>
+            </button>
+            <button class="modal-btn">
+                <i class="fas fa-video"></i>
+                <span>Live Events</span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Drawer Backdrop -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+<!-- Main Content -->
+<main class="mobile-main">
+    <header class="page-header">
+        <h1><i class="fas fa-radar" style="color: var(--accent-primary); margin-right: 8px;"></i>Upcoming Alerts</h1>
+        <p>Media advisories and upcoming content</p>
+    </header>
+    
+    <div class="search-bar">
+        <label for="searchInput" class="sr-only">Search radar alerts</label>
+        <div class="search-input-wrapper">
+            <input 
+                type="search" 
+                class="search-input" 
+                placeholder="Search alerts..." 
+                id="searchInput"
+                aria-label="Search alerts by title, brand or tags"
+                autocomplete="off"
+                spellcheck="false"
+            >
+            <button class="search-btn" id="searchBtn" aria-label="Search">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Card Grid -->
+    <div class="card-grid" id="radarGrid">
+        <div class="loading-container">
+            <i class="fas fa-spinner loading-spinner"></i>
+            <p>Loading radar alerts...</p>
+        </div>
+    </div>
+</main>
+
+<script>
+    // ===== CONFIGURATION =====
+    const API_BASE_URL = 'http://localhost:5000';
+    const ALERTS_PER_PAGE = 50;
+    
+    // ===== STATE =====
+    let allAlerts = [];
+    let filteredAlerts = [];
+    let currentSearchTerm = '';
+    
+    // ===== UI ELEMENTS =====
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
+    const drawerCloseBtn = document.getElementById('drawerCloseBtn');
+    const avatarContainer = document.getElementById('avatarContainer');
+    const avatarModal = document.getElementById('avatarModal');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const signOutBtn = document.getElementById('signOutBtn');
+    const searchInput = document.getElementById('searchInput');
+    const radarGrid = document.getElementById('radarGrid');
+    const mobileLogo = document.getElementById('mobileLogo');
+    
+    // ===== MOBILE NAVIGATION =====
+    hamburgerBtn.addEventListener('click', () => {
+        mobileDrawer.classList.add('active');
+        drawerBackdrop.classList.add('active');
+    });
+    
+    drawerCloseBtn.addEventListener('click', () => {
+        mobileDrawer.classList.remove('active');
+        drawerBackdrop.classList.remove('active');
+    });
+    
+    drawerBackdrop.addEventListener('click', () => {
+        mobileDrawer.classList.remove('active');
+        drawerBackdrop.classList.remove('active');
+    });
+    
+    // ===== AVATAR MODAL =====
+    avatarContainer.addEventListener('click', () => {
+        avatarModal.classList.toggle('hidden');
+        avatarModal.classList.toggle('active');
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!avatarModal.classList.contains('hidden') && 
+            !avatarContainer.contains(e.target) && 
+            !avatarModal.contains(e.target)) {
+            avatarModal.classList.add('hidden');
+            avatarModal.classList.remove('active');
+        }
+    });
+    
+    // ===== DARK MODE TOGGLE =====
+    themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        
+        const themeText = themeToggleBtn.querySelector('.theme-toggle-text');
+        const themeIndicator = themeToggleBtn.querySelector('.theme-toggle-indicator');
+        
+        themeText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+        themeIndicator.textContent = isDark ? '🌙' : '☀️';
+        
+        localStorage.setItem('darkMode', isDark);
+    });
+    
+    // Load dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        const themeText = themeToggleBtn.querySelector('.theme-toggle-text');
+        const themeIndicator = themeToggleBtn.querySelector('.theme-toggle-indicator');
+        themeText.textContent = 'Light Mode';
+        themeIndicator.textContent = '🌙';
+    }
+    
+    // ===== SIGN OUT =====
+    signOutBtn.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('currentUser');
+        window.location.href = 'login-dropbox-style.html';
+    });
+    
+    // ===== SCROLL TO TOP =====
+    mobileLogo.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    
+    // ===== COUNTDOWN CALCULATION =====
+    function calculateCountdown(eventDateTime) {
+        const eventDate = new Date(eventDateTime);
+        const now = new Date();
+        const diffMs = eventDate.getTime() - now.getTime();
+        
+        let countdownText = '';
+        let urgencyClass = 'urgency-medium';
+        
+        if (diffMs > 0) {
+            const totalHours = diffMs / (1000 * 60 * 60);
+            const days = Math.floor(totalHours / 24);
+            const hours = Math.floor(totalHours % 24);
+            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (days > 7) {
+                countdownText = `In ${days} days`;
+                urgencyClass = 'urgency-far';
+            } else if (days > 1) {
+                countdownText = `In ${days} days`;
+                urgencyClass = 'urgency-medium';
+            } else if (days === 1) {
+                countdownText = `Tomorrow`;
+                urgencyClass = 'urgency-soon';
+            } else if (hours > 0) {
+                countdownText = `In ${hours}h ${minutes}m`;
+                urgencyClass = 'urgency-soon';
+            } else if (minutes > 0) {
+                countdownText = `In ${minutes}m`;
+                urgencyClass = 'urgency-soon';
+            } else {
+                countdownText = `Dropping now`;
+                urgencyClass = 'urgency-soon';
+            }
+        } else {
+            countdownText = "Dropped";
+            urgencyClass = 'urgency-past';
+        }
+        
+        return { text: countdownText, urgencyClass };
+    }
+    
+    // ===== CREATE RADAR CARD =====
+    function createRadarCard(alert) {
+        const card = document.createElement('div');
+        card.className = 'radar-card';
+        card.dataset.alertId = alert._id;
+        card.dataset.uuid = alert.uuid;
+        
+        // Countdown
+        const countdown = calculateCountdown(alert.eventDateTime);
+        
+        // Format date/time exactly like desktop version
+        const eventDate = new Date(alert.eventDateTime);
+        const formattedDate = eventDate.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        const formattedTime = eventDate.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZoneName: 'short'
+        });
+        
+        // Image URL - match desktop logic
+        const imageUrl = alert.teaserImagePath ?
+            `${API_BASE_URL}${alert.teaserImagePath}` : '';
+        
+        card.innerHTML = `
+            <div class="card-image">
+                ${imageUrl ?
+                    `<img src="${imageUrl}" alt="${alert.title || 'Radar Alert'}">` :
+                    `<i class="fas fa-photo-video placeholder-icon"></i>`
+                }
+
+                <div class="image-actions" role="group" aria-label="Alert actions">
+                    <button class="image-action-btn" data-action="calendar" type="button">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span>Add to Calendar</span>
+                    </button>
+                    <button class="image-action-btn image-action-btn--reminder" data-action="reminder" type="button">
+                        <i class="fas fa-bell"></i>
+                        <span>Set Reminder</span>
+                    </button>
+                    <button class="image-action-btn image-action-btn--follow" data-action="follow" type="button">
+                        <i class="fas fa-bookmark"></i>
+                        <span>Follow Topic</span>
+                    </button>
+                </div>
+            </div>
+            
+            ${alert.brand ? `<div class="brand-band">${alert.brand}</div>` : ''}
+            
+            <div class="card-content">
+                <h3 class="card-title">${alert.title || 'Untitled Alert'}</h3>
+                <div class="card-bottom-meta">
+                    <div class="countdown-badge ${countdown.urgencyClass}">
+                        <i class="fas fa-stopwatch"></i> ${countdown.text}
+                    </div>
+                    <div class="drop-time">
+                        <span class="date-line">
+                            <i class="far fa-calendar-alt"></i>${formattedDate}
+                        </span>
+                        <span class="time-line">${formattedTime}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return card;
+    }
+    
+    // ===== ESCAPE HTML UTILITY =====
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // ===== DISPLAY ALERTS =====
+    function displayAlerts(alerts) {
+        radarGrid.innerHTML = '';
+        
+        if (alerts.length === 0) {
+            const searchTerm = searchInput.value.trim();
+            radarGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <p>${searchTerm ? 
+                        `No alerts found for "${searchTerm}"` : 
+                        'No radar alerts available'
+                    }</p>
+                    ${searchTerm ? 
+                        '<p style="font-size: 14px; margin-top: 8px;">Try different keywords</p>' : 
+                        ''
+                    }
+                </div>
+            `;
+            return;
+        }
+        
+        // Show result count for searches
+        if (currentSearchTerm && alerts.length > 0) {
+            const countDiv = document.createElement('div');
+            countDiv.style.cssText = 'grid-column: 1 / -1; padding: 12px; background: var(--bg-tertiary); border-radius: 8px; text-align: center; color: var(--text-secondary); margin-bottom: 8px;';
+            countDiv.innerHTML = `
+                <i class="fas fa-check-circle" style="color: var(--accent-primary);"></i>
+                Found ${alerts.length} alert${alerts.length !== 1 ? 's' : ''} for "${currentSearchTerm}"
+            `;
+            radarGrid.appendChild(countDiv);
+        }
+        
+        alerts.forEach(alert => {
+            const card = createRadarCard(alert);
+            radarGrid.appendChild(card);
+        });
+        
+        startCountdownTicker();
+        attachCardListeners();
+    }
+    
+    
+
+    // ===== COUNTDOWN TICKER (keeps pills live on mobile/tablet) =====
+    let __countdownTicker = null;
+
+    function updateAllCountdownBadges() {
+        document.querySelectorAll('.countdown-badge[data-drop-ts]').forEach(badge => {
+            const ts = parseInt(badge.getAttribute('data-drop-ts') || '', 10);
+            if (!ts) return;
+            const { text, className } = calculateCountdown(new Date(ts));
+
+            // swap urgency classes
+            badge.classList.remove('urgency-far', 'urgency-medium', 'urgency-soon', 'urgency-past');
+            badge.classList.add(className);
+
+            const txtEl = badge.querySelector('.countdown-text');
+            if (txtEl) txtEl.textContent = text;
+        });
+    }
+
+    function startCountdownTicker() {
+        updateAllCountdownBadges();
+        if (__countdownTicker) return;
+        __countdownTicker = setInterval(updateAllCountdownBadges, 30000); // update every 30s
+    }
+
+// ===== ATTACH CARD LISTENERS =====
+    function attachCardListeners() {
+        
+        // Tap anywhere on card to reveal/hide actions (mobile/tablet)
+        // Buttons already stopPropagation so they won't toggle this.
+        const isCompactMode = () => window.matchMedia('(max-width: 900px)').matches;
+        document.querySelectorAll('.radar-card').forEach(card => {
+    // Tap/click the IMAGE area to reveal actions (mobile / compact mode only)
+    const img = card.querySelector('.card-image');
+    if (img) {
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', (e) => {
+            if (!isCompactMode()) return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            const wasOpen = card.classList.contains('is-expanded');
+
+            // Close any other open cards
+            document.querySelectorAll('.radar-card.is-expanded').forEach(other => {
+                if (other !== card) other.classList.remove('is-expanded');
+            });
+
+            // Toggle this one
+            card.classList.toggle('is-expanded', !wasOpen);
+        });
+    }
+
+    // Action buttons (inside the image overlay)
+    card.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleAction(card, btn.dataset.action);
+            card.classList.remove('is-expanded');
+        });
+    });
+});
+
+// Tap anywhere else to close overlays (mobile / compact mode)
+document.addEventListener('click', () => {
+    if (!isCompactMode()) return;
+    document.querySelectorAll('.radar-card.is-expanded').forEach(card => card.classList.remove('is-expanded'));
+});
+    }
+    
+    // ===== HANDLE ACTION =====
+    function handleAction(card, action) {
+        const alertId = card.dataset.alertId;
+        
+        switch(action) {
+            case 'calendar':
+                addToCalendar(alertId);
+                break;
+            case 'reminder':
+                setReminder(alertId);
+                break;
+            case 'follow':
+                followAlert(alertId);
+                break;
+            default:
+                console.log('Unknown action:', action);
+        }
+    }
+    
+    // ===== CALENDAR ACTION =====
+    async function addToCalendar(alertId) {
+        console.log('Add to calendar:', alertId);
+        
+        const btn = document.querySelector(`[data-action="calendar"][data-alert-id="${alertId}"]`);
+        if (btn) {
+            btn.classList.add('active');
+            btn.innerHTML = '<i class="fas fa-check"></i><span>Added</span>';
+            
+            setTimeout(() => {
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="far fa-calendar-plus"></i><span>Calendar</span>';
+            }, 2000);
+        }
+        
+        // Log interaction
+        await logRadarInteraction(alertId, 'calendar_add');
+    }
+    
+    // ===== REMINDER ACTION =====
+    async function setReminder(alertId) {
+        console.log('Set reminder:', alertId);
+        
+        const btn = document.querySelector(`[data-action="reminder"][data-alert-id="${alertId}"]`);
+        if (btn) {
+            btn.classList.add('active');
+            btn.innerHTML = '<i class="fas fa-check"></i><span>Set</span>';
+            
+            setTimeout(() => {
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="far fa-bell"></i><span>Reminder</span>';
+            }, 2000);
+        }
+        
+        // Log interaction
+        await logRadarInteraction(alertId, 'reminder_set');
+    }
+    
+    // ===== FOLLOW ACTION =====
+    async function followAlert(alertId) {
+        console.log('Follow alert:', alertId);
+        
+        const btn = document.querySelector(`[data-action="follow"][data-alert-id="${alertId}"]`);
+        if (btn) {
+            btn.classList.add('active');
+            btn.innerHTML = '<i class="fas fa-check"></i><span>Following</span>';
+            
+            setTimeout(() => {
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="fas fa-bookmark"></i><span>Follow</span>';
+            }, 2000);
+        }
+        
+        // Log interaction
+        await logRadarInteraction(alertId, 'follow_alert');
+    }
+    
+    // ===== LOG INTERACTION =====
+    async function logRadarInteraction(alertId, interactionType) {
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        if (!alertId) {
+            console.error('logRadarInteraction: alertId is missing');
+            return;
+        }
+        
+        console.log(`Logging: alertId=${alertId}, type=${interactionType}`);
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/events/log-radar-interaction`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token && { 'Authorization': `Bearer ${token}` })
+                },
+                body: JSON.stringify({ alertId, interactionType })
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    console.log(`Interaction logged: ${interactionType} for alert ${alertId}`);
+                }
+            }
+        } catch (error) {
+            console.error('Error logging interaction:', error);
+        }
+    }
+    
+    // ===== SEARCH FUNCTIONALITY =====
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase().trim();
+        
+        searchInput.classList.add('searching');
+        clearTimeout(searchTimeout);
+        
+        searchTimeout = setTimeout(() => {
+            currentSearchTerm = searchTerm;
+            
+            if (searchTerm === '') {
+                displayAlerts(allAlerts);
+            } else {
+                const results = allAlerts.filter(alert => {
+                    const title = (alert.title || '').toLowerCase();
+                    const brand = (alert.brand || '').toLowerCase();
+                    const tags = (alert.tags || []).join(' ').toLowerCase();
+                    
+                    return title.includes(searchTerm) || 
+                           brand.includes(searchTerm) ||
+                           tags.includes(searchTerm);
+                });
+                
+                displayAlerts(results);
+            }
+            
+            setTimeout(() => {
+                searchInput.classList.remove('searching');
+            }, 400);
+        }, 300);
+    });
+    
+    // Enter key handler
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            searchInput.blur();
+        }
+    });
+    
+    // ===== FETCH RADAR ALERTS =====
+    async function fetchRadarAlerts(token) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/v1/radar/alerts`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
+            }
+            
+            const responseData = await response.json();
+            
+            if (responseData.success && responseData.data) {
+                allAlerts = responseData.data;
+                filteredAlerts = allAlerts;
+                displayAlerts(allAlerts);
+                
+                console.log(`Loaded ${allAlerts.length} radar alerts`);
+                
+                // Setup view tracking and action listeners like desktop version
+                setupViewTracking();
+                attachActionListeners();
+            } else {
+                throw new Error(responseData.error || responseData.message || 'Failed to load Radar alerts: Unexpected response structure.');
+            }
+        } catch (error) {
+            console.error('Error fetching radar alerts:', error);
+            radarGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Could not load radar alerts</p>
+                    <p style="font-size: 14px; margin-top: 8px; color: var(--accent-danger);">${error.message}</p>
+                </div>
+            `;
+        }
+    }
+    
+    // ===== SETUP VIEW TRACKING (DESKTOP PARITY) =====
+    function setupViewTracking() {
+        const viewedInSessionKey = 'viewedRadarAlertsInSession';
+        let viewedInSession = new Set(JSON.parse(sessionStorage.getItem(viewedInSessionKey)) || []);
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.5 };
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const cardElement = entry.target;
+                    const alertDbId = cardElement.dataset.alertId;
+                    if (alertDbId && !viewedInSession.has(alertDbId)) {
+                        logRadarInteraction(alertDbId, 'view');
+                        viewedInSession.add(alertDbId);
+                        sessionStorage.setItem(viewedInSessionKey, JSON.stringify(Array.from(viewedInSession)));
+                    }
+                }
+            });
+        }, observerOptions);
+        document.querySelectorAll('.radar-card[data-alert-id]').forEach(card => { observer.observe(card); });
+        console.log("View tracking setup for radar cards.");
+    }
+    
+    // ===== ATTACH ACTION LISTENERS (DESKTOP PARITY) =====
+    function attachActionListeners() {
+        // Remove existing listeners to prevent duplicates
+        radarGrid.removeEventListener('click', handleRadarGridClick);
+        radarGrid.addEventListener('click', handleRadarGridClick);
+        console.log("Action listeners attached to radar grid.");
+    }
+    
+    // ===== HANDLE RADAR GRID CLICKS =====
+    function handleRadarGridClick(event) {
+        const actionButton = event.target.closest('[data-action]');
+        if (actionButton) {
+            event.preventDefault();
+            event.stopPropagation();
+            const actionType = actionButton.dataset.action;
+            const alertDbId = actionButton.closest('.radar-card')?.dataset.alertId;
+            
+            if (alertDbId && actionType) {
+                logRadarInteraction(alertDbId, actionType);
+                
+                // Show feedback like desktop version
+                const originalText = actionButton.innerHTML;
+                actionButton.innerHTML = '<i class="fas fa-check"></i><span>Done</span>';
+                actionButton.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    actionButton.innerHTML = originalText;
+                    actionButton.style.background = '';
+                }, 2000);
+            } else {
+                console.warn("Could not log action: missing alertDbId or actionType on button.", actionButton);
+            }
+        }
+    }
+    
+    // ===== USER AUTHENTICATION =====
+    function loadUserData() {
+        const storedUser = JSON.parse(
+            localStorage.getItem('user') || localStorage.getItem('currentUser') || '{}'
+        );
+        
+        if (storedUser.email) {
+            document.getElementById('modalEmail').textContent = storedUser.email;
+        }
+        
+        if (storedUser.role) {
+            const roleMap = {
+                'media_user': 'Media User',
+                'company_user': 'Company User',
+                'admin': 'Administrator'
+            };
+            document.getElementById('modalRole').textContent = roleMap[storedUser.role] || storedUser.role;
+        }
+    }
+    
+    // ===== INITIALIZATION =====
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        
+        if (!token) {
+            console.warn('No authentication token found');
+            radarGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-lock"></i>
+                    <p>Please log in to view radar alerts</p>
+                    <button class="action-btn" onclick="window.location.href='login-dropbox-style.html'" style="margin-top: 16px; width: auto; padding: 12px 24px;">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Log In</span>
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        loadUserData();
+        fetchRadarAlerts(token);
+    });
+    
+    // ===== UPDATE COUNTDOWNS (Every minute) =====
+    setInterval(() => {
+        document.querySelectorAll('.radar-card').forEach(card => {
+            const alertId = card.dataset.alertId;
+            const alert = allAlerts.find(a => a._id === alertId);
+            
+            if (alert) {
+                const countdown = calculateCountdown(alert.eventDateTime);
+                const overlay = card.querySelector('.countdown-overlay');
+                
+                if (overlay) {
+                    overlay.className = `countdown-overlay ${countdown.urgencyClass}`;
+                    overlay.innerHTML = `<i class="fas fa-stopwatch"></i> ${countdown.text}`;
+                }
+            }
+        });
+    }, 60000); // Update every minute
+</script>
+
+</body>
+</html>

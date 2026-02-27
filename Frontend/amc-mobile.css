@@ -1,0 +1,211 @@
+/* --- GLOBAL --- */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  background: #f5f6f8;
+  color: #222;
+}
+
+button {
+  background: none;
+  border: none;
+}
+
+.amc-logo {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* --- HEADER --- */
+.amc-mobile-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 56px;
+  background: #fff;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.amc-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.amc-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.amc-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+/* --- SIDEBAR OVERLAY (darkens screen when sidebar open) --- */
+#mobileSidebarOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 999;
+}
+
+/* --- SIDEBAR DRAWER --- */
+#mobileSidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 265px;
+  height: 100vh;
+  background: #111;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  padding: 18px;
+  z-index: 1000;
+  color: white;
+  overflow-y: auto;
+}
+
+/* When active, sidebar slides in */
+#mobileSidebar.active {
+  transform: translateX(0);
+}
+
+/* Overlay visible when sidebar is open */
+#mobileSidebarOverlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar-header {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #333;
+}
+
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-links li {
+  padding: 12px 0;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.sidebar-links li:hover {
+  opacity: 0.7;
+}
+
+.sidebar-links hr {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 10px 0;
+}
+
+/* --- PAGE WRAPPER --- */
+.amc-page {
+  padding: 15px;
+}
+
+/* --- SEARCH + SORT --- */
+.amc-search-row {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0 15px;
+}
+
+.amc-search-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.amc-sort-btn {
+  width: 45px;
+  background: #e7e7e7;
+  border-radius: 6px;
+}
+
+/* --- MOBILE CARD --- */
+.amc-mobile-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.amc-card-photo {
+  width: 100%;
+  height: 200px;
+  background: #ccc url('sample.jpg') center/cover no-repeat;
+}
+
+.amc-card-body {
+  padding: 12px 14px 14px;
+}
+
+.amc-company {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.amc-heading {
+  font-size: 15px;
+  line-height: 1.35;
+  max-height: 3.9em; /* approx 3 lines */
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+/* --- ICONS + DATE SECTION --- */
+.amc-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.amc-icons {
+  display: grid;
+  grid-template-columns: repeat(2, 22px);
+  grid-template-rows: repeat(2, 22px);
+  gap: 6px;
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  background: #dcdcdc;
+  border-radius: 5px;
+}
+
+.amc-date-box {
+  text-align: right;
+  font-size: 13px;
+}
+
+.date {
+  font-weight: 600;
+}
+
+.time {
+  opacity: 0.7;
+}

@@ -1,0 +1,120 @@
+/* =====================================================================
+   DUAL MODE SIDEBAR OVERRIDES (AUTHORITATIVE)
+   Desktop (>=1600): in-flow push, 5/6 grid
+   Laptop  (<=1599): overlay rail+drawer, 4 grid, content NOT pushed
+   ===================================================================== */
+
+/* TOKEN UNIFICATION: single source of truth */
+:root{
+  --amc-sidebar-w: 272px;
+  --amc-sidebar-w-collapsed: 72px;
+  --amc-header-h: 64px;
+
+  /* Map/alias legacy tokens (do NOT change upstream files) */
+  --amc-sidebar-expanded: var(--amc-sidebar-w);
+  --amc-sidebar-collapsed: var(--amc-sidebar-w-collapsed);
+  --sidebar-width-expanded: var(--amc-sidebar-w);
+  --sidebar-width-collapsed: var(--amc-sidebar-w-collapsed);
+}
+
+/* HARD GUARDS: prevent horizontal spill from legacy widths/min-widths */
+html, body{ overflow-x: hidden; }
+.amc-content{ overflow-x: hidden; box-sizing: border-box; }
+.amc-card-grid{ max-width: 100%; box-sizing: border-box; }
+/* Allow grid children to shrink inside 1fr columns (prevents right-edge overflow) */
+.amc-card-grid > *{ min-width: 0; }
+
+/* =====================================================================
+   LAPTOP OVERLAY MODE (<=1599px)
+   ===================================================================== */
+@media (max-width: 1599px){
+
+  /* Defeat Global Shell margin locks */
+  body.overlay-mode .amc-content,
+  body.overlay-mode .main-content,
+  body.overlay-mode .amc-page,
+  body.overlay-mode .app-container{
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  /* Sidebar rail by default */
+  body.overlay-mode #sidebar{
+    left: 0;
+    width: var(--amc-sidebar-w-collapsed) !important;
+    z-index: 950; /* normal until open */
+  }
+
+  /* Overlay open state can be expressed either as:
+     - body.sidebar-open (preferred)
+     - OR body.overlay-mode:not(.sidebar-collapsed) (compat with existing toggles) */
+  body.overlay-mode.sidebar-open #sidebar,
+  body.overlay-mode:not(.sidebar-collapsed) #sidebar{
+    width: var(--amc-sidebar-w) !important;
+    z-index: 1201;
+    box-shadow: 12px 0 32px rgba(0,0,0,.18);
+  }
+
+  /* Backdrop (below sidebar, above content) */
+  body.overlay-mode.sidebar-open::before,
+  body.overlay-mode:not(.sidebar-collapsed)::before{
+    content: "";
+    position: fixed;
+    top: var(--amc-header-h);
+    left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,.45);
+    backdrop-filter: blur(4px);
+    z-index: 1200;
+    pointer-events: auto;
+  }
+
+  /* Deterministic laptop grid: ALWAYS 4 columns */
+  .amc-card-grid{
+    display: grid !important;
+    gap: 20px;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+
+/* HARD GUARDS: prevent horizontal spill from legacy widths/min-widths */
+html, body{ overflow-x: hidden; }
+.amc-content{ overflow-x: hidden; box-sizing: border-box; }
+.amc-card-grid{ max-width: 100%; box-sizing: border-box; }
+/* Allow grid children to shrink inside 1fr columns (prevents right-edge overflow) */
+.amc-card-grid > *{ min-width: 0; }
+
+/* =====================================================================
+   DESKTOP MODE (>=1600px)
+   ===================================================================== */
+@media (min-width: 1600px){
+
+  /* Ensure sidebar sits below header; keep z-index sane */
+  #sidebar{ z-index: 950; }
+
+  /* Deterministic desktop grid */
+  .amc-card-grid{
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  body.sidebar-collapsed .amc-card-grid,
+  body.amc-collapsed .amc-card-grid{
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  }
+}
+
+/* HARD GUARDS: prevent horizontal spill from legacy widths/min-widths */
+html, body{ overflow-x: hidden; }
+.amc-content{ overflow-x: hidden; box-sizing: border-box; }
+.amc-card-grid{ max-width: 100%; box-sizing: border-box; }
+/* Allow grid children to shrink inside 1fr columns (prevents right-edge overflow) */
+.amc-card-grid > *{ min-width: 0; }
+
+/* =====================================================================
+   SAFETY: prevent accidental laptop push behavior if any rule slips through
+   ===================================================================== */
+@media (max-width: 1599px){
+  body.overlay-mode body.sidebar-collapsed .amc-card-grid{ /* no-op, keeps specificity simple */ }
+}

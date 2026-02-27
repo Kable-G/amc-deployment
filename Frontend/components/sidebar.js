@@ -3,6 +3,79 @@
    EXACT extraction from test_globalshell.html with collapsible sections
    ============================================================ */
 
+
+
+// ============================================================
+
+// ------------------------------------------------------------
+// Dual-mode collapsed-state persistence (canonical + legacy)
+// Canonical key used by dual-mode controller: "sidebar-collapsed"
+// Legacy keys used by older AMC sidebar builds: "amc_sidebar_collapsed", "amcSidebarCollapsed"
+// ------------------------------------------------------------
+const AMC_COLLAPSE_KEY = "sidebar-collapsed";
+const AMC_LEGACY_COLLAPSE_KEYS = ["amc_sidebar_collapsed", "amcSidebarCollapsed"];
+
+function amcReadCollapsedPref() {
+  try {
+    const canonical = localStorage.getItem(AMC_COLLAPSE_KEY);
+    if (canonical === "true") return true;
+    if (canonical === "false") return false;
+
+    // Fallback to legacy keys
+    for (const k of AMC_LEGACY_COLLAPSE_KEYS) {
+      const v = localStorage.getItem(k);
+      if (v === "true") {
+        // Migrate forward
+        localStorage.setItem(AMC_COLLAPSE_KEY, "true");
+        return true;
+      }
+      if (v === "false") {
+        localStorage.setItem(AMC_COLLAPSE_KEY, "false");
+        return false;
+      }
+    }
+  } catch (e) {}
+  return false;
+}
+
+function amcWriteCollapsedPref(isCollapsed) {
+  try {
+    localStorage.setItem(AMC_COLLAPSE_KEY, String(!!isCollapsed));
+    // Keep legacy key in sync for older pages/components still reading it
+    localStorage.setItem("amc_sidebar_collapsed", String(!!isCollapsed));
+localStorage.setItem("amcSidebarCollapsed", String(!!isCollapsed));
+  } catch (e) {}
+}
+// AMC DUAL-MODE SIDEBAR (Desktop in-flow >=1600 / Laptop overlay <=1599)
+// Asset loader: keeps implementation deterministic across ALL pages
+// ============================================================
+(function ensureAmcDualModeAssets(){
+  try {
+    const CSS_HREF = 'css/amc-dualmode-overrides.css';
+    const JS_SRC   = 'components/amc-dualmode-sidebar-controller.js';
+
+    // CSS
+    if (!document.getElementById('amc-dualmode-css')) {
+      const link = document.createElement('link');
+      link.id = 'amc-dualmode-css';
+      link.rel = 'stylesheet';
+      link.href = CSS_HREF;
+      document.head.appendChild(link);
+    }
+
+    // Controller JS (defer; safe if injected multiple times)
+    if (!document.getElementById('amc-dualmode-controller')) {
+      const s = document.createElement('script');
+      s.id = 'amc-dualmode-controller';
+      s.src = JS_SRC;
+      s.defer = true;
+      document.head.appendChild(s);
+    }
+  } catch (e) {
+    console.warn('⚠️ Dual-mode asset loader failed:', e);
+  }
+})();
+
 /**
  * Enterprise Sidebar System with Collapsible Sections
  * Features: Role-based rendering, dynamic badges, collapsible sections, tooltips
@@ -387,12 +460,25 @@ class AMCSidebar {
       this.updateTooltip();
       this.updateLinkTooltips(this.collapsed);
 
-      toggleBtn.addEventListener('click', () => {
+      
+toggleBtn.addEventListener('click', () => {
+  // Dual-mode behavior:
+  // - Overlay mode (<=1599px): open/close overlay (no layout push)
+  // - Desktop mode (>=1600px): collapse/expand rail (layout push)
+  if (document.body.classList.contains('overlay-mode')) {
+    const isOpen = document.body.classList.toggle('sidebar-open');
+    // Keep legacy/internals aligned: open == expanded (not collapsed)
+    document.body.classList.toggle('sidebar-collapsed', !isOpen);
+    document.body.classList.toggle('amc-collapsed', !isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return;
+  }
+
         document.body.classList.toggle('sidebar-collapsed');
         document.body.classList.toggle('amc-collapsed'); // legacy support
 
         const isCollapsed = document.body.classList.contains('sidebar-collapsed');
-        localStorage.setItem('amc_sidebar_collapsed', isCollapsed.toString());
+        amcWriteCollapsedPref(isCollapsed);
         this.collapsed = isCollapsed;
 
         // DEBUG: Log toggle action
@@ -423,7 +509,10 @@ class AMCSidebar {
    * Apply collapse state to DOM
    */
   applyCollapseState() {
-    if (window.innerWidth > 1024) {
+    // Never let the legacy desktop push/collapse logic run in overlay-mode
+    if (document.body.classList.contains('overlay-mode')) return;
+
+    if (window.innerWidth >= 1600) {
       document.body.classList.toggle('sidebar-collapsed', this.collapsed);
       document.body.classList.toggle('amc-collapsed', this.collapsed); // legacy
 
@@ -451,12 +540,7 @@ class AMCSidebar {
    * Get stored collapse state from localStorage
    */
   getStoredCollapseState() {
-    try {
-      return localStorage.getItem('amc_sidebar_collapsed') === 'true' ||
-             localStorage.getItem('amcSidebarCollapsed') === 'true';
-    } catch (e) {
-      return false;
-    }
+    return amcReadCollapsedPref();
   }
 
   /**
@@ -465,7 +549,7 @@ class AMCSidebar {
   toggle() {
     this.collapsed = !this.collapsed;
     this.applyCollapseState();
-    localStorage.setItem('amc_sidebar_collapsed', this.collapsed.toString());
+    amcWriteCollapsedPref(this.collapsed);
   }
 
   /**

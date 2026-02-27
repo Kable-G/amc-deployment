@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const { z } = require('zod');
 const AssetEvent = require('../models/AssetEvent');
-const auth = require('../middleware/auth-bypass'); // FAKE AUTH - Always allows access
+const { authenticate } = require('../middleware/authMiddleware'); // Real authentication
 const admin = require('../middleware/admin');
 const RadarInteraction = require('../models/RadarInteraction');
 const RadarAlert = require('../models/RadarAlert');
@@ -30,7 +30,7 @@ const LogRadarInteractionSchema = z.object({
 });
 
 // --- Route Definition 1: Log a generic asset event ---
-router.post('/log', auth, async (req, res, next) => {
+router.post('/log', authenticate, async (req, res, next) => {
     console.log('API received request for POST /log');
     console.log('Request body for /log:', req.body);
 
@@ -65,7 +65,7 @@ router.post('/log', auth, async (req, res, next) => {
 });
 
 // --- Route Definition 2: Retrieve all generic asset events ---
-router.get('/all', [auth, admin], async (req, res, next) => {
+router.get('/all', [authenticate, admin], async (req, res, next) => {
     console.log('API received request for GET /api/v1/events/all (Admin only)');
     try {
         const page = parseInt(req.query.page) || 1;
@@ -104,7 +104,7 @@ router.get('/all', [auth, admin], async (req, res, next) => {
 });
 
 // --- NEW ROUTE: Log a Radar Alert Interaction ---
-router.post('/log-radar-interaction', auth, async (req, res) => {
+router.post('/log-radar-interaction', authenticate, async (req, res) => {
     console.log('API received request for POST /log-radar-interaction');
     console.log('Request body for /log-radar-interaction:', req.body);
     try {

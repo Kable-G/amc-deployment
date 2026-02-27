@@ -1,0 +1,2921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Where Automotive Stories Begin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body { 
+            font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff5f5 100%);
+            color: #3c4043;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(218, 220, 224, 0.2);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a73e8;
+            text-decoration: none;
+            letter-spacing: -0.8px;
+            transition: all 0.2s ease;
+            text-shadow: 0 1px 2px rgba(26, 115, 232, 0.1);
+        }
+
+        .logo:hover {
+            opacity: 0.8;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-signin {
+            color: #1a73e8;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .btn-signin:hover {
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .btn-create-account {
+            background: #1a73e8;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .btn-create-account:hover {
+            background: #1557b0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 140px 32px 120px;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 120px;
+            align-items: flex-start;
+        }
+
+        .hero-content h1 {
+            font-size: 64px;
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 32px;
+            color: #202124;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-content p {
+            font-size: 22px;
+            color: #5f6368;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* Signup Section */
+        .signup-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .signup-section h2 {
+            font-size: 52px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            color: #202124;
+            letter-spacing: -1px;
+            white-space: nowrap;
+        }
+
+        .signup-section h3 {
+            font-size: 36px;
+            font-weight: 400;
+            margin-bottom: 56px;
+            color: #202124;
+        }
+
+        .signup-form {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .btn-google, .btn-apple {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 12px 24px;
+            border: 1px solid #dadce0;
+            border-radius: 24px;
+            background: white;
+            color: #3c4043;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-google:hover, .btn-apple:hover {
+            background: #f8f9fa;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: #5f6368;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #dadce0;
+        }
+
+        .divider span {
+            padding: 0 16px;
+            font-size: 14px;
+        }
+
+        .btn-create-account-form {
+            background: #1a73e8;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-create-account-form:hover {
+            background: #1557b0;
+        }
+
+        .terms-text {
+            font-size: 12px;
+            color: #5f6368;
+            margin-top: 16px;
+            line-height: 1.4;
+        }
+
+        .terms-text a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+
+        .terms-text a:hover {
+            text-decoration: underline;
+        }
+
+        .signin-section {
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        .signin-section p {
+            font-size: 16px;
+            color: #5f6368;
+            margin-bottom: 16px;
+        }
+
+        .btn-signin-form {
+            background: #1a73e8;
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.25);
+        }
+
+        .btn-signin-form:hover {
+            background: #1557b0;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* Mobile sign-in emphasis (landing page) */
+        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+        .mobile-auth-card{display:none;border-radius:18px;padding:18px 18px 14px;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);box-shadow:0 16px 40px rgba(0,0,0,0.08);border:1px solid rgba(0,0,0,0.06)}
+        .mobile-auth-title{margin:0 0 6px;font-size:22px;line-height:1.15;font-weight:800;letter-spacing:-0.02em}
+        .mobile-auth-subtitle{margin:0 0 14px;font-size:14px;opacity:.82}
+        .mobile-login-form{display:flex;flex-direction:column;gap:10px}
+        .mobile-login-form input{height:44px;border-radius:999px;border:1px solid rgba(0,0,0,0.12);padding:0 14px;font-size:15px;outline:none}
+        .mobile-login-form input:focus{border-color:rgba(29,155,240,0.9);box-shadow:0 0 0 4px rgba(29,155,240,0.18)}
+        .mobile-login-form .primary-btn{height:44px;border-radius:999px;font-weight:700;background:#1a73e8;color:white;border:none;cursor:pointer}
+        .mobile-auth-links{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;font-size:13px;opacity:.9}
+        .link-btn{background:none;border:none;color:rgb(29,155,240);padding:4px 6px;border-radius:8px;cursor:pointer}
+        .link-btn:hover{background:rgba(29,155,240,0.08)}
+        .mobile-auth-links .dot{opacity:.45}
+        .mobile-sso{margin-top:12px}
+        .mobile-sso summary{cursor:pointer;font-size:13px;opacity:.85}
+        .mobile-sso-buttons{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+        .mobile-sso-buttons button{width:100%;border-radius:999px;height:42px}
+
+        /* Desktop-only wrapper */
+        .desktop-auth{display:block}
+
+        @media (max-width: 860px){
+          /* Mobile: make sign-in the first thing people see */
+          .header{padding:12px 16px}
+          .logo{font-size:20px}
+          .btn-create-account{padding:9px 14px}
+          .btn-signin{padding:8px 12px}
+
+          .hero{padding:92px 16px 48px;gap:28px}
+          .hero-content{display:flex;flex-direction:column;gap:14px;align-items:flex-start;text-align:left}
+
+          .signup-section{width:100%;max-width:560px;margin:0 auto}
+          .mobile-auth-card{display:block}
+          .desktop-auth{display:none}
+
+          /* Reduce headline size slightly to keep auth card above the fold */
+          .hero-content h1{font-size:40px;line-height:1.05}
+          .hero-content p{font-size:18px;margin-bottom:18px}
+
+          /* Avoid overflow on small screens */
+          .signup-section h2{white-space:normal;font-size:34px;line-height:1.1}
+          .signup-section h3{font-size:20px;margin-bottom:18px}
+        }
+
+        /* Tight landscape phones: keep auth card visible without pushing below fold */
+        @media (max-width: 860px) and (orientation: landscape){
+          .hero{padding-top:76px;padding-bottom:24px}
+          .hero-content h1{font-size:32px}
+          .mobile-auth-card{padding:14px 14px 12px}
+          .mobile-auth-title{font-size:18px}
+          .mobile-login-form input,.mobile-login-form .primary-btn{height:40px}
+        }
+
+        /* Features */
+        .features {
+            padding: 120px 32px;
+            background: linear-gradient(135deg, #fff5f5 0%, #f0f8ff 100%);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 56px;
+            font-weight: 400;
+            margin-bottom: 24px;
+            color: #202124;
+            letter-spacing: -0.5px;
+        }
+
+        .features-description {
+            font-size: 22px;
+            color: #5f6368;
+            margin-bottom: 80px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            text-align: left;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(218, 220, 224, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card h4 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 16px 0;
+            color: #1a73e8;
+        }
+
+        .feature-card p {
+            color: #5f6368;
+            line-height: 1.7;
+            font-size: 17px;
+            margin-bottom: 0;
+            font-weight: 300;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 580px;
+            max-height: 95vh;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalSlideIn 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: 40px 40px 0 40px;
+            text-align: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .modal-header h2 {
+            font-size: 26px;
+            font-weight: 600;
+            color: #202124;
+            margin: 0 0 32px 0;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            color: #5f6368;
+            font-size: 28px;
+            font-weight: 300;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .close:hover {
+            background-color: #f8f9fa;
+            color: #202124;
+        }
+
+        .modal-body {
+            padding: 0 40px 40px 40px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal-form input {
+            padding: 16px 20px;
+            border: 2px solid #e8eaed;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Google Sans', sans-serif;
+            transition: all 0.2s ease;
+            background-color: #fafbfc;
+            width: 100%;
+            min-height: 56px;
+        }
+
+        .modal-form input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .modal-form input:valid {
+            border-color: #34a853;
+        }
+
+        .modal-form input:invalid:not(:placeholder-shown) {
+            border-color: #ea4335;
+        }
+
+        .modal-form input::placeholder {
+            color: #9aa0a6;
+        }
+
+        .modal-oauth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .modal-btn-google, .modal-btn-apple {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 14px 24px;
+            border: 2px solid #e8eaed;
+            border-radius: 12px;
+            background: white;
+            color: #3c4043;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Google Sans', sans-serif;
+        }
+
+        .modal-btn-google:hover, .modal-btn-apple:hover {
+            background: #f8f9fa;
+            border-color: #dadce0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-divider {
+            display: flex;
+            align-items: center;
+            margin: 28px 0;
+            color: #5f6368;
+            position: relative;
+        }
+
+        .modal-divider::before,
+        .modal-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e8eaed 20%, #e8eaed 80%, transparent);
+        }
+
+        .modal-divider span {
+            padding: 0 20px;
+            font-size: 13px;
+            font-weight: 500;
+            background: white;
+            text-transform: lowercase;
+        }
+
+        .modal-btn-primary {
+            background: #1a73e8;
+            color: white;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Google Sans', sans-serif;
+            margin-top: 8px;
+        }
+
+        .modal-btn-primary:hover:not(:disabled) {
+            background: #1557b0;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .modal-btn-primary:disabled {
+            background: #dadce0;
+            color: #9aa0a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .modal-switch {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e8eaed;
+        }
+
+        .modal-switch p {
+            color: #5f6368;
+            margin: 0 0 12px 0;
+            font-size: 15px;
+        }
+
+        .modal-switch button {
+            background: transparent;
+            color: #1a73e8;
+            border: 2px solid #e8eaed;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Google Sans', sans-serif;
+        }
+
+        .modal-switch button:hover {
+            background: rgba(26, 115, 232, 0.08);
+            border-color: #1a73e8;
+        }
+
+        .field-helper {
+            font-size: 12px;
+            color: #5f6368;
+            margin-top: 4px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .field-helper.error {
+            color: #ea4335;
+        }
+
+        .field-helper.success {
+            color: #34a853;
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            background: none;
+            border: none;
+            color: #5f6368;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            z-index: 10;
+            height: 32px;
+            width: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-toggle:hover {
+            color: #202124;
+            background: rgba(95, 99, 104, 0.1);
+        }
+
+        .modal-form input.error {
+            border-color: #ea4335;
+            background-color: #fef7f0;
+        }
+
+        .modal-form input.success {
+            border-color: #34a853;
+        }
+
+        /* Removed error icons - using border color for error indication */
+
+        .field-wrapper {
+            position: relative;
+        }
+
+        .password-strength {
+            height: 4px;
+            background: #e8eaed;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .password-strength.weak .password-strength-bar {
+            width: 33%;
+            background: #ea4335;
+        }
+
+        .password-strength.medium .password-strength-bar {
+            width: 66%;
+            background: #fbbc04;
+        }
+
+        .password-strength.strong .password-strength-bar {
+            width: 100%;
+            background: #34a853;
+        }
+
+        /* Country dropdown styles */
+        .country-select-wrapper {
+            position: relative;
+        }
+
+        .country-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e8eaed;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .country-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f3f4;
+            transition: background-color 0.2s ease;
+            font-size: 15px;
+        }
+
+        .country-option:hover,
+        .country-option.highlighted {
+            background-color: #f8f9fa;
+        }
+
+        .country-option:last-child {
+            border-bottom: none;
+        }
+
+        .country-option.popular {
+            font-weight: 500;
+            background-color: #f8f9ff;
+        }
+
+        .country-divider {
+            height: 1px;
+            background: #e8eaed;
+            margin: 4px 0;
+        }
+
+        /* Select field styling */
+        .modal-form select {
+            padding: 16px 20px;
+            border: 2px solid #e8eaed;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Google Sans', sans-serif;
+            transition: all 0.2s ease;
+            background-color: #fafbfc;
+            width: 100%;
+            min-height: 56px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+        }
+
+        .modal-form select:focus {
+            outline: none;
+            border-color: #1a73e8;
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .modal-form select:valid {
+            border-color: #34a853;
+        }
+
+        .modal-form select:invalid:not(:placeholder-shown) {
+            border-color: #ea4335;
+        }
+
+        /* Success overlay removed - direct redirect instead */
+
+        @media (max-width: 768px) {
+            .modal-content {
+                margin: 2% auto;
+                width: 95%;
+                max-width: 95%;
+                max-height: 95vh;
+            }
+
+            .modal-header {
+                padding: 24px 24px 0 24px;
+            }
+
+            .modal-header h2 {
+                font-size: 20px;
+                white-space: normal;
+                line-height: 1.3;
+            }
+
+            .modal-body {
+                padding: 0 24px 24px 24px;
+            }
+
+            .modal-form {
+                gap: 16px;
+            }
+
+            .success-content {
+                margin: 0 20px;
+                padding: 40px 32px;
+            }
+
+            .success-content h2 {
+                font-size: 28px;
+            }
+        }
+
+        /* Footer */
+        .footer {
+            background: #202124;
+            color: white;
+            padding: 64px 32px 32px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+        }
+
+        .footer-section h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            color: #9aa0a6;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-section ul li a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid #3c4043;
+            text-align: center;
+            color: #9aa0a6;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 48px;
+                text-align: center;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 16px 20px;
+            }
+
+            .hero {
+                padding: 100px 20px 60px;
+            }
+
+            .hero-content h1 {
+                font-size: 40px;
+            }
+
+            .signup-section h2 {
+                font-size: 48px;
+            }
+
+            .signup-section h3 {
+                font-size: 24px;
+            }
+
+            .features {
+                padding: 60px 20px;
+            }
+
+            .features h2 {
+                font-size: 36px;
+            }
+
+            .footer-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 32px;
+            }
+
+            .signup-section h2 {
+                font-size: 36px;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading Animation Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff5f5 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-content {
+            text-align: center;
+            max-width: 400px;
+            padding: 0 20px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 32px;
+            border: 3px solid rgba(26, 115, 232, 0.1);
+            border-top: 3px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-title {
+            font-size: 24px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .loading-subtitle {
+            font-size: 16px;
+            color: #5f6368;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .loading-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(26, 115, 232, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #1a73e8, #4285f4);
+            border-radius: 2px;
+            animation: progress 2s ease-in-out;
+            transform-origin: left;
+        }
+
+        @keyframes progress {
+            0% { transform: scaleX(0); }
+            50% { transform: scaleX(0.7); }
+            100% { transform: scaleX(1); }
+        }
+
+        .loading-status {
+            font-size: 14px;
+            color: #5f6368;
+            opacity: 0.8;
+        }
+
+        /* Mobile loading adjustments */
+        @media (max-width: 768px) {
+            .loading-title {
+                font-size: 20px;
+            }
+            
+            .loading-subtitle {
+                font-size: 14px;
+            }
+            
+            .loading-spinner {
+                width: 48px;
+                height: 48px;
+                margin-bottom: 24px;
+            }
+        }
+    
+/* =========================
+   TABLET BREAKPOINT (768–1180)
+   Enterprise tablet layout
+   ========================= */
+@media (min-width: 768px) and (max-width: 1180px) {
+  body {
+    font-size: 15px;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 32px;
+    padding: 64px 40px;
+  }
+
+  .hero-content h1 {
+    font-size: 36px;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+    max-width: 520px;
+  }
+
+  .signup-card {
+    max-width: 420px;
+    padding: 24px;
+  }
+
+  .signup-card h2 {
+    font-size: 20px;
+  }
+
+  .signup-card button {
+    height: 44px;
+    font-size: 15px;
+  }
+}
+
+</style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2 class="loading-title">Optimizing for your device...</h2>
+            <p class="loading-subtitle">Detecting optimal interface and preparing your experience</p>
+            <div class="loading-progress">
+                <div class="loading-progress-bar"></div>
+            </div>
+            <p class="loading-status" id="loadingStatus">Analyzing device capabilities...</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <a href="#" class="logo">
+            AutoMediaCenter
+        </a>
+        <div class="header-buttons">
+            <a href="login-dropbox-style.html" class="btn-signin">Sign in</a>
+            <a href="register.html" class="btn-create-account">Create an account</a>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Where automotive stories begin.</h1>
+            <p>
+                AutoMediaCenter is your central source for global automotive media assets – from verified media releases to images, videos and much more. All accessible and instantly downloadable.
+            </p>
+        </div>
+        
+        <div class="signup-section">
+            
+      <!-- Mobile-first sign-in (shown on small screens) -->
+      <div class="mobile-auth-card" aria-label="Sign in">
+        <h2 class="mobile-auth-title">Stop searching. Start reporting.</h2>
+        <p class="mobile-auth-subtitle">Sign in to access releases and download assets.</p>
+
+        <form id="mobileLoginForm" class="mobile-login-form" autocomplete="on">
+          <label class="sr-only" for="mobileLoginEmail">Email</label>
+          <input id="mobileLoginEmail" type="email" placeholder="Email" autocomplete="email" required />
+
+          <label class="sr-only" for="mobileLoginPassword">Password</label>
+          <input id="mobileLoginPassword" type="password" placeholder="Password" autocomplete="current-password" required />
+
+          <button id="mobileLoginSubmit" type="submit" class="primary-btn">Sign in</button>
+
+          <div class="mobile-auth-links">
+            <button type="button" class="link-btn" id="mobileOpenSignup">Create an account</button>
+            <span class="dot">•</span>
+            <button type="button" class="link-btn" id="mobileOpenLoginModal">Use advanced sign-in</button>
+          </div>
+        </form>
+
+        <details class="mobile-sso">
+          <summary>More sign-in options</summary>
+          <div class="mobile-sso-buttons">
+            <button class="google-btn" type="button" onclick="loginWithGoogle()">
+              <span class="icon">G</span> Continue with Google
+            </button>
+            <button class="apple-btn" type="button" onclick="loginWithApple()">
+              <span class="icon">🍎</span> Continue with Apple
+            </button>
+          </div>
+        </details>
+      </div>
+
+      <div class="desktop-auth">
+        <h2>Stop searching. Start reporting.</h2>
+        <h3>Join AutoMediaCenter today</h3>
+        
+        <div class="signup-form">
+                <button class="btn-google">
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Sign up with Google
+                </button>
+                
+                <button class="btn-apple">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                    </svg>
+                    Sign up with Apple
+                </button>
+                
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                
+                <button class="btn-create-account-form">Create an account - it's free!</button>
+                
+                <p class="terms-text">
+                    By signing up, you agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>, including <a href="#">Cookie Use</a>.
+                </p>
+                
+                <div class="signin-section">
+                    <p>Already have an account?</p>
+                    <button class="btn-signin-form">Sign in</button>
+                </div>
+            </div>
+      </div><!-- /desktop-auth -->
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <h2>Built for Media Professionals</h2>
+            <p class="features-description">Stop chasing assets across endless portals and inboxes. AutoMediaCenter consolidates the entire media-gathering process into one secure, streamlined platform, complete with specialized tools for demanding workflows.</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>AutoMediaCenter</h4>
+                    <p>Central hub for media releases, images, videos, documents and more. Download what you need, when you need it.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>AutoMediaRadar</h4>
+                    <p>See what's coming before it lands. Stay ahead with official embargo alerts.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>AutoMediaVault</h4>
+                    <p>Pre-release content under NDA. Watermarked, secured, always respected.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>AutoMediaLive</h4>
+                    <p>Follow launches and events in real time. Stream coverage as it happens.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Product</h3>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#api">API</a></li>
+                    <li><a href="#integrations">Integrations</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#careers">Careers</a></li>
+                    <li><a href="#press">Press</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="#help">Help Center</a></li>
+                    <li><a href="#docs">Documentation</a></li>
+                    <li><a href="#blog">Blog</a></li>
+                    <li><a href="#community">Community</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#privacy">Privacy</a></li>
+                    <li><a href="#terms">Terms</a></li>
+                    <li><a href="#security">Security</a></li>
+                    <li><a href="#compliance">Compliance</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 AutoMediaCenter. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" data-modal="signupModal">&times;</span>
+                <h2>Create your AutoMediaCenter account</h2>
+            </div>
+            <div class="modal-body">
+                <div class="modal-oauth-buttons">
+                    <button class="modal-btn-google" onclick="signupWithGoogle()">
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Sign up with Google
+                    </button>
+                    
+                    <button class="modal-btn-apple" onclick="signupWithApple()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        Sign up with Apple
+                    </button>
+                </div>
+
+                <div class="modal-divider">
+                    <span>or</span>
+                </div>
+
+                <form id="signupForm" class="modal-form">
+                    <div class="field-wrapper">
+                        <input type="text" id="signupName" placeholder="Full Name" required>
+                    </div>
+                    
+                    <div class="field-wrapper">
+                        <input type="email" id="signupEmail" placeholder="Email" required>
+                        <div class="field-helper">We'll never share your email with anyone.</div>
+                    </div>
+                    
+                    <div class="field-wrapper password-field">
+                        <input type="password" id="signupPassword" placeholder="Password" required minlength="8">
+                        <button type="button" class="password-toggle" onclick="togglePassword('signupPassword')"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></button>
+                        <div class="password-strength" id="signupPasswordStrength">
+                            <div class="password-strength-bar"></div>
+                        </div>
+                        <div class="field-helper" id="passwordHelper">At least 8 characters, one uppercase, one number.</div>
+                    </div>
+
+                    <div class="field-wrapper password-field">
+                        <input type="password" id="signupConfirmPassword" placeholder="Confirm Password" required minlength="8">
+                        <div class="field-helper" id="confirmPasswordHelper">Passwords must match.</div>
+                    </div>
+
+                    <div class="field-wrapper">
+                        <select id="signupJobTitle" required>
+                            <option value="">Select Job Title</option>
+                            <option value="Journalist">Journalist</option>
+                            <option value="Editor">Editor</option>
+                            <option value="Senior Editor">Senior Editor</option>
+                            <option value="Managing Editor">Managing Editor</option>
+                            <option value="PR Manager">PR Manager</option>
+                            <option value="Communications Manager">Communications Manager</option>
+                            <option value="Communications Director">Communications Director</option>
+                            <option value="Press Officer">Press Officer</option>
+                            <option value="Content Creator">Content Creator</option>
+                            <option value="Social Media Manager">Social Media Manager</option>
+                            <option value="Marketing Manager">Marketing Manager</option>
+                            <option value="Brand Manager">Brand Manager</option>
+                            <option value="Freelance Writer">Freelance Writer</option>
+                            <option value="Blogger">Blogger</option>
+                            <option value="Influencer">Influencer</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="field-wrapper">
+                        <div class="country-select-wrapper">
+                            <input type="text" id="countrySearch" placeholder="Select your country" autocomplete="country" required readonly>
+                            <div class="country-dropdown" id="countryDropdown" style="display: none;">
+                                <!-- Countries will be populated by JavaScript -->
+                            </div>
+                            <input type="hidden" id="selectedCountry" name="country">
+                        </div>
+                    </div>
+                    
+                    <div class="field-wrapper">
+                        <input type="text" id="signupCompany" placeholder="Organisation (optional)">
+                    </div>
+                    
+                    <button type="submit" class="modal-btn-primary" id="signupSubmit" disabled>Create Account</button>
+                </form>
+
+                <div class="modal-switch">
+                    <p>Already have an account?</p>
+                    <button onclick="switchToLogin()">Sign in</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" data-modal="loginModal">&times;</span>
+                <h2>Sign in to AutoMediaCenter</h2>
+            </div>
+            <div class="modal-body">
+                <div class="modal-oauth-buttons">
+                    <button class="modal-btn-google" onclick="loginWithGoogle()">
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Sign in with Google
+                    </button>
+                    
+                    <button class="modal-btn-apple" onclick="loginWithApple()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        Sign in with Apple
+                    </button>
+                </div>
+
+                <div class="modal-divider">
+                    <span>or</span>
+                </div>
+
+                <form id="loginForm" class="modal-form">
+                    <div class="field-wrapper">
+                        <input type="email" id="loginEmail" placeholder="Email" required>
+                        <div class="field-helper">We'll never share your email with anyone.</div>
+                    </div>
+                    
+                    <div class="field-wrapper password-field">
+                        <input type="password" id="loginPassword" placeholder="Password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></button>
+                    </div>
+                    
+                    <div style="text-align: right; margin-bottom: 16px;">
+                        <button type="button" id="forgotPasswordLink" style="background: none; border: none; color: #1a73e8; font-size: 14px; cursor: pointer; text-decoration: none; padding: 4px 0;">
+                            Forgot password?
+                        </button>
+                    </div>
+                    
+                    <button type="submit" class="modal-btn-primary" id="loginSubmit" disabled>Sign In</button>
+                </form>
+
+                <div class="modal-switch">
+                    <p>Don't have an account?</p>
+                    <button onclick="switchToSignup()">Create account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Verification Modal -->
+    <div id="verificationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" data-modal="verificationModal">&times;</span>
+                <h2>Verify Your Email</h2>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <p style="font-size: 16px; color: #5f6368; margin-bottom: 16px;">
+                        We've sent a 6-digit verification code to:
+                    </p>
+                    <p style="font-size: 16px; font-weight: 600; color: #202124;" id="verificationEmail">
+                        <!-- Email will be inserted here -->
+                    </p>
+                </div>
+
+                <form id="verificationForm" class="modal-form">
+                    <div class="field-wrapper">
+                        <input type="text" id="verificationCode" placeholder="Enter 6-digit code" required maxlength="6"
+                               style="text-align: center; font-size: 24px; letter-spacing: 8px; font-weight: 600;">
+                        <div class="field-helper">Enter the code from your email</div>
+                    </div>
+                    
+                    <button type="submit" class="modal-btn-primary" id="verifySubmit">Verify Email</button>
+                </form>
+
+                <div style="text-align: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e8eaed;">
+                    <p style="color: #5f6368; margin-bottom: 12px; font-size: 14px;">Didn't receive the code?</p>
+                    <button type="button" id="resendCode" style="background: transparent; color: #1a73e8; border: none; font-size: 14px; cursor: pointer; text-decoration: underline;">
+                        Resend verification code
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="passwordResetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" data-modal="passwordResetModal">&times;</span>
+                <h2>Reset Your Password</h2>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <p style="font-size: 16px; color: #5f6368; margin-bottom: 16px;">
+                        Enter your email address and we'll send you a link to reset your password.
+                    </p>
+                </div>
+
+                <form id="passwordResetForm" class="modal-form">
+                    <div class="field-wrapper">
+                        <input type="email" id="resetEmail" placeholder="Enter your email address" required>
+                        <div class="field-helper">We'll send reset instructions to this email</div>
+                    </div>
+                    
+                    <button type="submit" class="modal-btn-primary" id="resetSubmit" disabled>Send Reset Link</button>
+                </form>
+
+                <div class="modal-switch">
+                    <p>Remember your password?</p>
+                    <button onclick="switchToLogin()">Back to Sign In</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Reset Success Modal -->
+    <div id="passwordResetSuccessModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" data-modal="passwordResetSuccessModal">&times;</span>
+                <h2>Check Your Email</h2>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div style="width: 64px; height: 64px; background: #34a853; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                    </div>
+                    <p style="font-size: 16px; color: #5f6368; margin-bottom: 16px;">
+                        We've sent password reset instructions to:
+                    </p>
+                    <p style="font-size: 16px; font-weight: 600; color: #202124; margin-bottom: 24px;" id="resetEmailAddress">
+                        <!-- Email will be inserted here -->
+                    </p>
+                    <p style="font-size: 14px; color: #5f6368; line-height: 1.5;">
+                        If you don't see the email in your inbox within a few minutes, check your spam folder.
+                    </p>
+                </div>
+
+                <div class="modal-switch">
+                    <p>Didn't receive the email?</p>
+                    <button onclick="switchToPasswordReset()">Try again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success overlay removed for immediate redirect -->
+
+    <script>
+        // Modal functionality
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function switchToLogin() {
+            closeModal('signupModal');
+            openModal('loginModal');
+        }
+
+        function switchToSignup() {
+            closeModal('loginModal');
+            openModal('signupModal');
+        }
+
+        function switchToPasswordReset() {
+            closeModal('loginModal');
+            closeModal('passwordResetSuccessModal');
+            openModal('passwordResetModal');
+        }
+
+        // Event listeners for buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Main page buttons
+            document.querySelector('.btn-google').addEventListener('click', () => openModal('signupModal'));
+            document.querySelector('.btn-apple').addEventListener('click', () => openModal('signupModal'));
+            document.querySelector('.btn-create-account-form').addEventListener('click', () => openModal('signupModal'));
+            document.querySelector('.btn-signin-form').addEventListener('click', () => openModal('loginModal'));
+            
+            // Header buttons
+            document.querySelector('.btn-create-account').addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal('signupModal');
+            });
+            document.querySelector('.btn-signin').addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal('loginModal');
+            });
+
+            // Forgot password link
+            document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                switchToPasswordReset();
+            });
+
+            // Close buttons
+            document.querySelectorAll('.close').forEach(closeBtn => {
+                closeBtn.addEventListener('click', function() {
+                    const modalId = this.getAttribute('data-modal');
+                    closeModal(modalId);
+                });
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target.classList.contains('modal')) {
+                    event.target.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+
+        // Password toggle functionality
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const toggle = field.nextElementSibling;
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                toggle.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/><path d="M2 2l20 20-1.41 1.41L2 4.41z" stroke="currentColor" stroke-width="2"/></svg>';
+            } else {
+                field.type = 'password';
+                toggle.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>';
+            }
+        }
+
+        // Form validation functions
+        function validatePassword(password) {
+            // Simplified validation - just check minimum length
+            return password.length >= 6;
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function getPasswordStrength(password) {
+            let score = 0;
+            if (password.length >= 8) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[a-z]/.test(password)) score++;
+            if (/\d/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+            
+            if (score <= 2) return 'weak';
+            if (score <= 4) return 'medium';
+            return 'strong';
+        }
+
+        function updatePasswordStrength(password, strengthId) {
+            const strengthMeter = document.getElementById(strengthId);
+            if (!strengthMeter) return;
+            
+            const strength = getPasswordStrength(password);
+            strengthMeter.className = `password-strength ${strength}`;
+        }
+
+        function updateFieldState(field, isValid, errorMessage = '') {
+            // Update field classes - no error icons, just border colors
+            field.classList.remove('error', 'success');
+            
+            if (field.value.length === 0) {
+                // Empty field - neutral state
+                return;
+            }
+            
+            if (isValid) {
+                field.classList.add('success');
+            } else {
+                field.classList.add('error');
+            }
+        }
+
+        function updatePasswordHelper(password) {
+            const helper = document.getElementById('passwordHelper');
+            const field = document.getElementById('signupPassword');
+            const isValid = validatePassword(password);
+            
+            updatePasswordStrength(password, 'signupPasswordStrength');
+            
+            if (password.length === 0) {
+                helper.textContent = 'At least 8 characters, one uppercase, one number.';
+                helper.className = 'field-helper';
+                updateFieldState(field, true);
+            } else if (isValid) {
+                helper.textContent = 'Password meets requirements ✓';
+                helper.className = 'field-helper success';
+                updateFieldState(field, true);
+            } else {
+                helper.textContent = 'Password must have 8+ characters, one uppercase, one number.';
+                helper.className = 'field-helper error';
+                updateFieldState(field, false, 'Password requirements not met');
+            }
+        }
+
+        function checkSignupFormValidity() {
+            const nameField = document.getElementById('signupName');
+            const emailField = document.getElementById('signupEmail');
+            const passwordField = document.getElementById('signupPassword');
+            const submitBtn = document.getElementById('signupSubmit');
+            
+            const name = nameField.value.trim();
+            const email = emailField.value.trim();
+            const password = passwordField.value;
+            
+            // Validate individual fields
+            const nameValid = name.length > 0;
+            const emailValid = validateEmail(email);
+            const passwordValid = validatePassword(password);
+            
+            // Update field states
+            if (name.length > 0) updateFieldState(nameField, nameValid, 'Name is required');
+            if (email.length > 0) updateFieldState(emailField, emailValid, 'Please enter a valid email address');
+            
+            const isValid = nameValid && emailValid && passwordValid;
+            submitBtn.disabled = !isValid;
+        }
+
+        function checkLoginFormValidity() {
+            const emailField = document.getElementById('loginEmail');
+            const passwordField = document.getElementById('loginPassword');
+            const submitBtn = document.getElementById('loginSubmit');
+            
+            const email = emailField.value.trim();
+            const password = passwordField.value;
+            
+            // Validate individual fields
+            const emailValid = validateEmail(email);
+            const passwordValid = password.length > 0;
+            
+            // Update field states
+            if (email.length > 0) updateFieldState(emailField, emailValid, 'Please enter a valid email address');
+            if (password.length > 0) updateFieldState(passwordField, passwordValid, 'Password is required');
+            
+            const isValid = emailValid && passwordValid;
+            submitBtn.disabled = !isValid;
+        }
+
+        function checkPasswordResetFormValidity() {
+            const emailField = document.getElementById('resetEmail');
+            const submitBtn = document.getElementById('resetSubmit');
+            
+            const email = emailField.value.trim();
+            const emailValid = validateEmail(email);
+            
+            // Update field state
+            if (email.length > 0) updateFieldState(emailField, emailValid, 'Please enter a valid email address');
+            
+            submitBtn.disabled = !emailValid;
+        }
+
+        function showSuccessOverlay(name, isSignup = false) {
+            // This function is no longer used - redirects are handled directly in login/signup forms
+            // Keeping for backward compatibility but it should not be called
+            // Redirect to appropriate app version based on device
+            const isMobile = shouldUseMobileApp();
+            const target = isMobile
+                ? 'automediacenter-responsive.html'
+                : 'automediacenter-responsive.html';
+            
+            window.location.href = target;
+        }
+
+        // Add form validation event listeners and initialize components
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile authentication handler
+        const mobileForm = document.getElementById('mobileLoginForm');
+        if (mobileForm) {
+            mobileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('mobileLoginEmail')?.value?.trim() || '';
+                const password = document.getElementById('mobileLoginPassword')?.value || '';
+                
+                if (!email || !password) {
+                    alert('Please enter both email and password');
+                    return;
+                }
+
+                const submitBtn = document.getElementById('mobileLoginSubmit');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Signing In...';
+
+                try {
+                    const response = await fetch('/api/v1/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Store authentication token and user data
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        sessionStorage.setItem('justLoggedIn', 'true');
+                        
+                        // Show loading animation with fail-safe
+                        showLoadingAnimation();
+                        
+                        // Redirect to appropriate app version based on device with analytics
+                        const deviceInfo = detectDeviceWithAnalytics();
+                        const target = deviceInfo.shouldUseMobile
+                            ? 'automediacenter-mobile-v6.6-container-queries.html?welcome=true'
+                            : 'automediacenter-responsive.html?welcome=true';
+                        
+                        console.log('🚀 Mobile Login Success Redirect:');
+                        console.log('  - Device Info:', deviceInfo);
+                        console.log('  - Target URL:', target);
+                        
+                        // Track analytics with fail-safe
+                        trackDeviceRoutingWithFailsafe(deviceInfo, {
+                            finalDecision: deviceInfo.shouldUseMobile ? 'mobile' : 'desktop',
+                            targetUrl: target,
+                            confidence: calculateConfidence(deviceInfo),
+                            userType: 'authenticated',
+                            sessionType: 'mobile-login'
+                        });
+                        
+                        // Enhanced timing: respect target duration
+                        const redirectDelay = Math.min(LoadingConfig.targetDuration, 1800);
+                        setTimeout(() => {
+                            completeLoading();
+                            setTimeout(() => {
+                                window.location.href = target;
+                            }, 300);
+                        }, redirectDelay);
+                    } else {
+                        const error = await response.json();
+                        alert('Login failed: ' + (error.error || error.message || 'Invalid credentials'));
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('Network error: ' + error.message);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Sign in';
+                }
+            });
+
+            // Handle other mobile buttons
+            document.getElementById('mobileOpenSignup')?.addEventListener('click', () => {
+                openModal('signupModal');
+            });
+            
+            document.getElementById('mobileOpenLoginModal')?.addEventListener('click', () => {
+                openModal('loginModal');
+            });
+        }
+
+        // Initialize country dropdown
+        initializeCountryDropdown();
+            
+            // Signup form validation
+            const signupName = document.getElementById('signupName');
+            const signupEmail = document.getElementById('signupEmail');
+            const signupPassword = document.getElementById('signupPassword');
+            const signupConfirmPassword = document.getElementById('signupConfirmPassword');
+            const signupJobTitle = document.getElementById('signupJobTitle');
+            
+            signupName.addEventListener('input', checkSignupFormValidity);
+            signupEmail.addEventListener('input', checkSignupFormValidity);
+            signupPassword.addEventListener('input', function() {
+                updatePasswordHelper(this.value);
+                checkSignupFormValidity();
+            });
+            signupConfirmPassword.addEventListener('input', checkSignupFormValidity);
+            signupJobTitle.addEventListener('change', checkSignupFormValidity);
+            
+            // Login form validation
+            const loginEmail = document.getElementById('loginEmail');
+            const loginPassword = document.getElementById('loginPassword');
+            
+            loginEmail.addEventListener('input', checkLoginFormValidity);
+            loginPassword.addEventListener('input', checkLoginFormValidity);
+            
+            // Password reset form validation
+            const resetEmail = document.getElementById('resetEmail');
+            if (resetEmail) {
+                resetEmail.addEventListener('input', checkPasswordResetFormValidity);
+            }
+            
+            // Verification code input formatting
+            const verificationCodeInput = document.getElementById('verificationCode');
+            if (verificationCodeInput) {
+                verificationCodeInput.addEventListener('input', function() {
+                    // Only allow numbers and limit to 6 digits
+                    this.value = this.value.replace(/\D/g, '').substring(0, 6);
+                });
+            }
+        });
+
+        // ENHANCED Signup form submission with new fields and verification
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const jobTitle = document.getElementById('signupJobTitle').value;
+            const country = document.getElementById('selectedCountry').value;
+            const company = document.getElementById('signupCompany').value.trim();
+            const submitBtn = document.getElementById('signupSubmit');
+            
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            // Validate required fields
+            if (!name || !email || !password || !jobTitle || !country) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Disable button during submission
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Account...';
+
+            try {
+                // Use enhanced backend API endpoint with new fields
+                const response = await fetch('/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        confirmPassword,
+                        jobTitle,
+                        country,
+                        company: company || undefined,
+                        role: 'media_user' // Default role for landing page signups
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.requiresVerification) {
+                        // Show verification modal
+                        closeModal('signupModal');
+                        document.getElementById('verificationEmail').textContent = email;
+                        openModal('verificationModal');
+                        
+                        // Store email for verification
+                        sessionStorage.setItem('verificationEmail', email);
+                    } else {
+                        // Direct login (for admin-created users)
+                        if (data.token) {
+                            localStorage.setItem('token', data.token);
+                        }
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        sessionStorage.setItem('justLoggedIn', 'true');
+                        closeModal('signupModal');
+                        
+                        // Show loading animation with fail-safe
+                        showLoadingAnimation();
+                        
+                        // Redirect to appropriate app version based on device with analytics
+                        const deviceInfo = detectDeviceWithAnalytics();
+                        const target = deviceInfo.shouldUseMobile
+                            ? 'automediacenter-mobile-v6.6-container-queries.html?welcome=true'
+                            : 'automediacenter-responsive.html?welcome=true';
+                        
+                        console.log('🚀 Signup Success Redirect:');
+                        console.log('  - Device Info:', deviceInfo);
+                        console.log('  - Target URL:', target);
+                        
+                        // Track analytics with fail-safe
+                        trackDeviceRoutingWithFailsafe(deviceInfo, {
+                            finalDecision: deviceInfo.shouldUseMobile ? 'mobile' : 'desktop',
+                            targetUrl: target,
+                            confidence: calculateConfidence(deviceInfo),
+                            userType: 'new_user',
+                            sessionType: 'signup-success'
+                        });
+                        
+                        // Enhanced timing: respect target duration
+                        const redirectDelay = Math.min(LoadingConfig.targetDuration, 1800);
+                        setTimeout(() => {
+                            completeLoading();
+                            setTimeout(() => {
+                                window.location.href = target;
+                            }, 300);
+                        }, redirectDelay);
+                    }
+                } else {
+                    const error = await response.json();
+                    alert('Signup failed: ' + (error.error || error.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                alert('Network error: ' + error.message);
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account';
+                checkSignupFormValidity(); // Recheck validity
+            }
+        });
+
+        // ENHANCED Login form submission with email verification handling
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const submitBtn = document.getElementById('loginSubmit');
+            
+            // Disable button during submission
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing In...';
+
+            try {
+                // Use working backend API endpoint (as shown in terminal logs)
+                const response = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Store authentication token and user data using consistent keys
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Set flag to show welcome modal on automediacenter.html
+                    sessionStorage.setItem('justLoggedIn', 'true');
+                    
+                    closeModal('loginModal');
+                    
+                    // Show loading animation with fail-safe
+                    showLoadingAnimation();
+                    
+                    // Redirect to appropriate app version based on device with analytics
+                    const deviceInfo = detectDeviceWithAnalytics();
+                    const target = deviceInfo.shouldUseMobile
+                        ? 'automediacenter-mobile-v6.6-container-queries.html?welcome=true'
+                        : 'automediacenter-responsive.html?welcome=true';
+                    
+                    console.log('🚀 Login Success Redirect:');
+                    console.log('  - Device Info:', deviceInfo);
+                    console.log('  - Target URL:', target);
+                    
+                    // Track analytics with fail-safe
+                    trackDeviceRoutingWithFailsafe(deviceInfo, {
+                        finalDecision: deviceInfo.shouldUseMobile ? 'mobile' : 'desktop',
+                        targetUrl: target,
+                        confidence: calculateConfidence(deviceInfo),
+                        userType: 'returning',
+                        sessionType: 'modal-login'
+                    });
+                    
+                    // Enhanced timing: respect target duration
+                    const redirectDelay = Math.min(LoadingConfig.targetDuration, 1800);
+                    setTimeout(() => {
+                        completeLoading();
+                        setTimeout(() => {
+                            window.location.href = target;
+                        }, 300);
+                    }, redirectDelay);
+                } else {
+                    const error = await response.json();
+                    
+                    // Handle email verification required
+                    if (error.errorCode === 'EMAIL_NOT_VERIFIED') {
+                        closeModal('loginModal');
+                        document.getElementById('verificationEmail').textContent = email;
+                        openModal('verificationModal');
+                        sessionStorage.setItem('verificationEmail', email);
+                    } else {
+                        alert('Login failed: ' + (error.error || error.message || 'Invalid credentials'));
+                    }
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Network error: ' + error.message);
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign In';
+                checkLoginFormValidity(); // Recheck validity
+            }
+        });
+
+        // Email verification form submission
+        document.getElementById('verificationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = sessionStorage.getItem('verificationEmail');
+            const verificationCode = document.getElementById('verificationCode').value.trim();
+            const submitBtn = document.getElementById('verifySubmit');
+            
+            if (!email || !verificationCode) {
+                alert('Please enter the verification code');
+                return;
+            }
+            
+            // Disable button during submission
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Verifying...';
+
+            try {
+                const response = await fetch('/api/v1/auth/verify-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, verificationCode })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Store authentication token and user data using consistent keys
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    sessionStorage.setItem('justLoggedIn', 'true');
+                    sessionStorage.removeItem('verificationEmail');
+                    
+                    closeModal('verificationModal');
+                    
+                    // Show loading animation
+                    showLoadingAnimation();
+                    
+                    // Redirect to appropriate app version based on device with analytics
+                    const deviceInfo = detectDeviceWithAnalytics();
+                    const target = deviceInfo.shouldUseMobile
+                        ? 'automediacenter-mobile-v6.6-container-queries.html?welcome=true'
+                        : 'automediacenter-responsive.html?welcome=true';
+                    
+                    console.log('🚀 Email Verification Success Redirect:');
+                    console.log('  - Device Info:', deviceInfo);
+                    console.log('  - Target URL:', target);
+                    
+                    // Track analytics with fail-safe
+                    trackDeviceRoutingWithFailsafe(deviceInfo, {
+                        finalDecision: deviceInfo.shouldUseMobile ? 'mobile' : 'desktop',
+                        targetUrl: target,
+                        confidence: calculateConfidence(deviceInfo),
+                        userType: 'verified',
+                        sessionType: 'email-verification'
+                    });
+                    
+                    // Enhanced timing: respect target duration
+                    const redirectDelay = Math.min(LoadingConfig.targetDuration, 1800);
+                    setTimeout(() => {
+                        completeLoading();
+                        setTimeout(() => {
+                            window.location.href = target;
+                        }, 300);
+                    }, redirectDelay);
+                } else {
+                    const error = await response.json();
+                    alert('Verification failed: ' + (error.error || error.message || 'Invalid code'));
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                alert('Network error: ' + error.message);
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Verify Email';
+            }
+        });
+
+        // Resend verification code
+        document.getElementById('resendCode').addEventListener('click', async function() {
+            const email = sessionStorage.getItem('verificationEmail');
+            if (!email) {
+                alert('No email found for verification');
+                return;
+            }
+            
+            const button = this;
+            button.disabled = true;
+            button.textContent = 'Sending...';
+
+            try {
+                const response = await fetch('/api/v1/auth/resend-verification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                if (response.ok) {
+                    alert('Verification code sent! Please check your email.');
+                } else {
+                    const error = await response.json();
+                    alert('Failed to resend code: ' + (error.error || error.message));
+                }
+            } catch (error) {
+                console.error('Resend error:', error);
+                alert('Network error: ' + error.message);
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Resend verification code';
+            }
+        });
+
+        // Password reset form submission
+        document.getElementById('passwordResetForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('resetEmail').value.trim();
+            const submitBtn = document.getElementById('resetSubmit');
+            
+            if (!email) {
+                alert('Please enter your email address');
+                return;
+            }
+            
+            // Disable button during submission
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+
+            try {
+                // Note: This endpoint needs to be implemented in the backend
+                const response = await fetch('/api/v1/auth/forgot-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                if (response.ok) {
+                    // Show success modal
+                    closeModal('passwordResetModal');
+                    document.getElementById('resetEmailAddress').textContent = email;
+                    openModal('passwordResetSuccessModal');
+                } else {
+                    const error = await response.json();
+                    alert('Password reset failed: ' + (error.error || error.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Password reset error:', error);
+                alert('Network error: ' + error.message);
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Reset Link';
+                checkPasswordResetFormValidity(); // Recheck validity
+            }
+        });
+
+        // COUNTRY DROPDOWN FUNCTIONALITY
+        const countries = [
+            // Popular countries first
+            { name: 'United States', code: 'US', popular: true },
+            { name: 'United Kingdom', code: 'GB', popular: true },
+            { name: 'Germany', code: 'DE', popular: true },
+            { name: 'France', code: 'FR', popular: true },
+            { name: 'Canada', code: 'CA', popular: true },
+            { name: 'Australia', code: 'AU', popular: true },
+            { name: 'Japan', code: 'JP', popular: true },
+            { name: 'Italy', code: 'IT', popular: true },
+            // All other countries alphabetically
+            { name: 'Afghanistan', code: 'AF' },
+            { name: 'Albania', code: 'AL' },
+            { name: 'Algeria', code: 'DZ' },
+            { name: 'Argentina', code: 'AR' },
+            { name: 'Armenia', code: 'AM' },
+            { name: 'Austria', code: 'AT' },
+            { name: 'Azerbaijan', code: 'AZ' },
+            { name: 'Bahrain', code: 'BH' },
+            { name: 'Bangladesh', code: 'BD' },
+            { name: 'Belarus', code: 'BY' },
+            { name: 'Belgium', code: 'BE' },
+            { name: 'Bolivia', code: 'BO' },
+            { name: 'Bosnia and Herzegovina', code: 'BA' },
+            { name: 'Brazil', code: 'BR' },
+            { name: 'Bulgaria', code: 'BG' },
+            { name: 'Cambodia', code: 'KH' },
+            { name: 'Cameroon', code: 'CM' },
+            { name: 'Chile', code: 'CL' },
+            { name: 'China', code: 'CN' },
+            { name: 'Colombia', code: 'CO' },
+            { name: 'Costa Rica', code: 'CR' },
+            { name: 'Croatia', code: 'HR' },
+            { name: 'Czech Republic', code: 'CZ' },
+            { name: 'Denmark', code: 'DK' },
+            { name: 'Ecuador', code: 'EC' },
+            { name: 'Egypt', code: 'EG' },
+            { name: 'Estonia', code: 'EE' },
+            { name: 'Ethiopia', code: 'ET' },
+            { name: 'Finland', code: 'FI' },
+            { name: 'Georgia', code: 'GE' },
+            { name: 'Ghana', code: 'GH' },
+            { name: 'Greece', code: 'GR' },
+            { name: 'Guatemala', code: 'GT' },
+            { name: 'Honduras', code: 'HN' },
+            { name: 'Hong Kong', code: 'HK' },
+            { name: 'Hungary', code: 'HU' },
+            { name: 'Iceland', code: 'IS' },
+            { name: 'India', code: 'IN' },
+            { name: 'Indonesia', code: 'ID' },
+            { name: 'Iran', code: 'IR' },
+            { name: 'Iraq', code: 'IQ' },
+            { name: 'Ireland', code: 'IE' },
+            { name: 'Israel', code: 'IL' },
+            { name: 'Jordan', code: 'JO' },
+            { name: 'Kazakhstan', code: 'KZ' },
+            { name: 'Kenya', code: 'KE' },
+            { name: 'Kuwait', code: 'KW' },
+            { name: 'Latvia', code: 'LV' },
+            { name: 'Lebanon', code: 'LB' },
+            { name: 'Lithuania', code: 'LT' },
+            { name: 'Luxembourg', code: 'LU' },
+            { name: 'Malaysia', code: 'MY' },
+            { name: 'Mexico', code: 'MX' },
+            { name: 'Morocco', code: 'MA' },
+            { name: 'Netherlands', code: 'NL' },
+            { name: 'New Zealand', code: 'NZ' },
+            { name: 'Nigeria', code: 'NG' },
+            { name: 'Norway', code: 'NO' },
+            { name: 'Pakistan', code: 'PK' },
+            { name: 'Panama', code: 'PA' },
+            { name: 'Peru', code: 'PE' },
+            { name: 'Philippines', code: 'PH' },
+            { name: 'Poland', code: 'PL' },
+            { name: 'Portugal', code: 'PT' },
+            { name: 'Qatar', code: 'QA' },
+            { name: 'Romania', code: 'RO' },
+            { name: 'Russia', code: 'RU' },
+            { name: 'Saudi Arabia', code: 'SA' },
+            { name: 'Serbia', code: 'RS' },
+            { name: 'Singapore', code: 'SG' },
+            { name: 'Slovakia', code: 'SK' },
+            { name: 'Slovenia', code: 'SI' },
+            { name: 'South Africa', code: 'ZA' },
+            { name: 'South Korea', code: 'KR' },
+            { name: 'Spain', code: 'ES' },
+            { name: 'Sri Lanka', code: 'LK' },
+            { name: 'Sweden', code: 'SE' },
+            { name: 'Switzerland', code: 'CH' },
+            { name: 'Taiwan', code: 'TW' },
+            { name: 'Thailand', code: 'TH' },
+            { name: 'Turkey', code: 'TR' },
+            { name: 'Ukraine', code: 'UA' },
+            { name: 'United Arab Emirates', code: 'AE' },
+            { name: 'Uruguay', code: 'UY' },
+            { name: 'Venezuela', code: 'VE' },
+            { name: 'Vietnam', code: 'VN' }
+        ];
+
+        function initializeCountryDropdown() {
+            const countrySearch = document.getElementById('countrySearch');
+            const countryDropdown = document.getElementById('countryDropdown');
+            const selectedCountry = document.getElementById('selectedCountry');
+            let highlightedIndex = -1;
+
+            function populateDropdown(filteredCountries) {
+                countryDropdown.innerHTML = '';
+                
+                // Add popular countries first
+                const popularCountries = filteredCountries.filter(c => c.popular);
+                const otherCountries = filteredCountries.filter(c => !c.popular);
+                
+                if (popularCountries.length > 0) {
+                    popularCountries.forEach((country, index) => {
+                        const option = document.createElement('div');
+                        option.className = 'country-option popular';
+                        option.textContent = country.name;
+                        option.dataset.country = country.name;
+                        option.dataset.code = country.code;
+                        option.addEventListener('click', () => selectCountry(country));
+                        countryDropdown.appendChild(option);
+                    });
+                    
+                    if (otherCountries.length > 0) {
+                        const divider = document.createElement('div');
+                        divider.className = 'country-divider';
+                        countryDropdown.appendChild(divider);
+                    }
+                }
+                
+                otherCountries.forEach((country, index) => {
+                    const option = document.createElement('div');
+                    option.className = 'country-option';
+                    option.textContent = country.name;
+                    option.dataset.country = country.name;
+                    option.dataset.code = country.code;
+                    option.addEventListener('click', () => selectCountry(country));
+                    countryDropdown.appendChild(option);
+                });
+            }
+
+            function selectCountry(country) {
+                countrySearch.value = country.name;
+                selectedCountry.value = country.name;
+                countryDropdown.style.display = 'none';
+                highlightedIndex = -1;
+                checkSignupFormValidity();
+            }
+
+            function filterCountries(query) {
+                return countries.filter(country =>
+                    country.name.toLowerCase().includes(query.toLowerCase())
+                );
+            }
+
+            // Initialize with all countries
+            populateDropdown(countries);
+
+            // Handle input events
+            countrySearch.addEventListener('click', function() {
+                countryDropdown.style.display = 'block';
+                populateDropdown(countries);
+            });
+
+            countrySearch.addEventListener('input', function() {
+                const query = this.value;
+                const filtered = query ? filterCountries(query) : countries;
+                populateDropdown(filtered);
+                countryDropdown.style.display = 'block';
+                highlightedIndex = -1;
+            });
+
+            // Handle keyboard navigation
+            countrySearch.addEventListener('keydown', function(e) {
+                const options = countryDropdown.querySelectorAll('.country-option');
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    highlightedIndex = Math.min(highlightedIndex + 1, options.length - 1);
+                    updateHighlight(options);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    highlightedIndex = Math.max(highlightedIndex - 1, 0);
+                    updateHighlight(options);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (highlightedIndex >= 0 && options[highlightedIndex]) {
+                        const country = {
+                            name: options[highlightedIndex].dataset.country,
+                            code: options[highlightedIndex].dataset.code
+                        };
+                        selectCountry(country);
+                    }
+                } else if (e.key === 'Escape') {
+                    countryDropdown.style.display = 'none';
+                    highlightedIndex = -1;
+                }
+            });
+
+            function updateHighlight(options) {
+                options.forEach((option, index) => {
+                    option.classList.toggle('highlighted', index === highlightedIndex);
+                });
+                
+                if (highlightedIndex >= 0 && options[highlightedIndex]) {
+                    options[highlightedIndex].scrollIntoView({ block: 'nearest' });
+                }
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!countrySearch.contains(e.target) && !countryDropdown.contains(e.target)) {
+                    countryDropdown.style.display = 'none';
+                    highlightedIndex = -1;
+                }
+            });
+        }
+
+        // ENHANCED FORM VALIDATION
+        function checkSignupFormValidity() {
+            const nameField = document.getElementById('signupName');
+            const emailField = document.getElementById('signupEmail');
+            const passwordField = document.getElementById('signupPassword');
+            const confirmPasswordField = document.getElementById('signupConfirmPassword');
+            const jobTitleField = document.getElementById('signupJobTitle');
+            const countryField = document.getElementById('selectedCountry');
+            const submitBtn = document.getElementById('signupSubmit');
+            
+            const name = nameField.value.trim();
+            const email = emailField.value.trim();
+            const password = passwordField.value;
+            const confirmPassword = confirmPasswordField.value;
+            const jobTitle = jobTitleField.value;
+            const country = countryField.value;
+            
+            // Validate individual fields
+            const nameValid = name.length > 0;
+            const emailValid = validateEmail(email);
+            const passwordValid = validatePassword(password);
+            const confirmPasswordValid = confirmPassword === password;
+            const jobTitleValid = jobTitle.length > 0;
+            const countryValid = country.length > 0;
+            
+            // Update field states
+            if (name.length > 0) updateFieldState(nameField, nameValid);
+            if (email.length > 0) updateFieldState(emailField, emailValid);
+            if (confirmPassword.length > 0) {
+                updateFieldState(confirmPasswordField, confirmPasswordValid);
+                const helper = document.getElementById('confirmPasswordHelper');
+                if (confirmPasswordValid) {
+                    helper.textContent = 'Passwords match ✓';
+                    helper.className = 'field-helper success';
+                } else {
+                    helper.textContent = 'Passwords do not match';
+                    helper.className = 'field-helper error';
+                }
+            }
+            if (jobTitle.length > 0) updateFieldState(jobTitleField, jobTitleValid);
+            
+            const isValid = nameValid && emailValid && passwordValid && confirmPasswordValid && jobTitleValid && countryValid;
+            submitBtn.disabled = !isValid;
+        }
+
+        // OAuth functions (placeholders - implement with your OAuth providers)
+        function signupWithGoogle() {
+            alert('Google OAuth signup - implement with your Google OAuth flow');
+        }
+
+        function signupWithApple() {
+            alert('Apple OAuth signup - implement with your Apple OAuth flow');
+        }
+
+        function loginWithGoogle() {
+            alert('Google OAuth login - implement with your Google OAuth flow');
+        }
+
+        function loginWithApple() {
+            alert('Apple OAuth login - implement with your Apple OAuth flow');
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Enhanced mobile detection with better testing support
+        function shouldUseMobileApp() {
+            // Enterprise routing strategy (2026):
+            // Always load the single responsive app shell (automediacenter.html).
+            // Layout (mobile/tablet/laptop/desktop) is handled via CSS breakpoints + overlay sidebar mode.
+            return false;
+        }
+
+        // ===== ANALYTICS TRACKING SYSTEM =====
+        // Track which devices use which version for optimization insights
+        
+        function trackDeviceRouting(deviceInfo, routingDecision) {
+            const analyticsData = {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                screenResolution: `${window.screen.width}x${window.screen.height}`,
+                viewportSize: `${window.innerWidth}x${window.innerHeight}`,
+                devicePixelRatio: window.devicePixelRatio || 1,
+                touchSupport: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+                orientation: window.innerHeight > window.innerWidth ? 'portrait' : 'landscape',
+                connectionType: navigator.connection ? navigator.connection.effectiveType : 'unknown',
+                platform: navigator.platform,
+                language: navigator.language,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                routingDecision: routingDecision,
+                deviceClassification: deviceInfo.classification,
+                targetApp: deviceInfo.targetApp,
+                detectionMethod: deviceInfo.detectionMethod,
+                sessionId: generateSessionId(),
+                pageLoadTime: performance.now()
+            };
+
+            // Store locally for batch sending
+            const existingAnalytics = JSON.parse(localStorage.getItem('deviceRoutingAnalytics') || '[]');
+            existingAnalytics.push(analyticsData);
+            
+            // Keep only last 50 entries to prevent storage bloat
+            if (existingAnalytics.length > 50) {
+                existingAnalytics.splice(0, existingAnalytics.length - 50);
+            }
+            
+            localStorage.setItem('deviceRoutingAnalytics', JSON.stringify(existingAnalytics));
+
+            // Send to analytics endpoint (if available)
+            sendAnalyticsData(analyticsData);
+
+            console.log('📊 Device Routing Analytics Tracked:', analyticsData);
+        }
+
+        function generateSessionId() {
+            return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        async function sendAnalyticsData(data) {
+            // Fail-safe: Never block UX for analytics
+            try {
+                // Try to send to backend analytics endpoint with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2000); // 2s timeout
+
+                const response = await fetch('/api/v1/analytics/device-routing', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    if (LoadingConfig.debugMode) console.log('📊 Analytics data sent successfully');
+                } else {
+                    if (LoadingConfig.debugMode) console.log('📊 Analytics endpoint not available, data stored locally');
+                }
+            } catch (error) {
+                // Fail silently - analytics must never break the product
+                if (LoadingConfig.debugMode) {
+                    console.log('📊 Analytics endpoint not available, data stored locally:', error.message);
+                }
+            }
+        }
+
+        // Enhanced analytics with fail-safe localStorage
+        function trackDeviceRoutingWithFailsafe(deviceInfo, routingDecision) {
+            try {
+                trackDeviceRouting(deviceInfo, routingDecision);
+            } catch (error) {
+                // Fail-safe: If analytics fails, log but continue
+                console.warn('⚠️ Analytics tracking failed, continuing with routing:', error.message);
+            }
+        }
+
+        // ===== LOADING ANIMATION SYSTEM (ENTERPRISE-GRADE) =====
+        
+        // Configuration and feature flags (Enhanced per expert recommendations)
+        const LoadingConfig = {
+            enabled: !new URLSearchParams(window.location.search).has('skipLoading'),
+            debugMode: new URLSearchParams(window.location.search).has('debugRouting'),
+            silentMode: localStorage.getItem('silentMode') === 'true',
+            maxDuration: 3000, // Hard timeout: 3 seconds max
+            targetDuration: 1400, // Optimized: 1.4 seconds (expert recommendation: 1.2-1.8s)
+            steps: [
+                { text: 'Analyzing device capabilities...', duration: 350 },
+                { text: 'Optimizing for your device...', duration: 400 }, // Expert recommendation
+                { text: 'Preparing optimal interface...', duration: 350 },
+                { text: 'Loading your experience...', duration: 300 }
+            ]
+        };
+
+        let loadingStartTime = 0;
+        let loadingTimeout = null;
+        let isLoadingComplete = false;
+
+        function showLoadingAnimation() {
+            // Skip if disabled or in silent mode
+            if (!LoadingConfig.enabled || LoadingConfig.silentMode) {
+                if (LoadingConfig.debugMode) console.log('🔧 Loading animation skipped (disabled or silent mode)');
+                return;
+            }
+
+            const overlay = document.getElementById('loadingOverlay');
+            const statusElement = document.getElementById('loadingStatus');
+            
+            if (!overlay) {
+                console.warn('⚠️ Loading overlay not found - fail-safe routing');
+                return;
+            }
+
+            loadingStartTime = performance.now();
+            overlay.classList.remove('hidden');
+            
+            if (LoadingConfig.debugMode) {
+                console.log('🔧 Loading animation started', {
+                    startTime: loadingStartTime,
+                    config: LoadingConfig
+                });
+            }
+
+            // Hard timeout protection
+            loadingTimeout = setTimeout(() => {
+                if (!isLoadingComplete) {
+                    console.warn('⚠️ Loading animation timeout reached - forcing completion');
+                    completeLoading();
+                }
+            }, LoadingConfig.maxDuration);
+
+            let currentStep = 0;
+
+            function updateStatus() {
+                if (isLoadingComplete || currentStep >= LoadingConfig.steps.length || !statusElement) {
+                    return;
+                }
+
+                const step = LoadingConfig.steps[currentStep];
+                statusElement.textContent = step.text;
+                
+                if (LoadingConfig.debugMode) {
+                    console.log(`🔧 Loading step ${currentStep + 1}: ${step.text}`);
+                }
+                
+                currentStep++;
+                
+                if (currentStep < LoadingConfig.steps.length) {
+                    setTimeout(updateStatus, step.duration);
+                }
+            }
+
+            updateStatus();
+        }
+
+        function hideLoadingAnimation() {
+            completeLoading();
+        }
+
+        function completeLoading() {
+            if (isLoadingComplete) return;
+            
+            isLoadingComplete = true;
+            
+            // Clear timeout
+            if (loadingTimeout) {
+                clearTimeout(loadingTimeout);
+                loadingTimeout = null;
+            }
+
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                const loadingDuration = performance.now() - loadingStartTime;
+                
+                if (LoadingConfig.debugMode) {
+                    console.log('🔧 Loading animation completed', {
+                        duration: Math.round(loadingDuration),
+                        target: LoadingConfig.targetDuration,
+                        withinTarget: loadingDuration <= LoadingConfig.targetDuration
+                    });
+                }
+
+                overlay.classList.add('hidden');
+                // Remove from DOM after transition
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+            }
+        }
+
+        // Early completion if detection finishes faster
+        function maybeCompleteEarly() {
+            const elapsed = performance.now() - loadingStartTime;
+            if (elapsed >= LoadingConfig.targetDuration) {
+                completeLoading();
+                return true;
+            }
+            return false;
+        }
+
+        // Enhanced device detection with analytics
+        function detectDeviceWithAnalytics() {
+            const windowWidth  = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            // User agent signals (treat iPad/Surface as tablets, not phones)
+            const ua = (navigator.userAgent || '');
+            const uaPhone  = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+            const uaTablet = /iPad|Tablet|Silk|Kindle|PlayBook|Surface/i.test(ua);
+
+            // Viewport signals
+            const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+            // FIXED: Mobile app routing is for true-phone contexts only (≤768px width)
+            // Desktop/laptop users (including 1440x900) should ALWAYS get desktop version
+            const phoneWidth = windowWidth <= 768;
+
+            // Debug + test flags (avoid sticky localStorage misroutes)
+            const qs = window.location.search || '';
+            const debugRouting = qs.includes('debugRouting');
+
+            // Allow explicit forcing ONLY via querystring or sessionStorage.
+            // (We ignore localStorage to prevent persistent misclassification.)
+            const isForceMobile = qs.includes('mobile=true') || sessionStorage.getItem('forceMobile') === 'true';
+
+            // FIXED: Determine classification with proper desktop-first logic
+            let classification = 'desktop'; // Default to desktop
+            let detectionMethod = 'viewport-desktop';
+
+            if (isForceMobile) {
+                classification = 'mobile';
+                detectionMethod = 'force-flag';
+                // one-shot: clear session flag so it doesn't persist forever
+                try { sessionStorage.removeItem('forceMobile'); } catch(e){}
+            } else if (uaPhone && phoneWidth) {
+                // Only classify as mobile if BOTH UA indicates phone AND width is phone-sized
+                classification = 'mobile';
+                detectionMethod = 'ua-phone-confirmed';
+            } else if (phoneWidth && !uaTablet) {
+                // Small width but not a tablet = mobile
+                classification = 'mobile';
+                detectionMethod = 'phone-width';
+            } else if (uaTablet) {
+                // Explicit tablet UA = tablet (goes to desktop app)
+                classification = 'tablet';
+                detectionMethod = 'ua-tablet';
+            } else if (isTouchDevice && windowWidth >= 768 && windowWidth <= 1024) {
+                // Touch device in tablet range = tablet (goes to desktop app)
+                classification = 'tablet';
+                detectionMethod = 'touch-tablet';
+            }
+            // FIXED: Everything else (including 1440x900 laptops) = desktop
+
+            // Route policy (enterprise): ONLY true mobile phones get mobile app
+            const shouldUseMobile = (classification === 'mobile');
+
+            const targetApp = shouldUseMobile
+              ? 'automediacenter-mobile-v6.6-container-queries.html'
+              : 'automediacenter-responsive.html';
+
+            const deviceInfo = {
+                classification,
+                detectionMethod,
+                targetApp,
+                shouldUseMobile,
+                metrics: {
+                    windowWidth,
+                    windowHeight,
+                    uaPhone,
+                    uaTablet,
+                    isTouchDevice,
+                    phoneWidth
+                }
+            };
+
+            if (debugRouting) {
+                console.log('[AMC ROUTING]', deviceInfo);
+                console.log('[AMC ROUTING] URL:', window.location.href);
+            }
+
+            return deviceInfo;
+        }
+
+        function calculateConfidence(deviceInfo) {
+            let confidence = 0.5; // Base confidence
+            
+            // Higher confidence for clear indicators
+            if (deviceInfo.detectionMethod === 'user-agent') confidence = 0.9;
+            else if (deviceInfo.detectionMethod === 'small-screen') confidence = 0.8;
+            else if (deviceInfo.detectionMethod === 'test-flag') confidence = 1.0;
+            else if (deviceInfo.detectionMethod === 'touch-viewport') confidence = 0.7;
+            
+            return Math.round(confidence * 100) / 100;
+        }
+
+        // ✅ Session Redirect Script (ENTERPRISE-GRADE WITH FAIL-SAFES)
+        // Purpose: Session detection and redirect mechanism with mobile/desktop routing
+        // Ensures authenticated users bypass the public landing page and go to appropriate UI
+        document.addEventListener("DOMContentLoaded", () => {
+            try {
+                const storedUser = JSON.parse(
+                    localStorage.getItem('user') || localStorage.getItem('currentUser')
+                );
+                if (storedUser && storedUser.role) {
+                    console.log('🔄 FOUND EXISTING SESSION - Auto-Skip Redirect Starting...');
+                    console.log('  - Stored User:', storedUser);
+                    
+                    // Show loading animation (with fail-safe)
+                    showLoadingAnimation();
+                    
+                    // User already authenticated → Skip landing page with device detection and analytics
+                    const deviceInfo = detectDeviceWithAnalytics();
+                    const target = deviceInfo.targetApp;
+                    
+                    console.log('🔄 Auto-Skip Redirect:');
+                    console.log('  - Device Info:', deviceInfo);
+                    console.log('  - Target URL:', target);
+                    
+                    // Enhanced timing: respect target duration but don't exceed it
+                    const redirectDelay = Math.min(LoadingConfig.targetDuration, 1800); // Max 1.8s
+                    console.log(`  - Redirect in ${redirectDelay}ms...`);
+                    
+                    // Track analytics with fail-safe
+                    trackDeviceRoutingWithFailsafe(deviceInfo, {
+                        finalDecision: deviceInfo.shouldUseMobile ? 'mobile' : 'desktop',
+                        targetUrl: target,
+                        confidence: calculateConfidence(deviceInfo),
+                        userType: 'returning',
+                        sessionType: 'auto-redirect'
+                    });
+                    
+                    // Add delay for loading animation to complete
+                    setTimeout(() => {
+                        completeLoading();
+                        setTimeout(() => {
+                            window.location.href = target;
+                        }, 300);
+                    }, redirectDelay);
+                } else {
+                    console.log('🔄 No existing session found, staying on landing page');
+                    // Hide loading overlay for new users quickly
+                    setTimeout(() => {
+                        completeLoading();
+                    }, 100);
+                }
+            } catch (e) {
+                console.warn("⚠️ Session detection failed:", e);
+                // Fail-safe: Hide loading overlay and continue
+                setTimeout(() => {
+                    completeLoading();
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>

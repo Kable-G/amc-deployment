@@ -107,8 +107,8 @@ const connectDB = async () => {
     // Start the server immediately after DB connection to bypass blocking issues
     const PORT = process.env.PORT || 5000;
     console.log('About to start listening on port', PORT);
-    app.listen(PORT, () => {
-      console.log(`Server listening on port ${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server listening on port ${PORT} on all interfaces`);
       console.log(`API base URL is http://localhost:${PORT}/api/v1/`);
       console.log('✅ REAL AUTHENTICATION ENABLED - Full JWT-based authentication active');
     });
@@ -189,11 +189,6 @@ console.log('✅ Enterprise client onboarding routes mounted');
 console.log('✅ Client admin company-scoped routes mounted');
 console.log('✅ Asset management routes mounted with company isolation');
 
-// --- MOUNT ADMIN PAGE ROUTES (for protected page serving) ---
-console.log('🔧 Mounting admin page routes...');
-app.use('/', adminPageRoutes); // PAGE PROTECTION - Admin page serving with authentication
-console.log('✅ Admin page routes mounted successfully');
-
 // Add a catch-all API route to debug missing routes
 app.use('/api/*', (req, res) => {
   console.log('❌ Unmatched API route:', req.method, req.originalUrl);
@@ -208,24 +203,47 @@ app.use('/api/*', (req, res) => {
   });
 });
 
-// --- PORTAL ROUTING ---
+// --- PORTAL ROUTING (MUST BE BEFORE ADMIN ROUTES) ---
 console.log('🔧 Setting up portal routes...');
 
-// Main login route (Dropbox-style)
+// Test route to debug
+app.get('/test', (req, res) => {
+  res.send('TEST ROUTE WORKS! Server is responding.');
+});
+
+// Root route - main landing/login page
+app.get('/', (req, res) => {
+  console.log('ROOT ROUTE HIT - Attempting to serve landing page');
+  const filePath = path.join(__dirname, 'Frontend', 'landing-page-twitter-style.html');
+  console.log('File path:', filePath);
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error serving file:', err);
+      res.status(500).send('Error serving file: ' + err.message);
+    }
+  });
+});
+
+// Main login route (Twitter-style)
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'Frontend', 'login-dropbox-style.html'));
+  res.sendFile(path.join(__dirname, 'Frontend', 'landing-page-twitter-style.html'));
 });
 
 // Legacy portal routes (keeping for backward compatibility)
 app.get('/client', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'Frontend', 'client.html'));
+  res.sendFile(path.join(__dirname, 'Frontend', 'client.html'));
 });
 
 app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'Frontend', 'admin.html'));
+  res.sendFile(path.join(__dirname, 'Frontend', 'admin.html'));
 });
 
 console.log('✅ Portal routes configured');
+
+// --- MOUNT ADMIN PAGE ROUTES (for protected page serving) ---
+console.log('🔧 Mounting admin page routes...');
+app.use('/', adminPageRoutes); // PAGE PROTECTION - Admin page serving with authentication
+console.log('✅ Admin page routes mounted successfully');
 
 // --- ACCESS DENIED PAGE ---
 app.get('/access-denied', (req, res) => {
@@ -268,11 +286,11 @@ app.get('/access-denied', (req, res) => {
     `);
 });
 
-// --- STATIC FILE SERVING - NO AUTHENTICATION CHECKS ---
+// --- STATIC FILE SERVING - SIMPLIFIED! ---
 console.log('🔧 Setting up static file serving...');
 
-// Serve public directory files (including success page) with cache control
-app.use(express.static(path.join(__dirname, 'public'), {
+// ✅ ONLY SERVE Frontend/ - This eliminates confusion!
+app.use(express.static(path.join(__dirname, 'Frontend'), {
   setHeaders: (res, path) => {
     if (path.endsWith('.html')) {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -281,12 +299,14 @@ app.use(express.static(path.join(__dirname, 'public'), {
     }
   }
 }));
-// Serve Frontend directory files
-app.use(express.static(path.join(__dirname, '..', 'Frontend')));
+
+// ✅ ONLY serve specific public assets that Frontend/ doesn't have
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 
 // (optional) ensure direct file route works:
 app.get('/amc-analytics-saved.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'Frontend', 'amc-analytics-saved.html'));
+  res.sendFile(path.join(__dirname, 'Frontend', 'amc-analytics-saved.html'));
 });
 
 console.log('✅ Static file serving configured');

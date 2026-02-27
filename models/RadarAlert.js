@@ -66,6 +66,16 @@ const radarAlertSchema = new mongoose.Schema({
         type: String,
         trim: true,
         default: null 
+    },
+    alertDocPath: {
+        type: String,
+        trim: true,
+        default: null
+    },
+    alertDocOriginalName: {
+        type: String,
+        trim: true,
+        default: null
     }
 }, {
     timestamps: true // Automatically adds createdAt and updatedAt

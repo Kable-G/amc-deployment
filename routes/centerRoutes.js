@@ -27,6 +27,10 @@ const createCenterReleaseSchema = z.object({
     releaseDate: z.string().refine((dateString) => !isNaN(new Date(dateString).getTime()), { message: "Invalid release date format." }),
     releaseTime: z.string().optional().nullable().refine(val => val === null || val === undefined || val === '' || /^\d{2}:\d{2}$/.test(val), { message: "Invalid time format. Use HH:MM or leave empty." }),
     brand: z.string().min(1, { message: "Brand is required." }),
+    companyName: z.string().optional().nullable(), // NEW: Company/parent organization name
+    categoryCheckbox: z.union([z.string(), z.array(z.string())]).optional().nullable(), // NEW: Can be string or array
+    primaryLanguage: z.union([z.string(), z.array(z.string())]).optional().nullable(), // NEW: Can be string or array
+    marketCheckbox: z.union([z.string(), z.array(z.string())]).optional().nullable(), // NEW: Can be string or array
     tags: z.string().optional().nullable(),
     summary: z.string().min(1, { message: "Summary is required." }),
     action: z.enum(['draft', 'publish'], { errorMap: () => ({ message: "Action must be 'draft' or 'publish'." }) }),
@@ -188,6 +192,7 @@ router.post('/releases', handleMulterUpload, auth, async (req, res) => {
         const validatedTextData = validationResult.data;
         const {
             releaseUUID, title, releaseDate, releaseTime, brand, tags,
+            companyName, categoryCheckbox, primaryLanguage, marketCheckbox,
             summary, watermark, monitoring, legalTermsAck, action
         } = validatedTextData;
         const userId = req.user.id;
@@ -268,10 +273,34 @@ router.post('/releases', handleMulterUpload, auth, async (req, res) => {
             };
         }
 
+        // Process new filtering fields into arrays (handle both string and array inputs)
+        const categoriesArray = Array.isArray(categoryCheckbox) 
+            ? categoryCheckbox 
+            : (categoryCheckbox && typeof categoryCheckbox === 'string' && categoryCheckbox.trim() !== '') 
+                ? categoryCheckbox.split(',').map(cat => cat.trim()) 
+                : [];
+        
+        const marketsArray = Array.isArray(marketCheckbox) 
+            ? marketCheckbox 
+            : (marketCheckbox && typeof marketCheckbox === 'string' && marketCheckbox.trim() !== '') 
+                ? marketCheckbox.split(',').map(market => market.trim()) 
+                : [];
+        
+        const primaryLanguageValue = Array.isArray(primaryLanguage) 
+            ? primaryLanguage[0] 
+            : (primaryLanguage && typeof primaryLanguage === 'string' && primaryLanguage.trim() !== '') 
+                ? primaryLanguage.trim() 
+                : null;
+
         const releaseDataForDb = {
             uuid: releaseUUID, title, releaseDate: new Date(releaseDate),
             releaseTime: (releaseTime && releaseTime.trim() !== '') ? releaseTime : null,
-            brand, tags: (tags && tags.trim() !== '') ? tags.split(',').map(tag => tag.trim()) : [],
+            brand, 
+            companyName: (companyName && companyName.trim() !== '') ? companyName.trim() : null,
+            categories: categoriesArray,
+            primaryLanguage: primaryLanguageValue,
+            markets: marketsArray,
+            tags: (tags && tags.trim() !== '') ? tags.split(',').map(tag => tag.trim()) : [],
             summary, 
             status: (() => {
                 if (action === 'draft') return 'draft';

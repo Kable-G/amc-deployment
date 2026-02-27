@@ -1,0 +1,5150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Release Detail - AutoMediaCenter Mobile</title>
+    
+    <!-- ========================================= -->
+    <!-- VERSION: VIDEO-EXPERT-POLISH-DEC-22-2024 -->
+    <!-- ✅ Gradient fallback for missing posters  -->
+    <!-- ✅ Video X/Y header (not filename)        -->
+    <!-- ✅ Simplified selection bar               -->
+    <!-- ✅ Dark gradient for duration badges      -->
+    <!-- ✅ Enterprise-grade video UX              -->
+    <!-- ========================================= -->
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PDF.js Library for Custom PDF Rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
+    <style>
+        /* ===== CSS RESET FOR EDGE-TO-EDGE RENDERING ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        /* ===== MOBILE-FIRST CSS - MATCHES V6.5 ===== */
+        :root {
+            --bg-primary: #f3f4f6;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f9fafb;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-headings: #0f172a;
+            --border-primary: #e2e8f0;
+            --border-card: #d1d5db;
+            --accent-primary: #3b82f6;
+            --color-success: #10b981;
+            --color-danger: #ef4444;
+            --header-height: 60px;
+        }
+        
+        body.dark-mode {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-headings: #f1f5f9;
+            --border-primary: #334155;
+            --border-card: #475569;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* ===== MOBILE HEADER - CLEANER DESIGN ===== */
+        .mobile-header {
+            position: fixed; /* Changed from sticky - must stay visible over all modals */
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            z-index: 1000;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            width: 60px;
+        }
+        
+        .header-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 60px;
+            justify-content: flex-end;
+        }
+        
+        .mobile-hamburger {
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 18px;
+            border-radius: 6px;
+        }
+        
+        .mobile-hamburger:active {
+            background: var(--bg-tertiary);
+        }
+        
+        /* BIGGER LOGO - DESKTOP MATCH - NOW AS BUTTON */
+        .mobile-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            font-family: 'Inter', -apple-system, sans-serif;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .mobile-logo:active {
+            color: var(--accent-primary);
+            transform: scale(0.96);
+        }
+        
+        .header-icon-btn {
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 18px;
+            position: relative;
+            border-radius: 6px;
+        }
+        
+        .header-icon-btn:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .header-icon-btn .badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: var(--color-danger);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 4px;
+            border-radius: 8px;
+            min-width: 14px;
+            text-align: center;
+            line-height: 1;
+        }
+        
+        /* ===== SIMPLIFIED AVATAR - SOLID COLOR, NO RING ===== */
+        .amc-avatar {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            border-radius: 50%;
+        }
+        
+        .amc-avatar:active {
+            transform: scale(0.95);
+        }
+        
+        .amc-avatar i {
+            font-size: 24px;
+        }
+        
+        /* Role-based colors - SOLID AVATAR */
+        .amc-avatar.role-media-user {
+            color: #3B82F6; /* Blue */
+        }
+        
+        .amc-avatar.role-client-user {
+            color: #10B981; /* Green */
+        }
+        
+        .amc-avatar.role-client-admin {
+            color: #F59E0B; /* Yellow */
+        }
+        
+        .amc-avatar.role-platform-admin {
+            color: #EF4444; /* Red */
+        }
+        
+        /* Dark mode avatar colors - brighter */
+        body.dark-mode .amc-avatar.role-media-user {
+            color: #60a5fa;
+        }
+        
+        body.dark-mode .amc-avatar.role-client-user {
+            color: #34d399;
+        }
+        
+        body.dark-mode .amc-avatar.role-client-admin {
+            color: #fbbf24;
+        }
+        
+        body.dark-mode .amc-avatar.role-platform-admin {
+            color: #f87171;
+        }
+        
+        /* ===== AVATAR MODAL AS LAUNCHER ===== */
+        .avatar-modal {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            width: 280px;
+            max-height: calc(100vh - 70px); /* Allow scrolling if content is too tall */
+            background: var(--bg-secondary);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+            border-radius: 12px;
+            z-index: 2000;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-primary);
+            overflow-y: auto; /* Enable scrolling */
+            overflow-x: hidden;
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+        
+        .avatar-modal:not(.hidden) {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .avatar-modal.hidden {
+            display: none;
+        }
+        
+        .avatar-modal-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-primary);
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        }
+        
+        .avatar-modal-avatar {
+            display: grid;
+            place-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .avatar-modal-avatar i {
+            font-size: 48px;
+        }
+        
+        .avatar-email {
+            font-weight: 600;
+            font-size: 1em;
+            color: var(--text-headings);
+            margin-bottom: 4px;
+        }
+        
+        .avatar-role {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Quick Access Icons Section */
+        .modal-quick-access {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .quick-access-btn {
+            flex: 1;
+            padding: 16px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+        
+        .quick-access-btn:active {
+            transform: scale(0.95);
+            background: var(--bg-primary);
+        }
+        
+        .quick-access-btn i {
+            font-size: 20px;
+            color: var(--accent-primary);
+        }
+        
+        .quick-access-btn span {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .quick-access-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--color-danger);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+        
+        /* Profile Actions Section */
+        .avatar-modal-section {
+            padding: 8px 0;
+        }
+        
+        .modal-btn {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 0.95em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .modal-btn:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .modal-btn i {
+            width: 16px;
+            text-align: center;
+            opacity: 0.7;
+        }
+        
+        .modal-divider {
+            margin: 8px 20px;
+            border: none;
+            border-top: 1px solid var(--border-primary);
+        }
+        
+        .modal-btn-danger {
+            color: var(--color-danger);
+        }
+        
+        .modal-btn-danger:active {
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .theme-toggle-text {
+            flex: 1;
+        }
+        
+        .theme-toggle-indicator {
+            font-size: 16px;
+        }
+        
+        /* ===== CART MODAL - SLIDES IN FROM RIGHT ===== */
+        .cart-modal {
+            position: fixed;
+            top: 56px;
+            right: -100%;
+            width: 100%;
+            max-width: 400px;
+            height: calc(100vh - 56px);
+            background: var(--bg-secondary);
+            box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+            z-index: 2002;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cart-modal.active {
+            right: 0;
+        }
+        
+        .cart-modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        
+        .cart-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-headings);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .cart-modal-close {
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        
+        .cart-modal-close:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .cart-modal-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .cart-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .cart-item-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .cart-item-brand {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: var(--color-danger);
+            cursor: pointer;
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 6px;
+        }
+        
+        .cart-item-remove:active {
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .cart-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .cart-empty i {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+        
+        .cart-modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-primary);
+            flex-shrink: 0;
+        }
+        
+        .cart-checkout-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .cart-checkout-btn:active {
+            background: #2563eb;
+        }
+        
+        /* ===== TOOLS DROPDOWN ===== */
+        .tools-dropdown {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            width: 280px;
+            background: var(--bg-secondary);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+            border-radius: 12px;
+            z-index: 2001;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-primary);
+            overflow: hidden;
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+        
+        .tools-dropdown:not(.hidden) {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .tools-dropdown.hidden {
+            display: none;
+        }
+        
+        .tools-dropdown-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .tools-dropdown-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-headings);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tools-dropdown-close {
+            width: 28px;
+            height: 28px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .tools-dropdown-close:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .tools-dropdown-content {
+            padding: 8px;
+        }
+        
+        .tool-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .tool-item:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .tool-item i {
+            width: 20px;
+            text-align: center;
+            color: var(--accent-primary);
+            font-size: 16px;
+        }
+        
+        .tool-item span {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        /* ===== DESKTOP-STYLE DRAWER ===== */
+        .mobile-drawer {
+            position: fixed;
+            top: 56px;
+            left: -100%;
+            width: 280px;
+            height: calc(100vh - 56px);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-primary);
+            z-index: 2001;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mobile-drawer.open {
+            left: 0;
+        }
+        
+        .drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-primary);
+            flex-shrink: 0;
+            background: var(--bg-tertiary);
+        }
+        
+        .drawer-title {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+        
+        .drawer-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .drawer-close:active {
+            background: var(--bg-primary);
+        }
+        
+        .drawer-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 56px 0 16px 0;
+        }
+        
+        .drawer-section {
+            padding: 20px 0 8px 0;
+        }
+        
+        .drawer-section-header {
+            padding: 6px 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+            margin: 0 12px 4px 12px;
+            border-radius: 4px;
+            padding-left: 10px;
+        }
+        
+        /* Section-specific colors - work in both themes */
+        .drawer-section:nth-child(1) .drawer-section-header {
+            border-left: 3px solid #1d4ed8;
+            background: linear-gradient(90deg, rgba(29, 78, 216, 0.1) 0%, var(--bg-tertiary) 100%);
+        }
+        
+        .drawer-section:nth-child(2) .drawer-section-header {
+            border-left: 3px solid #047857;
+            background: linear-gradient(90deg, rgba(4, 120, 87, 0.1) 0%, var(--bg-tertiary) 100%);
+        }
+        
+        .drawer-section:nth-child(3) .drawer-section-header {
+            border-left: 3px solid #c2410c;
+            background: linear-gradient(90deg, rgba(194, 65, 12, 0.1) 0%, var(--bg-tertiary) 100%);
+        }
+        
+        .drawer-section:nth-child(4) .drawer-section-header {
+            border-left: 3px solid #b91c1c;
+            background: linear-gradient(90deg, rgba(185, 28, 28, 0.1) 0%, var(--bg-tertiary) 100%);
+        }
+        
+        .drawer-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .drawer-nav-item:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .drawer-nav-item.active {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+        }
+        
+        .drawer-nav-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 16px;
+            opacity: 0.7;
+            color: var(--text-secondary);
+        }
+        
+        .drawer-nav-item.active i {
+            opacity: 1;
+            color: #3b82f6;
+        }
+        
+        /* ===== DRAWER BACKDROP ===== */
+        .drawer-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            display: none;
+        }
+        
+        .drawer-backdrop.visible {
+            display: block;
+        }
+        
+        /* ===== FILTER PANEL ===== */
+        /* ===== MAIN CONTENT AREA ===== */
+        .mobile-main {
+            padding-top: 56px; /* Fixed header height */
+            min-height: 100vh;
+        }
+        
+        .release-detail-container {
+            padding: 16px;
+            max-width: 100%;
+        }
+        
+        /* ===== RELEASE HEADER ===== */
+        .release-hero {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .release-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-headings);
+            line-height: 1.25; /* Reduced from 1.3 for better mobile density */
+            margin-bottom: 12px;
+            /* Clamp to max 3 lines */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .release-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .meta-item i {
+            font-size: 16px;
+            color: var(--accent-primary); /* Blue calendar icon - enterprise hygiene */
+        }
+        
+        /* ===== HERO HEADER ROW (Brand + Controls) ===== */
+        .hero-header-row {
+            display: flex;
+            align-items: center; /* Vertical center alignment */
+            justify-content: space-between; /* Brand left, controls right */
+            margin-bottom: 12px; /* Space between row and title */
+            min-height: 32px; /* Ensure consistent row height */
+        }
+        
+        .brand-badge {
+            background: var(--accent-primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 0; /* Removed - row handles spacing now */
+        }
+        
+        /* ===== DOWNLOAD BUTTONS ===== */
+        .download-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 12px; /* Reduced from 20px for tighter spacing */
+        }
+        
+        .download-btn {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        
+        .download-btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+        
+        .download-btn-secondary {
+            background: transparent; /* Ghost button */
+            color: var(--accent-primary); /* Blue text */
+            border: 2px solid var(--accent-primary); /* Blue outline */
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+        }
+        
+        /* Dark mode - harmonize with segmented bar */
+        body.dark-mode .download-btn-secondary {
+            background: #2A3342; /* Same as segmented bar but distinct */
+            border: 2px solid rgba(59, 130, 246, 0.5); /* Muted blue border */
+            color: #60A5FA; /* Muted blue text */
+            box-shadow: none;
+        }
+        
+        .download-btn-secondary i {
+            color: var(--accent-primary); /* Blue icon */
+        }
+        
+        body.dark-mode .download-btn-secondary i {
+            color: #60A5FA; /* Muted blue icon in dark mode */
+        }
+        
+        .download-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* ===== RELEASE CONTENT ===== */
+        .release-section {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        /* ===== SEGMENTED ASSET CONTROL BAR ===== */
+        .asset-segment-bar {
+            display: flex;
+            background: #EEF1F5; /* Heavier neutral - light mode */
+            border: none; /* No border - contained feel */
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 12px 0;
+            height: 50px;
+        }
+        
+        /* Dark mode segmented bar */
+        body.dark-mode .asset-segment-bar {
+            background: #2A3342; /* Raised from card surface */
+        }
+        
+        .asset-segment {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 8px;
+            background: transparent;
+            border-left: 1px solid rgba(0, 0, 0, 0.08); /* Visible divider - light mode */
+            cursor: pointer;
+            transition: background 0.15s ease;
+            user-select: none;
+        }
+        
+        /* Dark mode segment dividers */
+        body.dark-mode .asset-segment {
+            border-left: 1px solid rgba(255, 255, 255, 0.18); /* Translucent white divider */
+        }
+        
+        .asset-segment:first-child {
+            border-left: none;
+        }
+        
+        .asset-segment:active {
+            background: rgba(59, 130, 246, 0.08); /* Subtle blue tint on press */
+        }
+        
+        .asset-segment-icon {
+            font-size: 18px;
+            color: var(--accent-primary); /* AutoMediaCenter blue */
+            flex-shrink: 0;
+        }
+        
+        /* Dark mode icons */
+        body.dark-mode .asset-segment-icon {
+            color: var(--accent-primary); /* Keep blue in dark mode */
+        }
+        
+        .asset-segment-info {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        
+        .asset-segment-count {
+            font-size: 16px;
+            font-weight: 600; /* Semibold - INFORMATION */
+            color: #1F2937; /* Darker for contrast */
+        }
+        
+        /* Dark mode count */
+        body.dark-mode .asset-segment-count {
+            color: #F9FAFB;
+        }
+        
+        .asset-segment-label {
+            font-size: 12px; /* Slightly smaller than body */
+            font-weight: 400; /* Regular - explanation */
+            color: #5F6B7A; /* Medium grey */
+        }
+        
+        /* Dark mode label */
+        body.dark-mode .asset-segment-label {
+            color: #9CA3AF;
+        }
+        
+        /* Old quick nav pills - REMOVED */
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-headings);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            color: var(--accent-primary); /* AutoMediaCenter blue for section icons */
+        }
+        
+        .section-count {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .release-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .release-text p {
+            margin-bottom: 14px;
+            width: 100%;
+        }
+        
+        /* ===== COLLAPSIBLE SECTIONS ===== */
+        .text-section {
+            margin-bottom: 16px;
+            width: 100%;
+        }
+        
+        .text-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            cursor: pointer;
+            user-select: none;
+            width: 100%;
+        }
+        
+        .text-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-headings);
+            flex: 1;
+            padding-right: 12px;
+        }
+        
+        .text-section-toggle {
+            color: var(--accent-primary);
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .text-section-toggle i {
+            transition: transform 0.3s ease;
+        }
+        
+        .text-section-toggle.expanded i {
+            transform: rotate(180deg);
+        }
+        
+        .text-section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            width: 100%;
+        }
+        
+        .text-section-content.expanded {
+            max-height: 10000px;
+        }
+        
+        .text-section-preview {
+            display: block;
+            width: 100%;
+        }
+        
+        .text-section-preview.hidden {
+            display: none;
+        }
+        
+        /* ===== PDF VIEWER (PDF.js Canvas Rendering) ===== */
+        .pdf-viewer-wrapper {
+            width: 100vw;
+            margin-left: -16px;
+            margin-right: -16px;
+            margin-bottom: 16px; /* Add spacing after PDF section */
+            padding: 0;
+            background: white;
+            overflow: hidden;
+        }
+        
+        .pdf-viewer-container {
+            width: 100%;
+            background: white;
+            position: relative;
+        }
+        
+        .pdf-viewer-container.collapsed {
+            max-height: none; /* Will be controlled by showing/hiding canvases */
+        }
+        
+        .pdf-canvas {
+            width: 100%;
+            display: block;
+            margin: 0;
+            padding: 0;
+            background: white;
+        }
+        
+        .pdf-canvas.hidden {
+            display: none;
+        }
+        
+        .pdf-loading {
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .pdf-loading i {
+            font-size: 24px;
+            margin-bottom: 12px;
+            display: block;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .pdf-expand-btn {
+            width: auto;
+            min-width: 200px;
+            max-width: 90%;
+            margin: 0 auto; /* Centered */
+            padding: 14px 24px;
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 8px; /* Rounded corners like other buttons */
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            pointer-events: auto;
+            user-select: none;
+        }
+        
+        .pdf-expand-btn-wrapper {
+            width: 100%;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            background: transparent;
+        }
+        
+        .pdf-expand-btn * {
+            pointer-events: none;
+        }
+        
+        .pdf-expand-btn:active {
+            background: var(--accent-hover);
+            transform: scale(0.98);
+        }
+        
+        .pdf-expand-btn i {
+            transition: transform 0.3s ease;
+        }
+        
+        /* ===== IMAGE GALLERY ===== */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .image-item {
+            position: relative;
+            aspect-ratio: 16/9;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--bg-tertiary);
+            cursor: pointer;
+        }
+        
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s;
+        }
+        
+        .image-item:active img {
+            transform: scale(0.95);
+        }
+        
+        .view-all-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            color: var(--accent-primary);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        /* ===== DOCUMENT LIST ===== */
+        .document-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .document-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .document-item:active {
+            transform: scale(0.98);
+        }
+        
+        .document-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ef4444;
+            border-radius: 8px;
+            color: white;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .document-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .document-name {
+            font-weight: 600;
+            color: var(--text-headings);
+            font-size: 14px;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .document-size {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .document-download-icon {
+            color: var(--accent-primary);
+            font-size: 20px;
+        }
+        
+        /* ===== MOBILE IMAGE VIEWER (Enterprise swipe-first) ===== */
+        .lightbox {
+            position: fixed;
+            top: var(--header-h); /* Fixed: Use 56px header, not 60px */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #1a1a1a; /* Near-black for dark mode */
+            z-index: 999; /* BELOW AMC header (header is 1000) - CRITICAL */
+            display: none;
+            flex-direction: column;
+            /* MICRO-ANIMATION: Fade in */
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        /* Light mode background */
+        body:not(.dark-mode) .lightbox {
+            background: #2c2c2c; /* Soft charcoal */
+        }
+        
+        .lightbox.active {
+            display: flex;
+            /* MICRO-ANIMATION: Fade in */
+            opacity: 1;
+        }
+        
+        /* Lock body scroll when viewer is open */
+        body.lightbox-open {
+            overflow: hidden;
+        }
+        
+        /* Sticky minimal header */
+        .lightbox-header {
+            position: sticky;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .lightbox-header.hidden {
+            opacity: 0;
+            transform: translateY(-100%);
+            pointer-events: none;
+        }
+        
+        .lightbox-back {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+        }
+        
+        .lightbox-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .lightbox-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+        }
+        
+        /* Landscape density optimization - reclaim vertical space */
+        @media (orientation: landscape) and (max-width: 1024px) {
+            .lightbox-header {
+                padding: 8px 12px; /* Reduced from 16px - reclaims ~16px vertical space */
+            }
+            
+            .lightbox-title {
+                font-size: 14px; /* Slightly denser (was 16px) */
+            }
+            
+            .lightbox-back,
+            .lightbox-close {
+                padding: 6px; /* Tighter (still maintains 44px touch target via icon size) */
+            }
+            
+            .lightbox-footer {
+                padding: 8px 12px; /* Reduced from 12px 16px - more compact in landscape */
+            }
+            
+            .lightbox-download-btn {
+                padding: 8px 12px; /* Slightly tighter (was 10px 16px) */
+                font-size: 12px; /* Slightly smaller (was 13px) */
+            }
+        }
+        
+        /* Edge-to-edge image container */
+        .lightbox-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: pan-x pan-y;
+        }
+        
+        .lightbox img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        
+        /* Compact bottom action strip */
+        .lightbox-footer {
+            position: sticky;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Space buttons apart with counter in center */
+            gap: 16px; /* Prevent thumbs clashing */
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .lightbox-footer.hidden {
+            opacity: 0;
+            transform: translateY(100%);
+            pointer-events: none;
+        }
+        
+        .lightbox-position {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-align: center;
+            min-width: 60px; /* Prevents jumping when numbers change */
+            pointer-events: none; /* Non-interactive - critical */
+        }
+        
+        .lightbox-download-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            min-height: 44px; /* Minimum touch target */
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            border: 1px solid transparent;
+            flex-shrink: 0;
+        }
+        
+        /* Low-res: LEFT - muted/secondary for quick reference */
+        .lightbox-download-btn.low-res {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .lightbox-download-btn.low-res:active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        /* High-res: RIGHT - PRIMARY with blue border (journalist's real action) */
+        .lightbox-download-btn.high-res {
+            background: transparent;
+            border: 2px solid var(--accent-primary);
+            color: var(--accent-primary);
+            font-weight: 600; /* Slightly stronger weight */
+        }
+        
+        .lightbox-download-btn.high-res:active {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .lightbox-download-btn i {
+            font-size: 14px;
+        }
+        
+        
+        
+        /* ===== IMAGE GRID MODAL (Enterprise selection pattern) ===== */
+        .image-grid-modal {
+            position: fixed;
+            top: var(--header-h); /* Fixed: Use 56px header, not 60px */
+            left: 0;
+            right: 0;
+            height: calc(100dvh - var(--header-h)); /* Fixed: Use correct variable */
+            background: var(--bg-primary);
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            overflow: hidden; /* KEY: prevent weird overflow stacking */
+            /* MICRO-ANIMATION: Fade in */
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .image-grid-modal.active {
+            display: flex;
+            /* MICRO-ANIMATION: Fade in */
+            opacity: 1;
+        }
+        
+        /* Grid modal header */
+        .grid-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .grid-modal-header button {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 8px;
+            min-width: 60px;
+        }
+        
+        /* Back button */
+        .grid-modal-header button:first-child {
+            color: var(--text-primary);
+        }
+        
+        .grid-modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-headings);
+            margin: 0;
+            flex: 1;
+            text-align: center;
+        }
+        
+        /* Select button - BUTTON style with blue background */
+        .grid-modal-header button.select-btn {
+            background: var(--accent-primary);
+            border: 1px solid var(--accent-primary);
+            border-radius: 6px;
+            color: white;
+            font-weight: 600; /* Stronger weight - enterprise hierarchy */
+            font-size: 14px;
+            padding: 8px 16px;
+            min-width: 70px;
+        }
+        
+        .grid-modal-header button.select-btn:active {
+            background: var(--accent-hover);
+        }
+        
+        /* Select all / Deselect all button - text-only, quiet but authoritative (enterprise standard) */
+        .grid-modal-header button.select-all-btn {
+            background: none;
+            border: none;
+            color: var(--accent-primary);
+            font-weight: 500; /* Medium weight */
+            font-size: 14px;
+            padding: 8px 16px;
+            min-width: 70px;
+        }
+        
+        .grid-modal-header button.select-all-btn:active {
+            opacity: 0.7; /* Subtle press feedback */
+        }
+        
+        /* Selection counter in header (hidden - we only show in download bar) */
+        .grid-modal-header .selection-counter {
+            display: none !important; /* Force hidden - counter only in download bar */
+        }
+        
+        /* Landscape density optimization for grid modal - reclaim vertical space */
+        @media (orientation: landscape) and (max-width: 1024px) {
+            .grid-modal-header {
+                padding: 8px 12px; /* Reduced from 16px - consistent with lightbox */
+            }
+            
+            .grid-modal-header h2 {
+                font-size: 16px; /* Slightly denser (was 18px) */
+            }
+            
+            .grid-modal-header button {
+                font-size: 14px; /* Slightly smaller (was 16px) */
+                padding: 6px; /* Tighter (was 8px) */
+            }
+            
+            .grid-modal-header button.select-btn,
+            .grid-modal-header button.select-all-btn {
+                padding: 6px 12px; /* Slightly tighter (was 8px 16px) */
+                font-size: 13px; /* Slightly smaller (was 14px) */
+            }
+        }
+        
+        /* Grid content area */
+        .grid-modal-content {
+            flex: 1; /* Fill available space in modal */
+            overflow-y: auto; /* Enable scrolling */
+            -webkit-overflow-scrolling: touch; /* KEY: iOS smooth scroll */
+            min-height: 0; /* Critical for flex scrolling */
+            padding: 16px;
+            padding-bottom: 16px; /* CHANGED: normal padding since bar flows after content */
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns - enterprise standard */
+            gap: 6px 8px; /* Vertical 6px (enterprise density), Horizontal 8px */
+        }
+        
+        /* Grid thumbnail - hardened for landscape stability */
+        .grid-thumbnail {
+            position: relative;
+            min-width: 0; /* KEY: prevent collapse */
+            padding-bottom: 100%; /* OLD SCHOOL HACK: Creates 1:1 aspect ratio (works on all webkit) */
+            height: 0; /* Critical for padding-bottom hack */
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            background: var(--bg-secondary);
+        }
+        
+        .grid-thumbnail img {
+            position: absolute; /* KEY: fill the padding-bottom container */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block; /* KEY: remove inline spacing */
+            object-fit: cover;
+            transition: opacity 0.2s;
+        }
+        
+        .grid-thumbnail:active img {
+            opacity: 0.8;
+        }
+        
+        /* Subtle dark overlay on selected thumbnails - enterprise polish (Adobe/Google-tier) */
+        .grid-thumbnail.selected::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.12); /* Subtle 12% overlay - keeps grid readable */
+            z-index: 1;
+        }
+        
+        /* Checkbox (hidden by default) */
+        .grid-thumbnail .checkbox {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #D1D5DB;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            transition: transform 0.12s ease; /* Subtle scale-in animation */
+        }
+        
+        /* Dark mode checkbox */
+        body.dark-mode .grid-thumbnail .checkbox {
+            background: #374151;
+            border-color: #4B5563;
+        }
+        
+        /* Selection mode active - show all checkboxes */
+        .grid-modal-content.select-mode .checkbox {
+            display: flex;
+        }
+        
+        /* Selected thumbnail - scale-in animation */
+        .grid-thumbnail.selected .checkbox {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            transform: scale(1.1); /* Subtle scale-in (100-120ms via transition) */
+        }
+        
+        .grid-thumbnail.selected .checkbox::after {
+            content: '✓';
+            color: white; /* White tick on blue */
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        /* Haptic feedback animation on selection (enterprise quality) */
+        .grid-thumbnail.selected {
+            animation: pop 120ms ease-out;
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.96); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Selection action bar - mirrors individual image download logic */
+        .selection-action-bar {
+            position: static; /* CHANGED: flows naturally after grid, not stuck to screen */
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border-primary);
+            display: none;
+            align-items: center;
+            justify-content: space-between; /* Force symmetry */
+            gap: 8px; /* Tighter gap to fit all three elements */
+            z-index: 20; /* Above grid content */
+            /* MICRO-ANIMATION: Slide up from bottom */
+            transform: translateY(100%);
+            opacity: 0;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        
+        /* Light mode action bar */
+        body:not(.dark-mode) .selection-action-bar {
+            background: var(--bg-secondary);
+        }
+        
+        .selection-action-bar.active {
+            display: flex;
+            /* MICRO-ANIMATION: Slide in from bottom */
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Selection counter (center, non-clickable) */
+        .selection-action-bar .selection-count {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-align: center; /* Force center alignment */
+            min-width: 60px; /* Match lightbox footer exactly */
+            pointer-events: none; /* Non-interactive - CRITICAL */
+        }
+        
+        /* Light mode counter */
+        body:not(.dark-mode) .selection-action-bar .selection-count {
+            color: var(--text-headings);
+        }
+        
+        /* Download buttons - match lightbox footer exactly */
+        .selection-action-bar .download-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px; /* Tighter gap */
+            padding: 10px 12px; /* More compact padding */
+            min-height: 44px; /* Minimum touch target */
+            border-radius: 6px;
+            font-size: 13px; /* Matches lightbox */
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            border: 1px solid transparent;
+            flex: 1; /* Allow buttons to share space equally */
+            max-width: 120px; /* Prevent buttons from being too wide */
+            justify-content: center; /* Center content in button */
+        }
+        
+        /* Low-res: LEFT - muted/secondary (neutral outline) */
+        .selection-action-bar .download-btn.low-res {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        body:not(.dark-mode) .selection-action-bar .download-btn.low-res {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-primary);
+            color: var(--text-secondary);
+        }
+        
+        .selection-action-bar .download-btn.low-res:active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        /* High-res: RIGHT - PRIMARY (blue border - enterprise standard) */
+        .selection-action-bar .download-btn.high-res {
+            background: transparent;
+            border: 2px solid var(--accent-primary);
+            color: var(--accent-primary);
+            font-weight: 600; /* Slightly stronger weight */
+        }
+        
+        .selection-action-bar .download-btn.high-res:active {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .selection-action-bar .download-btn i {
+            font-size: 14px;
+        }
+        
+        /* ===== VIDEO GRID MODAL (mirrors image grid pattern) ===== */
+        .video-grid-modal {
+            position: fixed;
+            top: var(--header-h); /* Fixed: Use 56px header, not 60px */
+            left: 0;
+            right: 0;
+            height: calc(100dvh - var(--header-h)); /* Fixed: Use correct variable */
+            background: var(--bg-primary);
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            overflow: hidden; /* KEY: prevent weird overflow stacking */
+            /* MICRO-ANIMATION: Fade in */
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .video-grid-modal.active {
+            display: flex;
+            /* MICRO-ANIMATION: Fade in */
+            opacity: 1;
+        }
+        
+        /* Video grid header (matches image grid) */
+        .video-grid-modal .grid-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .video-grid-modal .grid-modal-header button {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 8px;
+            min-width: 60px;
+        }
+        
+        .video-grid-modal .grid-modal-header button:first-child {
+            color: var(--text-primary);
+        }
+        
+        .video-grid-modal .grid-modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-headings);
+            margin: 0;
+            flex: 1;
+            text-align: center;
+        }
+        
+        /* Select button for video selection mode */
+        .video-grid-modal .select-btn {
+            background: var(--accent-primary);
+            border: 1px solid var(--accent-primary);
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 16px;
+            min-width: 70px;
+        }
+        
+        .video-grid-modal .select-btn:active {
+            background: var(--accent-hover);
+        }
+        
+        .video-grid-modal .select-all-btn {
+            background: none;
+            border: none;
+            color: var(--accent-primary);
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 16px;
+            min-width: 70px;
+        }
+        
+        .video-grid-modal .select-all-btn:active {
+            opacity: 0.7;
+        }
+        
+        /* Landscape density optimization for video grid header */
+        @media (orientation: landscape) and (max-width: 1024px) {
+            .video-grid-modal .grid-modal-header {
+                padding: 8px 12px; /* Reduced from 16px - consistent with image grid */
+            }
+            
+            .video-grid-modal .grid-modal-header h2 {
+                font-size: 16px; /* Slightly denser (was 18px) */
+            }
+            
+            .video-grid-modal .grid-modal-header button {
+                font-size: 14px; /* Slightly smaller (was 16px) */
+                padding: 6px; /* Tighter (was 8px) */
+            }
+            
+            .video-grid-modal .select-btn,
+            .video-grid-modal .select-all-btn {
+                padding: 6px 12px; /* Slightly tighter (was 8px 16px) */
+                font-size: 13px; /* Slightly smaller (was 14px) */
+            }
+        }
+        
+        /* Video grid content area */
+        .video-grid-content {
+            flex: 1;
+            overflow-y: auto; /* KEY: enable scrolling */
+            -webkit-overflow-scrolling: touch; /* KEY: iOS smooth scroll */
+            min-height: 0;
+            padding: 16px;
+            padding-bottom: 16px; /* CHANGED: normal padding since bar flows after content */
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 columns for videos (wider aspect ratio) */
+            gap: 12px; /* Slightly more gap than images */
+        }
+        
+        /* Video thumbnail tile - hardened for landscape stability */
+        .video-thumbnail {
+            position: relative;
+            min-width: 0; /* KEY: prevent collapse */
+            aspect-ratio: 16/9; /* Video aspect ratio */
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); /* AutoMediaCenter blue gradient */
+        }
+        
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            display: block; /* KEY: remove inline spacing */
+            object-fit: cover;
+        }
+        
+        /* Fallback for videos without posters - clean blue gradient, no icon */
+        .video-thumbnail .video-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); /* AutoMediaCenter blue */
+        }
+        
+        /* Subtle dark gradient at bottom for duration badge readability */
+        .video-thumbnail::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .video-thumbnail:active {
+            opacity: 0.8;
+        }
+        
+        /* Play icon overlay */
+        .video-thumbnail .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            pointer-events: none;
+        }
+        
+        /* Duration badge (top-right) */
+        .video-thumbnail .duration-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+        
+        /* Checkbox for selection mode */
+        .video-thumbnail .checkbox {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #D1D5DB;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            transition: transform 0.12s ease;
+        }
+        
+        body.dark-mode .video-thumbnail .checkbox {
+            background: #374151;
+            border-color: #4B5563;
+        }
+        
+        .video-grid-content.select-mode .checkbox {
+            display: flex;
+        }
+        
+        .video-thumbnail.selected .checkbox {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            transform: scale(1.1);
+        }
+        
+        .video-thumbnail.selected .checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        /* Subtle overlay on selected videos */
+        .video-thumbnail.selected::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.12);
+            z-index: 1;
+        }
+        
+        .video-thumbnail.selected {
+            animation: pop 120ms ease-out;
+        }
+        
+        /* Video selection action bar (simpler than images - enterprise standard) */
+        .video-selection-bar {
+            position: static; /* CHANGED: flows naturally after grid, not stuck to screen */
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border-primary);
+            display: none;
+            align-items: center;
+            justify-content: center; /* Centered layout */
+            gap: 12px;
+            z-index: 20;
+            /* MICRO-ANIMATION: Slide up from bottom */
+            transform: translateY(100%);
+            opacity: 0;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+        
+        body:not(.dark-mode) .video-selection-bar {
+            background: var(--bg-secondary);
+        }
+        
+        .video-selection-bar.active {
+            display: flex;
+            /* MICRO-ANIMATION: Slide in from bottom */
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Video selection counter (left of button) */
+        .video-selection-bar .selection-count {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            white-space: nowrap;
+        }
+        
+        body:not(.dark-mode) .video-selection-bar .selection-count {
+            color: var(--text-headings);
+        }
+        
+        /* Single download button for videos (primary, centered) */
+        .video-selection-bar .download-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 24px;
+            min-height: 44px;
+            border-radius: 6px;
+            background: var(--accent-primary);
+            border: none;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .video-selection-bar .download-btn:active {
+            background: var(--accent-hover);
+            transform: scale(0.98);
+        }
+        
+        .video-selection-bar .download-btn i {
+            font-size: 14px;
+        }
+        
+        /* ===== VIDEO PLAYER MODAL (full-screen viewer) ===== */
+        .video-player-modal {
+            position: fixed;
+            top: var(--header-h); /* Fixed: Use correct 56px header height, not 60px */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #1a1a1a;
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            /* MICRO-ANIMATION: Fade in */
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        body:not(.dark-mode) .video-player-modal {
+            background: #2c2c2c;
+        }
+        
+        .video-player-modal.active {
+            display: flex;
+            /* MICRO-ANIMATION: Fade in */
+            opacity: 1;
+        }
+        
+        /* Video player header */
+        .video-player-header {
+            position: sticky;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px; /* Reduced vertical padding for sleeker bar */
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+        
+        .video-player-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+        }
+        
+        .video-player-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            flex: 1;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 0 12px;
+        }
+        
+        /* Video player content */
+        .video-player-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        /* Video container */
+        .video-container {
+            width: 100%;
+            background: #000;
+            position: relative;
+        }
+        
+        .video-container video {
+            width: 100%;
+            max-height: calc(100vh - var(--header-h) - 60px); /* Fit in viewport minus header and controls */
+            display: block;
+            object-fit: contain; /* CRITICAL: Show entire video, don't crop */
+            background: #000;
+        }
+        
+        /* Video info section */
+        .video-info {
+            padding: 16px; /* Reduced padding for more compact layout */
+            background: var(--bg-secondary);
+        }
+        
+        .video-filename {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-headings);
+            margin-bottom: 12px;
+            word-break: break-all;
+        }
+        
+        .video-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 16px; /* Reduced for compact layout */
+        }
+        
+        .video-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .video-meta-item i {
+            font-size: 12px;
+        }
+        
+        /* Download button in video player */
+        .video-download-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .video-download-btn:active {
+            background: var(--accent-hover);
+            transform: scale(0.98);
+        }
+        
+        .video-download-btn i {
+            font-size: 16px;
+        }
+        
+        /* Empty STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        /* ===== LOADING STATE ===== */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 50vh;
+            gap: 16px;
+        }
+        
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border-primary);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ===== LANDSCAPE WRAPPERS (work in both orientations) ===== */
+        /* Portrait mode: Use flexbox layout (DOM reordering done via JavaScript) */
+        @media (orientation: portrait) {
+            .release-detail-container {
+                display: flex;
+                flex-direction: column;
+                padding: 16px;
+            }
+            
+            /* All sections flow naturally in DOM order (JS handles reordering) */
+            .landscape-sidebar {
+                position: relative;
+            }
+            
+            /* HIDE collapse button in portrait - only show in landscape */
+            .actions-toggle {
+                display: none !important;
+            }
+            
+            /* HIDE collapsed rail in portrait - only show in landscape */
+            .sidebar-rail {
+                display: none !important;
+            }
+        }
+        
+        /* Default for both orientations */
+        .landscape-sidebar,
+        .landscape-pdf-column {
+            display: block;
+        }
+        
+        /* ===== LANDSCAPE / HORIZONTAL LAYOUT (Enterprise two-column) ===== */
+        @media (orientation: landscape) and (max-width: 1024px) {
+            /* Landscape layout - 66/33 with proper sidebar nesting */
+            
+            /* Main content: 2 columns, unified 8px top spacing */
+            .release-detail-container {
+                display: grid;
+                grid-template-columns: 66% 34%; /* PDF 66%, Sidebar 34% */
+                grid-template-rows: auto auto; /* Two rows - sidebar will span both */
+                padding: 0; /* EDGE-TO-EDGE: No padding */
+                gap: 0;
+                align-items: start;
+                width: 100vw;
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+            
+            /* PDF column - left side */
+            .landscape-pdf-column {
+                grid-column: 1;
+                grid-row: 1; /* Only row 1 */
+                background: white;
+                align-self: start;
+                padding: 0; /* EDGE-TO-EDGE: No padding for full-width PDF rendering */
+            }
+            
+            /* Sidebar - SPANS BOTH ROWS (enterprise fix) */
+            .landscape-sidebar {
+                grid-column: 2;
+                grid-row: 1 / span 2; /* CRITICAL: Span both rows to avoid empty cell gap */
+                padding: 0 12px 12px 16px; /* Increased left padding for separation instead of border */
+                background: var(--bg-primary);
+                display: flex;
+                flex-direction: column; /* Hero + media stack vertically */
+            }
+            
+            /* Media sections flow naturally INSIDE sidebar */
+            .landscape-sidebar-continued {
+                /* Not a grid item - flows inside .landscape-sidebar */
+                padding: 0;
+                margin-top: 8px; /* 8px gap between hero and first media section */
+            }
+            
+            /* PDF wrapper - STATIC (unified scroll, no sticky) */
+            .pdf-viewer-wrapper {
+                position: static; /* Not sticky - flows with page */
+                margin: 0;
+                width: 100%;
+                max-width: 100%;
+                background: white;
+                /* No overflow, no max-height - flows naturally */
+            }
+            
+            /* PDF container */
+            .pdf-viewer-container {
+                width: 100%;
+                max-width: 100%;
+                padding: 0; /* EDGE-TO-EDGE: No padding for full-width PDF rendering */
+            }
+            
+            /* PDF canvas */
+            .pdf-canvas {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            /* Sidebar styling - tighter hero padding for landscape */
+            .release-hero {
+                padding: 10px 12px; /* Reduced vertical padding */
+                margin-top: 0; /* FLUSH WITH HEADER: No top margin */
+                margin-bottom: 0;
+            }
+            
+            .release-title {
+                font-size: 15px;
+                line-height: 1.15;
+                margin-bottom: 8px;
+            }
+            
+            .release-meta {
+                margin-bottom: 8px;
+            }
+            
+            .meta-item {
+                font-size: 11px;
+            }
+            
+            .asset-segment-bar {
+                gap: 4px;
+                margin-bottom: 8px;
+            }
+            
+            .asset-segment {
+                flex: 1;
+                min-width: 0;
+                padding: 6px 4px;
+            }
+            
+            .asset-segment-count {
+                font-size: 13px;
+            }
+            
+            .asset-segment-label {
+                font-size: 9px;
+            }
+            
+            .download-btn {
+                width: 100%;
+                font-size: 11px;
+                padding: 8px 10px;
+            }
+            
+            .download-actions {
+                margin-bottom: 0;
+            }
+            
+            /* Explicit rhythm: hero to first section */
+            .landscape-sidebar-continued .release-section:first-child {
+                margin-top: 0; /* Controlled by .landscape-sidebar-continued margin-top */
+            }
+            
+            /* Consistent 8px rhythm between all sections */
+            .release-section {
+                margin-bottom: 8px;
+            }
+            
+            .release-section {
+                margin-bottom: 8px;
+            }
+            
+            .section-title {
+                font-size: 11px;
+                margin-bottom: 5px;
+            }
+            
+            .section-count {
+                font-size: 10px;
+            }
+            
+            .image-grid {
+                gap: 4px;
+            }
+            
+            .image-item {
+                border-radius: 4px;
+            }
+            
+            .view-all-btn {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+            
+            .document-item {
+                padding: 6px;
+            }
+            
+            .document-name {
+                font-size: 10px;
+            }
+            
+            .document-size {
+                font-size: 9px;
+            }
+            
+            .document-icon {
+                width: 26px;
+                height: 32px;
+                font-size: 14px;
+            }
+        }
+        
+        /* ===== MODALS IN LANDSCAPE (Separate query - modals are full-screen) ===== */
+        @media (orientation: portrait) {
+            /* Portrait density optimization - match landscape for uniformity */
+            .lightbox-header,
+            .grid-modal-header,
+            .video-grid-modal .grid-modal-header,
+            .video-player-header {
+                padding: 12px; /* Down from 16px - uniform with landscape */
+            }
+            
+            .lightbox-footer {
+                padding: 10px 12px; /* Down from 12px 16px - uniform with landscape */
+            }
+            
+            .lightbox-title,
+            .grid-modal-header h2,
+            .video-grid-modal .grid-modal-header h2,
+            .video-player-title {
+                font-size: 15px; /* Slightly denser (was 16px/18px) */
+            }
+            
+            .lightbox-back,
+            .lightbox-close,
+            .grid-modal-header button,
+            .video-grid-modal .grid-modal-header button,
+            .video-player-header button {
+                padding: 7px; /* Slightly tighter (was 8px) */
+            }
+            
+            .grid-modal-header button.select-btn,
+            .grid-modal-header button.select-all-btn,
+            .video-grid-modal .select-btn,
+            .video-grid-modal .select-all-btn {
+                padding: 7px 14px; /* Slightly tighter (was 8px 16px) */
+                font-size: 13px; /* Slightly smaller (was 14px) */
+            }
+            
+            .lightbox-download-btn {
+                padding: 9px 14px; /* Slightly tighter (was 10px 16px) */
+                font-size: 12px; /* Slightly smaller (was 13px) */
+            }
+            
+            .selection-action-bar,
+            .video-selection-bar {
+                padding: 10px 12px; /* Down from 12px 16px - uniform with landscape */
+            }
+            
+            .selection-action-bar .download-btn,
+            .video-selection-bar .download-btn {
+                padding: 9px 14px; /* Slightly tighter */
+                font-size: 12px; /* Slightly smaller */
+            }
+            
+            /* Image grid: fix row spacing in portrait */
+            .grid-modal-content {
+                gap: 8px !important; /* Uniform gap (was 6px 8px causing huge vertical spacing) */
+                align-content: start !important; /* CRITICAL: prevent rows from stretching to fill viewport */
+            }
+            
+            /* Video grid: fix row spacing in portrait */
+            .video-grid-content {
+                gap: 12px !important; /* Uniform gap */
+                align-content: start !important; /* CRITICAL: prevent rows from stretching to fill viewport */
+            }
+        }
+        
+        @media (orientation: landscape) {
+            /* Image grid: 6 columns in landscape (keeps tiles ~140px like portrait's ~130px) */
+            .grid-modal-content {
+                grid-template-columns: repeat(6, 1fr) !important;
+                gap: 8px !important; /* Uniform gap, slightly larger for landscape */
+            }
+            
+            /* Video grid: 4 columns in landscape (keeps tiles similar size to portrait) */
+            .video-grid-content {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 10px !important;
+            }
+        }
+    
+
+/* ===== HEADER HEIGHT / SAFE OFFSET ===== */
+:root{ --header-h:56px; }
+
+/* Ensure main content never sits under fixed header */
+.mobile-main{ padding-top: var(--header-h); padding-bottom: 12px; }
+@media (max-width: 480px){
+  :root{ --header-h:56px; }
+}
+
+/* ===== LANDSCAPE: FULL-HEIGHT TWO-COLUMN WITH INDEPENDENT SCROLL ===== */
+@media (orientation: landscape) and (max-width: 1024px){
+  .mobile-main{ 
+    height: calc(100vh - var(--header-h)); 
+    min-height: unset; /* Remove portrait min-height */
+    overflow: hidden; 
+    margin-top: var(--header-h); /* Push below fixed header */
+    padding-top: 0; 
+    padding-bottom: 0; 
+  }
+
+  .release-detail-container{
+    height: calc(100vh - var(--header-h));
+    gap: 0;                  /* NO GAP: Sidebar has border for visual separation */
+    padding: 0 !important;   /* EDGE-TO-EDGE: No padding on any side */
+    /* MICRO-ANIMATION: Smooth column resize on collapse/expand */
+    transition: grid-template-columns 0.25s ease;
+  }
+
+  .landscape-pdf-column{
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .landscape-sidebar{
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-top: 0 !important;
+    position: relative;
+    scroll-padding-top: 10px; /* Prevents hero from scrolling under header when scrolling back up */
+  }
+
+  /* Collapse toggle - lives in hero-header-row (enterprise alignment) */
+  .actions-toggle{
+    position: static; /* Flex child, not absolute */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .actions-toggle button{
+    width: 32px; /* Slightly smaller for visual subordination */
+    height: 32px;
+    border-radius: 8px; /* Softer than pill */
+    border: 1px solid var(--border-primary);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, transform 0.1s ease; /* Added transform */
+  }
+  .actions-toggle button:hover{
+    background: var(--bg-tertiary); /* Quiet hover state */
+  }
+  .actions-toggle button:active{
+    /* MICRO-ANIMATION: Subtle scale on press */
+    transform: scale(0.95);
+  }
+  .actions-toggle i{
+    color: var(--text-secondary); /* Quieter than accent-blue */
+    font-size: 14px; /* Slightly smaller */
+  }
+
+  /* Collapsed state: shrink actions column to rail */
+  body.actions-collapsed .release-detail-container{
+    grid-template-columns: 1fr 64px !important;
+  }
+  body.actions-collapsed .landscape-sidebar{
+    padding: 0 !important;
+  }
+  body.actions-collapsed .landscape-sidebar .release-hero,
+  body.actions-collapsed .landscape-sidebar .landscape-sidebar-continued{
+    display:none !important;
+  }
+
+  /* Rail */
+  body.actions-collapsed .actions-toggle{display:none !important;}
+.sidebar-rail{
+    display:none;
+    position: sticky;
+    top: 0;
+    height: 100%;
+    padding: 8px 6px;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    /* MICRO-ANIMATION: Fade in when appearing */
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  body.actions-collapsed .sidebar-rail{
+    display:flex;
+    /* MICRO-ANIMATION: Fade in */
+    opacity: 1;
+  }
+  .rail-btn{
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    border: 1px solid var(--border-primary);
+    background: var(--bg-secondary);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition: background 0.15s ease, transform 0.1s ease; /* Added transform transition */
+  }
+  .rail-btn:hover{
+    background: var(--bg-tertiary); /* Quiet hover state */
+  }
+  .rail-btn:active{
+    /* MICRO-ANIMATION: Subtle scale on press for tactile feedback */
+    transform: scale(0.95);
+  }
+  .rail-btn i{
+    color: var(--accent-blue); /* Blue = "does something" */
+    font-size: 18px;
+  }
+  
+  /* Expand button - visually subordinate (mode control, not action) */
+  .rail-btn-expand{
+    background: transparent; /* More subtle than actions */
+    border-color: transparent; /* No border in default state */
+  }
+  .rail-btn-expand:hover{
+    background: var(--bg-tertiary); /* Subtle hover */
+    border-color: var(--border-primary); /* Border only on hover */
+  }
+  .rail-btn-expand i{
+    color: var(--text-secondary); /* Grey = "changes layout" (not blue) */
+    font-size: 16px; /* Slightly smaller (subordinate to actions) */
+  }
+  
+  /* Rail divider - separates mode control from content actions */
+  .rail-divider{
+    width: 32px;
+    height: 1px;
+    background: var(--border-primary);
+    margin: 4px 0 8px 0; /* Extra bottom margin for clear grouping */
+  }
+}
+
+/* === FIX: stable PDF sizing + blue rail icons (except expand button) === */
+.pdf-page canvas, .pdf-canvas, canvas.pdf-canvas {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+}
+/* Action buttons are blue */
+.sidebar-rail .rail-btn:not(.rail-btn-expand),
+.sidebar-rail .rail-btn:not(.rail-btn-expand) i,
+.sidebar-rail .rail-btn:not(.rail-btn-expand) svg {
+  color: var(--accent-blue, #2f78ff) !important;
+  fill: var(--accent-blue, #2f78ff) !important;
+}
+body.dark-mode .sidebar-rail .rail-btn:not(.rail-btn-expand),
+body.dark-mode .sidebar-rail .rail-btn:not(.rail-btn-expand) i,
+body.dark-mode .sidebar-rail .rail-btn:not(.rail-btn-expand) svg {
+  color: var(--accent-blue, #2f78ff) !important;
+  fill: var(--accent-blue, #2f78ff) !important;
+}
+/* Expand button stays grey (mode control) */
+.sidebar-rail .rail-btn-expand i {
+  color: var(--text-secondary) !important;
+}
+
+</style>
+<style id="amc-unified-sidebar-css">
+  :root{
+    --amc-topbar-h: 72px;
+    --amc-sidebar-w: 272px;
+  }
+
+  /* ===== Unified overlay sidebar behaviour ===== */
+  body.overlay-mode #sidebar,
+  body.overlay-mode .amc-sidebar{
+    position: fixed !important;
+    top: var(--amc-topbar-h) !important;
+    left: 0 !important;
+    height: calc(100vh - var(--amc-topbar-h)) !important;
+    width: var(--amc-sidebar-w) !important;
+    transform: translateX(calc(-1 * var(--amc-sidebar-w))) !important;
+    transition: transform .28s ease !important;
+    z-index: 1001 !important;
+  }
+  body.overlay-mode.sidebar-open #sidebar,
+  body.overlay-mode.sidebar-open .amc-sidebar{
+    transform: translateX(0) !important;
+  }
+
+  /* Backdrop via pseudo-element (desktop/laptop overlay) */
+  body.overlay-mode.sidebar-open::before{
+    content: "";
+    position: fixed;
+    top: var(--amc-topbar-h);
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - var(--amc-topbar-h));
+    background: rgba(0,0,0,.42);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+  }
+
+  /* Prevent scroll behind open sidebar */
+  body.overlay-mode.sidebar-open{
+    overflow: hidden;
+    overscroll-behavior: contain;
+  }
+
+  /* In overlay mode, content must not be offset by a persistent sidebar */
+  body.overlay-mode .main-content,
+  body.overlay-mode .amc-content,
+  body.overlay-mode .amc-main-content,
+  body.overlay-mode .content,
+  body.overlay-mode #mainContent{
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+</style>
+</head>
+<body>
+    
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+    <div class="header-left">
+        <button class="mobile-hamburger" id="hamburgerBtn" aria-label="Open menu">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    
+    <div class="header-center">
+        <button class="mobile-logo" id="mobileLogo" aria-label="Scroll to top">AutoMediaCenter</button>
+    </div>
+    
+    <div class="header-right">
+        <button class="header-icon-btn" id="notificationBtn" aria-label="Notifications">
+            <i class="fas fa-bell"></i>
+            <span class="badge" id="notificationBadge" style="display: none;">0</span>
+        </button>
+        
+        <div class="amc-avatar role-media-user" id="avatarContainer">
+            <i class="far fa-user-circle"></i>
+        </div>
+    </div>
+</header>
+
+<!-- Avatar Modal (Launcher) -->
+<div class="avatar-modal hidden" id="avatarModal">
+    <div class="avatar-modal-header">
+        <div class="avatar-modal-avatar">
+            <i class="far fa-user-circle" id="modalAvatarIcon"></i>
+        </div>
+        <div class="avatar-email" id="modalEmail">media@example.com</div>
+        <div class="avatar-role" id="modalRole">Media User</div>
+    </div>
+    
+    <!-- Quick Access Icons -->
+    <div class="modal-quick-access">
+        <button class="quick-access-btn" id="quickAccessCart">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+            <span class="quick-access-badge hidden" id="quickAccessCartBadge">0</span>
+        </button>
+        <button class="quick-access-btn" id="quickAccessTools">
+            <i class="fas fa-wrench"></i>
+            <span>Tools</span>
+        </button>
+    </div>
+    
+    <!-- Profile Actions -->
+    <div class="avatar-modal-section">
+        <button class="modal-btn" id="themeToggleBtn">
+            <i class="fas fa-moon"></i>
+            <span class="theme-toggle-text">Dark Mode</span>
+            <span class="theme-toggle-indicator">☀️</span>
+        </button>
+        <button class="modal-btn" id="settingsBtn">
+            <i class="fas fa-cog"></i>
+            <span>User Settings</span>
+        </button>
+        <hr class="modal-divider">
+        <button class="modal-btn modal-btn-danger" id="signOutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sign Out</span>
+        </button>
+    </div>
+</div>
+
+<!-- Cart Modal (Slides in from right) -->
+<div class="cart-modal" id="cartModal">
+    <div class="cart-modal-header">
+        <h2 class="cart-modal-title">
+            <i class="fas fa-shopping-cart"></i>
+            Cart
+        </h2>
+        <button class="cart-modal-close" id="cartModalClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="cart-modal-content" id="cartModalContent">
+        <div class="cart-empty">
+            <i class="fas fa-shopping-cart"></i>
+            <p>Your cart is empty</p>
+        </div>
+    </div>
+    <div class="cart-modal-footer hidden" id="cartModalFooter">
+        <button class="cart-checkout-btn" id="cartCheckoutBtn">
+            <i class="fas fa-check"></i>
+            Checkout (<span id="cartItemCount">0</span> items)
+        </button>
+    </div>
+</div>
+
+<!-- Tools Dropdown -->
+<div class="tools-dropdown hidden" id="toolsDropdown">
+    <div class="tools-dropdown-header">
+        <h3 class="tools-dropdown-title">
+            <i class="fas fa-wrench"></i>
+            Tools
+        </h3>
+        <button class="tools-dropdown-close" id="toolsDropdownClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="tools-dropdown-content">
+        <div class="tool-item" id="toolUnitConverter">
+            <i class="fas fa-calculator"></i>
+            <span>Unit Converter</span>
+        </div>
+        <div class="tool-item" id="toolCurrencyConverter">
+            <i class="fas fa-dollar-sign"></i>
+            <span>Currency Converter</span>
+        </div>
+        <div class="tool-item" id="toolTimezoneConverter">
+            <i class="fas fa-clock"></i>
+            <span>Timezone Converter</span>
+        </div>
+    </div>
+</div>
+
+<!-- Desktop-Style Drawer -->
+<nav class="mobile-drawer" id="mobileDrawer">
+    <button class="drawer-close" id="drawerCloseBtn" aria-label="Close menu">
+        <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="drawer-content">
+        <!-- CORE Section -->
+        <div class="drawer-section">
+            <div class="drawer-section-header">CORE</div>
+            <a href="copyofautomediacenter-mobile-v6_5.html" class="drawer-nav-item">
+                <i class="fas fa-newspaper"></i> AutoMediaCenter
+            </a>
+            <a href="automediaradar.html" class="drawer-nav-item">
+                <i class="fas fa-satellite-dish"></i> AutoMediaRadar
+            </a>
+            <a href="automedialive.html" class="drawer-nav-item">
+                <i class="fas fa-video"></i> AutoMediaLive
+            </a>
+            <a href="automediavault.html" class="drawer-nav-item">
+                <i class="fas fa-lock"></i> AutoMediaVault
+            </a>
+        </div>
+        
+        <!-- MANAGEMENT Section -->
+        <div class="drawer-section">
+            <div class="drawer-section-header">MANAGEMENT</div>
+            <a href="#" class="drawer-nav-item">
+                <i class="fas fa-building"></i> Company Dashboard
+            </a>
+            <a href="#" class="drawer-nav-item">
+                <i class="fas fa-upload"></i> Upload Dashboard
+            </a>
+            <a href="manage_releases.html" class="drawer-nav-item">
+                <i class="fas fa-folder-open"></i> Manage Releases
+            </a>
+            <a href="#" class="drawer-nav-item">
+                <i class="fas fa-history"></i> Radar History
+            </a>
+            <a href="#" class="drawer-nav-item">
+                <i class="fas fa-flag-checkered"></i> Manage Live Events
+            </a>
+            <a href="#" class="drawer-nav-item">
+                <i class="fas fa-lock"></i> Manage Vault Assets
+            </a>
+        </div>
+        
+        <!-- ANALYTICS Section -->
+        <div class="drawer-section">
+            <div class="drawer-section-header">ANALYTICS</div>
+            <a href="#" class="drawer-nav-item">
+                <i class="fas fa-chart-line"></i> Company Analytics
+            </a>
+            <a href="amc-analytics.html" class="drawer-nav-item">
+                <i class="fas fa-chart-bar"></i> AMC Analytics
+            </a>
+            <a href="#" class="drawer-nav-item">
+                <i class="fas fa-chart-area"></i> Radar Analytics
+            </a>
+            <a href="#" class="drawer-nav-item">
+                <i class="fas fa-chart-pie"></i> Live Analytics
+            </a>
+            <a href="#" class="drawer-nav-item">
+                <i class="fas fa-chart-bar"></i> Vault Analytics
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- Drawer Backdrop -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+    
+    <!-- Main Content -->
+    <main class="mobile-main">
+        <div class="release-detail-container" id="mainContent">
+            <!-- Loading state -->
+            <div class="loading-container">
+                <div class="spinner"></div>
+                <p>Loading release...</p>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Mobile Image Viewer (Swipe-first) -->
+    <div class="lightbox" id="lightbox">
+        <!-- Sticky minimal header -->
+        <div class="lightbox-header" id="lightboxHeader">
+            <button class="lightbox-back" onclick="closeLightbox()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="lightbox-title" id="lightboxTitle">Images</div>
+            <button class="lightbox-close" onclick="closeLightbox()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Edge-to-edge image container (swipe enabled) -->
+        <div class="lightbox-content" id="lightboxContent">
+            <img id="lightboxImage" src="" alt="Image">
+        </div>
+        
+        <!-- Compact bottom action strip -->
+        <div class="lightbox-footer" id="lightboxFooter">
+            <button class="lightbox-download-btn low-res" id="downloadLowRes">
+                <i class="fas fa-download"></i>
+                <span>Low-res</span>
+            </button>
+            <div class="lightbox-position" id="lightboxPosition">4 / 10</div>
+            <button class="lightbox-download-btn high-res" id="downloadHighRes">
+                <i class="fas fa-download"></i>
+                <span>High-res</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Image Grid Modal (Enterprise selection pattern) -->
+    <div class="image-grid-modal" id="imageGridModal">
+        <!-- Header with back, title, selection counter, and select/cancel button -->
+        <div class="grid-modal-header">
+            <button onclick="closeImageGrid()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>
+                <span id="gridModalTitle">Images (0)</span>
+                <span class="selection-counter" id="selectionCounter" style="display: none;"></span>
+            </h2>
+            <button class="select-btn" id="selectModeBtn" onclick="toggleSelectMode()">Select</button>
+        </div>
+        
+        <!-- Grid of thumbnails (populated by JavaScript) -->
+        <div class="grid-modal-content" id="gridContent">
+            <!-- Thumbnails populated dynamically -->
+        </div>
+        
+        <!-- Selection action bar (hidden by default, mirrors individual image download logic) -->
+        <!-- IMPORTANT: This bar has THREE elements: Low-res button | Counter | High-res button -->
+        <div class="selection-action-bar" id="selectionBar">
+            <!-- LEFT: Low-res button -->
+            <button class="download-btn low-res" onclick="downloadSelectedLowRes()">
+                <i class="fas fa-download"></i>
+                <span>Low-res</span>
+            </button>
+            <!-- CENTER: Counter (non-clickable) -->
+            <div class="selection-count" id="selectionCountText">0/10 selected</div>
+            <!-- RIGHT: High-res button (PRIMARY) -->
+            <button class="download-btn high-res" onclick="downloadSelectedHighRes()">
+                <i class="fas fa-download"></i>
+                <span>High-res</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- ===== VIDEO GRID MODAL ===== -->
+    <div class="video-grid-modal" id="videoGridModal">
+        <!-- Header with back, title, and select button -->
+        <div class="grid-modal-header">
+            <button onclick="closeVideoGrid()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>
+                <span id="videoGridModalTitle">Videos (0)</span>
+            </h2>
+            <button class="select-btn" id="videoSelectModeBtn" onclick="toggleVideoSelectMode()">Select</button>
+        </div>
+        
+        <!-- Grid of video thumbnails (populated by JavaScript) -->
+        <div class="video-grid-content" id="videoGridContent">
+            <!-- Video thumbnails populated dynamically -->
+        </div>
+        
+        <!-- Video selection action bar (simple: counter + single button) -->
+        <div class="video-selection-bar" id="videoSelectionBar">
+            <span class="selection-count" id="videoSelectionCountText">3 selected</span>
+            <button class="download-btn" onclick="downloadSelectedVideos()">
+                <i class="fas fa-download"></i>
+                <span>Download videos</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- ===== VIDEO PLAYER MODAL ===== -->
+    <div class="video-player-modal" id="videoPlayerModal">
+        <!-- Header with back and close buttons -->
+        <div class="video-player-header">
+            <button onclick="closeVideoPlayer()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="video-player-title" id="videoPlayerTitle">Video</div>
+            <button onclick="closeVideoPlayer()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Video content area -->
+        <div class="video-player-content">
+            <!-- Video container -->
+            <div class="video-container">
+                <video id="videoPlayer" controls playsinline preload="metadata">
+                    <source id="videoSource" src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            
+            <!-- Video info and download -->
+            <div class="video-info">
+                <div class="video-filename" id="videoFilename">video.mp4</div>
+                
+                <div class="video-meta" id="videoMeta">
+                    <!-- Populated dynamically: size, format, duration, etc. -->
+                </div>
+                
+                <button class="video-download-btn" id="videoDownloadBtn" onclick="downloadCurrentVideo()">
+                    <i class="fas fa-download"></i>
+                    <span>Download Video</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        console.log('✅ Mobile Release Detail v2.0 loaded');
+        console.log('================================================');
+        console.log('VERSION: DIAGNOSTIC-VERSION-DEC-21-2024');
+        console.log('🔴 RED BORDER + YELLOW BG on grid = Working!');
+        console.log('================================================');
+        
+        // DIAGNOSTIC BANNER
+        setTimeout(() => {
+            const banner = document.createElement('div');
+            banner.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: red;
+                color: white;
+                padding: 20px;
+                font-size: 18px;
+                font-weight: bold;
+                z-index: 99999;
+                border-radius: 8px;
+                text-align: center;
+            `;
+            banner.innerHTML = '🔴 DIAGNOSTIC VERSION LOADED<br>Tap grid to test - look for RED BORDER';
+            document.body.appendChild(banner);
+            
+            setTimeout(() => banner.remove(), 5000);
+        }, 1000);
+        
+        // ===== DISABLE SCROLL RESTORATION =====
+        // Prevent browser from remembering scroll position on refresh
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        
+        // IMMEDIATE SCROLL RESET - before anything else
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        
+        // Get UUID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const releaseUuid = urlParams.get('uuid');
+        const API_BASE_URL = window.location.origin;
+        
+        // ===== PDF INITIALIZATION FUNCTION (MUST BE DEFINED FIRST) =====
+        // This function is called after release content is rendered to initialize PDF.js
+        window.initializePDFAfterRender = function() {
+            setTimeout(() => {
+                initializePDF();
+            }, 100);
+        };
+        
+        if (!releaseUuid) {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>No release ID provided</p>
+                </div>
+            `;
+        } else {
+            loadRelease();
+        }
+        
+        // ===== SCROLL RESTORATION: Reset all columns to top on page load =====
+        window.addEventListener('load', () => {
+            // Aggressive scroll reset - try multiple times
+            const resetScroll = () => {
+                // Reset main window
+                window.scrollTo(0, 0);
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+                
+                // Reset landscape columns
+                const pdfColumn = document.querySelector('.landscape-pdf-column');
+                const sidebarColumn = document.querySelector('.landscape-sidebar');
+                
+                if (pdfColumn) {
+                    pdfColumn.scrollTop = 0;
+                    pdfColumn.scrollLeft = 0;
+                }
+                
+                if (sidebarColumn) {
+                    sidebarColumn.scrollTop = 0;
+                    sidebarColumn.scrollLeft = 0;
+                }
+            };
+            
+            // Reset immediately
+            resetScroll();
+            
+            // Reset again after short delay (catches late-loading content)
+            setTimeout(resetScroll, 50);
+            setTimeout(resetScroll, 100);
+            setTimeout(resetScroll, 200);
+            
+            console.log('📍 Page load - forced scroll to top');
+        });
+        
+        // ===== V6.5 HEADER SYSTEM JS =====
+        // Global variables for user state
+        let currentUser = null;
+        let currentRole = 'media_user'; // Default role
+        
+        const roleColors = {
+            'media_user': '#3B82F6',
+            'client_user': '#10B981',
+            'client_admin': '#F59E0B',
+            'platform_admin': '#EF4444'
+        };
+        
+        const roleColorsDark = {
+            'media_user': '#60a5fa',
+            'client_user': '#34d399',
+            'client_admin': '#fbbf24',
+            'platform_admin': '#f87171'
+        };
+        
+        // ===== AVATAR SYSTEM =====
+        function initializeAvatar() {
+            const userString = localStorage.getItem('user') || localStorage.getItem('currentUser') || localStorage.getItem('amcUser');
+            
+            if (userString) {
+                try {
+                    currentUser = JSON.parse(userString);
+                    currentRole = currentUser.role || 'media_user';
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                }
+            }
+            
+            updateAvatarDisplay();
+            
+            const modalEmail = document.getElementById('modalEmail');
+            const modalRole = document.getElementById('modalRole');
+            
+            if (currentUser && currentUser.email) {
+                modalEmail.textContent = currentUser.email;
+            }
+            
+            const roleNames = {
+                'media_user': 'Media User',
+                'client_user': 'Client User',
+                'client_admin': 'Client Admin',
+                'platform_admin': 'Platform Admin'
+            };
+            modalRole.textContent = roleNames[currentRole] || 'Media User';
+        }
+        
+        function updateAvatarDisplay() {
+            const avatarContainer = document.getElementById('avatarContainer');
+            const modalAvatarIcon = document.getElementById('modalAvatarIcon');
+            
+            // Null safety checks
+            if (!avatarContainer) {
+                console.warn('avatarContainer element not found');
+                return;
+            }
+            
+            // Set role class
+            avatarContainer.className = `amc-avatar role-${currentRole.replace(/_/g, '-')}`;
+            
+            // Apply role color to modal avatar too
+            const isDark = document.body.classList.contains('dark-mode');
+            const color = isDark ? roleColorsDark[currentRole] : roleColors[currentRole];
+            if (modalAvatarIcon) {
+                modalAvatarIcon.style.color = color;
+            }
+        }
+        
+        // Avatar click handler
+        document.getElementById('avatarContainer').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('avatarModal').classList.toggle('hidden');
+            document.getElementById('toolsDropdown').classList.add('hidden');
+            updateCartBadge();
+        });
+        
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('avatarModal');
+            const avatar = document.getElementById('avatarContainer');
+            const toolsDropdown = document.getElementById('toolsDropdown');
+            
+            if (!modal.contains(e.target) && !avatar.contains(e.target)) {
+                modal.classList.add('hidden');
+            }
+            
+            if (!toolsDropdown.contains(e.target) && e.target.id !== 'quickAccessTools') {
+                toolsDropdown.classList.add('hidden');
+            }
+        });
+        
+        // Quick Access Cart Button
+        document.getElementById('quickAccessCart').addEventListener('click', () => {
+            document.getElementById('avatarModal').classList.add('hidden');
+            document.getElementById('cartModal').classList.add('active');
+            document.getElementById('drawerBackdrop').classList.add('visible');
+            updateCartModal();
+        });
+        
+        // Quick Access Tools Button
+        document.getElementById('quickAccessTools').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('avatarModal').classList.add('hidden');
+            document.getElementById('toolsDropdown').classList.toggle('hidden');
+        });
+        
+        // Tools Dropdown Close
+        document.getElementById('toolsDropdownClose').addEventListener('click', () => {
+            document.getElementById('toolsDropdown').classList.add('hidden');
+        });
+        
+        // Tool items
+        document.getElementById('toolUnitConverter').addEventListener('click', () => {
+            alert('Unit Converter coming soon!');
+            document.getElementById('toolsDropdown').classList.add('hidden');
+        });
+        
+        document.getElementById('toolCurrencyConverter').addEventListener('click', () => {
+            alert('Currency Converter coming soon!');
+            document.getElementById('toolsDropdown').classList.add('hidden');
+        });
+        
+        document.getElementById('toolTimezoneConverter').addEventListener('click', () => {
+            alert('Timezone Converter coming soon!');
+            document.getElementById('toolsDropdown').classList.add('hidden');
+        });
+        
+        // Cart Modal Close
+        document.getElementById('cartModalClose').addEventListener('click', () => {
+            document.getElementById('cartModal').classList.remove('active');
+            document.getElementById('drawerBackdrop').classList.remove('visible');
+        });
+        
+        // Theme toggle
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeToggleText = themeToggleBtn.querySelector('.theme-toggle-text');
+        const themeToggleIndicator = themeToggleBtn.querySelector('.theme-toggle-indicator');
+        
+        function updateThemeButton() {
+            const isDark = document.body.classList.contains('dark-mode');
+            themeToggleText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+            themeToggleIndicator.textContent = isDark ? '🌙' : '☀️';
+            themeToggleBtn.querySelector('i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            updateAvatarDisplay(); // Update avatar colors when theme changes
+        }
+        
+        // ===== INITIALIZE AVATAR FIRST (before theme code runs) =====
+        initializeAvatar();
+        console.log('✅ Avatar initialized');
+        
+        const savedTheme = localStorage.getItem('amc-theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+        updateThemeButton();
+        
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('amc-theme', isDark ? 'dark' : 'light');
+            updateThemeButton();
+            
+            // Close avatar modal after theme change (better UX - one tap instead of two)
+            setTimeout(() => {
+                document.getElementById('avatarModal').classList.add('hidden');
+            }, 150); // Brief delay so user sees the theme change
+        });
+        
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            window.location.href = 'user-settings.html';
+        });
+        
+        document.getElementById('signOutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('amcUser');
+            sessionStorage.clear();
+            window.location.href = 'landing-page-twitter-style.html';
+        });
+        
+        // ===== DRAWER FUNCTIONALITY =====
+        
+        /* AMC: removed legacy drawer controller block (replaced by unified controller) */
+// Logo tap to scroll to top - MULTIPLE METHODS FOR MOBILE COMPATIBILITY
+        const mobileLogo = document.getElementById('mobileLogo');
+        console.log('🔍 Logo element found:', mobileLogo !== null, mobileLogo);
+        if (mobileLogo) {
+            console.log('✅ Logo tap to scroll initialized');
+            
+            mobileLogo.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                console.log('🔵 LOGO CLICKED! Scrolling to top...');
+                
+                // PORTRAIT: Scroll main window to top
+                window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                
+                // LANDSCAPE: Also scroll both columns to top
+                const pdfColumn = document.querySelector('.landscape-pdf-column');
+                const sidebarColumn = document.querySelector('.landscape-sidebar');
+                
+                if (pdfColumn) {
+                    pdfColumn.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                    console.log('✅ PDF column scrolled to top');
+                }
+                
+                if (sidebarColumn) {
+                    sidebarColumn.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                    console.log('✅ Sidebar column scrolled to top');
+                }
+                
+                console.log('✅ All scrolled to top');
+            });
+            
+            console.log('✅ Click listener attached to button element');
+        } else {
+            console.error('❌ CRITICAL: mobileLogo button not found!');
+        }
+        
+        
+        /* AMC: removed legacy backdrop click handler (replaced by unified controller) */
+document.querySelectorAll('.drawer-nav-item').forEach(link => {
+            link.addEventListener('click', closeDrawer);
+        });
+        
+
+        // Fetch release data
+        async function loadRelease() {
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/api/v1/center/releases/${releaseUuid}`, {
+                    method: 'GET',
+                    headers: headers,
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    renderRelease(data.data);
+                } else {
+                    throw new Error('Invalid response format');
+                }
+                
+            } catch (error) {
+                console.error('Error loading release:', error);
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error Loading Release</h3>
+                        <p>${error.message}</p>
+                        <button class="download-btn download-btn-primary" onclick="window.history.back()" style="max-width: 200px; margin: 20px auto 0;">
+                            <i class="fas fa-arrow-left"></i> Go Back
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // ===== PORTRAIT PDF REORDERING =====
+        // Move PDF to appear after hero section in portrait mode only
+        function reorderPortraitLayout() {
+            const pdfColumn = document.getElementById('pdfColumn');
+            const heroSection = document.getElementById('heroSection');
+            const mediaSections = document.getElementById('mediaSections');
+            const sidebar = document.querySelector('.landscape-sidebar');
+            
+            if (!pdfColumn || !heroSection || !mediaSections || !sidebar) return;
+            
+            const isPortraitMode = window.matchMedia('(orientation: portrait)').matches;
+            
+            if (isPortraitMode) {
+                // PORTRAIT: Move PDF after hero, before media sections
+                // Insert PDF right after the hero section (inside sidebar, before media sections)
+                heroSection.after(pdfColumn);
+            } else {
+                // LANDSCAPE: Restore original order (PDF before sidebar)
+                // Move PDF back to be first child of container
+                const container = document.getElementById('mainContent');
+                if (container && container.firstChild !== pdfColumn) {
+                    container.insertBefore(pdfColumn, container.firstChild);
+                }
+            }
+        }
+        
+        // Run on orientation change
+        window.addEventListener('orientationchange', () => {
+            setTimeout(reorderPortraitLayout, 100); // Small delay for layout to settle
+        });
+        
+        // Also run on resize (for testing in browser dev tools)
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(reorderPortraitLayout, 100);
+        });
+        
+        // Render release content
+        function renderRelease(release) {
+            const mainContent = document.getElementById('mainContent');
+            
+            // Format date
+            let releaseDate = 'Date not available';
+            if (release.releaseDate) {
+                try {
+                    const dateObj = new Date(release.releaseDate);
+                    releaseDate = dateObj.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    if (release.releaseTime) {
+                        // Add time with middle dot separator and timezone
+                        releaseDate += ` · ${release.releaseTime} CET`;
+                    }
+                } catch (e) {
+                    console.error('Error parsing releaseDate', e);
+                }
+            }
+            
+            // Count assets
+            const imageCount = release.images?.length || 0;
+            const videoCount = release.videos?.length || 0;
+            const mainPdfDoc = release.releaseDocs?.find(d => d.mimetype === 'application/pdf');
+            const suppDocs = release.supplementaryDocs || [];
+            const totalDocs = (mainPdfDoc ? 1 : 0) + suppDocs.length;
+            
+            // Build HTML - PDF FIRST, then Sidebar (original structure for landscape)
+            let html = '';
+            
+            // PDF VIEWER - Build FIRST (left column in landscape)
+            if (mainPdfDoc) {
+                const pdfUrl = `${API_BASE_URL}${mainPdfDoc.path}`;
+                
+                html += `
+                <!-- Landscape: PDF column (left side) -->
+                <div class="landscape-pdf-column" id="pdfColumn">
+                    <!-- PDF Viewer - Canvas Rendering (PDF.js) -->
+                    <div class="pdf-viewer-wrapper">
+                        <div class="pdf-viewer-container collapsed" id="pdfViewer" data-pdf-url="${pdfUrl}">
+                            <div class="pdf-loading" id="pdfLoading">
+                                <i class="fas fa-spinner"></i>
+                                <div>Loading media release...</div>
+                            </div>
+                            <!-- Canvas elements will be inserted here by PDF.js -->
+                        </div>
+                        
+                        <!-- Expand/Collapse Button -->
+                        <div class="pdf-expand-btn-wrapper" id="pdfExpandBtnWrapper" style="display: none;">
+                            <button class="pdf-expand-btn" id="pdfExpandBtn" onclick="togglePDF()">
+                                <i class="fas fa-chevron-down"></i>
+                                <span>See Full Media Release</span>
+                            </button>
+                        </div>
+                    </div>
+                </div><!-- Close landscape-pdf-column -->
+                `;
+            }
+            
+            // SIDEBAR - Build SECOND (right column, spans both rows)
+            html += `
+                <!-- Landscape: Sidebar column (hero + media sections) -->
+                <div class="landscape-sidebar">
+                    <!-- Release Hero -->
+                    <div class="release-hero" id="heroSection">
+                        <!-- Hero header row: brand + controls (enterprise alignment) -->
+                        <div class="hero-header-row">
+                            ${release.brand ? `
+                            <div class="brand-badge">${escapeHtml(release.brand)}</div>
+                            ` : ''}
+                            <!-- Chevron toggle will be inserted here by JavaScript -->
+                        </div>
+                        
+                        <h1 class="release-title">${escapeHtml(release.title || 'Untitled Release')}</h1>
+                        
+                        <div class="release-meta">
+                            <div class="meta-item">
+                                <i class="far fa-calendar"></i>
+                                <span>${releaseDate}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Download Buttons -->
+                        <div class="download-actions">
+                            ${mainPdfDoc ? `
+                            <button class="download-btn download-btn-primary" onclick="downloadPDF()">
+                                <i class="fas fa-file-pdf"></i> Download Media Release
+                            </button>
+                            ` : ''}
+                        </div>
+                        
+                        <!-- Segmented Asset Control Bar -->
+                        ${(imageCount > 0 || videoCount > 0 || totalDocs > 0) ? `
+                        <div class="asset-segment-bar">
+                            ${imageCount > 0 ? `
+                            <div class="asset-segment" onclick="openImageGrid()">
+                                <i class="fas fa-images asset-segment-icon"></i>
+                                <div class="asset-segment-info">
+                                    <span class="asset-segment-count">${imageCount}</span>
+                                    <span class="asset-segment-label">Images</span>
+                                </div>
+                            </div>
+                            ` : ''}
+                            ${videoCount > 0 ? `
+                            <div class="asset-segment" onclick="openVideoGrid()">
+                                <i class="fas fa-video asset-segment-icon"></i>
+                                <div class="asset-segment-info">
+                                    <span class="asset-segment-count">${videoCount}</span>
+                                    <span class="asset-segment-label">Videos</span>
+                                </div>
+                            </div>
+                            ` : ''}
+                            ${totalDocs > 0 ? `
+                            <div class="asset-segment" onclick="scrollToSection('documentsSection')">
+                                <i class="fas fa-file-alt asset-segment-icon"></i>
+                                <div class="asset-segment-info">
+                                    <span class="asset-segment-count">${totalDocs}</span>
+                                    <span class="asset-segment-label">Docs</span>
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        ` : ''}
+                        
+                        <!-- Download All Assets -->
+                        <div class="download-actions">
+                            ${(imageCount + videoCount + totalDocs) > 0 ? `
+                            <button class="download-btn download-btn-secondary" onclick="downloadAll()">
+                                <i class="fas fa-download"></i> Download All Assets (ZIP)
+                            </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    <!-- Media Sections - INSIDE sidebar -->
+                    <div class="landscape-sidebar-continued" id="mediaSections">
+            `;
+            
+            // MEDIA SECTIONS - Inside sidebar
+            html += renderMediaSections(imageCount, videoCount, totalDocs, release, mainPdfDoc, suppDocs);
+            
+            // Close landscape-sidebar-continued and landscape-sidebar
+            html += `
+                    </div><!-- Close landscape-sidebar-continued -->
+                </div><!-- Close landscape-sidebar -->
+            `;
+            
+            // Empty state
+            if (!mainPdfDoc && !release.extractedPdfText && imageCount === 0 && videoCount === 0 && totalDocs === 0) {
+                html += `
+                <div class="release-section">
+                    <div class="empty-state">
+                        <i class="far fa-folder-open"></i>
+                        <p>No content available</p>
+                    </div>
+                </div>
+                `;
+            }
+            
+            mainContent.innerHTML = html;
+            
+            // Reorder DOM for portrait mode (PDF after hero)
+            reorderPortraitLayout();
+            
+            // CRITICAL: Scroll to top after content loads (landscape columns)
+            setTimeout(() => {
+                // Reset main window
+                window.scrollTo(0, 0);
+                
+                // Reset landscape columns
+                const pdfColumn = document.querySelector('.landscape-pdf-column');
+                const sidebarColumn = document.querySelector('.landscape-sidebar');
+                
+                if (pdfColumn) {
+                    pdfColumn.scrollTop = 0;
+                }
+                if (sidebarColumn) {
+                    sidebarColumn.scrollTop = 0;
+                }
+                
+                console.log('📍 Content loaded - scrolled to top');
+            }, 50);
+            
+            // Store images for lightbox
+            window.releaseImages = (release.images || []).map(img => ({
+                id: img._id || img.id,
+                url: `${API_BASE_URL}${img.path}`,
+                originalName: img.originalName || 'Image'
+            }));
+            window.currentImageIndex = 0;
+            
+            // Store videos for video grid and player
+            window.releaseVideos = (release.videos || []).map(video => ({
+                id: video._id || video.id,
+                url: `${API_BASE_URL}${video.path}`,
+                originalName: video.originalName || 'video.mp4',
+                posterUrl: video.posterPath ? `${API_BASE_URL}${video.posterPath}` : null,
+                size: video.size || null,
+                duration: video.duration || null,
+                resolution: video.resolution || null,
+                mimetype: video.mimetype || 'video/mp4'
+            }));
+            console.log('🎬 Stored videos data:', window.releaseVideos);
+            
+            // Initialize PDF.js rendering if PDF exists
+            if (mainPdfDoc) {
+                window.initializePDFAfterRender();
+            }
+        }
+        
+        // PDF.js Rendering Variables
+        let pdfDoc = null;
+        let totalPages = 0;
+        let isExpanded = false;
+        const PREVIEW_PAGES = 3; // Show 3 pages initially
+        
+        // Initialize PDF.js rendering after page loads
+        async function initializePDF() {
+            const container = document.getElementById('pdfViewer');
+            if (!container) return;
+            
+            const pdfUrl = container.getAttribute('data-pdf-url');
+            if (!pdfUrl) return;
+            
+            try {
+                // Configure PDF.js worker
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                
+                // Load the PDF document
+                const loadingTask = pdfjsLib.getDocument(pdfUrl);
+                pdfDoc = await loadingTask.promise;
+                totalPages = pdfDoc.numPages;
+                
+                console.log(`📄 PDF loaded: ${totalPages} pages`);
+                
+                // Hide loading indicator
+                const loading = document.getElementById('pdfLoading');
+                if (loading) loading.style.display = 'none';
+                
+                // ALWAYS render preview pages first (portrait AND landscape)
+                await renderPages(1, Math.min(PREVIEW_PAGES, totalPages));
+                
+                // Show expand button if more than 3 pages (in both orientations)
+                const expandBtnWrapper = document.getElementById('pdfExpandBtnWrapper');
+                if (expandBtnWrapper && totalPages > PREVIEW_PAGES) {
+                    expandBtnWrapper.style.display = 'flex';
+                }
+                
+            } catch (error) {
+                console.error('Error loading PDF:', error);
+                const loading = document.getElementById('pdfLoading');
+                if (loading) {
+                    loading.innerHTML = `
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>Error loading PDF. Please try downloading instead.</div>
+                    `;
+                }
+            }
+        }
+        
+        // Render PDF pages to canvas
+        async function renderPages(startPage, endPage) {
+            const container = document.getElementById('pdfViewer');
+            if (!container || !pdfDoc) return;
+            
+            const containerWidth = container.getBoundingClientRect().width || window.innerWidth;
+            
+            // Force minimum DPR=2 for crisp text, cap at 3 for performance
+            // CRITICAL: Math.max enforces floor, Math.min enforces ceiling
+            const dpr = Math.min(3, Math.max(2, window.devicePixelRatio || 1));
+            
+            for (let pageNum = startPage; pageNum <= endPage; pageNum++) {
+                let canvas = document.getElementById(`pdf-page-${pageNum}`);
+                
+                if (!canvas) {
+                    canvas = document.createElement('canvas');
+                    canvas.id = `pdf-page-${pageNum}`;
+                    canvas.className = 'pdf-canvas';
+                    container.appendChild(canvas);
+                }
+                
+                canvas.classList.remove('hidden');
+                
+                const page = await pdfDoc.getPage(pageNum);
+                
+                // Layout viewport (fit-to-width at scale=1)
+                const viewport = page.getViewport({ scale: 1 });
+                
+                // Landscape mode: Moderate scale increase for better readability (1.15x)
+                const isLandscape = window.matchMedia('(orientation: landscape) and (max-width: 1024px)').matches;
+                const landscapeScaleBoost = isLandscape ? 1.15 : 1.0;
+                
+                const layoutScale = (containerWidth / viewport.width) * landscapeScaleBoost;
+                const layoutViewport = page.getViewport({ scale: layoutScale });
+                
+                // Actual backing store size (DPR)
+                const outputScale = dpr;
+                
+                canvas.width = Math.floor(layoutViewport.width * outputScale);
+                canvas.height = Math.floor(layoutViewport.height * outputScale);
+                
+                // CSS pixel size (stable)
+                canvas.style.width = `${Math.floor(layoutViewport.width)}px`;
+                canvas.style.height = `${Math.floor(layoutViewport.height)}px`;
+                
+                const ctx = canvas.getContext('2d', { alpha: false });
+                
+                // Optional: reduces blur in some browsers
+                ctx.imageSmoothingEnabled = false;
+                
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: layoutViewport,
+                    transform: [outputScale, 0, 0, outputScale, 0, 0]
+                };
+                
+                await page.render(renderContext).promise;
+                console.log(`✅ Rendered page ${pageNum} at ${dpr}x DPR (crisp enterprise quality)`);
+            }
+        }
+        
+        // Toggle PDF expand/collapse
+        async function togglePDF() {
+            const container = document.getElementById('pdfViewer');
+            const btn = document.getElementById('pdfExpandBtn');
+            
+            if (!container || !btn || !pdfDoc) return;
+            
+            isExpanded = !isExpanded;
+            
+            if (isExpanded) {
+                // Expand: Show ALL pages
+                btn.innerHTML = '<i class="fas fa-chevron-up"></i><span>Show Less</span>';
+                
+                // Render remaining pages if not already rendered
+                if (totalPages > PREVIEW_PAGES) {
+                    await renderPages(PREVIEW_PAGES + 1, totalPages);
+                }
+                
+                container.classList.remove('collapsed');
+                
+            } else {
+                // Collapse: Hide pages after first 3
+                btn.innerHTML = '<i class="fas fa-chevron-down"></i><span>See Full Media Release</span>';
+                
+                // Hide canvases beyond preview pages
+                for (let pageNum = PREVIEW_PAGES + 1; pageNum <= totalPages; pageNum++) {
+                    const canvas = document.getElementById(`pdf-page-${pageNum}`);
+                    if (canvas) {
+                        canvas.classList.add('hidden');
+                    }
+                }
+                
+                container.classList.add('collapsed');
+                
+                // Scroll to top of PDF
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        
+        // Render media sections
+        function renderMediaSections(imageCount, videoCount, totalDocs, release, mainPdfDoc, suppDocs) {
+            let html = '';
+            
+            // Images
+            if (imageCount > 0) {
+                html += `
+                <div class="release-section" id="imagesSection">
+                    <div class="section-title">
+                        <i class="fas fa-images"></i> Images
+                        <span class="section-count">${imageCount}</span>
+                    </div>
+                    <div class="image-grid">
+                        ${release.images.slice(0, 4).map((img, index) => `
+                            <div class="image-item" onclick="openImageGrid()">
+                                <img src="${API_BASE_URL}${img.path}" alt="${escapeHtml(img.originalName || 'Image')}" loading="lazy">
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${imageCount > 4 ? `
+                    <button class="view-all-btn" onclick="openImageGrid()">
+                        View All ${imageCount} Images <i class="fas fa-chevron-right"></i>
+                    </button>
+                    ` : ''}
+                </div>
+                `;
+            }
+            
+            // Videos (AFTER Images, BEFORE Documents)
+            if (videoCount > 0) {
+                html += `
+                <div class="release-section" id="videosSection">
+                    <div class="section-title">
+                        <i class="fas fa-video"></i> Videos
+                        <span class="section-count">${videoCount}</span>
+                    </div>
+                    <div class="image-grid">
+                        ${release.videos.slice(0, 4).map((video, index) => `
+                            <div class="image-item" onclick="openVideoGrid()" style="position: relative;">
+                                ${video.posterPath ? `
+                                    <img src="${API_BASE_URL}${video.posterPath}" alt="${escapeHtml(video.originalName || 'Video')}" loading="lazy">
+                                ` : `
+                                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); display: flex; align-items: center; justify-content: center;">
+                                    </div>
+                                `}
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 48px; height: 48px; background: rgba(0, 0, 0, 0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 2;">
+                                    <i class="fas fa-play" style="font-size: 20px; color: white; margin-left: 3px;"></i>
+                                </div>
+                                ${video.duration ? `
+                                    <div style="position: absolute; top: 8px; right: 8px; background: rgba(0, 0, 0, 0.8); color: white; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px; pointer-events: none; z-index: 2;">
+                                        ${Math.floor(video.duration / 60)}:${String(Math.floor(video.duration % 60)).padStart(2, '0')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${videoCount > 4 ? `
+                    <button class="view-all-btn" onclick="openVideoGrid()">
+                        View All ${videoCount} Videos <i class="fas fa-chevron-right"></i>
+                    </button>
+                    ` : videoCount <= 4 && videoCount > 1 ? `
+                    <button class="view-all-btn" onclick="openVideoGrid()">
+                        View All ${videoCount} Videos <i class="fas fa-chevron-right"></i>
+                    </button>
+                    ` : ''}
+                </div>
+                `;
+            }
+            
+            // Documents
+            if (totalDocs > 0) {
+                const allDocs = [];
+                
+                if (mainPdfDoc) {
+                    allDocs.push({
+                        id: mainPdfDoc._id || mainPdfDoc.id,
+                        url: `${API_BASE_URL}${mainPdfDoc.path}`,
+                        filename: mainPdfDoc.originalName || `Press Release.pdf`,
+                        size: mainPdfDoc.size ? `${(mainPdfDoc.size / 1024).toFixed(0)} KB` : 'Unknown size',
+                        type: 'pdf'
+                    });
+                }
+                
+                suppDocs.forEach(doc => {
+                    allDocs.push({
+                        id: doc._id || doc.id,
+                        url: `${API_BASE_URL}${doc.path}`,
+                        filename: doc.originalName || 'Document',
+                        size: doc.size ? `${(doc.size / 1024).toFixed(0)} KB` : 'Unknown size',
+                        type: doc.mimetype && doc.mimetype.includes('pdf') ? 'pdf' : 'doc'
+                    });
+                });
+                
+                html += `
+                <div class="release-section" id="documentsSection">
+                    <div class="section-title">
+                        <i class="fas fa-file-alt"></i> Documents
+                        <span class="section-count">${totalDocs}</span>
+                    </div>
+                    <div class="document-list">
+                        ${allDocs.map(doc => `
+                            <div class="document-item" onclick="downloadTrackedDocument('${doc.id || ''}', '${doc.url}', '${escapeHtml(doc.filename)}')">
+                                <div class="document-icon">
+                                    <i class="fas fa-file-${doc.type || 'pdf'}"></i>
+                                </div>
+                                <div class="document-info">
+                                    <div class="document-name">${escapeHtml(doc.filename)}</div>
+                                    <div class="document-size">${doc.size}</div>
+                                </div>
+                                <div class="document-download-icon">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                `;
+            }
+            
+            return html;
+        }
+        
+        
+        // Helper functions
+        
+// Re-render PDF pages after layout width changes (e.g., collapsing/expanding actions column)
+let __rerenderPdfTimer = null;
+function rerenderPdfForWidth(){
+  try{
+    if(!pdfDoc) return;
+    const pdfViewer = document.getElementById('pdfViewer');
+    if(!pdfViewer) return;
+    clearTimeout(__rerenderPdfTimer);
+    __rerenderPdfTimer = setTimeout(async ()=>{
+      // Preserve scroll position in PDF column
+      const scroller = document.getElementById('pdfCol') || pdfViewer.closest('.pdf-col') || pdfViewer.parentElement;
+      const prevScroll = scroller ? scroller.scrollTop : 0;
+      pdfViewer.innerHTML = '';
+      // Render the same "preview pages" amount (or all if already expanded)
+      const pagesToRender = (window.__AMC_PDF_FULL === true) ? (pdfDoc.numPages||1) : Math.min(3, (pdfDoc.numPages||1));
+      await renderPages(1, pagesToRender);
+      if(scroller) scroller.scrollTop = prevScroll;
+    }, 80);
+  }catch(e){ /* swallow */ }
+}
+function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                // Smooth scroll to section with offset for header
+                const headerOffset = 70; // Account for fixed header
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function downloadPDF() {
+            window.open(`${API_BASE_URL}/api/v1/center/releases/${releaseUuid}/pdf`, '_blank');
+        }
+        
+        function downloadAll() {
+            window.open(`${API_BASE_URL}/api/v1/center/releases/${releaseUuid}/download-all`, '_blank');
+        }
+        
+        function downloadTrackedDocument(assetId, url, filename) {
+            if (assetId) {
+                // Use tracked download for documents with asset IDs
+                downloadTrackedAsset(assetId, filename, 'document');
+            } else {
+                // Fallback to direct download for documents without asset IDs
+                console.warn('Asset ID missing for document:', filename, 'using direct download');
+                window.open(url, '_blank');
+            }
+        }
+        
+        function downloadDocument(url, filename) {
+            // Legacy function - kept for backward compatibility
+            window.open(url, '_blank');
+        }
+        
+        
+        // Lightbox functions
+        // ===== MOBILE IMAGE VIEWER (Enterprise swipe-first) =====
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let uiVisible = true;
+        
+        function openLightbox(index) {
+            window.currentImageIndex = index;
+            showLightboxImage();
+            document.getElementById('lightbox').classList.add('active');
+            document.body.classList.add('lightbox-open'); // Lock body scroll
+            uiVisible = true;
+            showUI();
+            initializeSwipe();
+        }
+        
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            
+            // Enterprise navigation: Return to working context (grid) if opened from there
+            if (cameFromGrid) {
+                cameFromGrid = false; // Reset flag
+                openImageGrid(); // Return to grid view
+            } else {
+                document.body.classList.remove('lightbox-open'); // Unlock body scroll
+            }
+        }
+        
+        function showLightboxImage() {
+            if (!window.releaseImages || !window.releaseImages[window.currentImageIndex]) return;
+            
+            const img = window.releaseImages[window.currentImageIndex];
+            const totalImages = window.releaseImages.length;
+            
+            // Update image
+            document.getElementById('lightboxImage').src = img.url;
+            
+            // Update title
+            document.getElementById('lightboxTitle').textContent = `Images (${totalImages})`;
+            
+            // Update position counter (center)
+            document.getElementById('lightboxPosition').textContent = 
+                `${window.currentImageIndex + 1} / ${totalImages}`;
+            
+            // Setup download buttons
+            setupDownloadButtons(img.url, img.originalName);
+        }
+        
+        function setupDownloadButtons(imageUrl, filename) {
+            const lowResBtn = document.getElementById('downloadLowRes');
+            const highResBtn = document.getElementById('downloadHighRes');
+            
+            // Get current image data to access asset ID
+            const currentImage = window.releaseImages[window.currentImageIndex];
+            if (!currentImage || !currentImage.id) {
+                console.error('Asset ID missing for current image:', currentImage);
+                // Fallback to direct download if no ID available
+                lowResBtn.onclick = () => {
+                    const link = document.createElement('a');
+                    link.href = imageUrl;
+                    link.download = filename || 'image.jpg';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
+                highResBtn.onclick = () => {
+                    const link = document.createElement('a');
+                    link.href = imageUrl;
+                    link.download = filename || 'image.jpg';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
+                return;
+            }
+            
+            // Low-res: For quick editorial/social (could be scaled version in future)
+            lowResBtn.onclick = () => downloadTrackedAsset(currentImage.id, filename, 'low');
+            
+            // High-res: Original file for print/archive
+            highResBtn.onclick = () => downloadTrackedAsset(currentImage.id, filename, 'high');
+        }
+        
+        async function downloadTrackedAsset(assetId, filename, quality) {
+            if (!assetId) {
+                console.error('Asset ID missing for download:', filename);
+                alert('Cannot download: Asset ID is missing.');
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                const downloadUrl = `${API_BASE_URL}/api/v1/center/assets/download/${assetId}`;
+                const response = await fetch(downloadUrl, {
+                    method: 'GET',
+                    headers: headers
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Download failed: ${response.statusText}`);
+                }
+
+                // Extract filename from Content-Disposition header if available
+                let finalFilename = filename || 'download';
+                const contentDisposition = response.headers.get('Content-Disposition');
+                if (contentDisposition) {
+                    const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                    if (filenameMatch && filenameMatch[1]) {
+                        finalFilename = filenameMatch[1].replace(/['"]/g, '');
+                    }
+                }
+
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.style.display = 'none';
+                link.href = blobUrl;
+                link.download = finalFilename;
+                
+                document.body.appendChild(link);
+                link.click();
+                
+                // Cleanup
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(blobUrl);
+                    if (document.body.contains(link)) {
+                        document.body.removeChild(link);
+                    }
+                }, 100);
+
+            } catch (error) {
+                console.error('Download error:', error);
+                alert(`Download failed: ${error.message}`);
+            }
+        }
+        
+        function nextImage() {
+            if (window.releaseImages && window.currentImageIndex < window.releaseImages.length - 1) {
+                window.currentImageIndex++;
+                showLightboxImage();
+            }
+        }
+        
+        function prevImage() {
+            if (window.releaseImages && window.currentImageIndex > 0) {
+                window.currentImageIndex--;
+                showLightboxImage();
+            }
+        }
+        
+        // Swipe gesture handling
+        function initializeSwipe() {
+            const content = document.getElementById('lightboxContent');
+            
+            content.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+            
+            content.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+            
+            // Tap to toggle UI chrome
+            content.addEventListener('click', (e) => {
+                // Only toggle if clicking the image, not the controls
+                if (e.target.tagName === 'IMG' || e.target.id === 'lightboxContent') {
+                    toggleUI();
+                }
+            });
+        }
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+            
+            if (Math.abs(swipeDistance) > swipeThreshold) {
+                if (swipeDistance > 0) {
+                    // Swipe right → previous image
+                    prevImage();
+                } else {
+                    // Swipe left → next image
+                    nextImage();
+                }
+            }
+        }
+        
+        // Toggle UI chrome (tap to show/hide)
+        function toggleUI() {
+            uiVisible = !uiVisible;
+            if (uiVisible) {
+                showUI();
+            } else {
+                hideUI();
+            }
+        }
+        
+        function showUI() {
+            document.getElementById('lightboxHeader').classList.remove('hidden');
+            document.getElementById('lightboxFooter').classList.remove('hidden');
+        }
+        
+        function hideUI() {
+            document.getElementById('lightboxHeader').classList.add('hidden');
+            document.getElementById('lightboxFooter').classList.add('hidden');
+        }
+        
+        // ===== IMAGE GRID MODAL (Enterprise selection pattern) =====
+        let selectMode = false;
+        let selectedImages = new Set();
+        let cameFromGrid = false; // Track if user opened lightbox from grid
+        
+        function openImageGrid() {
+            const modal = document.getElementById('imageGridModal');
+            const grid = document.getElementById('gridContent');
+            
+            // DIAGNOSTIC ALERT
+            alert('🔴 DIAGNOSTIC: Grid modal opening! You should see RED BORDER and YELLOW BACKGROUND on grid!');
+            
+            // Open grid modal
+            modal.classList.add('active');
+            document.body.classList.add('lightbox-open');
+            
+            // 🔑 FORCE GRID RECALC (CRITICAL - fixes spacing not updating)
+            // This is standard practice in enterprise UIs with modal grids
+            grid.style.display = 'none';
+            grid.offsetHeight; // Trigger reflow
+            grid.style.display = 'grid';
+            
+            // Update title
+            const imageCount = window.releaseImages ? window.releaseImages.length : 0;
+            document.getElementById('gridModalTitle').textContent = `Images (${imageCount})`;
+            
+            // Render thumbnails
+            renderImageGrid();
+            
+            console.log('✅ Grid opened with forced reflow - spacing should now be 6px vertical');
+            console.log('🔴 DIAGNOSTIC: Check for RED BORDER and YELLOW BACKGROUND on grid');
+        }
+        
+        function closeImageGrid() {
+            // Enterprise behavior: Back arrow exits selection mode first, then closes modal
+            if (selectMode) {
+                // If in selection mode, exit it but stay in grid
+                exitSelectMode();
+                console.log('✅ Exited selection mode, staying in grid');
+            } else {
+                // If not in selection mode, close the modal entirely
+                document.getElementById('imageGridModal').classList.remove('active');
+                document.body.classList.remove('lightbox-open');
+                console.log('✅ Closed grid modal, returned to release page');
+            }
+        }
+        
+        function renderImageGrid() {
+            const gridContent = document.getElementById('gridContent');
+            
+            if (!window.releaseImages || window.releaseImages.length === 0) {
+                gridContent.innerHTML = '<p style="text-align: center; padding: 40px; color: var(--text-secondary);">No images available</p>';
+                return;
+            }
+            
+            gridContent.innerHTML = window.releaseImages.map((img, index) => `
+                <div class="grid-thumbnail" data-index="${index}" onclick="handleThumbnailClick(${index})">
+                    <img src="${img.url}" alt="${img.originalName || 'Image'}" loading="lazy">
+                    <div class="checkbox"></div>
+                </div>
+            `).join('');
+        }
+        
+        function handleThumbnailClick(index) {
+            if (selectMode) {
+                // Selection mode: toggle selection
+                toggleImageSelection(index);
+            } else {
+                // Normal mode: mark that we came from grid, then open swipe viewer
+                cameFromGrid = true;
+                closeImageGrid();
+                openLightbox(index);
+            }
+        }
+        
+        function toggleSelectMode() {
+            selectMode = !selectMode;
+            const gridContent = document.getElementById('gridContent');
+            const btn = document.getElementById('selectModeBtn');
+            
+            if (selectMode) {
+                // Enter selection mode
+                gridContent.classList.add('select-mode');
+                btn.textContent = 'Select all';
+                btn.classList.remove('select-btn');
+                btn.classList.add('select-all-btn');
+                btn.onclick = toggleSelectAll; // Change click handler to select all/deselect all
+            } else {
+                // Exit selection mode
+                exitSelectMode();
+            }
+        }
+        
+        function toggleSelectAll() {
+            // Check if all images are selected
+            const total = window.releaseImages ? window.releaseImages.length : 0;
+            const allSelected = selectedImages.size === total;
+            
+            if (allSelected) {
+                // Deselect all
+                deselectAll();
+            } else {
+                // Select all
+                selectAll();
+            }
+        }
+        
+        function selectAll() {
+            const total = window.releaseImages ? window.releaseImages.length : 0;
+            const btn = document.getElementById('selectModeBtn');
+            
+            // Select all images
+            for (let i = 0; i < total; i++) {
+                selectedImages.add(i);
+                const thumbnail = document.querySelector(`.grid-thumbnail[data-index="${i}"]`);
+                if (thumbnail) {
+                    thumbnail.classList.add('selected');
+                }
+            }
+            
+            // Update button text
+            btn.textContent = 'Deselect all';
+            
+            // Update download bar
+            updateSelectionBar();
+            
+            console.log(`✅ Selected all ${total} images`);
+        }
+        
+        function deselectAll() {
+            const btn = document.getElementById('selectModeBtn');
+            
+            // Deselect all images
+            selectedImages.clear();
+            document.querySelectorAll('.grid-thumbnail').forEach(thumb => {
+                thumb.classList.remove('selected');
+            });
+            
+            // Update button text
+            btn.textContent = 'Select all';
+            
+            // Update download bar (will hide it since count = 0)
+            updateSelectionBar();
+            
+            console.log('✅ Deselected all images');
+        }
+        
+        function exitSelectMode() {
+            selectMode = false;
+            selectedImages.clear();
+            
+            // Update UI
+            const gridContent = document.getElementById('gridContent');
+            const btn = document.getElementById('selectModeBtn');
+            
+            gridContent.classList.remove('select-mode');
+            btn.textContent = 'Select';
+            btn.classList.remove('select-all-btn');
+            btn.classList.add('select-btn');
+            btn.onclick = toggleSelectMode; // Reset to original handler
+            
+            document.getElementById('selectionBar').classList.remove('active');
+            
+            // Remove selected class from all thumbnails
+            document.querySelectorAll('.grid-thumbnail').forEach(thumb => {
+                thumb.classList.remove('selected');
+            });
+        }
+        
+        function toggleImageSelection(index) {
+            const thumbnail = document.querySelector(`.grid-thumbnail[data-index="${index}"]`);
+            
+            if (!thumbnail) return;
+            
+            if (selectedImages.has(index)) {
+                // Deselect
+                selectedImages.delete(index);
+                thumbnail.classList.remove('selected');
+            } else {
+                // Select
+                selectedImages.add(index);
+                thumbnail.classList.add('selected');
+            }
+            
+            updateSelectionBar();
+            updateSelectAllButton(); // Update button text based on selection state
+        }
+        
+        function updateSelectAllButton() {
+            if (!selectMode) return; // Only update if in selection mode
+            
+            const btn = document.getElementById('selectModeBtn');
+            const total = window.releaseImages ? window.releaseImages.length : 0;
+            const allSelected = selectedImages.size === total && total > 0;
+            
+            // Update button text based on selection state
+            btn.textContent = allSelected ? 'Deselect all' : 'Select all';
+        }
+        
+        function updateSelectionBar() {
+            const selectionBar = document.getElementById('selectionBar');
+            const selectionCountText = document.getElementById('selectionCountText');
+            // Don't update header counter - it's hidden
+            const count = selectedImages.size;
+            const total = window.releaseImages ? window.releaseImages.length : 0;
+            
+            console.log(`📊 Selection updated: ${count}/${total} images selected`);
+            
+            if (count > 0) {
+                selectionBar.classList.add('active');
+                selectionCountText.textContent = `${count}/${total}`; // Match individual viewer format
+                console.log('✅ Download bar should now be visible with LOW-RES | COUNTER | HIGH-RES layout');
+            } else {
+                selectionBar.classList.remove('active');
+                console.log('❌ Download bar hidden (no images selected)');
+            }
+        }
+        
+        // Download selected images as LOW-RES (left button)
+        function downloadSelectedLowRes() {
+            downloadSelectedImages('low');
+        }
+        
+        // Download selected images as HIGH-RES (right button - primary)
+        function downloadSelectedHighRes() {
+            downloadSelectedImages('high');
+        }
+        
+        function downloadSelectedImages(quality) {
+            if (selectedImages.size === 0) return;
+            
+            // Get selected images with asset IDs
+            const selectedAssets = Array.from(selectedImages).map(index => {
+                const img = window.releaseImages[index];
+                return {
+                    id: img.id,
+                    filename: img.originalName || `image-${index + 1}.jpg`,
+                    url: img.url // fallback for assets without ID
+                };
+            });
+            
+            console.log(`Downloading ${selectedAssets.length} images as ${quality}-res:`, selectedAssets);
+            
+            // Download each image individually using tracked downloads
+            selectedAssets.forEach(({ id, filename, url }, index) => {
+                setTimeout(() => {
+                    if (id) {
+                        downloadTrackedAsset(id, filename, quality);
+                    } else {
+                        // Fallback to direct download if no ID available
+                        console.warn('Asset ID missing for:', filename, 'using direct download');
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = filename;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                }, index * 300); // Stagger downloads to avoid overwhelming the server
+            });
+            
+            // Close grid and exit selection mode
+            setTimeout(() => {
+                exitSelectMode();
+                closeImageGrid();
+            }, 500);
+        }
+        
+        // ===== VIDEO GRID MODAL (Enterprise pattern - mirrors images) =====
+        let videoSelectMode = false;
+        let selectedVideos = new Set();
+        let currentVideoIndex = 0;
+        
+        function openVideoGrid() {
+            try {
+                console.log('🎬 openVideoGrid() called');
+                const modal = document.getElementById('videoGridModal');
+                
+                if (!modal) {
+                    console.error('❌ videoGridModal element not found');
+                    alert('Error: Video modal not found. Please refresh the page.');
+                    return;
+                }
+                
+                // Open video grid modal
+                modal.classList.add('active');
+                document.body.classList.add('lightbox-open');
+                
+                // Update title
+                const videoCount = window.releaseVideos ? window.releaseVideos.length : 0;
+                console.log(`📊 Video count: ${videoCount}`, window.releaseVideos);
+                document.getElementById('videoGridModalTitle').textContent = `Videos (${videoCount})`;
+                
+                // Render video thumbnails
+                renderVideoGrid();
+                
+                console.log('✅ Video grid opened successfully');
+            } catch (error) {
+                console.error('❌ Error in openVideoGrid:', error);
+                alert('Error opening video grid: ' + error.message);
+            }
+        }
+        
+        function closeVideoGrid() {
+            // Enterprise behavior: Back arrow exits selection mode first, then closes modal
+            if (videoSelectMode) {
+                exitVideoSelectMode();
+                console.log('✅ Exited video selection mode, staying in grid');
+            } else {
+                document.getElementById('videoGridModal').classList.remove('active');
+                document.body.classList.remove('lightbox-open');
+                console.log('✅ Closed video grid modal');
+            }
+        }
+        
+        function renderVideoGrid() {
+            const gridContent = document.getElementById('videoGridContent');
+            
+            if (!window.releaseVideos || window.releaseVideos.length === 0) {
+                gridContent.innerHTML = '<p style="text-align: center; padding: 40px; color: var(--text-secondary);">No videos available</p>';
+                return;
+            }
+            
+            gridContent.innerHTML = window.releaseVideos.map((video, index) => `
+                <div class="video-thumbnail" data-index="${index}" onclick="handleVideoThumbnailClick(${index})">
+                    ${video.posterUrl ? `
+                        <img src="${video.posterUrl}" alt="${video.originalName || 'Video'}">
+                    ` : `
+                        <div class="video-fallback"></div>
+                    `}
+                    <div class="play-overlay">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    ${video.duration ? `<div class="duration-badge">${formatDuration(video.duration)}</div>` : ''}
+                    <div class="checkbox"></div>
+                </div>
+            `).join('');
+        }
+        
+        function handleVideoThumbnailClick(index) {
+            if (videoSelectMode) {
+                // Selection mode: toggle selection
+                toggleVideoSelection(index);
+            } else {
+                // Normal mode: open video player
+                closeVideoGrid();
+                openVideoPlayer(index);
+            }
+        }
+        
+        function toggleVideoSelectMode() {
+            videoSelectMode = !videoSelectMode;
+            const gridContent = document.getElementById('videoGridContent');
+            const btn = document.getElementById('videoSelectModeBtn');
+            
+            if (videoSelectMode) {
+                // Enter selection mode
+                gridContent.classList.add('select-mode');
+                btn.textContent = 'Select all';
+                btn.classList.remove('select-btn');
+                btn.classList.add('select-all-btn');
+                btn.onclick = toggleVideoSelectAll;
+            } else {
+                exitVideoSelectMode();
+            }
+        }
+        
+        function toggleVideoSelectAll() {
+            const total = window.releaseVideos ? window.releaseVideos.length : 0;
+            const allSelected = selectedVideos.size === total;
+            
+            if (allSelected) {
+                deselectAllVideos();
+            } else {
+                selectAllVideos();
+            }
+        }
+        
+        function selectAllVideos() {
+            const total = window.releaseVideos ? window.releaseVideos.length : 0;
+            const btn = document.getElementById('videoSelectModeBtn');
+            
+            for (let i = 0; i < total; i++) {
+                selectedVideos.add(i);
+                const thumbnail = document.querySelector(`.video-thumbnail[data-index="${i}"]`);
+                if (thumbnail) {
+                    thumbnail.classList.add('selected');
+                }
+            }
+            
+            btn.textContent = 'Deselect all';
+            updateVideoSelectionBar();
+            console.log(`✅ Selected all ${total} videos`);
+        }
+        
+        function deselectAllVideos() {
+            const btn = document.getElementById('videoSelectModeBtn');
+            
+            selectedVideos.clear();
+            document.querySelectorAll('.video-thumbnail').forEach(thumb => {
+                thumb.classList.remove('selected');
+            });
+            
+            btn.textContent = 'Select all';
+            updateVideoSelectionBar();
+            console.log('✅ Deselected all videos');
+        }
+        
+        function exitVideoSelectMode() {
+            videoSelectMode = false;
+            selectedVideos.clear();
+            
+            const gridContent = document.getElementById('videoGridContent');
+            const btn = document.getElementById('videoSelectModeBtn');
+            
+            gridContent.classList.remove('select-mode');
+            btn.textContent = 'Select';
+            btn.classList.remove('select-all-btn');
+            btn.classList.add('select-btn');
+            btn.onclick = toggleVideoSelectMode;
+            
+            document.getElementById('videoSelectionBar').classList.remove('active');
+            
+            document.querySelectorAll('.video-thumbnail').forEach(thumb => {
+                thumb.classList.remove('selected');
+            });
+        }
+        
+        function toggleVideoSelection(index) {
+            const thumbnail = document.querySelector(`.video-thumbnail[data-index="${index}"]`);
+            
+            if (!thumbnail) return;
+            
+            if (selectedVideos.has(index)) {
+                selectedVideos.delete(index);
+                thumbnail.classList.remove('selected');
+            } else {
+                selectedVideos.add(index);
+                thumbnail.classList.add('selected');
+            }
+            
+            updateVideoSelectionBar();
+            updateVideoSelectAllButton();
+        }
+        
+        function updateVideoSelectAllButton() {
+            if (!videoSelectMode) return;
+            
+            const btn = document.getElementById('videoSelectModeBtn');
+            const total = window.releaseVideos ? window.releaseVideos.length : 0;
+            const allSelected = selectedVideos.size === total && total > 0;
+            
+            btn.textContent = allSelected ? 'Deselect all' : 'Select all';
+        }
+        
+        function updateVideoSelectionBar() {
+            const selectionBar = document.getElementById('videoSelectionBar');
+            const selectionCountText = document.getElementById('videoSelectionCountText');
+            const count = selectedVideos.size;
+            
+            if (count > 0) {
+                selectionBar.classList.add('active');
+                selectionCountText.textContent = `${count} selected`; // Enterprise format: "3 selected"
+                console.log(`✅ Video download bar visible: ${count} videos selected`);
+            } else {
+                selectionBar.classList.remove('active');
+                console.log('❌ Video download bar hidden');
+            }
+        }
+        
+        function downloadSelectedVideos() {
+            if (selectedVideos.size === 0) return;
+            
+            const selectedAssets = Array.from(selectedVideos).map(index => {
+                const video = window.releaseVideos[index];
+                return {
+                    id: video.id,
+                    filename: video.originalName || `video-${index + 1}.mp4`,
+                    url: video.url // fallback for assets without ID
+                };
+            });
+            
+            console.log(`Downloading ${selectedAssets.length} videos:`, selectedAssets);
+            
+            // Download each video individually using tracked downloads
+            selectedAssets.forEach(({ id, filename, url }, index) => {
+                setTimeout(() => {
+                    if (id) {
+                        downloadTrackedAsset(id, filename, 'video');
+                    } else {
+                        // Fallback to direct download if no ID available
+                        console.warn('Asset ID missing for:', filename, 'using direct download');
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = filename;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                }, index * 300); // Stagger downloads to avoid overwhelming the server
+            });
+            
+            // Close grid and exit selection mode
+            setTimeout(() => {
+                exitVideoSelectMode();
+                closeVideoGrid();
+            }, 500);
+        }
+        
+        // ===== VIDEO PLAYER MODAL =====
+        function openVideoPlayer(index) {
+            if (!window.releaseVideos || !window.releaseVideos[index]) return;
+            
+            currentVideoIndex = index;
+            const video = window.releaseVideos[index];
+            const total = window.releaseVideos.length;
+            const modal = document.getElementById('videoPlayerModal');
+            
+            // Set video source
+            const videoElement = document.getElementById('videoPlayer');
+            const videoSource = document.getElementById('videoSource');
+            videoSource.src = video.url;
+            videoElement.load();
+            
+            // Set title to position context (Video X / Y) instead of filename
+            document.getElementById('videoPlayerTitle').textContent = `Video ${index + 1} / ${total}`;
+            
+            // Set filename in info section
+            document.getElementById('videoFilename').textContent = video.originalName || 'video.mp4';
+            
+            // Set metadata
+            const metaHtml = `
+                ${video.size ? `<div class="video-meta-item"><i class="fas fa-hdd"></i> ${formatFileSize(video.size)}</div>` : ''}
+                ${video.duration ? `<div class="video-meta-item"><i class="fas fa-clock"></i> ${formatDuration(video.duration)}</div>` : ''}
+                ${video.resolution ? `<div class="video-meta-item"><i class="fas fa-expand"></i> ${video.resolution}</div>` : ''}
+                ${video.mimetype ? `<div class="video-meta-item"><i class="fas fa-file-video"></i> ${video.mimetype.split('/')[1].toUpperCase()}</div>` : ''}
+            `;
+            document.getElementById('videoMeta').innerHTML = metaHtml;
+            
+            // Open modal
+            modal.classList.add('active');
+            document.body.classList.add('lightbox-open');
+            
+            console.log(`✅ Video player opened: Video ${index + 1} / ${total}`);
+        }
+        
+        function closeVideoPlayer() {
+            const modal = document.getElementById('videoPlayerModal');
+            const videoElement = document.getElementById('videoPlayer');
+            
+            // Pause and reset video
+            videoElement.pause();
+            videoElement.currentTime = 0;
+            
+            // Close modal
+            modal.classList.remove('active');
+            document.body.classList.remove('lightbox-open');
+            
+            console.log('✅ Video player closed');
+        }
+        
+        function downloadCurrentVideo() {
+            if (!window.releaseVideos || !window.releaseVideos[currentVideoIndex]) return;
+            
+            const video = window.releaseVideos[currentVideoIndex];
+            
+            if (video.id) {
+                downloadTrackedAsset(video.id, video.originalName || 'video.mp4', 'video');
+            } else {
+                // Fallback to direct download if no ID available
+                console.warn('Asset ID missing for:', video.originalName, 'using direct download');
+                const link = document.createElement('a');
+                link.href = video.url;
+                link.download = video.originalName || 'video.mp4';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            console.log('✅ Downloading video:', video.originalName);
+        }
+        
+        // Helper: Format duration (seconds to MM:SS)
+        function formatDuration(seconds) {
+            if (!seconds) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Helper: Format file size
+        function formatFileSize(bytes) {
+            if (!bytes) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+        
+        // Close lightbox on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                // Close whichever modal is open
+                if (document.getElementById('videoPlayerModal').classList.contains('active')) {
+                    closeVideoPlayer();
+                } else if (document.getElementById('videoGridModal').classList.contains('active')) {
+                    closeVideoGrid();
+                } else if (document.getElementById('imageGridModal').classList.contains('active')) {
+                    closeImageGrid();
+                } else {
+                    closeLightbox();
+                }
+            }
+            // Arrow keys for desktop testing
+            if (e.key === 'ArrowLeft') {
+                prevImage();
+            }
+            if (e.key === 'ArrowRight') {
+                nextImage();
+            }
+        });
+    </script>
+
+
+<!-- AMC: removed duplicate sidebar controller -->
+
+
+<script id="amc-unified-sidebar-controller">
+(function(){
+  'use strict';
+
+  // Elements (desktop + mobile)
+  const sidebar = document.getElementById('sidebar') || document.querySelector('.amc-sidebar');
+  const mobileDrawer = document.getElementById('mobileDrawer');
+  const drawerBackdrop = document.getElementById('drawerBackdrop');
+
+  // Buttons (best-effort: different pages use different IDs/classes)
+  const TOGGLE_SELECTORS = [
+    '#sidebarToggle',
+    '#hamburgerBtn',
+    '#hamburgerMenu',
+    '.hamburger-menu',
+    '.sidebar-toggle',
+    '[data-sidebar-toggle]'
+  ];
+
+  // Modes
+  const mqOverlay = window.matchMedia('(max-width: 1599px), (max-height: 820px), (pointer: coarse)');
+  function shouldOverlay(){
+    // Mobile shell always uses overlay drawer
+    if (mobileDrawer) return true;
+    return mqOverlay.matches;
+  }
+
+  function setOverlayMode(on){
+    document.body.classList.toggle('overlay-mode', !!on);
+    if (!on){
+      document.body.classList.remove('sidebar-open');
+    }
+  }
+
+  function openSidebar(){
+    document.body.classList.add('sidebar-open');
+    // If mobile drawer exists, open it too
+    if (mobileDrawer){
+      mobileDrawer.classList.add('open');
+      if (drawerBackdrop) drawerBackdrop.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeSidebar(){
+    document.body.classList.remove('sidebar-open');
+    if (mobileDrawer){
+      mobileDrawer.classList.remove('open');
+      // Only remove backdrop if no other overlay modal is active
+      const cartModal = document.getElementById('cartModal');
+      const lightbox = document.getElementById('lightbox');
+      const keepBackdrop =
+        (cartModal && cartModal.classList.contains('active')) ||
+        (lightbox && lightbox.classList.contains('active'));
+      if (drawerBackdrop && !keepBackdrop) drawerBackdrop.classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function toggleSidebar(){
+    if (document.body.classList.contains('sidebar-open')) closeSidebar();
+    else openSidebar();
+  }
+
+  function isToggleClick(e){
+    const path = (typeof e.composedPath === 'function') ? e.composedPath() : [];
+    for (const sel of TOGGLE_SELECTORS){
+      if (e.target && e.target.closest && e.target.closest(sel)) return true;
+      if (path && path.length){
+        for (const n of path){
+          if (n && n.nodeType === 1 && n.matches && n.matches(sel)) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function clickInsideSidebar(e){
+    if (mobileDrawer) return mobileDrawer.contains(e.target);
+    return sidebar ? sidebar.contains(e.target) : false;
+  }
+
+  // Init mode
+  function syncMode(){
+    setOverlayMode(shouldOverlay());
+  }
+  syncMode();
+
+  // Respond to resizes/orientation changes
+  if (mqOverlay && mqOverlay.addEventListener){
+    mqOverlay.addEventListener('change', syncMode);
+  } else {
+    window.addEventListener('resize', syncMode);
+  }
+  window.addEventListener('orientationchange', () => setTimeout(syncMode, 50));
+
+  // Toggle handling (event delegation)
+  document.addEventListener('click', (e) => {
+    if (isToggleClick(e)){
+      e.preventDefault();
+      e.stopPropagation();
+      toggleSidebar();
+    }
+  }, true);
+
+  // Backdrop / click outside to close (overlay mode only)
+  document.addEventListener('click', (e) => {
+    if (!document.body.classList.contains('overlay-mode')) return;
+    if (!document.body.classList.contains('sidebar-open')) return;
+
+    // If the mobile backdrop itself is clicked, close sidebar and also close menus
+    if (drawerBackdrop && e.target === drawerBackdrop){
+      closeSidebar();
+      // Also close common overlays tied to the same backdrop (safe best-effort)
+      const cartModal = document.getElementById('cartModal');
+      if (cartModal) cartModal.classList.remove('active');
+      const toolsDropdown = document.getElementById('toolsDropdown');
+      if (toolsDropdown) toolsDropdown.classList.add('hidden');
+      const lightbox = document.getElementById('lightbox');
+      if (lightbox) lightbox.classList.remove('active');
+      drawerBackdrop.classList.remove('visible');
+      return;
+    }
+
+    // Desktop/laptop: click anywhere outside the sidebar closes it
+    if (!clickInsideSidebar(e) && !isToggleClick(e)){
+      closeSidebar();
+    }
+  }, true);
+
+  // Escape closes
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.body.classList.contains('sidebar-open')){
+      closeSidebar();
+    }
+  });
+
+  // Expose for debugging / other modules if needed
+  window.AMC_SIDEBAR = { open: openSidebar, close: closeSidebar, toggle: toggleSidebar, syncMode };
+})();
+</script>
+</body>
+</html>

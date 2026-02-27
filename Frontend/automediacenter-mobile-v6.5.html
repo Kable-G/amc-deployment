@@ -1,0 +1,5422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AutoMediaCenter Mobile</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,32..144,800&display=swap" rel="stylesheet">
+    
+    <!-- Content Filtering System -->
+    <script src="brands-hierarchy.js"></script>
+    <script src="content-filtering-system.js"></script>
+    
+    <style>
+        /* ===== CSS VARIABLES - EXACT DESKTOP MATCH ===== */
+        :root {
+            --bg-primary: #f3f4f6;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f9fafb;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-headings: #0f172a;
+            --border-primary: #e2e8f0;
+            --border-card: #d1d5db;
+            --accent-primary: #3b82f6;
+            --color-danger: #ef4444;
+            --card-hover-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);  /* Blue shadow in light mode */
+        }
+        
+        body.dark-mode {
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a1f2e;
+            --bg-tertiary: #161b26;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-headings: #f1f5f9;
+            --border-primary: #2d3748;
+            --border-card: #374151;
+            --card-hover-shadow: 0 4px 20px rgba(59,130,246,0.3);
+        }
+        
+        /* ===== BASE RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 16px;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        /* ===== MOBILE HEADER - CLEANER DESIGN ===== */
+        .mobile-header {
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;  /* ADDED: Ensure full width */
+            height: 56px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            z-index: 1000;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            width: 60px;
+        }
+        
+        .header-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 60px;
+            justify-content: flex-end;
+        }
+        
+        .mobile-hamburger {
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 18px;
+            border-radius: 6px;
+        }
+        
+        .mobile-hamburger:active {
+            background: var(--bg-tertiary);
+        }
+        
+        /* BIGGER LOGO - DESKTOP MATCH - NOW AS BUTTON */
+        .mobile-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            font-family: 'Inter', -apple-system, sans-serif;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .mobile-logo:active {
+            color: var(--accent-primary);
+            transform: scale(0.96);
+        }
+        
+        .header-icon-btn {
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 18px;
+            position: relative;
+            border-radius: 6px;
+        }
+        
+        .header-icon-btn:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .header-icon-btn .badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: var(--color-danger);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 4px;
+            border-radius: 8px;
+            min-width: 14px;
+            text-align: center;
+            line-height: 1;
+        }
+        
+        /* ===== SIMPLIFIED AVATAR - SOLID COLOR, NO RING ===== */
+        .amc-avatar {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            border-radius: 50%;
+        }
+        
+        .amc-avatar:active {
+            transform: scale(0.95);
+        }
+        
+        .amc-avatar i {
+            font-size: 24px;
+        }
+        
+        /* Role-based colors - SOLID AVATAR */
+        .amc-avatar.role-media-user {
+            color: #3B82F6; /* Blue */
+        }
+        
+        .amc-avatar.role-client-user {
+            color: #10B981; /* Green */
+        }
+        
+        .amc-avatar.role-client-admin {
+            color: #F59E0B; /* Yellow */
+        }
+        
+        .amc-avatar.role-platform-admin {
+            color: #EF4444; /* Red */
+        }
+        
+        /* Dark mode avatar colors - brighter */
+        body.dark-mode .amc-avatar.role-media-user {
+            color: #60a5fa;
+        }
+        
+        body.dark-mode .amc-avatar.role-client-user {
+            color: #34d399;
+        }
+        
+        body.dark-mode .amc-avatar.role-client-admin {
+            color: #fbbf24;
+        }
+        
+        body.dark-mode .amc-avatar.role-platform-admin {
+            color: #f87171;
+        }
+        
+        /* ===== AVATAR MODAL AS LAUNCHER ===== */
+        .avatar-modal {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            width: 280px;
+            background: var(--bg-secondary);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+            border-radius: 12px;
+            z-index: 2000;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-primary);
+            overflow: hidden;
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+        
+        .avatar-modal:not(.hidden) {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .avatar-modal.hidden {
+            display: none;
+        }
+        
+        .avatar-modal-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-primary);
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        }
+        
+        .avatar-modal-avatar {
+            display: grid;
+            place-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .avatar-modal-avatar i {
+            font-size: 48px;
+        }
+        
+        .avatar-email {
+            font-weight: 600;
+            font-size: 1em;
+            color: var(--text-headings);
+            margin-bottom: 4px;
+        }
+        
+        .avatar-role {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Quick Access Icons Section */
+        .modal-quick-access {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .quick-access-btn {
+            flex: 1;
+            padding: 16px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+        
+        .quick-access-btn:active {
+            transform: scale(0.95);
+            background: var(--bg-primary);
+        }
+        
+        .quick-access-btn i {
+            font-size: 20px;
+            color: var(--accent-primary);
+        }
+        
+        .quick-access-btn span {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .quick-access-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--color-danger);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+        
+        /* Profile Actions Section */
+        .avatar-modal-section {
+            padding: 8px 0;
+        }
+        
+        .modal-btn {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 0.95em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .modal-btn:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .modal-btn i {
+            width: 16px;
+            text-align: center;
+            opacity: 0.7;
+        }
+        
+        .modal-divider {
+            margin: 8px 20px;
+            border: none;
+            border-top: 1px solid var(--border-primary);
+        }
+        
+        .modal-btn-danger {
+            color: var(--color-danger);
+        }
+        
+        .modal-btn-danger:active {
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .theme-toggle-text {
+            flex: 1;
+        }
+        
+        .theme-toggle-indicator {
+            font-size: 16px;
+        }
+        
+        /* ===== CART MODAL - SLIDES IN FROM RIGHT ===== */
+        .cart-modal {
+            position: fixed;
+            top: 56px;
+            right: -100%;
+            width: 100%;
+            max-width: 400px;
+            height: calc(100vh - 56px);
+            background: var(--bg-secondary);
+            box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+            z-index: 2002;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cart-modal.active {
+            right: 0;
+        }
+        
+        .cart-modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        
+        .cart-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-headings);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .cart-modal-close {
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        
+        .cart-modal-close:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .cart-modal-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .cart-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .cart-item-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .cart-item-brand {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: var(--color-danger);
+            cursor: pointer;
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 6px;
+        }
+        
+        .cart-item-remove:active {
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .cart-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .cart-empty i {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+        
+        .cart-modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-primary);
+            flex-shrink: 0;
+        }
+        
+        .cart-checkout-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .cart-checkout-btn:active {
+            background: #2563eb;
+        }
+        
+        /* ===== TOOLS DROPDOWN ===== */
+        .tools-dropdown {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            width: 280px;
+            background: var(--bg-secondary);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12);
+            border-radius: 12px;
+            z-index: 2001;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-primary);
+            overflow: hidden;
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+        
+        .tools-dropdown:not(.hidden) {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .tools-dropdown.hidden {
+            display: none;
+        }
+        
+        .tools-dropdown-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .tools-dropdown-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-headings);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tools-dropdown-close {
+            width: 28px;
+            height: 28px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .tools-dropdown-close:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .tools-dropdown-content {
+            padding: 8px;
+        }
+        
+        .tool-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .tool-item:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .tool-item i {
+            width: 20px;
+            text-align: center;
+            color: var(--accent-primary);
+            font-size: 16px;
+        }
+        
+        .tool-item span {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        /* ===== DESKTOP-STYLE DRAWER ===== */
+        .mobile-drawer {
+            position: fixed;
+            top: 56px;
+            left: -100%;
+            width: 265px;  /* ENTERPRISE: Reduced from 280px */
+            height: calc(100vh - 56px);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-primary);
+            z-index: 2001;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mobile-drawer.open {
+            left: 0;
+        }
+        
+        .drawer-header {
+            position: sticky;  /* FIXED: Stays at top when scrolling */
+            top: 0;            /* FIXED: Anchored to top */
+            z-index: 10;       /* FIXED: Above scrolling content */
+            display: flex;
+            align-items: flex-end;  /* FIXED: Align bottom edges (was center) */
+            justify-content: space-between;
+            padding: 12px 56px 12px 16px;  /* FIXED: Reduced vertical, room for [X] */
+            border-bottom: 1px solid var(--border-primary);
+            flex-shrink: 0;
+            background: var(--bg-secondary);  /* FIXED: Match drawer background (not tertiary) */
+        }
+        
+        .drawer-title {
+            font-size: 13px;  /* Consistent across all screen sizes */
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            line-height: 1;  /* FIXED: Remove extra line height for perfect alignment */
+        }
+        
+        .drawer-close {
+            position: absolute;
+            top: 12px;  /* FIXED: Matches header padding */
+            right: 16px;  /* FIXED: Consistent with left padding */
+            width: 32px;
+            height: 32px;
+            background: transparent;  /* FIXED: No separate background (was bg-tertiary) */
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 11;  /* FIXED: Above header */
+            transition: background 0.2s ease;  /* FIXED: Smooth hover */
+        }
+        
+        .drawer-close:hover {
+            background: var(--bg-tertiary);  /* FIXED: Hover state */
+        }
+        
+        .drawer-close:active {
+            background: var(--bg-primary);
+        }
+        
+        .drawer-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 0 16px 0;  /* ENTERPRISE: Reduced from 56px top to 16px */
+            /* Thin scrollbar styling */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(100, 116, 139, 0.4) transparent;
+        }
+        
+        /* Webkit scrollbar for drawer (matches main content scrollbar) */
+        .drawer-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .drawer-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .drawer-content::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.4);
+            border-radius: 4px;
+        }
+        
+        .drawer-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 116, 139, 0.6);
+        }
+        
+        /* Dark mode scrollbar for drawer */
+        body.dark-mode .drawer-content {
+            scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+        }
+        
+        body.dark-mode .drawer-content::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.4);
+        }
+        
+        body.dark-mode .drawer-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.6);
+        }
+        
+        .drawer-section {
+            padding: 16px 0 8px 0;  /* ENTERPRISE: Reduced from 20px to 16px */
+        }
+        
+        .drawer-section-header {
+            padding: 6px 16px;  /* ENTERPRISE: Reduced from 6px 20px */
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+            margin: 0 12px 4px 12px;
+            border-radius: 4px;
+            padding-left: 10px;
+        }
+        
+        /* Section-specific colors - work in both themes */
+        .drawer-section:nth-child(1) .drawer-section-header {
+            border-left: 3px solid #1d4ed8;
+            background: linear-gradient(90deg, rgba(29, 78, 216, 0.1) 0%, var(--bg-tertiary) 100%);
+        }
+        
+        .drawer-section:nth-child(2) .drawer-section-header {
+            border-left: 3px solid #047857;
+            background: linear-gradient(90deg, rgba(4, 120, 87, 0.1) 0%, var(--bg-tertiary) 100%);
+        }
+        
+        .drawer-section:nth-child(3) .drawer-section-header {
+            border-left: 3px solid #c2410c;
+            background: linear-gradient(90deg, rgba(194, 65, 12, 0.1) 0%, var(--bg-tertiary) 100%);
+        }
+        
+        .drawer-section:nth-child(4) .drawer-section-header {
+            border-left: 3px solid #b91c1c;
+            background: linear-gradient(90deg, rgba(185, 28, 28, 0.1) 0%, var(--bg-tertiary) 100%);
+        }
+        
+        .drawer-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;  /* ENTERPRISE: Reduced from 10px 20px */
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .drawer-nav-item:active {
+            background: var(--bg-tertiary);
+        }
+        
+        /* MODERN & CLEAN: Active state with blue icon + text only (no band) */
+        .drawer-nav-item.active {
+            background: transparent;  /* REMOVED: No background band */
+            color: #3b82f6;          /* Blue text */
+            border-left-color: transparent;  /* REMOVED: No left border */
+        }
+        
+        .drawer-nav-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 16px;
+            opacity: 0.7;
+            color: var(--text-secondary);
+        }
+        
+        .drawer-nav-item.active i {
+            opacity: 1;
+            color: #3b82f6;  /* Blue icon */
+        }
+        
+        /* DESKTOP HOVER STATE: Light blue background + darker blue (mouse/trackpad only) */
+        @media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+            .drawer-nav-item:hover:not(.active) {
+                background: rgba(59, 130, 246, 0.08);  /* Light blue background */
+                color: #1e40af;  /* Darker blue text (blue-800) */
+            }
+            
+            .drawer-nav-item:hover:not(.active) i {
+                color: #1e40af;  /* Darker blue icon */
+                opacity: 1;
+            }
+        }
+        
+        /* ===== DRAWER BACKDROP ===== */
+        .drawer-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            display: none;
+        }
+        
+        .drawer-backdrop.visible {
+            display: block;
+        }
+        
+        /* ===== FILTER PANEL ===== */
+        .filter-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            z-index: 1999;
+            transition: transform 0.3s ease;
+            transform: translateY(100%);
+            max-height: 70vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-panel.active {
+            transform: translateY(0);
+        }
+        
+        .filter-panel-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        
+        .filter-panel-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-headings);
+        }
+        
+        .filter-panel-close {
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        
+        .filter-panel-close:active {
+            background: var(--bg-tertiary);
+        }
+        
+        .filter-panel-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .filter-section {
+            margin-bottom: 24px;
+        }
+        
+        .filter-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-headings);
+            margin-bottom: 12px;
+        }
+        
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .filter-chip {
+            padding: 8px 16px;
+            border: 1px solid var(--border-card);
+            border-radius: 20px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-chip.active {
+            background: var(--accent-primary);
+            color: #fff;
+            border-color: var(--accent-primary);
+        }
+        
+        .filter-chip:active {
+            transform: scale(0.95);
+        }
+        
+        /* ===== MAIN CONTENT ===== */
+        .mobile-main {
+            padding: 16px 12px;
+            min-height: calc(100vh - 56px);
+        }
+        
+        /* ===== PAGE HEADER — LINEAR-STYLE TYPOGRAPHY ===== */
+        .page-header {
+            margin: 0 0 20px 0;
+            padding: 0;
+        }
+
+        .page-header h1 {
+            font-size: 42px;
+            font-weight: 800;
+            font-variation-settings: 'opsz' 42;
+            letter-spacing: -0.04em;
+            line-height: 1.05;
+            margin: 0 0 8px 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-headings);
+        }
+
+        body.dark-mode .page-header h1 {
+            color: #f8fafc;
+        }
+
+        body:not(.dark-mode) .page-header h1 {
+            color: #0f172a;
+        }
+
+        .page-header p {
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 1.55;
+            letter-spacing: 0;
+            margin: 0;
+            padding: 0;
+            opacity: 1;
+        }
+
+        body.dark-mode .page-header p {
+            color: #64748b;
+        }
+
+        body:not(.dark-mode) .page-header p {
+            color: #6b7280;
+        }
+        
+        /* ===== SEARCH BAR — left-aligned under title ===== */
+        .search-bar {
+            margin: 0 0 16px 0;
+            padding: 0;
+            max-width: 400px;
+        }
+        
+        .search-input-wrapper {
+            display: flex;
+            gap: 8px;
+            position: relative;
+            margin: 0;   /* EXPLICIT: No margin */
+            padding: 0;  /* EXPLICIT: No padding */
+            width: 100%; /* Fill parent (max 400px) */
+        }
+        
+        .search-input {
+            flex: 1;     /* Fill available space in wrapper */
+            height: 44px;
+            padding: 0 16px;
+            border: 2px solid var(--border-primary);
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);  /* BLUE border on focus */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);  /* BLUE glow */
+        }
+        
+        .search-input.searching {
+            border-color: var(--accent-primary);  /* Blue — consistent with active/selected state */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .search-btn {
+            width: 44px;
+            height: 44px;
+            background: var(--accent-primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .search-btn:active {
+            background: #2563eb;
+        }
+        
+        /* ===== SEARCH CONTEXT — LINEAR-STYLE MINIMAL ===== */
+        /* No box. No border. Just type, flush with the search bar. */
+        .search-context-field {
+            max-width: 400px;
+            margin: 0 0 16px 0;
+            padding: 0;
+            background: none;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+            opacity: 1;
+            transition: opacity 0.15s ease;
+        }
+
+        .search-context-field.hidden {
+            display: none;
+        }
+
+        /* The top row is the ONLY row now — count + pill + clear, single line */
+        .search-context-top {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* "23 results" — Inter 300 Light, muted, unobtrusive */
+        .search-context-count {
+            font-size: 14px;
+            font-weight: 300;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        body.dark-mode .search-context-count {
+            color: #64748b;
+        }
+
+        body:not(.dark-mode) .search-context-count {
+            color: #6b7280;
+        }
+
+        /* "for" — same weight, same colour, just a connector word */
+        .search-context-for {
+            font-size: 14px;
+            font-weight: 300;
+            white-space: nowrap;
+            color: var(--text-secondary);
+        }
+
+        body.dark-mode .search-context-for {
+            color: #64748b;
+        }
+
+        body:not(.dark-mode) .search-context-for {
+            color: #6b7280;
+        }
+
+        /* Search term pill — very subtle, just enough to identify the term */
+        .search-context-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 8px 2px 10px;
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--accent-primary);
+            max-width: 180px;
+            min-width: 0;
+        }
+
+        body.dark-mode .search-context-pill {
+            background: rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.25);
+        }
+
+        #searchContextTerm {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Clear × — minimal, inline with pill */
+        .search-context-clear {
+            background: none;
+            border: none;
+            color: var(--accent-primary);
+            cursor: pointer;
+            padding: 0;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            opacity: 0.6;
+            transition: opacity 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .search-context-clear:hover {
+            opacity: 1;
+        }
+
+        .search-context-clear i {
+            font-size: 9px;
+        }
+
+        /* Bottom metadata row — hidden. The count IS the metadata. */
+        .search-context-bottom {
+            display: none;
+        }
+        
+        /* ===== LOADING STATE ===== */
+        .loading-container {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .loading-spinner {
+            font-size: 32px;
+            color: var(--accent-primary);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ===== CARD GRID ===== */
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            max-width: 1200px;
+            align-items: stretch;       /* All cards in a row match the tallest */
+        }
+        
+        /* ===== MEDIA CARD ===== */
+        .media-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-card);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .media-card:active {
+            transform: translateY(-4px);
+            box-shadow: var(--card-hover-shadow);
+            border-color: var(--accent-primary);
+        }
+        
+        .card-image {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /*
+          LANDSCAPE REFINEMENT
+          - 2-up grid with more breathing room
+          - Taller image window (reduces "missing vital cues" complaints)
+        */
+        @media (orientation: landscape) and (max-width: 767px) {
+	            /*
+	              Header compaction (landscape only)
+	              - Keep the "Media Releases" title block on the left
+	              - Move the search + filter control to the right on the same row
+	              - Lift the first card row up (more above-the-fold content)
+	            */
+	            .mobile-main{
+	                display: grid;
+	                grid-template-columns: 1fr min(420px, 48vw);
+	                grid-template-rows: auto auto;
+	                grid-template-areas:
+	                    "header search"
+	                    "cards cards";
+	                column-gap: 14px;
+	                row-gap: 12px;
+	            }
+	            .page-header{ grid-area: header; margin-bottom: 0; }
+	            .search-bar{ grid-area: search; margin: 0; align-self: end; }
+	            /* Tighten title in landscape to save vertical space */
+	            .page-header h1 { font-size: 28px; letter-spacing: -0.03em; }
+	            .page-header p { font-size: 13px; }
+	            .card-grid{ grid-area: cards; }
+	            /* Make the search control a bit more compact in landscape */
+	            .search-input{ height: 40px; }
+	            .search-btn{ width: 40px; height: 40px; }
+
+            .card-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 18px;
+                /* FIXED: Removed padding to maintain alignment */
+            }
+
+            /* More height than 16:9 to avoid over-cropping marketing imagery */
+            .card-image {
+                height: auto;
+                aspect-ratio: 3 / 2;
+            }
+
+            .card-image img {
+                object-position: center;
+            }
+        }
+        
+        .card-image .placeholder-icon {
+            font-size: 48px;
+            color: var(--text-secondary);
+            opacity: 0.3;
+        }
+        
+        /* TAP OVERLAY */
+        .card-image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card-image-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .overlay-btn {
+            width: 100%;
+            max-width: 200px;
+            height: 44px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.2s ease;
+        }
+        
+        .overlay-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .overlay-btn-primary {
+            background: var(--accent-primary);
+            color: #fff;
+        }
+        
+        .overlay-btn-success {
+            background: #10b981;
+            color: #fff;
+        }
+        
+        .overlay-btn-secondary {
+            background: #64748b;
+            color: #fff;
+        }
+        
+        .overlay-btn-danger {
+            background: var(--color-danger);
+            color: #fff;
+        }
+        
+        /* Brand band */
+        .brand-band {
+            background: #2a2a2a;
+            color: #ffffff;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .card-content {
+            padding: 14px;
+            background: var(--bg-tertiary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-headings);
+            margin-bottom: 12px;
+            line-height: 1.4;
+            min-height: calc(15px * 1.4 * 2);  /* Always reserves exactly 2 lines: 42px */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .card-title a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .card-title a:active {
+            color: var(--accent-primary);
+        }
+        
+        /* HORIZONTAL ASSET ICONS + DATE/TIME */
+        .card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-primary);
+            margin-top: auto;           /* Pins meta row to bottom regardless of title height */
+        }
+        
+        .card-assets {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .asset-icon {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .asset-icon.available {
+            color: var(--accent-primary);
+        }
+        
+        .asset-icon.unavailable {
+            color: var(--border-card);
+        }
+        
+        .asset-count-badge {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .card-date-time {
+            min-width: 85px;
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        
+        .card-date-time i {
+            color: var(--accent-primary);
+        }
+        
+        .date-part, .time-part {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            justify-content: flex-end;
+        }
+        
+        /* ===== INFINITE SCROLL LOADER ===== */
+        .infinite-scroll-loader {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+        }
+        
+        .infinite-scroll-loader.hidden {
+            display: none;
+        }
+        
+        /* ===== END OF CONTENT ===== */
+        .end-of-content {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .end-of-content.hidden {
+            display: none;
+        }
+        
+        .end-of-content i {
+            font-size: 32px;
+            color: var(--accent-primary);
+            margin-bottom: 12px;
+            opacity: 0.6;
+        }
+        
+        .end-of-content p {
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        /* ===== v7.0: ENTERPRISE PAGINATION CONTROLS ===== */
+        /* Inspired by Linear, Notion, Stripe - clean, professional, precise */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            margin-top: 32px;
+            border-top: 1px solid var(--border-primary);
+        }
+        
+        .pagination-container.hidden {
+            display: none;
+        }
+        
+        .pagination-info {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .pagination-info span {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pagination-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border-primary);
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .pagination-numbers {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .page-number {
+            min-width: 36px;
+            height: 36px;
+            padding: 0 8px;
+            border: 1px solid var(--border-primary);
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .page-number:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+        
+        .page-number.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+        
+        .page-number.ellipsis {
+            border: none;
+            cursor: default;
+            pointer-events: none;
+        }
+        
+        /* ===== v7.0: MOBILE LOAD MORE ===== */
+        .load-more-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 24px 0;
+            margin-top: 24px;
+        }
+        
+        .load-more-container.hidden {
+            display: none;
+        }
+        
+        .load-more-btn {
+            padding: 12px 32px;
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .load-more-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .load-more-info {
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .load-more-info span {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        /* ===== v7.0: MAX LOAD WARNING ===== */
+        .max-load-warning {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 24px;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            color: #9a3412;
+        }
+        
+        .max-load-warning.hidden {
+            display: none;
+        }
+        
+        .max-load-warning i {
+            font-size: 20px;
+            margin-top: 2px;
+        }
+        
+        .max-load-warning p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        body.dark-mode .max-load-warning {
+            background: rgba(251, 146, 60, 0.1);
+            border-color: rgba(251, 146, 60, 0.3);
+            color: #fb923c;
+        }
+        
+        /* ===== ENTERPRISE FOOTER ===== */
+        .amc-footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-primary);
+            margin-top: 60px;
+            padding: 48px 0 0 0;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 40px 24px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+        
+        .footer-column {
+            min-width: 0;
+        }
+        
+        .footer-heading {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+            letter-spacing: 0.3px;
+        }
+        
+        .footer-tagline {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin: 8px 0 16px 0;
+            opacity: 0.7;
+        }
+        
+        .footer-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        .footer-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s ease;
+            display: inline-block;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent-primary);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid var(--border-primary);
+            background: var(--bg-primary);
+        }
+        
+        .footer-bottom-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-copyright {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .footer-social a {
+            color: var(--text-secondary);
+            font-size: 18px;
+            transition: color 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .footer-social a:hover {
+            color: var(--accent-primary);
+        }
+        
+        /* Footer Responsive */
+        @media (max-width: 1024px) {
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 32px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .amc-footer {
+                margin-top: 40px;
+                padding: 32px 0 0 0;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                padding: 0 20px 32px 20px;
+            }
+            
+            .footer-bottom-content {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+                padding: 16px 20px;
+            }
+            
+            .footer-copyright {
+                order: 2;
+            }
+            
+            .footer-social {
+                order: 1;
+            }
+        }
+        
+        /* ===== EMPTY STATE ===== */
+        /* ===== EMPTY STATE — typography-system compliant ===== */
+        .empty-state {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;       /* Left-aligned — matches page header and search */
+            justify-content: flex-start;
+            padding: 48px 0 0 0;
+        }
+
+        .empty-state i {
+            font-size: 32px;
+            color: var(--accent-primary);  /* Blue — active, intentional, not broken/disabled */
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .empty-state .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-headings);
+            letter-spacing: -0.01em;
+            line-height: 1.3;
+            margin: 0 0 8px 0;
+        }
+
+        .empty-state .empty-subtitle {
+            font-size: 15px;
+            font-weight: 300;              /* Light — same register as page subtitle */
+            color: #64748b;
+            line-height: 1.55;
+            margin: 0;
+        }
+
+        body:not(.dark-mode) .empty-state .empty-subtitle {
+            color: #6b7280;
+        }
+        
+        /* ===== ACCESSIBILITY: SCREEN READER ONLY ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        /* ========================================
+           TABLET SUPPORT - ADDED BREAKPOINTS ONLY
+           ======================================== */
+        
+        /* ===== TABLET PORTRAIT (768px - 1024px) ===== */
+        @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+            .mobile-header {
+                height: 64px;
+                padding: 0 24px;
+            }
+            
+            .header-left,
+            .header-right {
+                width: 80px;
+            }
+            
+            .mobile-logo {
+                font-size: 20px;
+            }
+            
+            .mobile-hamburger,
+            .header-icon-btn,
+            .amc-avatar {
+                width: 44px;
+                height: 44px;
+            }
+            
+            .header-icon-btn {
+                font-size: 20px;
+            }
+            
+            .amc-avatar i {
+                font-size: 26px;
+            }
+            
+            .mobile-main {
+                padding: 24px;
+                min-height: calc(100vh - 64px);
+            }
+            
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            
+            .release-card {
+                border-radius: 10px;
+            }
+            
+            .card-header {
+                padding: 16px;
+            }
+            
+            .card-logo {
+                width: 48px;
+                height: 48px;
+            }
+            
+            .card-brand {
+                font-size: 12px;
+            }
+            
+            .card-title {
+                font-size: 17px;
+                min-height: calc(17px * 1.4 * 2);  /* 47.6px — always 2 lines at tablet size */
+            }
+            
+            .card-meta {
+                padding: 12px 16px;
+                font-size: 13px;
+            }
+            
+            .mobile-search {
+                margin-bottom: 20px;
+            }
+            
+            .mobile-search-input {
+                height: 48px;
+                font-size: 16px;
+                padding: 0 48px;
+            }
+            
+            .mobile-search-icon {
+                left: 16px;
+                font-size: 18px;
+            }
+            
+            .mobile-search-clear {
+                right: 12px;
+                width: 36px;
+                height: 36px;
+            }
+            
+            .mobile-filter-tabs {
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            
+            .mobile-filter-tab {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            
+            .mobile-drawer {
+                width: 265px;  /* ENTERPRISE: Consistent width */
+            }
+            
+            /* REMOVED: drawer-title font-size override - stays 13px across all sizes */
+            
+            .drawer-section-header {
+                font-size: 12px;
+                padding: 0 16px 10px 16px;  /* ENTERPRISE: Reduced from 20px */
+            }
+            
+            .drawer-nav-item {
+                padding: 14px 16px;  /* ENTERPRISE: Reduced from 14px 20px */
+                font-size: 15px;
+            }
+            
+            .avatar-modal {
+                top: 68px;
+                right: 24px;
+                width: 300px;
+            }
+            
+            .avatar-modal-header {
+                padding: 24px;
+            }
+            
+            .avatar-modal-avatar {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .avatar-modal-avatar i {
+                font-size: 36px;
+            }
+            
+            .avatar-modal-name {
+                font-size: 16px;
+            }
+            
+            .avatar-modal-email {
+                font-size: 14px;
+            }
+            
+            .avatar-modal-actions {
+                padding: 16px;
+            }
+            
+            .avatar-modal-btn {
+                padding: 14px 18px;
+                font-size: 15px;
+            }
+            
+            .cart-modal-content {
+                max-height: 75vh;
+                border-radius: 20px 20px 0 0;
+            }
+            
+            .cart-modal-header {
+                padding: 20px 24px;
+            }
+            
+            .cart-modal-title {
+                font-size: 20px;
+            }
+            
+            .cart-modal-body {
+                padding: 20px 24px;
+            }
+            
+            .cart-item {
+                padding: 14px;
+                margin-bottom: 10px;
+            }
+            
+            .cart-item-logo {
+                width: 56px;
+                height: 56px;
+            }
+            
+            .cart-item-brand {
+                font-size: 12px;
+            }
+            
+            .cart-item-title {
+                font-size: 15px;
+            }
+            
+            .cart-modal-footer {
+                padding: 20px 24px;
+            }
+            
+            .cart-download-btn {
+                height: 52px;
+                font-size: 16px;
+            }
+            
+            .empty-state {
+                padding: 56px 0 0 0;
+            }
+            
+            .empty-state i {
+                font-size: 36px;
+            }
+            
+            .empty-state .empty-title {
+                font-size: 21px;
+            }
+        }
+        
+        /* ===== TABLET LANDSCAPE (1024px - 1366px) ===== */
+        @media (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+            .mobile-header {
+                height: 68px;
+                padding: 0 32px;
+            }
+            
+            .header-left {
+                width: 80px;
+            }
+            
+            .header-right {
+                width: auto;
+                gap: 16px;
+            }
+            
+            .mobile-logo {
+                font-size: 22px;
+            }
+            
+            .mobile-hamburger,
+            .header-icon-btn,
+            .amc-avatar {
+                width: 44px;
+                height: 44px;
+            }
+            
+            /* Main content - 3 column grid, NO persistent sidebar */
+            .mobile-main {
+                padding: 32px;
+                min-height: calc(100vh - 68px);
+            }
+            
+            /* Drawer stays as slide-in (same as portrait) */
+            .mobile-drawer {
+                width: 265px;  /* ENTERPRISE: Consistent width */
+            }
+            
+            .card-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+            }
+            
+            .release-card {
+                border-radius: 12px;
+            }
+            
+            .card-header {
+                padding: 18px;
+            }
+            
+            .card-logo {
+                width: 52px;
+                height: 52px;
+            }
+            
+            .card-brand {
+                font-size: 12px;
+            }
+            
+            .card-title {
+                font-size: 18px;
+                min-height: calc(18px * 1.4 * 2);  /* 50.4px — always 2 lines at desktop size */
+            }
+            
+            .card-meta {
+                padding: 14px 18px;
+                font-size: 14px;
+            }
+            
+            .mobile-search {
+                margin-bottom: 24px;
+            }
+            
+            .mobile-search-input {
+                height: 52px;
+                font-size: 17px;
+                padding: 0 52px;
+            }
+            
+            .mobile-search-icon {
+                left: 18px;
+                font-size: 20px;
+            }
+            
+            .mobile-filter-tabs {
+                gap: 12px;
+                margin-bottom: 24px;
+            }
+            
+            .mobile-filter-tab {
+                padding: 12px 24px;
+                font-size: 15px;
+            }
+            
+            /* REMOVED: drawer-title font-size override - stays consistent 13px */
+            
+            .drawer-section-header {
+                font-size: 12px;
+                padding: 0 20px 10px 20px;
+            }
+            
+            .drawer-nav-item {
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+            
+            .avatar-modal {
+                top: 72px;
+                right: 32px;
+                width: 320px;
+            }
+            
+            .cart-modal {
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .cart-modal-content {
+                max-width: 600px;
+                max-height: 85vh;
+                border-radius: 16px;
+            }
+            
+            .empty-state {
+                padding: 64px 0 0 0;
+            }
+            
+            .empty-state i {
+                font-size: 40px;
+            }
+            
+            .empty-state .empty-title {
+                font-size: 22px;
+            }
+        }
+        
+        /* ===== WIDE TABLET (1366px+) ===== */
+        @media (min-width: 1366px) {
+            .mobile-main {
+                padding: 40px;
+            }
+            
+            .card-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 28px;
+            }
+            
+            .mobile-drawer {
+                width: 265px;  /* ENTERPRISE: Consistent width across all breakpoints */
+            }
+        }
+    
+/* =========================================================
+   HYBRID LAYOUT EXTENSION (v6.6)
+   - Adds an "icon rail" for laptops/desktops while keeping
+     the proven mobile drawer + backdrop behavior.
+   - Adds 5-column grid option on very wide screens.
+   ========================================================= */
+
+:root{
+  --amc-header-h: 56px;  /* FIXED: Match actual mobile header height */
+  --amc-rail-w: 72px;
+}
+
+/* Icon rail is OFF by default (phones/tablets use drawer only) */
+.amc-icon-rail{
+  display:none;
+  position:fixed;
+  top: var(--amc-header-h);
+  left:0;
+  height: calc(100vh - var(--amc-header-h));
+  width: var(--amc-rail-w);
+  background:#fff;
+  border-right:1px solid rgba(15, 23, 42, 0.08);
+  z-index: 900; /* below header (1000) and drawer/backdrop (2000+) */
+  overflow:hidden;
+}
+
+.amc-icon-rail-inner{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:10px 0;
+  gap:10px;
+}
+
+.amc-rail-open{
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border:1px solid rgba(15, 23, 42, 0.12);
+  background:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.amc-rail-items{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  padding: 4px 0;
+  overflow:auto;
+}
+
+.amc-rail-item{
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#334155;
+  text-decoration:none;
+  border:1px solid transparent;
+}
+
+.amc-rail-item:hover{
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.18);
+}
+
+.amc-rail-item i{
+  font-size: 16px;
+}
+
+/* Enable rail on laptop/desktop widths (keeps drawer overlay behavior) */
+@media (min-width: 1100px){
+  .amc-icon-rail{ display:block; }
+
+  /* Make room for rail */
+  .mobile-main{
+    padding-left: calc(32px + var(--amc-rail-w)) !important;
+  }
+
+  /* Keep content comfortably wide on laptops */
+  .card-grid{ max-width: 1400px; }
+}
+
+@media (min-width: 1366px){
+  .mobile-main{
+    padding-left: calc(40px + var(--amc-rail-w)) !important;
+  }
+  .card-grid{ max-width: 1500px; }
+}
+
+/* Very wide screens: allow 5-up grid to avoid huge margins */
+@media (min-width: 1600px){
+  .card-grid{
+    max-width: 1760px;
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}
+
+/* ===== DESKTOP NON-TOUCH ENHANCEMENTS ===== */
+
+/* Dark mode support for icon rail */
+body.dark-mode .amc-icon-rail {
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-primary);
+}
+
+body.dark-mode .amc-rail-open {
+    background: var(--bg-tertiary);
+    border-color: var(--border-primary);
+    color: var(--text-primary);
+}
+
+body.dark-mode .amc-rail-item {
+    color: var(--text-secondary);
+}
+
+body.dark-mode .amc-rail-item:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: var(--text-primary);
+}
+
+/* Active state for current page */
+.amc-rail-item.active {
+    background: rgba(59, 130, 246, 0.12);
+    border-color: rgba(59, 130, 246, 0.25);
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+body.dark-mode .amc-rail-item.active {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: #60a5fa;
+}
+
+/* Smooth transitions */
+.amc-rail-item,
+.amc-rail-open {
+    transition: all 0.2s ease;
+}
+
+.amc-rail-open:active {
+    transform: scale(0.95);
+}
+
+/* Thin scrollbar for icon rail */
+.amc-rail-items {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 116, 139, 0.3) transparent;
+}
+
+.amc-rail-items::-webkit-scrollbar {
+    width: 4px;
+}
+
+.amc-rail-items::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.amc-rail-items::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.3);
+    border-radius: 4px;
+}
+
+.amc-rail-items::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 0.5);
+}
+
+body.dark-mode .amc-rail-items {
+    scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+}
+
+body.dark-mode .amc-rail-items::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.3);
+}
+
+body.dark-mode .amc-rail-items::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.5);
+}
+
+/* ===== MAIN CONTENT AREA - THIN SCROLLBAR (Non-touch devices) ===== */
+/* Apply fixed positioning and scrollbar only on desktop with mouse/trackpad */
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+    /* Ensure body doesn't have a scrollbar competing with mobile-main */
+    html, body {
+        height: 100%;
+        overflow: hidden;  /* Prevent body scrollbar */
+    }
+
+    .mobile-main {
+        position: fixed;
+        top: 56px;  /* Start below header */
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(100, 116, 139, 0.4) var(--bg-primary);
+        /* Padding is maintained from base styles + @media rules for icon rail */
+    }
+
+    .mobile-main::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .mobile-main::-webkit-scrollbar-track {
+        background: var(--bg-primary);
+    }
+
+    .mobile-main::-webkit-scrollbar-thumb {
+        background: rgba(100, 116, 139, 0.4);
+        border-radius: 4px;
+    }
+
+    .mobile-main::-webkit-scrollbar-thumb:hover {
+        background: rgba(100, 116, 139, 0.6);
+    }
+
+    body.dark-mode .mobile-main {
+        scrollbar-color: rgba(148, 163, 184, 0.4) var(--bg-primary);
+    }
+
+    body.dark-mode .mobile-main::-webkit-scrollbar-thumb {
+        background: rgba(148, 163, 184, 0.4);
+    }
+
+    body.dark-mode .mobile-main::-webkit-scrollbar-thumb:hover {
+        background: rgba(148, 163, 184, 0.6);
+    }
+
+    /* Hover state for rail hamburger button */
+    .amc-rail-open:hover {
+        background: rgba(59, 130, 246, 0.08);
+        border-color: rgba(59, 130, 246, 0.2);
+        cursor: pointer;
+    }
+
+    body.dark-mode .amc-rail-open:hover {
+        background: rgba(59, 130, 246, 0.15);
+    }
+}
+
+/* ===== CARD HOVER STATES (Non-touch devices only) ===== */
+@media (hover: hover) and (pointer: fine) {
+    .media-card {
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .media-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--card-hover-shadow);
+        border-color: var(--accent-primary);  /* Blue border on hover */
+    }
+
+    /* Hover for buttons inside cards */
+    .card-button,
+    .media-card button {
+        cursor: pointer;
+        transition: background 0.2s ease, opacity 0.2s ease;
+    }
+
+    .card-button:hover,
+    .media-card button:hover {
+        background: rgba(59, 130, 246, 0.15);
+        opacity: 0.9;
+    }
+
+    /* Hover for links */
+    a,
+    button,
+    .clickable {
+        cursor: pointer;
+    }
+}
+
+/* ===== ICON RAIL ANIMATION ===== */
+@media (min-width: 1100px) {
+    .amc-icon-rail {
+        animation: slideInLeft 0.3s ease;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ===== FILTER CHIPS SYSTEM ===== */
+
+/* Filter count badge on search button */
+.filter-count-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    animation: badgePulse 2s ease-in-out 3;
+}
+
+.filter-count-badge.hidden {
+    display: none;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* Filter chips container */
+/* ===== FILTER CHIPS CONTAINER — LINEAR-STYLE ===== */
+.filter-chips-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;              /* Zero padding — aligns with page-header and search-bar above */
+    margin: 0 0 16px 0;
+    background: none;
+    border-bottom: none;
+    flex-wrap: wrap;
+    animation: chipContainerSlideIn 0.2s ease-out;
+}
+
+.filter-chips-container.hidden {
+    display: none;
+}
+
+@keyframes chipContainerSlideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* "Filtered by:" — same muted Inter 300 Light as subtitle and search context */
+.filter-chips-label {
+    font-size: 14px;
+    font-weight: 300;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+body:not(.dark-mode) .filter-chips-label {
+    color: #6b7280;
+}
+
+.filter-chips-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+/* Individual filter chip — flat, minimal, same language as search-context-pill */
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px 3px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent-primary);
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    animation: chipSlideIn 0.2s ease-out both;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    cursor: default;
+}
+
+body.dark-mode .filter-chip {
+    background: rgba(59, 130, 246, 0.12);
+    border-color: rgba(59, 130, 246, 0.25);
+}
+
+.filter-chip:hover {
+    background: rgba(59, 130, 246, 0.14);
+    border-color: rgba(59, 130, 246, 0.35);
+    transform: none;
+    box-shadow: none;
+}
+
+/* All chip category colour overrides removed — one colour, one language */
+.chip-company, .chip-brand, .chip-category,
+.chip-contentType, .chip-language, .chip-market, .chip-recency {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    color: var(--accent-primary);
+}
+
+body.dark-mode .chip-company, body.dark-mode .chip-brand,
+body.dark-mode .chip-category, body.dark-mode .chip-contentType,
+body.dark-mode .chip-language, body.dark-mode .chip-market,
+body.dark-mode .chip-recency {
+    background: rgba(59, 130, 246, 0.12);
+    border-color: rgba(59, 130, 246, 0.25);
+}
+
+.filter-chip-text {
+    user-select: none;
+}
+
+/* Remove × button — inline, minimal opacity approach */
+.chip-remove-btn {
+    background: none;
+    border: none;
+    color: var(--accent-primary);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.15s ease;
+    font-size: 10px;
+    padding: 0;
+    line-height: 1;
+}
+
+.chip-remove-btn:hover {
+    opacity: 1;
+    background: none;
+    transform: none;
+}
+
+.chip-remove-btn:active {
+    opacity: 1;
+    transform: none;
+}
+
+/* Clear All — ghost text link, no pill shape */
+.filter-clear-all-btn {
+    background: none;
+    border: none;
+    color: #64748b;
+    padding: 0 4px;
+    border-radius: 0;
+    font-size: 13px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: color 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 2px;
+}
+
+.filter-clear-all-btn:hover {
+    color: var(--accent-primary);
+    background: none;
+    border-color: transparent;
+    text-decoration-color: var(--accent-primary);
+}
+
+.filter-clear-all-btn i {
+    font-size: 11px;
+}
+
+/* Chip animations */
+@keyframes chipSlideIn {
+    from { opacity: 0; transform: translateY(-4px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes chipSlideOut {
+    to { opacity: 0; transform: translateX(12px) scale(0.9); }
+}
+
+.filter-chip.removing {
+    animation: chipSlideOut 0.2s ease-out forwards;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .filter-chips-container {
+        padding: 0;
+        gap: 6px;
+    }
+
+    .filter-chips-label {
+        font-size: 13px;
+    }
+
+    .filter-chips-wrapper {
+        width: 100%;
+    }
+
+    .filter-chip {
+        font-size: 12px;
+        padding: 3px 8px 3px 10px;
+    }
+
+    .filter-clear-all-btn {
+        font-size: 12px;
+        margin-top: 2px;
+    }
+}
+
+/* Tablet responsive */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .filter-chips-container {
+        padding: 0;
+    }
+}
+
+</style>
+</head>
+<body>
+
+<!-- Mobile Header -->
+<header class="mobile-header">
+    <div class="header-left">
+        <button class="mobile-hamburger" id="hamburgerBtn" aria-label="Open menu">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    
+    <div class="header-center">
+        <button class="mobile-logo" id="mobileLogo" aria-label="Scroll to top">AutoMediaCenter</button>
+    </div>
+    
+    <div class="header-right">
+        <button class="header-icon-btn" id="notificationBtn" aria-label="Notifications">
+            <i class="fas fa-bell"></i>
+            <span class="badge" id="notificationBadge" style="display: none;">0</span>
+        </button>
+        
+        <div class="amc-avatar role-media-user" id="avatarContainer">
+            <i class="far fa-user-circle"></i>
+        </div>
+    </div>
+</header>
+
+<!-- Avatar Modal (Launcher) -->
+<div class="avatar-modal hidden" id="avatarModal">
+    <div class="avatar-modal-header">
+        <div class="avatar-modal-avatar">
+            <i class="far fa-user-circle" id="modalAvatarIcon"></i>
+        </div>
+        <div class="avatar-email" id="modalEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8afff9eff8caeff2ebe7fae6efa4e9e5e7">[email&#160;protected]</a></div>
+        <div class="avatar-role" id="modalRole">Media User</div>
+    </div>
+    
+    <!-- Quick Access Icons -->
+    <div class="modal-quick-access">
+        <button class="quick-access-btn" id="quickAccessCart">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+            <span class="quick-access-badge hidden" id="quickAccessCartBadge">0</span>
+        </button>
+        <button class="quick-access-btn" id="quickAccessTools">
+            <i class="fas fa-wrench"></i>
+            <span>Tools</span>
+        </button>
+    </div>
+    
+    <!-- Profile Actions -->
+    <div class="avatar-modal-section">
+        <button class="modal-btn" id="themeToggleBtn">
+            <i class="fas fa-moon"></i>
+            <span class="theme-toggle-text">Dark Mode</span>
+            <span class="theme-toggle-indicator">☀️</span>
+        </button>
+        <button class="modal-btn" id="settingsBtn">
+            <i class="fas fa-cog"></i>
+            <span>User Settings</span>
+        </button>
+        <button class="modal-btn" id="contentSettingsBtn">
+            <i class="fas fa-sliders-h"></i>
+            <span>Content Settings</span>
+        </button>
+        <hr class="modal-divider">
+        <button class="modal-btn modal-btn-danger" id="signOutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Sign Out</span>
+        </button>
+    </div>
+</div>
+
+<!-- Cart Modal (Slides in from right) -->
+<div class="cart-modal" id="cartModal">
+    <div class="cart-modal-header">
+        <h2 class="cart-modal-title">
+            <i class="fas fa-shopping-cart"></i>
+            Cart
+        </h2>
+        <button class="cart-modal-close" id="cartModalClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="cart-modal-content" id="cartModalContent">
+        <div class="cart-empty">
+            <i class="fas fa-shopping-cart"></i>
+            <p>Your cart is empty</p>
+        </div>
+    </div>
+    <div class="cart-modal-footer hidden" id="cartModalFooter">
+        <button class="cart-checkout-btn" id="cartCheckoutBtn">
+            <i class="fas fa-check"></i>
+            Checkout (<span id="cartItemCount">0</span> items)
+        </button>
+    </div>
+</div>
+
+<!-- Tools Dropdown -->
+<div class="tools-dropdown hidden" id="toolsDropdown">
+    <div class="tools-dropdown-header">
+        <h3 class="tools-dropdown-title">
+            <i class="fas fa-wrench"></i>
+            Tools
+        </h3>
+        <button class="tools-dropdown-close" id="toolsDropdownClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="tools-dropdown-content">
+        <div class="tool-item" id="toolUnitConverter">
+            <i class="fas fa-calculator"></i>
+            <span>Unit Converter</span>
+        </div>
+        <div class="tool-item" id="toolCurrencyConverter">
+            <i class="fas fa-dollar-sign"></i>
+            <span>Currency Converter</span>
+        </div>
+        <div class="tool-item" id="toolTimezoneConverter">
+            <i class="fas fa-clock"></i>
+            <span>Timezone Converter</span>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Icon Rail (Laptop/Desktop) -->
+    <nav class="amc-icon-rail" id="iconRail" aria-label="AutoMediaCenter quick navigation">
+      <div class="amc-icon-rail-inner">
+        <button class="amc-rail-open" id="iconRailOpen" type="button" title="Open menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="amc-rail-items" id="iconRailItems"></div>
+      </div>
+    </nav>
+
+<!-- Desktop-Style Drawer -->
+<nav class="mobile-drawer" id="mobileDrawer">
+    <button class="drawer-close" id="drawerCloseBtn" aria-label="Close menu">
+        <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="drawer-content" id="drawerContent">
+        <!-- Dynamic content will be rendered here by JavaScript -->
+    </div>
+</nav>
+
+<!-- Drawer Backdrop -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+<!-- Filter Panel -->
+<div class="filter-panel" id="filterPanel">
+    <div class="filter-panel-header">
+        <h3 class="filter-panel-title">Filters</h3>
+        <button class="filter-panel-close" id="filterPanelClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="filter-panel-content">
+        <div class="filter-section">
+            <div class="filter-section-title">Brand</div>
+            <div class="filter-chips">
+                <button class="filter-chip active" data-filter="brand" data-value="all">All Brands</button>
+                <button class="filter-chip" data-filter="brand" data-value="Mercedes-Benz">Mercedes-Benz</button>
+                <button class="filter-chip" data-filter="brand" data-value="BMW">BMW</button>
+                <button class="filter-chip" data-filter="brand" data-value="Audi">Audi</button>
+                <button class="filter-chip" data-filter="brand" data-value="Porsche">Porsche</button>
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <div class="filter-section-title">Asset Type</div>
+            <div class="filter-chips">
+                <button class="filter-chip active" data-filter="asset" data-value="all">All Assets</button>
+                <button class="filter-chip" data-filter="asset" data-value="images">Images</button>
+                <button class="filter-chip" data-filter="asset" data-value="videos">Videos</button>
+                <button class="filter-chip" data-filter="asset" data-value="docs">Documents</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<main class="mobile-main">
+    <header class="page-header">
+        <h1>Media Releases</h1>
+        <p>Latest media releases, images, videos and more</p>
+    </header>
+    
+    <div class="search-bar">
+        <label for="searchInput" class="sr-only">Search media releases</label>
+        <div class="search-input-wrapper">
+            <input 
+                type="search" 
+                class="search-input" 
+                placeholder="Search releases..." 
+                id="searchInput"
+                aria-label="Search releases by title or brand"
+                autocomplete="off"
+                spellcheck="false"
+            >
+            <button class="search-btn" id="searchBtn" title="Open Filters" aria-label="Open filter options">
+                <i class="fas fa-filter"></i>
+                <span class="filter-count-badge hidden" id="filterCountBadge">0</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Filter Chips Container -->
+    <div class="filter-chips-container hidden" id="filterChipsContainer">
+        <span class="filter-chips-label">Filtered by:</span>
+        <div class="filter-chips-wrapper" id="filterChipsWrapper">
+            <!-- Chips will be dynamically inserted here -->
+        </div>
+        <button class="filter-clear-all-btn" id="filterClearAllBtn">
+            <i class="fas fa-times-circle"></i>
+            Clear All
+        </button>
+    </div>
+    
+    <!-- MEGA-ENTERPRISE: Search Context Field -->
+    <div class="search-context-field hidden" id="searchContextField">
+        <div class="search-context-top">
+            <span class="search-context-count" id="searchContextCount">0 Results</span>
+            <span class="search-context-for">for</span>
+            <span class="search-context-pill" id="searchContextPill">
+                <span id="searchContextTerm"></span>
+                <button class="search-context-clear" id="searchContextClear" aria-label="Clear search">
+                    <i class="fas fa-times"></i>
+                </button>
+            </span>
+        </div>
+        <div class="search-context-bottom" id="searchContextBottom">
+            1–0 of 0
+        </div>
+    </div>
+    
+    <!-- Card Grid -->
+    <div class="card-grid" id="cardGrid">
+        <div class="loading-container">
+            <i class="fas fa-spinner loading-spinner"></i>
+            <p>Loading releases...</p>
+        </div>
+    </div>
+    
+    <!-- v7.0: Desktop Pagination Controls (enterprise-grade) -->
+    <div class="pagination-container hidden" id="paginationContainer">
+        <div class="pagination-info" id="paginationInfo">
+            Showing <span id="startCard">1</span>-<span id="endCard">25</span> of <span id="totalCards">0</span>
+        </div>
+        <div class="pagination-controls">
+            <button class="pagination-btn" id="prevPage" aria-label="Previous page">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="pagination-numbers" id="paginationNumbers"></div>
+            <button class="pagination-btn" id="nextPage" aria-label="Next page">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- v7.0: Mobile Load More (hidden on desktop) -->
+    <div class="load-more-container hidden" id="loadMoreContainer">
+        <button class="load-more-btn" id="loadMoreBtn">
+            <i class="fas fa-arrow-down"></i> Load More
+        </button>
+        <div class="load-more-info" id="loadMoreInfo">
+            Showing <span id="loadedCount">12</span> of <span id="loadTotalCount">279</span>
+        </div>
+    </div>
+    
+    <!-- v7.0: Max Load Warning -->
+    <div class="max-load-warning hidden" id="maxLoadWarning">
+        <i class="fas fa-info-circle"></i>
+        <p>Showing maximum of 100 releases. Use search or filters to find specific content.</p>
+    </div>
+    
+    <!-- Infinite Scroll Loader -->
+    <div class="infinite-scroll-loader hidden" id="infiniteScrollLoader">
+        <i class="fas fa-spinner loading-spinner"></i>
+        <p>Loading more...</p>
+    </div>
+    
+    <!-- End of Content Message -->
+    <div class="end-of-content hidden" id="endOfContent">
+        <i class="fas fa-check-circle"></i>
+        <p>You're all caught up!</p>
+    </div>
+    
+    <!-- ===== ENTERPRISE FOOTER ===== -->
+    <footer class="amc-footer">
+        <div class="footer-content">
+            <!-- Column 1: Company -->
+            <div class="footer-column">
+                <h4 class="footer-heading">AutoMediaCenter</h4>
+                <p class="footer-tagline">Where Automotive Stories Begin</p>
+            </div>
+            
+            <!-- Column 2: Product -->
+            <div class="footer-column">
+                <h4 class="footer-heading">Product</h4>
+                <ul class="footer-links">
+                    <li><a href="/features">Features</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/api-docs">API Documentation</a></li>
+                    <li><a href="https://status.automediacenter.com" target="_blank">System Status</a></li>
+                    <li><a href="/changelog">Changelog</a></li>
+                </ul>
+            </div>
+            
+            <!-- Column 3: Company -->
+            <div class="footer-column">
+                <h4 class="footer-heading">Company</h4>
+                <ul class="footer-links">
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/help">Help Center</a></li>
+                    <li><a href="/security">Security</a></li>
+                    <li><a href="/careers">Careers</a></li>
+                </ul>
+            </div>
+            
+            <!-- Column 4: Legal & Resources -->
+            <div class="footer-column">
+                <h4 class="footer-heading">Legal & Resources</h4>
+                <ul class="footer-links">
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/cookies">Cookie Policy</a></li>
+                    <li><a href="/dpa">Data Processing Agreement</a></li>
+                    <li><a href="/accessibility">Accessibility</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p class="footer-copyright">
+                    © 2026 AutoMediaCenter. All rights reserved.
+                </p>
+                <div class="footer-social">
+                    <a href="https://twitter.com/automediacenter" target="_blank" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://linkedin.com/company/automediacenter" target="_blank" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="https://github.com/automediacenter" target="_blank" aria-label="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</main>
+
+<!-- JavaScript -->
+<script>
+// Configuration
+const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
+const RELEASES_PER_PAGE = 24;
+
+// ===== v7.0: ENTERPRISE RESPONSIVE PAGINATION =====
+// Separate config for grid-perfect pagination (enterprise-grade approach)
+// Each page size divides perfectly by grid columns for clean layouts
+// Aligned with CSS @media breakpoints for pixel-perfect grid matching
+const PAGINATION_CONFIG = {
+    mobile: 12,      // ≤640px:   1 col × 12 rows = 12 cards ✅
+    tablet: 16,      // ≤899px:   2 col × 8 rows = 16 cards ✅
+    tabletLg: 18,    // ≤1365px:  3 col × 6 rows = 18 cards ✅ (CSS: 1024-1366px)
+    laptop: 24,      // ≥1366px:  4 col × 6 rows = 24 cards ✅
+    desktop: 25,     // ≥1920px:  5 col × 5 rows = 25 cards ✅
+    ultrawide: 30    // ≥2000px:  6 col × 5 rows = 30 cards ✅
+};
+
+// Calculate responsive page size based on viewport width
+// ALIGNED WITH CSS GRID BREAKPOINTS for perfect grid layouts
+function getPageSize() {
+    const width = window.innerWidth;
+    if (width <= 640) return PAGINATION_CONFIG.mobile;     // 1 col × 12 rows
+    if (width <= 899) return PAGINATION_CONFIG.tablet;     // 2 col × 8 rows
+    if (width <= 1099) return PAGINATION_CONFIG.tabletLg;  // 3 col × 6 rows
+    if (width < 1366) return PAGINATION_CONFIG.tabletLg;   // 3 col × 6 rows (CSS breakpoint at 1366px)
+    if (width <= 1919) return PAGINATION_CONFIG.laptop;    // 4 col × 6 rows
+    if (width <= 1999) return PAGINATION_CONFIG.desktop;   // 5 col × 5 rows
+    return PAGINATION_CONFIG.ultrawide;                    // 6 col × 5 rows
+}
+
+// Determine pagination mode (desktop) vs infinite scroll (mobile)
+function isPaginationMode() {
+    return window.innerWidth >= 1100;
+}
+
+// Pagination state
+let totalReleases = 0;
+let totalPages = 0;
+const MAX_INFINITE_CARDS = 100;
+
+// Global state
+let currentPage = 1;
+let cartItems = [];
+let currentUser = null;
+let currentRole = 'media_user';
+let activeOverlay = null;
+let allReleases = [];
+let filteredReleases = [];
+let isLoading = false;
+let hasMore = true;
+
+// Role color mapping
+const roleColors = {
+    'media_user': '#3B82F6',
+    'client_user': '#10B981',
+    'client_admin': '#F59E0B',
+    'platform_admin': '#EF4444'
+};
+
+const roleColorsDark = {
+    'media_user': '#60a5fa',
+    'client_user': '#34d399',
+    'client_admin': '#fbbf24',
+    'platform_admin': '#f87171'
+};
+
+// ===== AVATAR SYSTEM =====
+function initializeAvatar() {
+    const userString = localStorage.getItem('user') || localStorage.getItem('currentUser') || localStorage.getItem('amcUser');
+    
+    if (userString) {
+        try {
+            currentUser = JSON.parse(userString);
+            currentRole = currentUser.role || 'media_user';
+        } catch (e) {
+            console.error('Error parsing user data:', e);
+        }
+    }
+    
+    updateAvatarDisplay();
+    
+    const modalEmail = document.getElementById('modalEmail');
+    const modalRole = document.getElementById('modalRole');
+    
+    if (currentUser && currentUser.email) {
+        modalEmail.textContent = currentUser.email;
+    }
+    
+    const roleNames = {
+        'media_user': 'Media User',
+        'client_user': 'Client User',
+        'client_admin': 'Client Admin',
+        'platform_admin': 'Platform Admin'
+    };
+    modalRole.textContent = roleNames[currentRole] || 'Media User';
+}
+
+function updateAvatarDisplay() {
+    const avatarContainer = document.getElementById('avatarContainer');
+    const modalAvatarIcon = document.getElementById('modalAvatarIcon');
+    
+    // Set role class
+    avatarContainer.className = `amc-avatar role-${currentRole.replace(/_/g, '-')}`;
+    
+    // Apply role color to modal avatar too
+    const isDark = document.body.classList.contains('dark-mode');
+    const color = isDark ? roleColorsDark[currentRole] : roleColors[currentRole];
+    if (modalAvatarIcon) {
+        modalAvatarIcon.style.color = color;
+    }
+}
+
+// Avatar click handler
+document.getElementById('avatarContainer').addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('avatarModal').classList.toggle('hidden');
+    document.getElementById('toolsDropdown').classList.add('hidden');
+    updateCartBadge();
+});
+
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('avatarModal');
+    const avatar = document.getElementById('avatarContainer');
+    const toolsDropdown = document.getElementById('toolsDropdown');
+    
+    if (!modal.contains(e.target) && !avatar.contains(e.target)) {
+        modal.classList.add('hidden');
+    }
+    
+    if (!toolsDropdown.contains(e.target) && e.target.id !== 'quickAccessTools') {
+        toolsDropdown.classList.add('hidden');
+    }
+});
+
+// Quick Access Cart Button
+document.getElementById('quickAccessCart').addEventListener('click', () => {
+    document.getElementById('avatarModal').classList.add('hidden');
+    document.getElementById('cartModal').classList.add('active');
+    document.getElementById('drawerBackdrop').classList.add('visible');
+    updateCartModal();
+});
+
+// Quick Access Tools Button
+document.getElementById('quickAccessTools').addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('avatarModal').classList.add('hidden');
+    document.getElementById('toolsDropdown').classList.toggle('hidden');
+});
+
+// Tools Dropdown Close
+document.getElementById('toolsDropdownClose').addEventListener('click', () => {
+    document.getElementById('toolsDropdown').classList.add('hidden');
+});
+
+// Tool items
+document.getElementById('toolUnitConverter').addEventListener('click', () => {
+    alert('Unit Converter coming soon!');
+    document.getElementById('toolsDropdown').classList.add('hidden');
+});
+
+document.getElementById('toolCurrencyConverter').addEventListener('click', () => {
+    alert('Currency Converter coming soon!');
+    document.getElementById('toolsDropdown').classList.add('hidden');
+});
+
+document.getElementById('toolTimezoneConverter').addEventListener('click', () => {
+    alert('Timezone Converter coming soon!');
+    document.getElementById('toolsDropdown').classList.add('hidden');
+});
+
+// Cart Modal Close
+document.getElementById('cartModalClose').addEventListener('click', () => {
+    document.getElementById('cartModal').classList.remove('active');
+    document.getElementById('drawerBackdrop').classList.remove('visible');
+});
+
+// Theme toggle
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const themeToggleText = themeToggleBtn.querySelector('.theme-toggle-text');
+const themeToggleIndicator = themeToggleBtn.querySelector('.theme-toggle-indicator');
+
+function updateThemeButton() {
+    const isDark = document.body.classList.contains('dark-mode');
+    themeToggleText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+    themeToggleIndicator.textContent = isDark ? '🌙' : '☀️';
+    themeToggleBtn.querySelector('i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    updateAvatarDisplay(); // Update avatar colors when theme changes
+}
+
+const savedTheme = localStorage.getItem('amc-theme');
+if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+}
+updateThemeButton();
+
+themeToggleBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('amc-theme', isDark ? 'dark' : 'light');
+    updateThemeButton();
+    
+    // Close avatar modal after theme change (better UX - one tap instead of two)
+    setTimeout(() => {
+        document.getElementById('avatarModal').classList.add('hidden');
+    }, 150); // Brief delay so user sees the theme change
+});
+
+document.getElementById('settingsBtn').addEventListener('click', () => {
+    window.location.href = 'user-settings.html';
+});
+
+document.getElementById('contentSettingsBtn').addEventListener('click', () => {
+    window.location.href = 'content-settings.html';
+});
+
+document.getElementById('signOutBtn').addEventListener('click', () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('amcUser');
+    sessionStorage.clear();
+    window.location.href = 'landing-page-twitter-style.html';
+});
+
+// ===== DRAWER FUNCTIONALITY =====
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const mobileDrawer = document.getElementById('mobileDrawer');
+const drawerCloseBtn = document.getElementById('drawerCloseBtn');
+const drawerBackdrop = document.getElementById('drawerBackdrop');
+
+function openDrawer() {
+    mobileDrawer.classList.add('open');
+    drawerBackdrop.classList.add('visible');
+    // FIXED: Removed document.body.style.overflow = 'hidden' (redundant - body already has overflow:hidden in CSS)
+}
+
+function closeDrawer() {
+    mobileDrawer.classList.remove('open');
+    drawerBackdrop.classList.remove('visible');
+    // FIXED: Removed document.body.style.overflow = '' (was causing scrollbar issues)
+}
+
+hamburgerBtn.addEventListener('click', openDrawer);
+drawerCloseBtn.addEventListener('click', closeDrawer);
+
+// Logo tap to scroll to top - MULTIPLE METHODS FOR MOBILE COMPATIBILITY
+const mobileLogo = document.getElementById('mobileLogo');
+console.log('🔍 Logo element found:', mobileLogo !== null, mobileLogo);
+if (mobileLogo) {
+    console.log('✅ Logo tap to scroll initialized');
+    
+    mobileLogo.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('🏠 Logo clicked - returning to home (enterprise back-to-top)');
+        
+        // v7.0: Clear search state
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput && searchInput.value !== '') {
+            console.log('🔍 Clearing search');
+            searchInput.value = '';
+            searchInput.classList.remove('searching');  // FIXED: Return to neutral state
+            currentSearchTerm = '';
+            searchResults = [];
+            
+            // MEGA-ENTERPRISE: Hide search context field
+            document.getElementById('searchContextField').classList.add('hidden');
+        }
+        
+        // v7.0: ALWAYS reload to page 1 (enterprise pattern)
+        currentPage = 1;
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        fetchAndDisplayReleases(token, 1, false);
+        
+        // Smooth scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        console.log('✅ Returned to home - page 1, all releases');
+    });
+    
+    console.log('✅ Click listener attached to button element');
+} else {
+    console.error('❌ CRITICAL: mobileLogo button not found!');
+}
+
+drawerBackdrop.addEventListener('click', () => {
+    closeDrawer();
+    document.getElementById('cartModal').classList.remove('active');
+    document.getElementById('filterPanel').classList.remove('active');
+    drawerBackdrop.classList.remove('visible');
+});
+
+document.querySelectorAll('.drawer-nav-item').forEach(link => {
+    link.addEventListener('click', closeDrawer);
+});
+
+// ===== FILTER PANEL =====
+const searchBtn = document.getElementById('searchBtn');
+const filterPanel = document.getElementById('filterPanel');
+const filterPanelClose = document.getElementById('filterPanelClose');
+
+searchBtn.addEventListener('click', () => {
+    filterPanel.classList.toggle('active');
+    if (filterPanel.classList.contains('active')) {
+        drawerBackdrop.classList.add('visible');
+    } else {
+        drawerBackdrop.classList.remove('visible');
+    }
+});
+
+filterPanelClose.addEventListener('click', () => {
+    filterPanel.classList.remove('active');
+    drawerBackdrop.classList.remove('visible');
+});
+
+// Filter chips
+document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        const filterType = chip.dataset.filter;
+        const filterValue = chip.dataset.value;
+        
+        document.querySelectorAll(`[data-filter="${filterType}"]`).forEach(c => {
+            c.classList.remove('active');
+        });
+        chip.classList.add('active');
+        
+        applyFilters();
+    });
+});
+
+function applyFilters() {
+    const activeBrand = document.querySelector('[data-filter="brand"].active')?.dataset.value || 'all';
+    const activeAsset = document.querySelector('[data-filter="asset"].active')?.dataset.value || 'all';
+    
+    // Note: allReleases is already filtered by content preferences from fetchAndDisplayReleases
+    // This function only applies additional UI-based brand/asset filters
+    filteredReleases = allReleases.filter(release => {
+        let matchesBrand = activeBrand === 'all' || release.brand === activeBrand;
+        let matchesAsset = activeAsset === 'all' || 
+            (activeAsset === 'images' && release.images && release.images.length > 0) ||
+            (activeAsset === 'videos' && release.videos && release.videos.length > 0) ||
+            (activeAsset === 'docs' && release.releaseDocs && release.releaseDocs.length > 0);
+        
+        return matchesBrand && matchesAsset;
+    });
+    
+    // v7.0: Use enterprise responsive page size
+    currentPage = 1;
+    const pageSize = getPageSize();
+    const cardGrid = document.getElementById('cardGrid');
+    cardGrid.innerHTML = '';
+    displayReleases(filteredReleases.slice(0, pageSize));
+}
+
+// ===== SEARCH FUNCTIONALITY (Matches Desktop amc-releases-search.js) =====
+const searchInput = document.getElementById('searchInput');
+let searchTimeout;
+let currentSearchTerm = '';
+let searchResults = [];
+
+/**
+ * Normalize text for multi-language search
+ * Handles German umlauts and French accents like desktop does
+ */
+function normalizeSearchText(text) {
+    if (!text) return '';
+    
+    let normalized = text.toLowerCase();
+    
+    // German umlaut conversions (ä↔ae, ö↔oe, ü↔ue, ß↔ss)
+    normalized = normalized
+        .replace(/ä/g, 'ae').replace(/ö/g, 'oe')
+        .replace(/ü/g, 'ue').replace(/ß/g, 'ss');
+    
+    // French accent removal
+    normalized = normalized
+        .replace(/[àáâãäå]/g, 'a')
+        .replace(/[èéêë]/g, 'e')
+        .replace(/[ìíîï]/g, 'i')
+        .replace(/[òóôõö]/g, 'o')
+        .replace(/[ùúûü]/g, 'u')
+        .replace(/[ýÿ]/g, 'y')
+        .replace(/[ñ]/g, 'n')
+        .replace(/[ç]/g, 'c');
+    
+    return normalized;
+}
+
+/**
+ * Advanced search matching - matches desktop logic exactly
+ * Multi-word search: ALL words must match somewhere in the release
+ */
+function matchesSearchTerm(release, searchWords) {
+    // Build searchable text from all relevant fields
+    const title = normalizeSearchText(release.title || '');
+    const brand = normalizeSearchText(release.brand || '');
+    const summary = normalizeSearchText(release.summary || release.description || '');
+    const releaseDate = release.releaseDate || '';
+    
+    // Asset types for search
+    const hasPress = release.releaseDocs && release.releaseDocs.length > 0;
+    const hasImages = release.images && release.images.length > 0;
+    const hasVideos = release.videos && release.videos.length > 0;
+    const hasDocs = release.supplementaryDocs && release.supplementaryDocs.length > 0;
+    
+    const assetText = [
+        hasPress ? 'press release' : '',
+        hasImages ? 'images photos' : '',
+        hasVideos ? 'videos' : '',
+        hasDocs ? 'documents' : ''
+    ].join(' ');
+    
+    // Combine all searchable text
+    const searchableText = `${title} ${brand} ${summary} ${releaseDate} ${assetText}`;
+    
+    // ALL search words must match somewhere in the searchable text
+    return searchWords.every(word => searchableText.includes(word));
+}
+
+/**
+ * Perform search - fetches ALL releases and filters client-side
+ * Matches desktop behavior exactly
+ */
+async function performSearch(searchTerm) {
+    const trimmedTerm = searchTerm.trim();
+    
+    // If empty, reset to normal pagination
+    if (!trimmedTerm) {
+        currentSearchTerm = '';
+        searchResults = [];
+        currentPage = 1;
+        
+        // FIXED: Remove 'searching' class to return to neutral state
+        searchInput.classList.remove('searching');
+        
+        // MEGA-ENTERPRISE: Hide search context field
+        document.getElementById('searchContextField').classList.add('hidden');
+        
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        await fetchAndDisplayReleases(token, 1, false);
+        return;
+    }
+    
+    currentSearchTerm = trimmedTerm;
+    searchInput.classList.add('searching');
+    
+    try {
+        // FETCH ALL RELEASES (like desktop does)
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        // Fetch up to 1000 releases (same as desktop)
+        const response = await fetch(
+            `${API_BASE_URL}/api/v1/center/releases?limit=1000&page=1`,
+            {
+                method: 'GET',
+                headers: headers
+            }
+        );
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const responseData = await response.json();
+        
+        if (responseData.success && responseData.data && Array.isArray(responseData.data.releases)) {
+            const allReleasesForSearch = responseData.data.releases;
+            
+            // Normalize search term and split into words
+            const normalizedSearchTerm = normalizeSearchText(trimmedTerm);
+            const searchWords = normalizedSearchTerm.split(/\s+/).filter(word => word.length > 0);
+            
+            // Filter releases using advanced matching (like desktop)
+            searchResults = allReleasesForSearch.filter(release => 
+                matchesSearchTerm(release, searchWords)
+            );
+            
+            // Display first page of results
+            currentPage = 1;
+            displaySearchResults(searchResults, 1);
+            
+            console.log(`Search found ${searchResults.length} results for "${trimmedTerm}"`);
+        } else {
+            throw new Error('Invalid response format');
+        }
+        
+    } catch (error) {
+        console.error('Search error:', error);
+        const cardGrid = document.getElementById('cardGrid');
+        cardGrid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Search error occurred</p>
+                <p style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">
+                    Please try again or refresh the page
+                </p>
+            </div>
+        `;
+    } finally {
+        setTimeout(() => {
+            searchInput.classList.remove('searching');
+        }, 400);
+    }
+}
+
+/**
+ * Display search results with pagination
+ */
+function displaySearchResults(results, page) {
+    const cardGrid = document.getElementById('cardGrid');
+    const searchContextField = document.getElementById('searchContextField');
+    const searchContextCount = document.getElementById('searchContextCount');
+    const searchContextTerm = document.getElementById('searchContextTerm');
+    const searchContextBottom = document.getElementById('searchContextBottom');
+    
+    cardGrid.innerHTML = '';
+    
+    if (results.length === 0) {
+        // Hide search context field for no results
+        searchContextField.classList.add('hidden');
+        
+        cardGrid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <i class="fas fa-search"></i>
+                <p class="empty-title">No results for "${currentSearchTerm}"</p>
+                <p class="empty-subtitle">Try different keywords or check spelling</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // v7.0: Use enterprise responsive page size
+    const pageSize = getPageSize();
+    
+    // Calculate pagination
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const pageResults = results.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(results.length / pageSize);
+    
+    // MEGA-ENTERPRISE: Update search context field
+    searchContextField.classList.remove('hidden');
+    searchContextCount.textContent = `${results.length} Result${results.length !== 1 ? 's' : ''}`;
+    searchContextTerm.textContent = currentSearchTerm;
+    searchContextBottom.textContent = `${startIndex + 1}–${Math.min(endIndex, results.length)} of ${results.length}`;
+    
+    // Display results (no inline count div - using context field instead)
+    pageResults.forEach(release => {
+        const card = createReleaseCard(release);
+        cardGrid.appendChild(card);
+    });
+    
+    // Add "Load More" button if there are more results
+    if (endIndex < results.length) {
+        const loadMoreDiv = document.createElement('div');
+        loadMoreDiv.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 20px;';
+        loadMoreDiv.innerHTML = `
+            <button class="load-more-btn" style="
+                padding: 12px 24px;
+                background: var(--accent-primary);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 16px;
+                cursor: pointer;
+                transition: background 0.2s;
+            ">
+                <i class="fas fa-chevron-down"></i> Load More Results (${results.length - endIndex} remaining)
+            </button>
+        `;
+        
+        const loadMoreBtn = loadMoreDiv.querySelector('.load-more-btn');
+        loadMoreBtn.addEventListener('click', () => {
+            currentPage++;
+            displaySearchResults(results, currentPage);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        loadMoreBtn.addEventListener('mouseenter', (e) => {
+            e.target.style.background = 'var(--accent-primary-hover)';
+        });
+        loadMoreBtn.addEventListener('mouseleave', (e) => {
+            e.target.style.background = 'var(--accent-primary)';
+        });
+        
+        cardGrid.appendChild(loadMoreDiv);
+    }
+    
+    attachCardListeners();
+}
+
+// Search input with debounce (300ms - same as desktop)
+searchInput.addEventListener('input', (e) => {
+    const searchTerm = e.target.value;
+    
+    // FIXED: Only add 'searching' class if there's text
+    if (searchTerm.trim()) {
+        searchInput.classList.add('searching');
+    } else {
+        searchInput.classList.remove('searching');
+    }
+    
+    clearTimeout(searchTimeout);
+    
+    searchTimeout = setTimeout(() => {
+        performSearch(searchTerm);
+    }, 300);
+});
+
+// Enter key handler - instant search
+searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        clearTimeout(searchTimeout);
+        searchInput.classList.add('searching');
+        performSearch(e.target.value);
+        searchInput.blur(); // Close mobile keyboard
+    }
+    
+    // ESC key - clear search (like desktop)
+    if (e.key === 'Escape') {
+        e.preventDefault();
+        searchInput.value = '';
+        searchInput.classList.remove('searching');  // FIXED: Return to neutral state
+        performSearch('');
+    }
+});
+
+// MEGA-ENTERPRISE: Search Context Field clear button
+const searchContextClear = document.getElementById('searchContextClear');
+searchContextClear.addEventListener('click', () => {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.value = '';
+    searchInput.classList.remove('searching');  // FIXED: Return to neutral state
+    currentSearchTerm = '';
+    searchResults = [];
+    
+    // Hide search context field
+    document.getElementById('searchContextField').classList.add('hidden');
+    
+    // Reload all releases
+    currentPage = 1;
+    const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    fetchAndDisplayReleases(token, 1, false);
+    
+    console.log('🔍 Search cleared via context field button');
+});
+
+
+// ===== ESC KEY =====
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        if (mobileDrawer.classList.contains('open')) {
+            closeDrawer();
+        }
+        if (filterPanel.classList.contains('active')) {
+            filterPanel.classList.remove('active');
+            drawerBackdrop.classList.remove('visible');
+        }
+        if (document.getElementById('cartModal').classList.contains('active')) {
+            document.getElementById('cartModal').classList.remove('active');
+            drawerBackdrop.classList.remove('visible');
+        }
+        document.getElementById('avatarModal').classList.add('hidden');
+        document.getElementById('toolsDropdown').classList.add('hidden');
+        if (activeOverlay) {
+            activeOverlay.classList.remove('active');
+            activeOverlay = null;
+        }
+    }
+});
+
+// ===== NOTIFICATIONS =====
+document.getElementById('notificationBtn').addEventListener('click', () => {
+    alert('Notifications coming soon!');
+});
+
+// ===== CART FUNCTIONALITY =====
+function loadCart() {
+    const saved = localStorage.getItem('amcCart');
+    cartItems = saved ? JSON.parse(saved) : [];
+    updateCartBadge();
+}
+
+function saveCart() {
+    localStorage.setItem('amcCart', JSON.stringify(cartItems));
+    updateCartBadge();
+    updateCartModal();
+}
+
+function updateCartBadge() {
+    const quickAccessCartBadge = document.getElementById('quickAccessCartBadge');
+    
+    if (cartItems.length > 0) {
+        quickAccessCartBadge.textContent = cartItems.length;
+        quickAccessCartBadge.classList.remove('hidden');
+    } else {
+        quickAccessCartBadge.classList.add('hidden');
+    }
+}
+
+function updateCartModal() {
+    const cartModalContent = document.getElementById('cartModalContent');
+    const cartModalFooter = document.getElementById('cartModalFooter');
+    const cartItemCount = document.getElementById('cartItemCount');
+    
+    if (cartItems.length === 0) {
+        cartModalContent.innerHTML = `
+            <div class="cart-empty">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Your cart is empty</p>
+            </div>
+        `;
+        cartModalFooter.classList.add('hidden');
+    } else {
+        cartModalContent.innerHTML = cartItems.map(item => `
+            <div class="cart-item">
+                <div class="cart-item-info">
+                    <div class="cart-item-title">${item.title}</div>
+                    <div class="cart-item-brand">${item.brand}</div>
+                </div>
+                <button class="cart-item-remove" data-uuid="${item.uuid}">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `).join('');
+        
+        cartModalFooter.classList.remove('hidden');
+        cartItemCount.textContent = cartItems.length;
+        
+        // Bind remove buttons
+        document.querySelectorAll('.cart-item-remove').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const uuid = e.currentTarget.dataset.uuid;
+                removeFromCart(uuid);
+                
+                // Update overlay button
+                const overlayBtn = document.querySelector(`[data-action="overlay-cart"][data-uuid="${uuid}"]`);
+                if (overlayBtn) {
+                    overlayBtn.classList.remove('overlay-btn-success');
+                    overlayBtn.classList.add('overlay-btn-primary');
+                    overlayBtn.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
+                }
+            });
+        });
+    }
+}
+
+function isInCart(uuid) {
+    return cartItems.some(item => item.uuid === uuid);
+}
+
+function addToCart(uuid, title, brand) {
+    if (!isInCart(uuid)) {
+        cartItems.push({ uuid, title, brand });
+        saveCart();
+        return true;
+    }
+    return false;
+}
+
+function removeFromCart(uuid) {
+    cartItems = cartItems.filter(item => item.uuid !== uuid);
+    saveCart();
+}
+
+document.getElementById('cartCheckoutBtn').addEventListener('click', () => {
+    alert('Checkout coming soon!');
+});
+
+// ===== HELPER FUNCTIONS =====
+function getDynamicTimezone(dateObj) {
+    if (!dateObj || !(dateObj instanceof Date)) {
+        return 'CET';
+    }
+    
+    const year = dateObj.getFullYear();
+    const marchLastSunday = new Date(year, 2, 31);
+    marchLastSunday.setDate(31 - marchLastSunday.getDay());
+    const octoberLastSunday = new Date(year, 9, 31);
+    octoberLastSunday.setDate(31 - octoberLastSunday.getDay());
+    
+    if (dateObj >= marchLastSunday && dateObj < octoberLastSunday) {
+        return 'CEST';
+    } else {
+        return 'CET';
+    }
+}
+
+function generateAssetIconHtml(assetArray, iconClass, title) {
+    const count = assetArray && assetArray.length > 0 ? assetArray.length : 0;
+    const isAvailable = count > 0;
+    return `
+        <span class="asset-icon ${isAvailable ? 'available' : 'unavailable'}" title="${title}${isAvailable ? ` (${count})` : ''}">
+            <i class="fas fa-${iconClass}"></i> 
+            ${isAvailable ? `<span class="asset-count-badge">${count}</span>` : ''}
+        </span>
+    `;
+}
+
+// ===== API & RENDERING =====
+
+/**
+ * Fetch all releases from the API for content filtering
+ * Fetches in batches and returns complete array
+ */
+async function fetchAllReleasesForFiltering(token) {
+    console.log('📥 Fetching all releases for filtering...');
+    
+    if (!token) {
+        token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    }
+    
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    let allFetchedReleases = [];
+    let page = 1;
+    let hasMorePages = true;
+    const limit = 100;
+    
+    try {
+        while (hasMorePages) {
+            const response = await fetch(`${API_BASE_URL}/api/v1/center/releases?page=${page}&limit=${limit}`, {
+                method: 'GET',
+                headers: headers
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
+            const responseData = await response.json();
+            
+            if (responseData.success && responseData.data && Array.isArray(responseData.data.releases)) {
+                const releases = responseData.data.releases;
+                allFetchedReleases = allFetchedReleases.concat(releases);
+                
+                console.log(`📥 Fetched page ${page}: ${releases.length} releases (total: ${allFetchedReleases.length})`);
+                
+                hasMorePages = releases.length === limit;
+                page++;
+            } else {
+                hasMorePages = false;
+            }
+        }
+        
+        console.log(`✅ Fetched all ${allFetchedReleases.length} releases`);
+        return allFetchedReleases;
+        
+    } catch (error) {
+        console.error('Error fetching all releases:', error);
+        return [];
+    }
+}
+
+async function fetchAndDisplayReleases(token, page = 1, append = false) {
+    if (isLoading) return;
+    
+    // Auto-retrieve token if not provided
+    if (!token) {
+        token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    }
+    
+    isLoading = true;
+    currentPage = page;
+    const cardGrid = document.getElementById('cardGrid');
+    const infiniteLoader = document.getElementById('infiniteScrollLoader');
+    const pageSize = getPageSize();
+    
+    if (!append) {
+        cardGrid.innerHTML = `
+            <div class="loading-container">
+                <i class="fas fa-spinner loading-spinner"></i>
+                <p>Loading releases...</p>
+            </div>
+        `;
+    } else {
+        infiniteLoader.classList.remove('hidden');
+    }
+    
+    try {
+        // NEW: Fetch ALL releases first, then filter, then paginate
+        if (!append) {
+            // First load - fetch everything and filter
+            const allFetchedReleases = await fetchAllReleasesForFiltering(token);
+            
+            // Apply content preferences filtering to ALL releases
+            const filteredAllReleases = typeof applyContentPreferencesFilter === 'function' 
+                ? applyContentPreferencesFilter(allFetchedReleases) 
+                : allFetchedReleases;
+            
+            // Store filtered releases
+            allReleases = filteredAllReleases;
+            filteredReleases = allReleases;
+            
+            // Update totals based on FILTERED results
+            totalReleases = filteredReleases.length;
+            totalPages = Math.ceil(totalReleases / pageSize);
+            
+            // Display first page of filtered results
+            const firstPageReleases = filteredReleases.slice(0, pageSize);
+            displayReleases(firstPageReleases);
+            
+            hasMore = filteredReleases.length > pageSize;
+            
+            console.log(`📋 Displaying page 1: ${firstPageReleases.length} of ${filteredReleases.length} filtered releases`);
+            
+        } else {
+            // Pagination - show next page from already filtered results
+            const startIdx = (page - 1) * pageSize;
+            const endIdx = startIdx + pageSize;
+            const pageReleases = filteredReleases.slice(startIdx, endIdx);
+            
+            displayReleases(pageReleases, true);
+            hasMore = endIdx < filteredReleases.length;
+            
+            console.log(`📋 Displaying page ${page}: ${pageReleases.length} releases (${startIdx}-${endIdx} of ${filteredReleases.length})`);
+        }
+        
+        // Update pagination display
+        updatePaginationDisplay();
+        
+        // Show "You're all caught up" message if no more content (mobile only)
+        if (!hasMore && allReleases.length > 0 && !isPaginationMode()) {
+            document.getElementById('endOfContent').classList.remove('hidden');
+        }
+        
+    } catch (error) {
+        console.error('Error fetching releases:', error);
+        if (!append) {
+            cardGrid.innerHTML = `
+                <div class="error-container">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Error loading releases. Please try again.</p>
+                </div>
+            `;
+        }
+    } finally {
+        isLoading = false;
+        if (infiniteLoader) {
+            infiniteLoader.classList.add('hidden');
+        }
+    }
+}
+
+function displayReleases(releases, append = false) {
+    const cardGrid = document.getElementById('cardGrid');
+    
+    if (!append) {
+        cardGrid.innerHTML = '';
+    }
+    
+    if (releases.length === 0 && !append) {
+        // Check if this is a search result with no matches
+        const searchTerm = searchInput.value.trim();
+        
+        if (searchTerm) {
+            // No results for search query
+            cardGrid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <i class="fas fa-search"></i>
+                    <p class="empty-title">No results for "${searchTerm}"</p>
+                    <p class="empty-subtitle">Try different keywords or check spelling</p>
+                </div>
+            `;
+        } else {
+            // No releases available at all
+            cardGrid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <i class="fas fa-inbox"></i>
+                    <p class="empty-title">No media releases available</p>
+                    <p class="empty-subtitle">Check back soon or contact your administrator</p>
+                </div>
+            `;
+        }
+        return;
+    }
+    
+    releases.forEach(release => {
+        const card = createReleaseCard(release);
+        cardGrid.appendChild(card);
+    });
+    
+    attachCardListeners();
+}
+
+// ===== v7.0: ENTERPRISE PAGINATION SYSTEM =====
+
+// Update pagination or load more display based on viewport
+function updatePaginationDisplay() {
+    const paginationContainer = document.getElementById('paginationContainer');
+    const loadMoreContainer = document.getElementById('loadMoreContainer');
+    const endOfContent = document.getElementById('endOfContent');
+    const maxLoadWarning = document.getElementById('maxLoadWarning');
+    
+    if (isPaginationMode()) {
+        // Desktop: Show pagination, hide mobile controls
+        paginationContainer.classList.remove('hidden');
+        loadMoreContainer.classList.add('hidden');
+        endOfContent.classList.add('hidden');
+        maxLoadWarning.classList.add('hidden');
+        
+        // Update pagination info
+        const pageSize = getPageSize();
+        const start = (currentPage - 1) * pageSize + 1;
+        const end = Math.min(currentPage * pageSize, totalReleases);
+        
+        document.getElementById('startCard').textContent = start;
+        document.getElementById('endCard').textContent = end;
+        document.getElementById('totalCards').textContent = totalReleases;
+        
+        // Render page numbers with smart ellipsis
+        renderPaginationNumbers();
+        
+        // Update prev/next button states
+        document.getElementById('prevPage').disabled = currentPage === 1;
+        document.getElementById('nextPage').disabled = currentPage === totalPages;
+    } else {
+        // Mobile: Show load more, hide pagination
+        paginationContainer.classList.add('hidden');
+        
+        const loadedCount = document.querySelectorAll('.media-card').length;
+        const showLoadMore = hasMore && loadedCount < MAX_INFINITE_CARDS;
+        
+        if (showLoadMore) {
+            loadMoreContainer.classList.remove('hidden');
+            document.getElementById('loadedCount').textContent = loadedCount;
+            document.getElementById('loadTotalCount').textContent = totalReleases;
+        } else {
+            loadMoreContainer.classList.add('hidden');
+        }
+        
+        // Show max warning if hit limit
+        if (loadedCount >= MAX_INFINITE_CARDS && hasMore) {
+            maxLoadWarning.classList.remove('hidden');
+        }
+    }
+}
+
+// Render pagination numbers with smart ellipsis (enterprise pattern)
+function renderPaginationNumbers() {
+    const container = document.getElementById('paginationNumbers');
+    container.innerHTML = '';
+    
+    if (totalPages <= 7) {
+        // Show all pages if 7 or fewer
+        for (let i = 1; i <= totalPages; i++) {
+            container.appendChild(createPageButton(i));
+        }
+    } else {
+        // Smart pagination: [1] [2] [3] ... [123] [124] [125]
+        const pages = [];
+        
+        // Always show first page
+        pages.push(1);
+        
+        // Add ellipsis if current page is far from start
+        if (currentPage > 3) {
+            pages.push('...');
+        }
+        
+        // Show pages around current page
+        for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+            pages.push(i);
+        }
+        
+        // Add ellipsis if current page is far from end
+        if (currentPage < totalPages - 2) {
+            pages.push('...');
+        }
+        
+        // Always show last page
+        if (totalPages > 1) {
+            pages.push(totalPages);
+        }
+        
+        // Render page buttons
+        pages.forEach(page => {
+            if (page === '...') {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'page-number ellipsis';
+                ellipsis.textContent = '...';
+                container.appendChild(ellipsis);
+            } else {
+                container.appendChild(createPageButton(page));
+            }
+        });
+    }
+}
+
+// Create individual page button
+function createPageButton(pageNum) {
+    const button = document.createElement('button');
+    button.className = 'page-number';
+    button.textContent = pageNum;
+    
+    if (pageNum === currentPage) {
+        button.classList.add('active');
+    }
+    
+    button.addEventListener('click', () => goToPage(pageNum));
+    
+    return button;
+}
+
+// Navigate to specific page
+function goToPage(page) {
+    if (page < 1 || page > totalPages || page === currentPage) return;
+    
+    currentPage = page;
+    
+    // Display the appropriate slice of already filtered results
+    const pageSize = getPageSize();
+    const startIdx = (page - 1) * pageSize;
+    const endIdx = startIdx + pageSize;
+    const pageReleases = filteredReleases.slice(startIdx, endIdx);
+    
+    // Clear grid and display new page
+    const cardGrid = document.getElementById('cardGrid');
+    cardGrid.innerHTML = '';
+    displayReleases(pageReleases, false);
+    
+    // Update pagination display
+    updatePaginationDisplay();
+    
+    // Scroll to the card grid element (more reliable than top: 0)
+    requestAnimationFrame(() => {
+        const mainContent = document.querySelector('.mobile-main') || document.body;
+        mainContent.scrollTop = 0;
+        
+        // Also try window scroll as backup
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'instant'  // Changed from 'smooth' to 'instant' for immediate scroll
+        });
+        
+        // Also scroll card grid container if it exists
+        const gridContainer = cardGrid.parentElement;
+        if (gridContainer) {
+            gridContainer.scrollTop = 0;
+        }
+    });
+    
+    console.log(`📋 Showing page ${page}: items ${startIdx + 1}-${endIdx} of ${filteredReleases.length}`);
+}
+
+// Load more releases (mobile infinite scroll)
+async function loadMoreReleases() {
+    if (isLoading || !hasMore) return;
+    
+    const loadedCards = document.querySelectorAll('.media-card').length;
+    
+    if (loadedCards >= MAX_INFINITE_CARDS) {
+        document.getElementById('maxLoadWarning').classList.remove('hidden');
+        document.getElementById('loadMoreContainer').classList.add('hidden');
+        hasMore = false;
+        return;
+    }
+    
+    // Increment page and show next slice from already filtered results
+    currentPage++;
+    const pageSize = getPageSize();
+    const startIdx = (currentPage - 1) * pageSize;
+    const endIdx = startIdx + pageSize;
+    const pageReleases = filteredReleases.slice(startIdx, endIdx);
+    
+    // Append to existing grid
+    displayReleases(pageReleases, true);
+    
+    // Check if there are more pages
+    hasMore = endIdx < filteredReleases.length;
+    
+    // Update pagination display
+    updatePaginationDisplay();
+    
+    console.log(`📋 Loaded more: items ${startIdx + 1}-${endIdx} of ${filteredReleases.length}`);
+}
+
+function createReleaseCard(release) {
+    const card = document.createElement('article');
+    card.className = 'media-card';
+    card.dataset.uuid = release.uuid;
+    
+    const releaseDateObj = new Date(release.releaseDate);
+    
+    let teaserImageContent = '<i class="fas fa-photo-video placeholder-icon"></i>';
+    if (release.cardTeaserImagePath) {
+        const imageUrl = `${API_BASE_URL}${release.cardTeaserImagePath}`;
+        teaserImageContent = `<img src="${imageUrl}" alt="${release.title || 'Release Teaser'}">`;
+    } else if (release.images && release.images.length > 0 && release.images[0].path) {
+        const imageUrl = `${API_BASE_URL}${release.images[0].path}`;
+        teaserImageContent = `<img src="${imageUrl}" alt="${release.title || 'Release Teaser'}">`;
+    } else if (release.videos && release.videos.length > 0 && release.videos[0].thumbPath) {
+        const thumbnailUrl = `${API_BASE_URL}${release.videos[0].thumbPath}`;
+        teaserImageContent = `<img src="${thumbnailUrl}" alt="${release.title || 'Video Thumbnail'}">`;
+    }
+    
+    // Use smart routing to ensure mobile users get mobile detail page
+    const fullReleasePageUrl = getDetailPageUrl(release.uuid);
+    const releaseTitle = release.title || 'Untitled Release';
+    const brandName = release.brand || 'N/A';
+    const inCart = isInCart(release.uuid);
+    
+    card.innerHTML = `
+        <div class="card-image" data-uuid="${release.uuid}">
+            ${teaserImageContent}
+            <div class="card-image-overlay" data-uuid="${release.uuid}">
+                <button class="overlay-btn overlay-btn-primary" data-action="quick-view" data-uuid="${release.uuid}">
+                    <i class="fas fa-eye"></i> Quick View
+                </button>
+                <button class="overlay-btn ${inCart ? 'overlay-btn-success' : 'overlay-btn-primary'}" data-action="overlay-cart" data-uuid="${release.uuid}">
+                    <i class="fas ${inCart ? 'fa-check' : 'fa-cart-plus'}"></i> ${inCart ? 'In Cart' : 'Add to Cart'}
+                </button>
+                <button class="overlay-btn overlay-btn-secondary" data-action="download-all" data-uuid="${release.uuid}">
+                    <i class="fas fa-download"></i> Download All
+                </button>
+            </div>
+        </div>
+        <div class="brand-band" title="${brandName}">
+            ${brandName}
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">
+                <a href="${fullReleasePageUrl}">${releaseTitle}</a>
+            </h3>
+            <div class="card-meta">
+                <div class="card-assets">
+                    ${generateAssetIconHtml(release.releaseDocs, 'file-alt', 'Press Release')}
+                    ${generateAssetIconHtml(release.images, 'image', 'Images')}
+                    ${generateAssetIconHtml(release.videos, 'video', 'Videos')}
+                    ${generateAssetIconHtml(release.supplementaryDocs, 'folder', 'Other Docs')}
+                </div>
+                <div class="card-date-time">
+                    <span class="date-part">
+                        <i class="far fa-calendar-alt"></i>
+                        ${releaseDateObj.toLocaleDateString('en-GB', {day:'numeric', month:'short', year: 'numeric'})}
+                    </span>
+                    ${release.releaseTime ? `<span class="time-part">${release.releaseTime.substring(0,5)} ${getDynamicTimezone(releaseDateObj)}</span>` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+function attachCardListeners() {
+    // Card image tap
+    document.querySelectorAll('.card-image').forEach(imageDiv => {
+        imageDiv.addEventListener('click', (e) => {
+            if (e.target.closest('.card-image-overlay')) {
+                return;
+            }
+            
+            const overlay = imageDiv.querySelector('.card-image-overlay');
+            
+            if (activeOverlay && activeOverlay !== overlay) {
+                activeOverlay.classList.remove('active');
+            }
+            
+            overlay.classList.toggle('active');
+            activeOverlay = overlay.classList.contains('active') ? overlay : null;
+        });
+    });
+    
+    // Quick View - Navigate directly to mobile detail page
+    document.querySelectorAll('[data-action="quick-view"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const uuid = e.currentTarget.dataset.uuid;
+            // Navigate to mobile detail page
+            navigateToRelease(uuid);
+        });
+    });
+    
+    // Overlay cart
+    document.querySelectorAll('[data-action="overlay-cart"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const uuid = e.currentTarget.dataset.uuid;
+            const card = e.currentTarget.closest('.media-card');
+            const title = card.querySelector('.card-title a').textContent;
+            const brand = card.querySelector('.brand-band').textContent.trim();
+            
+            if (isInCart(uuid)) {
+                removeFromCart(uuid);
+                e.currentTarget.classList.remove('overlay-btn-success');
+                e.currentTarget.classList.add('overlay-btn-primary');
+                e.currentTarget.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
+            } else {
+                addToCart(uuid, title, brand);
+                e.currentTarget.classList.remove('overlay-btn-primary');
+                e.currentTarget.classList.add('overlay-btn-success');
+                e.currentTarget.innerHTML = '<i class="fas fa-check"></i> In Cart';
+            }
+        });
+    });
+    
+    // Download All - Enterprise Download Tracking with Analytics
+    document.querySelectorAll('[data-action="download-all"]').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const uuid = e.currentTarget.dataset.uuid;
+            const card = e.currentTarget.closest('.media-card');
+            const title = card?.querySelector('.card-title a')?.textContent || 'Unknown Release';
+            const brand = card?.querySelector('.brand-band')?.textContent?.trim() || 'Unknown Brand';
+            
+            console.log('🔽 Mobile download initiated:', { uuid, title, brand, userRole: currentRole });
+            
+            try {
+                // Show loading state
+                const originalText = e.currentTarget.innerHTML;
+                e.currentTarget.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing...';
+                e.currentTarget.disabled = true;
+                
+                // Get authentication token
+                const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+                const downloadUrl = `${API_BASE_URL}/api/v1/zip/release/${uuid}/zip`;
+                
+                // Track analytics event (same as desktop)
+                if (window.amcAnalytics) {
+                    window.amcAnalytics.log('download_all', 'mobile_release_card', {
+                        releaseUuid: uuid,
+                        releaseTitle: title,
+                        brand: brand,
+                        userRole: currentRole,
+                        source: 'mobile_overlay',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+                
+                // Create download request with proper headers
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                const response = await fetch(downloadUrl, {
+                    method: 'GET',
+                    headers: headers
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Download failed: ${response.status} ${response.statusText}`);
+                }
+                
+                // Get the blob and create download link
+                const blob = await response.blob();
+                const downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = `${title.replace(/[^a-zA-Z0-9]/g, '_')}_assets.zip`;
+                
+                // Trigger download
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                
+                // Clean up blob URL
+                URL.revokeObjectURL(downloadLink.href);
+                
+                // Show success feedback
+                e.currentTarget.innerHTML = '<i class="fas fa-check"></i> Downloaded!';
+                e.currentTarget.classList.remove('overlay-btn-secondary');
+                e.currentTarget.classList.add('overlay-btn-success');
+                
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    e.currentTarget.innerHTML = originalText;
+                    e.currentTarget.disabled = false;
+                    e.currentTarget.classList.remove('overlay-btn-success');
+                    e.currentTarget.classList.add('overlay-btn-secondary');
+                }, 2000);
+                
+                console.log('✅ Mobile download completed successfully');
+                
+            } catch (error) {
+                console.error('❌ Mobile download error:', error);
+                
+                // Show error feedback
+                e.currentTarget.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+                e.currentTarget.classList.remove('overlay-btn-secondary');
+                e.currentTarget.classList.add('overlay-btn-danger');
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    e.currentTarget.innerHTML = originalText;
+                    e.currentTarget.disabled = false;
+                    e.currentTarget.classList.remove('overlay-btn-danger');
+                    e.currentTarget.classList.add('overlay-btn-secondary');
+                }, 3000);
+                
+                // Track error analytics
+                if (window.amcAnalytics) {
+                    window.amcAnalytics.log('download_error', 'mobile_release_card', {
+                        releaseUuid: uuid,
+                        error: error.message,
+                        userRole: currentRole,
+                        source: 'mobile_overlay'
+                    });
+                }
+                
+                // Show user-friendly error message
+                alert(`Download failed: ${error.message}\n\nPlease try again or contact support if the problem persists.`);
+            }
+        });
+    });
+}
+
+// Close overlay when clicking outside
+document.addEventListener('click', (e) => {
+    if (activeOverlay && !e.target.closest('.card-image')) {
+        activeOverlay.classList.remove('active');
+        activeOverlay = null;
+    }
+});
+
+// ===== INFINITE SCROLL (Disabled during search) =====
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+    // Don't trigger infinite scroll during search
+    if (currentSearchTerm) {
+        return;
+    }
+    
+    if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+    }
+    
+    scrollTimeout = setTimeout(() => {
+        const scrollPosition = window.innerHeight + window.scrollY;
+        const documentHeight = document.documentElement.scrollHeight;
+        
+        // Load more when user is within 300px of bottom
+        if (scrollPosition >= documentHeight - 300 && !isLoading && hasMore) {
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            fetchAndDisplayReleases(token, currentPage + 1, true);
+        }
+    }, 100);
+});
+
+// ===== MOBILE DEVICE DETECTION & ROUTING =====
+
+/**
+ * Detect if user is on a mobile device
+ * Checks both user agent and screen width for comprehensive detection
+ */
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+           || window.innerWidth <= 768;
+}
+
+/**
+ * Get the appropriate detail page URL based on screen width breakpoint
+ * ROUTING TABLE:
+ * - iPhone (375px) → Mobile ✅
+ * - iPad Portrait (768px) → Mobile ✅
+ * - iPad Landscape (1024px) → Mobile ✅
+ * - Small Laptop (1280px) → Desktop ✅
+ * - Desktop (1920px) → Desktop ✅
+ * BREAKPOINT: 1280px
+ */
+function getDetailPageUrl(releaseUuid) {
+    const width = window.innerWidth;
+    
+    // Use 1280px breakpoint as specified in routing requirements
+    if (width < 1280) {
+        // Mobile detail page for screens < 1280px
+        return `amc-release-detail-mobile.html?uuid=${releaseUuid}`;
+    } else {
+        // Desktop detail page for screens ≥ 1280px
+        return `amc-release-detail.html?uuid=${releaseUuid}`;
+    }
+}
+
+/**
+ * Navigate to release detail page
+ * Wrapper function to ensure consistent routing behavior
+ */
+function navigateToRelease(releaseUuid) {
+    window.location.href = getDetailPageUrl(releaseUuid);
+}
+
+// ===== MOBILE RBAC SIDEBAR SYSTEM =====
+// Exact configuration from desktop sidebar.js with mobile adaptations
+const mobileSidebarConfig = [
+    {
+        section: "Core",
+        required: "media_user",
+        items: [
+            {
+                label: "AutoMediaCenter",
+                href: "automediacenter-mobile-v6.5.html",
+                icon: "fas fa-newspaper",
+                roles: ["media_user", "client_user", "client_admin", "platform_admin"],
+                enabled: true
+            },
+            {
+                label: "AutoMediaRadar",
+                href: "newradarfe.html",
+                icon: "fas fa-satellite-dish",
+                roles: ["media_user", "client_user", "client_admin", "platform_admin"],
+                enabled: true
+            },
+            {
+                label: "AutoMediaLive",
+                href: "automedialive.html",
+                icon: "fas fa-video",
+                roles: ["media_user", "client_user", "client_admin", "platform_admin"],
+                enabled: true
+            },
+            {
+                label: "AutoMediaVault",
+                href: "automediavault.html",
+                icon: "fas fa-lock",
+                roles: ["media_user", "client_user", "client_admin", "platform_admin"],
+                enabled: true
+            }
+        ]
+    },
+    {
+        section: "Management",
+        required: "client_user",
+        items: [
+            {
+                label: "Company Dashboard",
+                href: "client-admin-dashboard.html",
+                icon: "fas fa-building",
+                roles: ["client_admin", "platform_admin"],
+                enabled: true
+            },
+            {
+                label: "Upload Dashboard",
+                href: "AssetDBmenu1.6.html",
+                icon: "fas fa-upload",
+                roles: ["client_user", "client_admin", "platform_admin"],
+                enabled: true
+            },
+            {
+                label: "Manage Releases",
+                href: "manage_releases.html",
+                icon: "fas fa-folder-open",
+                roles: ["client_user", "client_admin", "platform_admin"],
+                enabled: true
+            },
+            {
+                label: "Radar History",
+                href: "radar_history_clean.html",
+                icon: "fas fa-history",
+                roles: ["client_user", "client_admin", "platform_admin"],
+                enabled: true
+            },
+            {
+                label: "Manage Live Events",
+                href: "manage_live.html",
+                icon: "fas fa-flag-checkered",
+                roles: ["client_admin", "platform_admin"],
+                enabled: true
+            },
+            {
+                label: "Manage Vault Assets",
+                href: "manage_vault.html",
+                icon: "fas fa-lock",
+                roles: ["client_admin", "platform_admin"],
+                enabled: true
+            }
+        ]
+    },
+    {
+        section: "Analytics",
+        required: "client_admin",
+        items: [
+            {
+                label: "Company Analytics",
+                href: "company-analytics-dashboard.html",
+                icon: "fas fa-chart-line",
+                roles: ["client_admin", "platform_admin"],
+                enabled: true
+            },
+            {
+                label: "AMC Analytics",
+                href: "amc-analytics.html",
+                icon: "fas fa-chart-bar",
+                roles: ["client_admin", "platform_admin"],
+                enabled: true
+            },
+            {
+                label: "Radar Analytics",
+                href: "radar_analytics.html",
+                icon: "fas fa-chart-area",
+                roles: ["client_admin", "platform_admin"],
+                enabled: true
+            },
+            {
+                label: "Live Analytics",
+                href: "live_analytics.html",
+                icon: "fas fa-chart-pie",
+                roles: ["client_admin", "platform_admin"],
+                enabled: true
+            },
+            {
+                label: "Vault Analytics",
+                href: "vault_analytics.html",
+                icon: "fas fa-chart-bar",
+                roles: ["platform_admin"],
+                enabled: true
+            }
+        ]
+    },
+    {
+        section: "Admin",
+        required: "platform_admin",
+        items: [
+            {
+                label: "Platform Admin",
+                href: "platform-admin-dashboard.html",
+                icon: "fas fa-tachometer-alt",
+                roles: ["platform_admin"],
+                enabled: true
+            },
+            {
+                label: "User Management",
+                href: "user-management.html",
+                icon: "fas fa-users",
+                roles: ["platform_admin"],
+                enabled: true
+            },
+            {
+                label: "Client Management",
+                href: "client_management.html",
+                icon: "fas fa-building",
+                roles: ["platform_admin"],
+                enabled: true
+            },
+            {
+                label: "Access Control",
+                href: "access_control.html",
+                icon: "fas fa-shield-alt",
+                roles: ["platform_admin"],
+                enabled: true
+            },
+            {
+                label: "System Settings",
+                href: "system_settings.html",
+                icon: "fas fa-cogs",
+                roles: ["platform_admin"],
+                enabled: true
+            }
+        ]
+    }
+];
+
+// Role hierarchy for permission checking
+const roleHierarchy = {
+    'media_user': 1,
+    'client_user': 2,
+    'client_admin': 3,
+    'platform_admin': 4
+};
+
+/**
+ * Check if user has required role level
+ */
+function hasRole(userRole, requiredRole) {
+    const userLevel = roleHierarchy[userRole] || 0;
+    const requiredLevel = roleHierarchy[requiredRole] || 0;
+    return userLevel >= requiredLevel;
+}
+
+/**
+ * Check if user can access specific item
+ */
+function canAccessItem(userRole, item) {
+    return item.roles.includes(userRole);
+}
+
+/**
+ * Get current page for active highlighting
+ */
+function getCurrentPage() {
+    const path = window.location.pathname;
+    return path.split('/').pop() || 'automediacenter-mobile-v6.5.html';
+}
+
+/**
+ * Render dynamic sidebar based on user role
+ */
+function renderMobileSidebar() {
+    const drawerContent = document.getElementById('drawerContent');
+    if (!drawerContent) {
+        console.error('❌ Drawer content container not found');
+        return;
+    }
+
+    const currentPage = getCurrentPage();
+    console.log('🔧 Rendering mobile sidebar for role:', currentRole, 'on page:', currentPage);
+
+    // Filter sections based on user role
+    const allowedSections = mobileSidebarConfig.filter(section =>
+        hasRole(currentRole, section.required)
+    );
+
+    if (allowedSections.length === 0) {
+        drawerContent.innerHTML = `
+            <div class="drawer-header">
+                <span class="drawer-title">Navigation</span>
+            </div>
+            <div class="drawer-section">
+                <div class="drawer-section-header">ACCESS RESTRICTED</div>
+                <div style="padding: 20px; text-align: center; color: var(--text-secondary);">
+                    <i class="fas fa-lock" style="font-size: 24px; margin-bottom: 8px;"></i>
+                    <p>No navigation items available for your role.</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // Generate HTML for allowed sections
+    const sectionsHTML = allowedSections.map(section => {
+        // Filter items based on user role
+        const allowedItems = section.items.filter(item =>
+            canAccessItem(currentRole, item) && item.enabled
+        );
+
+        if (allowedItems.length === 0) {
+            return ''; // Skip empty sections
+        }
+
+        const itemsHTML = allowedItems.map(item => {
+            const isActive = currentPage === item.href ||
+                           window.location.pathname.endsWith(item.href);
+            const activeClass = isActive ? ' active' : '';
+            
+            return `
+                <a href="${item.href}" class="drawer-nav-item${activeClass}">
+                    <i class="${item.icon}"></i> ${item.label}
+                </a>
+            `;
+        }).join('');
+
+        return `
+            <div class="drawer-section">
+                <div class="drawer-section-header">${section.section.toUpperCase()}</div>
+                ${itemsHTML}
+            </div>
+        `;
+    }).join('');
+
+    // ENTERPRISE: Add header with "Navigation" title
+    drawerContent.innerHTML = `
+        <div class="drawer-header">
+            <span class="drawer-title">Navigation</span>
+        </div>
+        ${sectionsHTML}
+    `;
+
+    // Add click handlers for navigation items
+    drawerContent.querySelectorAll('.drawer-nav-item').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            const label = link.textContent.trim();
+            
+            console.log('🔗 Mobile sidebar navigation:', label, '->', href);
+            
+            // Track analytics if available
+            if (window.amcAnalytics) {
+                window.amcAnalytics.log('mobile_sidebar', 'click', label);
+            }
+            
+            // Close drawer after navigation
+            closeDrawer();
+        });
+    });
+
+    console.log('✅ Mobile sidebar rendered with', allowedSections.length, 'sections for role:', currentRole);
+}
+
+/**
+ * Initialize mobile RBAC sidebar system
+ */
+function initializeMobileSidebar() {
+    console.log('🔧 Initializing mobile RBAC sidebar system...');
+    
+    // Get user role from storage (same logic as desktop)
+    try {
+        const userString = localStorage.getItem('user') ||
+                          localStorage.getItem('currentUser') ||
+                          sessionStorage.getItem('user') ||
+                          sessionStorage.getItem('currentUser');
+        
+        if (userString) {
+            const user = JSON.parse(userString);
+            if (user.role) {
+                currentRole = user.role;
+                console.log('🔧 Mobile sidebar: Loaded user role from user object:', currentRole);
+            }
+        } else {
+            // Try individual role key
+            const roleFromStorage = localStorage.getItem('userRole') ||
+                                  sessionStorage.getItem('userRole');
+            
+            if (roleFromStorage) {
+                currentRole = roleFromStorage;
+                console.log('🔧 Mobile sidebar: Loaded user role from role key:', currentRole);
+            }
+        }
+    } catch (e) {
+        console.error('❌ Error getting user role for mobile sidebar:', e);
+        currentRole = 'media_user'; // Safe fallback
+    }
+
+    // Render the sidebar
+    renderMobileSidebar();
+    
+    console.log('✅ Mobile RBAC sidebar system initialized for role:', currentRole);
+}
+
+
+// ===== ICON RAIL (Laptop/Desktop) - UPDATED =====
+/**
+ * Render icon-only rail for desktop/laptop devices
+ * Uses same navigation config as mobile drawer but shows only icons
+ */
+function renderIconRail() {
+    const iconRailItems = document.getElementById('iconRailItems');
+    if (!iconRailItems) {
+        console.warn('⚠️ Icon rail container not found');
+        return;
+    }
+
+    console.log('🔧 Rendering icon rail for role:', currentRole);
+
+    // Get allowed sections based on user role (same filtering as mobile drawer)
+    const allowedSections = mobileSidebarConfig.filter(section =>
+        hasRole(currentRole, section.required)
+    );
+
+    // Flatten all allowed items from all sections (ignore section headers)
+    const allAllowedItems = [];
+    allowedSections.forEach(section => {
+        const items = section.items.filter(item =>
+            canAccessItem(currentRole, item) && item.enabled
+        );
+        allAllowedItems.push(...items);
+    });
+
+    if (allAllowedItems.length === 0) {
+        iconRailItems.innerHTML = `
+            <div class="amc-rail-item" title="No items available" style="pointer-events: none; opacity: 0.5;">
+                <i class="fas fa-lock"></i>
+            </div>
+        `;
+        console.warn('⚠️ No items available for icon rail');
+        return;
+    }
+
+    // Get current page for active state highlighting
+    const currentPage = getCurrentPage();
+    
+    // Generate icon-only HTML (no text, just icons with tooltips)
+    const iconsHTML = allAllowedItems.map(item => {
+        const isActive = currentPage === item.href ||
+                       window.location.pathname.endsWith(item.href);
+        const activeClass = isActive ? ' active' : '';
+        
+        return `
+            <a href="${item.href}" 
+               class="amc-rail-item${activeClass}" 
+               title="${item.label}"
+               aria-label="${item.label}"
+               data-page="${item.href}">
+                <i class="${item.icon}"></i>
+            </a>
+        `;
+    }).join('');
+
+    iconRailItems.innerHTML = iconsHTML;
+
+    // Add click handlers for navigation and analytics
+    iconRailItems.querySelectorAll('.amc-rail-item').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            const label = link.getAttribute('title');
+            
+            console.log('🔗 Icon rail navigation:', label, '->', href);
+            
+            // Track analytics if available
+            if (window.amcAnalytics) {
+                window.amcAnalytics.log('icon_rail', 'click', label);
+            }
+        });
+    });
+
+    console.log('✅ Icon rail rendered with', allAllowedItems.length, 'items');
+}
+
+/**
+ * Wire up icon rail hamburger button to open mobile drawer
+ */
+function initIconRailControls() {
+    const iconRailOpen = document.getElementById('iconRailOpen');
+    if (iconRailOpen) {
+        iconRailOpen.addEventListener('click', () => {
+            console.log('📱 Opening drawer from icon rail hamburger');
+            openDrawer();
+        });
+        console.log('✅ Icon rail controls initialized');
+    }
+}
+
+// ===== FILTER CHIPS SYSTEM =====
+
+/**
+ * Initialize filter chips system
+ */
+function initFilterChips() {
+    const prefs = loadContentPreferences();
+    if (prefs && hasActiveFilters(prefs)) {
+        renderFilterChips(prefs);
+        updateFilterBadge(prefs);
+    }
+}
+
+/**
+ * Check if there are active filters
+ */
+function hasActiveFilters(prefs) {
+    if (!prefs) return false;
+    
+    return (prefs.brandMode === 'custom' && (
+        (prefs.selectedCompanies && prefs.selectedCompanies.length > 0) ||
+        (prefs.selectedBrands && prefs.selectedBrands.length > 0)
+    )) ||
+    (prefs.categories && prefs.categories.length > 0) ||
+    (prefs.contentTypes && prefs.contentTypes.length > 0) ||
+    (prefs.languages && prefs.languages.length > 0) ||
+    (prefs.markets && prefs.markets.length > 0) ||
+    (prefs.recency && prefs.recency !== 'all');
+}
+
+/**
+ * Count total active filters
+ */
+function countActiveFilters(prefs) {
+    if (!prefs) return 0;
+    
+    let count = 0;
+    
+    if (prefs.brandMode === 'custom') {
+        count += (prefs.selectedCompanies || []).length;
+        count += (prefs.selectedBrands || []).length;
+    }
+    count += (prefs.categories || []).length;
+    count += (prefs.contentTypes || []).length;
+    count += (prefs.languages || []).length;
+    count += (prefs.markets || []).length;
+    if (prefs.recency && prefs.recency !== 'all') count += 1;
+    
+    return count;
+}
+
+/**
+ * Update filter count badge
+ */
+function updateFilterBadge(prefs) {
+    const badge = document.getElementById('filterCountBadge');
+    if (!badge) return;
+    
+    const count = countActiveFilters(prefs);
+    
+    if (count > 0) {
+        badge.textContent = count;
+        badge.classList.remove('hidden');
+    } else {
+        badge.classList.add('hidden');
+    }
+}
+
+/**
+ * Render filter chips
+ */
+function renderFilterChips(prefs) {
+    const container = document.getElementById('filterChipsContainer');
+    const wrapper = document.getElementById('filterChipsWrapper');
+    
+    if (!container || !wrapper) return;
+    
+    wrapper.innerHTML = '';
+    
+    let chipIndex = 0;
+    
+    // Company chips
+    if (prefs.selectedCompanies && prefs.selectedCompanies.length > 0) {
+        prefs.selectedCompanies.forEach(function(company) {
+            wrapper.appendChild(createChip('company', company, company, chipIndex++));
+        });
+    }
+    
+    // Individual brand chips
+    if (prefs.selectedBrands && prefs.selectedBrands.length > 0) {
+        prefs.selectedBrands.forEach(function(brand) {
+            wrapper.appendChild(createChip('brand', brand, brand, chipIndex++));
+        });
+    }
+    
+    // Category chips
+    if (prefs.categories && prefs.categories.length > 0) {
+        prefs.categories.forEach(function(category) {
+            var label = formatCategoryLabel(category);
+            wrapper.appendChild(createChip('category', category, label, chipIndex++));
+        });
+    }
+    
+    // Content type chips
+    if (prefs.contentTypes && prefs.contentTypes.length > 0) {
+        prefs.contentTypes.forEach(function(type) {
+            wrapper.appendChild(createChip('contentType', type, type, chipIndex++));
+        });
+    }
+    
+    // Language chips
+    if (prefs.languages && prefs.languages.length > 0) {
+        prefs.languages.forEach(function(lang) {
+            var label = formatLanguageLabel(lang);
+            wrapper.appendChild(createChip('language', lang, label, chipIndex++));
+        });
+    }
+    
+    // Market chips
+    if (prefs.markets && prefs.markets.length > 0) {
+        prefs.markets.forEach(function(market) {
+            wrapper.appendChild(createChip('market', market, market, chipIndex++));
+        });
+    }
+    
+    // Recency chip
+    if (prefs.recency && prefs.recency !== 'all') {
+        var label = formatRecencyLabel(prefs.recency);
+        wrapper.appendChild(createChip('recency', prefs.recency, label, chipIndex++));
+    }
+    
+    container.classList.remove('hidden');
+}
+
+/**
+ * Create a filter chip element
+ */
+function createChip(type, value, label, index) {
+    var chip = document.createElement('div');
+    chip.className = 'filter-chip chip-' + type;
+    chip.style.animationDelay = (index * 0.05) + 's';
+    chip.setAttribute('data-type', type);
+    chip.setAttribute('data-value', value);
+    
+    var text = document.createElement('span');
+    text.className = 'filter-chip-text';
+    text.textContent = label;
+    
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'chip-remove-btn';
+    removeBtn.innerHTML = '×';
+    removeBtn.setAttribute('aria-label', 'Remove ' + label + ' filter');
+    removeBtn.addEventListener('click', function() {
+        removeFilter(type, value, chip);
+    });
+    
+    chip.appendChild(text);
+    chip.appendChild(removeBtn);
+    
+    return chip;
+}
+
+/**
+ * Format category label
+ */
+function formatCategoryLabel(category) {
+    var labels = {
+        'general': 'General',
+        'product-launch': 'Product Launch',
+        'financial': 'Financial',
+        'motorsport': 'Motorsport',
+        'sustainability': 'Sustainability',
+        'technology': 'Technology',
+        'partnerships': 'Partnerships',
+        'awards': 'Awards',
+        'personnel': 'Personnel',
+        'other': 'Other'
+    };
+    return labels[category] || category;
+}
+
+/**
+ * Format language label
+ */
+function formatLanguageLabel(lang) {
+    var labels = {
+        'en': 'English',
+        'de': 'German',
+        'fr': 'French',
+        'es': 'Spanish',
+        'it': 'Italian',
+        'pt': 'Portuguese',
+        'ja': 'Japanese',
+        'zh': 'Chinese',
+        'ko': 'Korean'
+    };
+    return labels[lang] || lang;
+}
+
+/**
+ * Format recency label
+ */
+function formatRecencyLabel(recency) {
+    var labels = {
+        '24h': 'Last 24 hours',
+        '7d': 'Last 7 days',
+        '30d': 'Last 30 days',
+        '3m': 'Last 3 months',
+        '6m': 'Last 6 months',
+        '1y': 'Last year'
+    };
+    return labels[recency] || recency;
+}
+
+/**
+ * Remove a single filter
+ */
+function removeFilter(type, value, chipElement) {
+    var prefs = loadContentPreferences();
+    if (!prefs) return;
+    
+    chipElement.classList.add('removing');
+    
+    setTimeout(function() {
+        switch(type) {
+            case 'company':
+                prefs.selectedCompanies = (prefs.selectedCompanies || []).filter(function(c) {
+                    return c !== value;
+                });
+                break;
+            case 'brand':
+                prefs.selectedBrands = (prefs.selectedBrands || []).filter(function(b) {
+                    return b !== value;
+                });
+                break;
+            case 'category':
+                prefs.categories = (prefs.categories || []).filter(function(c) {
+                    return c !== value;
+                });
+                break;
+            case 'contentType':
+                prefs.contentTypes = (prefs.contentTypes || []).filter(function(t) {
+                    return t !== value;
+                });
+                break;
+            case 'language':
+                prefs.languages = (prefs.languages || []).filter(function(l) {
+                    return l !== value;
+                });
+                break;
+            case 'market':
+                prefs.markets = (prefs.markets || []).filter(function(m) {
+                    return m !== value;
+                });
+                break;
+            case 'recency':
+                prefs.recency = 'all';
+                break;
+        }
+        
+        localStorage.setItem('amc_content_preferences', JSON.stringify(prefs));
+        
+        if (!hasActiveFilters(prefs)) {
+            clearAllFiltersAndReload();
+        } else {
+            location.reload();
+        }
+    }, 300);
+}
+
+/**
+ * Clear all filters
+ */
+function clearAllFiltersAndReload() {
+    localStorage.removeItem('amc_content_preferences');
+    location.reload();
+}
+
+// Clear all button event listener
+document.addEventListener('DOMContentLoaded', function() {
+    var clearAllBtn = document.getElementById('filterClearAllBtn');
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', clearAllFiltersAndReload);
+    }
+});
+
+
+// ===== INITIALIZATION =====
+function checkLoginStatus() {
+    let token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    fetchAndDisplayReleases(token, currentPage);
+}
+
+initializeAvatar();
+loadCart();
+checkLoginStatus();
+initFilterChips(); // Initialize filter chips system
+
+// Initialize the mobile RBAC sidebar system
+initializeMobileSidebar();
+
+// Initialize icon rail for desktop/laptop
+renderIconRail();
+initIconRailControls();
+
+// ===== v7.0: ENTERPRISE PAGINATION CONTROLS =====
+document.getElementById('prevPage').addEventListener('click', () => {
+    if (currentPage > 1) {
+        goToPage(currentPage - 1);
+    }
+});
+
+document.getElementById('nextPage').addEventListener('click', () => {
+    if (currentPage < totalPages) {
+        goToPage(currentPage + 1);
+    }
+});
+
+document.getElementById('loadMoreBtn').addEventListener('click', loadMoreReleases);
+
+// Handle window resize - switch between pagination modes (enterprise responsive pattern)
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        const wasPagination = !document.getElementById('paginationContainer').classList.contains('hidden');
+        const nowPagination = isPaginationMode();
+        
+        if (wasPagination !== nowPagination) {
+            // Mode changed - reload from page 1 with new page size
+            currentPage = 1;
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            fetchAndDisplayReleases(token, 1, false);
+        }
+    }, 300);
+});
+
+// ===== SCROLLBAR SAFETY CHECK =====
+// Defensive code to ensure scrollbars always render correctly
+// Fixes intermittent scrollbar disappearance issues on sign in/out and navigation
+function ensureScrollbarsVisible() {
+    const mobileMain = document.querySelector('.mobile-main');
+    const mobileDrawer = document.querySelector('.mobile-drawer');
+    const drawerContent = document.querySelector('.drawer-content');
+    
+    // Ensure body never has inline overflow that might override CSS
+    if (document.body.style.overflow) {
+        document.body.style.overflow = '';
+    }
+    
+    // Ensure mobile-main has correct overflow (defensive)
+    if (mobileMain && window.getComputedStyle(mobileMain).overflowY !== 'auto') {
+        console.warn('⚠️ Fixing mobile-main overflow');
+        mobileMain.style.overflowY = 'auto';
+    }
+    
+    // Ensure drawer has correct overflow (defensive)
+    if (mobileDrawer && window.getComputedStyle(mobileDrawer).overflowY !== 'auto') {
+        console.warn('⚠️ Fixing drawer overflow');
+        mobileDrawer.style.overflowY = 'auto';
+    }
+    
+    if (drawerContent && window.getComputedStyle(drawerContent).overflowY !== 'auto') {
+        console.warn('⚠️ Fixing drawer-content overflow');
+        drawerContent.style.overflowY = 'auto';
+    }
+}
+
+// Run on page load
+ensureScrollbarsVisible();
+
+// Run after any navigation/modal actions (defensive check)
+document.addEventListener('click', () => {
+    setTimeout(ensureScrollbarsVisible, 100);
+}, { passive: true });
+
+// Run on drawer close (extra safety)
+drawerBackdrop.addEventListener('click', () => {
+    setTimeout(ensureScrollbarsVisible, 350);
+});
+
+console.log('✅ AutoMediaCenter v7.0 - Enterprise Responsive Pagination System');
+console.log('✅ Scrollbar safety checks enabled');
+</script>
+
+</body>
+</html>

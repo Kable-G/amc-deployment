@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const archiver = require('archiver');
 const CenterRelease = require('../models/CenterRelease');
-const auth = require('../middleware/auth-bypass'); // FAKE AUTH - Always allows access
+const auth = require('../middleware/auth'); // Real authentication
 
 console.log('📦 ZIP Download routes module loaded successfully');
 

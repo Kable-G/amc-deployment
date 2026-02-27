@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth-bypass'); // FAKE AUTH - Always allows access
+const { authenticate } = require('../middleware/authMiddleware'); // Real authentication
 const VaultAsset = require('../models/VaultAsset');
 const { z } = require('zod');
 const multer = require('multer');
@@ -95,7 +95,7 @@ const handleVaultMulterUpload = (req, res, next) => {
 };
 
 // --- Route to CREATE a new Vault Asset ---
-router.post('/assets', handleVaultMulterUpload, auth, async (req, res) => {
+router.post('/assets', handleVaultMulterUpload, authenticate, async (req, res) => {
     console.log('Backend received POST /api/v1/vault/assets (Password functionality removed, invitedUsers processing, detailed JSON response)');
     
     const successfullyUploadedPaths = [];

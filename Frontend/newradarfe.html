@@ -3,724 +3,177 @@
 <head>
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>AutoMediaRadar - Upcoming Content [New Interface]</title>
-    
-    <!-- Enterprise Sidebar System -->
-    <link rel="stylesheet" href="css/sidebar.css">
-    <script src="components/sidebar.js"></script>
-    
+    <title>Media Alerts — AutoMediaCenter</title>
+
+    <!-- Auth -->
     <script type="module">
       import { protectPage } from "./auth.js";
-
-      document.addEventListener("DOMContentLoaded", () => {
-        protectPage("media_user");       // ✅ Checks login and role properly
-        // Sidebar is now auto-initialized by components/sidebar.js
-      });
+      protectPage("media_user");
     </script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet"/>
-    
-    <!-- Premium Avatar System Styles -->
-    <link rel="stylesheet" href="amc-avatar-styles.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Inter variable font — weights 300–800, opsz 14–144 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,32..144,800&display=swap" rel="stylesheet">
+
+    <!-- v6.5 shell CSS -->
+    <link rel="stylesheet" href="./components/shell/v6_5-shell.css">
+
     <style>
+        /* ============================================================
+           AMC TYPOGRAPHY SYSTEM v1.0
+           Inter variable font — Linear-inspired weight hierarchy
+           ============================================================ */
+        html, body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Page title */
+        .amc-page-title,
+        #main-content-title {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
+            font-size: 42px !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.04em !important;
+            line-height: 1.05 !important;
+            margin: 0 0 8px 0 !important;
+        }
+        body:not(.dark-mode) .amc-page-title { color: #0f172a !important; }
+        body.dark-mode .amc-page-title { color: #f8fafc !important; }
+
+        /* Page subtitle */
+        .amc-page-subtitle {
+            font-size: 16px !important;
+            font-weight: 300 !important;
+            line-height: 1.55 !important;
+            letter-spacing: 0 !important;
+            margin: 0 0 16px 0 !important;
+            padding: 0 !important;
+            border-bottom: none !important;
+        }
+        body:not(.dark-mode) .amc-page-subtitle { color: #6b7280 !important; }
+        body.dark-mode .amc-page-subtitle { color: #64748b !important; border-bottom-color: #334155 !important; }
+
+        /* ============================================================
+           COLOR TOKENS
+           ============================================================ */
         :root {
-            /* ── LAYERED BACKGROUND ARCHITECTURE (Light Mode Premium) ─────── */
-            --amc-body-bg-light: #f8fafc;         /* soft neutral layer */
-            --amc-surface-bg-light: #ffffff;      /* cards / containers */
-            --amc-table-bg-light: #fcfcfd;        /* table wrapper */
-            --amc-header-bg-light: #f3f4f6;       /* table header background */
-            --amc-sidebar-bg-light: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* sidebar gradient */
-            
-            /* Legacy variables (maintained for compatibility) */
-            --bg-primary: var(--amc-body-bg-light);
-            --bg-secondary: var(--amc-surface-bg-light);
-            --bg-tertiary: #e9ecef;
-            
-            /* ── ENTERPRISE TYPOGRAPHY HIERARCHY ─────────────────────────── */
-            --text-headings: #111827;    /* headers: strong */
-            --text-primary: #374151;     /* body text: medium */
-            --text-secondary: #6b7280;   /* metadata: subtle */
-            --text-muted: #9ca3af;       /* ultra-subtle */
-            
-            --accent-primary: #0d6efd; --accent-primary-hover: #0b5ed7;
-            
-            --accent-secondary-default: #6c757d;
-            --accent-secondary-default-hover: #5a6268;
-
-            --highlight-color: #ffc107; /* Yellow for Add to Cart on card hover & cart icon */
-            
-            --border-primary: #e5e7eb; --border-secondary: #d1d5db; --border-color-light: #e9ecef;
-            --header-bg: #1e2327; --header-text: #ffffff; --header-link: #adb5bd;
-            --icon-available: var(--accent-primary); --icon-unavailable: #ced4da;
-            --shadow-primary: rgba(0, 0, 0, 0.08); --shadow-hover: rgba(0, 0, 0, 0.15);
-            --overlay-bg: rgba(0, 0, 0, 0.65);
-            --tag-bg: var(--bg-tertiary); --tag-text: var(--text-secondary);
-            --color-info: #17a2b8;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --text-primary: #374151;
+            --text-secondary: #6b7280;
+            --text-headings: #0f172a;
+            --border-primary: #e5e7eb;
+            --accent-primary: #3b82f6;
+            --accent-primary-hover: #2563eb;
+            --accent-primary-rgb: 59, 130, 246;
             --color-warning: #ffc107;
-            --brand-band-light-bg: #212529; --brand-band-light-text: #f8f9fa;
-            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
-            --bg-image-placeholder: #e9ecef;
-            --font-family-main: 'Poppins', sans-serif;
-            --sidebar-width: 260px;
-            --header-height: 61px;
-            --footer-height: 60px;
-            --accent-primary-rgb: 13, 110, 253;
-            --accent-secondary-default-rgb: 108, 117, 125;
-            --highlight-color-rgb: 255, 193, 7;
-            --notification-error: #dc3545;
-            --accent-action-positive: #28a745;
-            --accent-action-positive-hover: #218838;
-            --accent-action-positive-rgb: 40, 167, 69;
-            --accent-action-danger: #dc3545;
-            --accent-action-danger-hover: #c82333;
-            --selection-dot-color: var(--accent-primary); /* Blue for selection */
-            
-            /* ENTERPRISE TYPOGRAPHY SYSTEM */
-            --font-display: 2rem;      /* Page titles (h1) */
-            --font-heading: 1.4rem;    /* Section headers */
-            --font-subheading: 1.1rem; /* Card headers */
-            --font-body: 0.95rem;      /* Body text */
-            --font-muted: 0.85rem;     /* Metadata / labels */
+            --color-info: #17a2b8;
+            --tag-bg: #e9ecef;
+            --tag-text: #6b7280;
+            --shadow-primary: rgba(0,0,0,0.08);
+            --shadow-hover: rgba(0,0,0,0.15);
         }
-
         body.dark-mode {
-            --bg-primary: #121212; --bg-secondary: #1a1c1e; --bg-tertiary: #2a2d30;
-            --text-primary: #e0e0e0; --text-secondary: #adb5bd; --text-headings: #f8f9fa;
-            --accent-primary: #3f91ff; --accent-primary-hover: #5fa0ff;
-            
-            --accent-secondary-default: #6c757d;
-            --accent-secondary-default-hover: #545b62;
-            
-            --border-primary: #3a3a3a; --border-secondary: #444; --header-bg: #111; --header-text: #f0f0f0; --header-link: #999;
-            --icon-available: var(--accent-primary); --icon-unavailable: #555;
-            --shadow-primary: rgba(0, 0, 0, 0.25); --shadow-hover: rgba(0, 0, 0, 0.35);
-            --overlay-bg: rgba(0, 0, 0, 0.75);
-            --tag-bg: #4a4a4a; --tag-text: var(--text-primary);
-            --brand-band-light-bg: #f8f9fa; --brand-band-light-text: #212529;
-            --brand-band-dark-bg: #343a40; --brand-band-dark-text: #f8f9fa;
-            --color-info: #36c4d9;
-            --color-warning: #ffd04a;
-            --bg-image-placeholder: #2c2c2c;
+            --bg-primary: #121212;
+            --bg-secondary: #1a1c1e;
+            --bg-tertiary: #2a2d30;
+            --text-primary: #e0e0e0;
+            --text-secondary: #adb5bd;
+            --text-headings: #f8f9fa;
+            --border-primary: #3a3a3a;
+            --accent-primary: #3f91ff;
+            --accent-primary-hover: #5fa0ff;
             --accent-primary-rgb: 63, 145, 255;
-            --accent-secondary-default-rgb: 108, 117, 125;
-            --accent-action-positive: #20c997;
-            --accent-action-positive-hover: #1ba984;
-            --accent-action-positive-rgb: 32, 201, 151;
-            --accent-action-danger: #e74c3c;
-            --accent-action-danger-hover: #d63031;
-            --selection-dot-color: var(--accent-primary); /* Keep blue for dark mode selection too */
-            --sidebar-bg: #1a1c1e;
+            --color-warning: #ffd04a;
+            --color-info: #36c4d9;
+            --tag-bg: #4a4a4a;
+            --tag-text: #e0e0e0;
+        }
+        body { background: var(--bg-primary); color: var(--text-primary); }
+        body.dark-mode { background: var(--bg-primary) !important; }
+        a { color: var(--accent-primary); text-decoration: none; }
+        a:hover { color: var(--accent-primary-hover); text-decoration: underline; }
+
+        /* ============================================================
+           PAGE LAYOUT
+           ============================================================ */
+        .amc-page {
+            max-width: none;
+            margin-inline: 0;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--amc-body-bg-light); /* soft neutral layer */
-            color: var(--text-primary);
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        /* Light mode layered background system */
-        body:not(.dark-mode) {
-            background: var(--amc-body-bg-light);
-        }
-        
-        /* DARK MODE BODY BACKGROUND */
-        body.dark-mode {
-            background: var(--bg-primary) !important;
-            color: var(--text-primary) !important;
-        }
-        a { color: var(--accent-primary); text-decoration: none; } a:hover { color: var(--accent-primary-hover); text-decoration: underline; }
-        .app-container { display: flex; flex-direction: column; flex-grow: 1; }
-        .app-body { display: flex; flex-grow: 1; transition: margin-left 0.3s ease; }
-        .app-header {
-            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%); /* subtle gradient for depth */
-            border-bottom: 1px solid #e5e7eb;
-            color: #1f2937; /* dark text for white background */
-            padding: 10px 25px;
+        /* ============================================================
+           SEARCH + FILTER BAR
+           ============================================================ */
+        .controls-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 10000;
-            height: var(--header-height);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        /* old .search-bar removed */
+        .search-bar input[type="search"] {
             width: 100%;
+            padding: 8px 14px;
+            border: 1px solid var(--border-primary);
+            border-radius: 6px 0 0 6px;
+            font-size: 14px;
+            font-family: "Inter", sans-serif;
+            outline: none;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
         }
-        
-        .app-header .logo h1 {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin: 0;
-            color: #1f2937; /* ensure logo is dark and visible in light mode */
-        }
-        
-        /* Dark mode header styling */
-        body.dark-mode .app-header {
-            background: linear-gradient(180deg, #1e2327 0%, #181b1f 100%); /* subtle gradient for depth */
-            border-bottom: 1px solid #3a3a3a;
-            color: #f0f0f0; /* light text for dark background */
-        }
-        
-        body.dark-mode .app-header .logo h1 {
-            color: #f0f0f0; /* ensure logo is light and visible in dark mode */
-        }
-        
-        .app-header .user-actions-group { display: flex; align-items: center; gap: 20px;}
-        .app-header .user-info { font-size: 0.9em; } .app-header .user-info span { opacity: 0.8; }
-        .app-header .logout-link { color: var(--header-link); text-decoration: none; font-size: 0.9em;}
-        .app-header .logout-link:hover { color: var(--header-text); } .app-header .logout-link i { margin-right: 5px; }
+        .search-bar input[type="search"]:focus { border-color: var(--accent-primary); }
+        .search-bar button { border-radius: 0 6px 6px 0; border-left: none; }
+        .filter-controls { display: flex; gap: 8px; align-items: center; }
 
-        .cart-indicator, .notification-indicator { position: relative; display: inline-flex; align-items: center; cursor: pointer; color: var(--header-link); transition: color 0.2s ease; font-size: 1.1em; }
-        .cart-indicator:hover, .notification-indicator:hover { color: var(--header-text); }
-        .cart-badge, .notification-badge { position: absolute; top: -8px; right: -10px; background-color: var(--accent-primary); color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: bold; transform: scale(0); transition: transform 0.2s ease-out; }
-        .notification-badge { background-color: var(--notification-error); top: -5px; right: -8px; width: 16px; height: 16px;}
-        .cart-indicator.has-items .cart-badge, .notification-indicator.has-new .notification-badge { transform: scale(1); }
-        .cart-indicator.has-items > i.fa-shopping-cart { color: var(--highlight-color); animation: pulseCartIcon 1.5s infinite; }
-        @keyframes pulseCartIcon { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
-        .amc-header-right { display: flex; align-items: center; gap: 15px; }
-        .amc-menu-dots { background: none; border: none; color: var(--header-link); font-size: 1.2em; cursor: pointer; padding: 5px; }
-        .amc-menu-dots:hover { color: var(--header-text); }
-
-        .btn-icon { background:transparent; border:none; padding:5px 8px; margin-left:10px; cursor:pointer; }
-        .btn-icon i { color:var(--header-link); font-size:1.1em; }
-        .btn-icon:hover i { color: var(--header-text); }
-
-  :root{
-    /* adjust if your header height differs on this page */
-    --amc-header-h: 61px;
-    --amc-sidebar-expanded: 264px;
-    --amc-sidebar-collapsed: 72px;
-
-    /* colors (light) */
-    --amc-bg: #ffffff;
-    --amc-line: #E5E7EB;
-    --amc-text: #0f172a;
-    --amc-muted:#64748b;
-
-    /* colors (dark) */
-    --amc-bg-dark: #0f1115;
-    --amc-line-dark: rgba(255,255,255,.12);
-    --amc-text-dark:#e5e7eb;
-    --amc-muted-dark:#94a3b8;
-  }
-
-  /* Body layout variables (expanded by default) */
-  body{
-    --amc-sidebar-w: var(--amc-sidebar-expanded);
-    padding-top: var(--amc-header-h);
-  }
-  /* When collapsed (remembered in localStorage) */
-  body.amc-collapsed{ --amc-sidebar-w: var(--amc-sidebar-collapsed); }
-  body.sidebar-collapsed{ --amc-sidebar-w: var(--amc-sidebar-collapsed); }
-
-  /* Sidebar (fixed, left) */
-  .amc-sidebar{
-    position: fixed; top: var(--amc-header-h); left:0; bottom:0;
-    width: var(--amc-sidebar-w);
-    background: var(--amc-bg);
-    border-right: 1px solid var(--amc-line);
-    overflow: visible auto; /* FIXED: changed from hidden to visible for tooltips */
-    transition: width .18s ease;
-    z-index: 900;
-  }
-  /* Dark mode support - FIXED: Use dark-mode class */
-  body.dark-mode .amc-sidebar{
-    background: var(--sidebar-bg);
-    border-right-color: var(--border-color);
-    color: var(--text-primary);
-  }
-  
-  /* AVATAR DARK MODE SUPPORT - Enable role-based rings in dark mode */
-  body.dark-mode {
-    /* Avatar modal dark mode support */
-    --bg-secondary-dark: #1a1c1e;
-    --text-primary-dark: #e2e8f0;
-    --border-primary-dark: #374151;
-    --bg-tertiary-dark: #2a2d30;
-    --text-headings-dark: #f8f9fa;
-    --text-secondary-dark: #9ca3af;
-  }
-  
-  /* Apply dark mode class to avatar system */
-  body.dark-mode .avatar-modal {
-    background: var(--bg-secondary-dark, #2c2c2c);
-    color: var(--text-primary-dark, #e2e8f0);
-    border-color: var(--border-primary-dark, #374151);
-  }
-  
-  body.dark-mode .avatar-modal-header {
-    background: linear-gradient(135deg, var(--bg-secondary-dark, #2c2c2c) 0%, var(--bg-tertiary-dark, #374151) 100%);
-    border-color: var(--border-primary-dark, #374151);
-  }
-  
-  body.dark-mode .avatar-email {
-    color: var(--text-headings-dark, #f8f9fa);
-  }
-  
-  body.dark-mode .avatar-role {
-    color: var(--text-secondary-dark, #9ca3af);
-  }
-  
-  body.dark-mode .modal-btn {
-    color: var(--text-primary-dark, #e2e8f0);
-  }
-  
-  body.dark-mode .modal-btn:hover {
-    background: var(--bg-tertiary-dark, #374151);
-    color: var(--accent-primary, #3b82f6);
-  }
-  
-  body.dark-mode .modal-divider {
-    border-color: var(--border-primary-dark, #374151);
-  }
-  
-  /* Ensure avatar ring colors work in dark mode */
-  body.dark-mode .amc-avatar-ring {
-    background: var(--bg-secondary, #1a1c1e);
-    border-color: var(--avatar-ring, #3B82F6);
-  }
-
-  /* Sidebar sections rendered by sidebar-builder.js */
-  .sidebar-section{ padding: 14px 10px; margin-bottom: 14px; }
-  .sidebar-section-header{
-    margin: 16px 12px 6px 12px; font: 700 12px/1 Inter, ui-sans-serif, system-ui;
-    color: var(--amc-muted); text-transform: uppercase; letter-spacing: .4px;
-  }
-  
-  /* ENHANCED SIDEBAR SECTION TITLES - TYPOGRAPHY & COLORS */
-  .sidebar .section-title {
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin: 16px 12px 6px 12px;
-    font-family: Inter, ui-sans-serif, system-ui;
-    color: #9ca3af; /* unified neutral tone */
-  }
-  
-  /* COLORFUL SECTION TITLES */
-  .sidebar .section-title.core { color: #2563eb; }       /* vivid blue */
-  .sidebar .section-title.management { color: #059669; } /* vivid green */
-  .sidebar .section-title.analytics { color: #d97706; }  /* vivid orange */
-  .sidebar .section-title.admin { color: #dc2626; }      /* vivid red */
-  .sidebar-list{ list-style:none; margin:0; padding:4px; }
-  .sidebar-item{ margin: 2px 6px; }
-  .sidebar-link{
-    display:flex; align-items:center; gap:10px;
-    padding:10px 12px; border-radius:10px;
-    color: inherit; text-decoration:none; font: 600 14px/1.2 Inter, ui-sans-serif, system-ui;
-  }
-  .sidebar-link:hover{ background: var(--sidebar-hover-bg); color: var(--text-primary); }
-  body.dark-mode .sidebar-link:hover{ background: var(--sidebar-hover-bg); color: var(--text-primary); }
-  .sidebar-link.active{ background: var(--sidebar-hover-bg); color: var(--sidebar-active-bar); border-left: 3px solid var(--sidebar-active-bar); }
-
-  /* Collapsed state: show only icons and hide text */
-  body.sidebar-collapsed .sidebar-section-header{ opacity: 0; }
-  body.sidebar-collapsed .sidebar-text{ opacity: 0; transform: translateX(-5px); }
-  body.sidebar-collapsed .sidebar-badge{ opacity: 0; }
-  body.sidebar-collapsed .sidebar-link{ justify-content: center; }
-
-  /* Main content shifts to the right of the sidebar */
-  .amc-main{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
-  .app-container{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
-
-/* === AMC Radar History HOTFIX (non-destructive) ========================= */
-/* 1) Kill the accidental header we injected in this page only */
-.amc-header-wrap{ display:none !important; }
-
-/* 2) Neutralize the generic sidebar skin so it can't override AMC */
-.sidebar, .sidebar-top, .sidebar-brand, .sidebar-menu,
-.sidebar .sidebar-link, .sidebar-toggle { all: unset; display: initial; }
-
-/* 3) Canonical AMC sidebar (driven by #sidebar that sidebar-builder.js fills) */
-:root{
-  --amc-header-h: 60px;         /* match the real header height on this page */
-  --amc-sidebar-expanded: 264px;
-  --amc-sidebar-collapsed: 72px;
-}
-
-/* page-wide width var + push the app container, not the header */
-body{ --amc-sidebar-w: var(--amc-sidebar-expanded); }
-body.amc-collapsed{ --amc-sidebar-w: var(--amc-sidebar-collapsed); }
-
-/* Restore AMC sidebar functionality but match automediacenter.html positioning */
-.app-container{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
-
-/* ENTERPRISE LAYOUT RHYTHM & ALIGNMENT - MATCH AUTOMEDIACENTER.HTML */
-.main-content {
-    margin-left: 0;
-    max-width: none; /* Remove max-width constraint for full width */
-    margin: 0 auto;
-    padding: 0.5rem 2rem 2rem 2rem; /* Further reduced top padding to move content higher */
-    background-color: var(--bg-primary);
-    overflow-y: auto;
-    min-height: calc(100vh - var(--header-height) - var(--footer-height));
-}
-
-/* DARK MODE MAIN CONTENT */
-body.dark-mode .main-content {
-    background-color: var(--bg-primary) !important;
-}
-
-/* Main content shifts to the right of the sidebar */
-.amc-main{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
-.amc-content{ margin-left: var(--amc-sidebar-w); transition: margin-left .18s ease; }
-
-/* ENTERPRISE SIDEBAR SHELL - PREMIUM LIGHT MODE ELEVATION */
-#sidebar{
-  position: fixed; left: 0; top: var(--amc-header-h); bottom: 0;
-  width: var(--amc-sidebar-w);
-  background: linear-gradient(to bottom, #f3f4f6, #e5e7eb); /* soft contrast gradient */
-  border-right: 1px solid #d1d5db; /* stronger border contrast */
-  overflow: visible auto; z-index: 950;
-  transition: width 0.18s ease, background 0.2s ease, box-shadow 0.2s ease;
-  padding-top: 8px;
-  box-shadow: inset -1px 0 0 rgba(0,0,0,0.05), 2px 0 8px rgba(0,0,0,0.06); /* enhanced panel depth */
-}
-body.dark-mode #sidebar{
-  background: var(--sidebar-bg, #1a1c1e) !important; /* cooler anthracite grey */
-  border-right-color: var(--border-primary, #3a3a3a) !important;
-  color: var(--text-primary, #e0e0e0) !important;
-  box-shadow: inset -1px 0 0 rgba(255,255,255,0.03) !important; /* subtle light inset for dark mode */
-}
-
-/* Dark mode sidebar section headers */
-body.dark-mode #sidebar .sidebar-section-header {
-  background: rgba(255, 255, 255, 0.05) !important; /* subtle translucent bar for dark mode */
-  color: #9ca3af !important; /* consistent neutral grey */
-  border-left-color: #fb923c !important; /* lighter orange for dark mode visibility */
-}
-
-/* Dark mode sidebar links */
-body.dark-mode #sidebar .sidebar-link {
-  color: var(--text-primary, #e0e0e0) !important;
-}
-
-body.dark-mode #sidebar .sidebar-link:hover {
-  background: var(--bg-tertiary, #2a2d30) !important;
-  color: var(--text-primary, #e0e0e0) !important;
-}
-
-/* Sidebar (fixed, left) */
-.amc-sidebar{
-  position: fixed; top: var(--amc-header-h); left:0; bottom:0;
-  width: var(--amc-sidebar-w);
-  background: var(--amc-bg);
-  border-right: 1px solid var(--amc-line);
-  overflow: visible auto; /* FIXED: changed from hidden to visible for tooltips */
-  transition: width .18s ease;
-  z-index: 900;
-}
-/* Dark mode support - FIXED: Use dark-mode class */
-body.dark-mode .amc-sidebar{
-  background: var(--sidebar-bg);
-  border-right-color: var(--border-color);
-  color: var(--text-primary);
-}
-
-/* ENTERPRISE SIDEBAR SECTIONS - TIGHTER RHYTHM */
-#sidebar .sidebar-section{
-  padding: 0 10px; /* remove vertical padding */
-  margin-bottom: 14px; /* consistent spacing between sections */
-}
-
-/* ENTERPRISE SECTION HEADERS - REFINED HYBRID WITH ORANGE ACCENT */
-#sidebar .sidebar-section-header{
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  font-weight: 600;
-  color: #9ca3af; /* neutral grey */
-  padding: 6px 12px;
-  margin-top: 16px; /* instead of ~32px */
-  margin-bottom: 4px; /* tighter below for better rhythm */
-  margin-left: 12px;
-  margin-right: 12px;
-  text-transform: uppercase;
-  background: rgba(0,0,0,0.08); /* darker tone for better definition in light mode */
-  border-left: 2px solid #f97316; /* orange accent strip */
-  border-radius: 4px;
-  padding-left: 10px; /* adjust for thinner accent bar */
-}
-
-/* Pull first section closer to top - ENTERPRISE SPACING */
-#sidebar .sidebar-section:first-child .sidebar-section-header {
-  margin-top: 4px; /* pull 'Core' closer to top */
-}
-
-/* Dark mode refined headers - enhanced visibility */
-body.dark-mode #sidebar .sidebar-section-header {
-  background: rgba(255, 255, 255, 0.05); /* subtle translucent bar for dark mode */
-  color: #9ca3af; /* consistent neutral grey */
-  border-left-color: #fb923c; /* lighter orange for dark mode visibility */
-}
-
-#sidebar .sidebar-list{ list-style:none; margin:0; padding:4px; }
-#sidebar .sidebar-item{ margin:2px 6px; }
-#sidebar .sidebar-link{
-  display:flex; align-items:center; gap:10px;
-  padding:10px 12px; border-radius:10px; text-decoration:none;
-  color: var(--text-primary); font:600 14px/1.2 Inter, ui-sans-serif, system-ui;
-  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-}
-#sidebar .sidebar-link:hover{
-  background: #d1d5db; /* Darker hover for better visibility in light mode */
-  transform: translateX(2px); /* subtle slide effect */
-}
-body.dark-mode #sidebar .sidebar-link:hover{ background: var(--bg-tertiary); }
-#sidebar .sidebar-link.active{
-  background: rgba(11,116,255,0.08);
-  color: #0b74ff;
-  border-left: 3px solid #0b74ff;
-  padding-left: 11px;
-}
-
-/* icon/label wrappers (we add them in JS below) */
-#sidebar .i{ width:22px; text-align:center; font-size:18px; line-height:1; }
-#sidebar .t{ white-space:nowrap; }
-
-/* collapsed: hide headings + labels, keep icons only */
-body.amc-collapsed #sidebar .sidebar-section-header{ display:none; }
-body.amc-collapsed #sidebar .t{ display:none; }
-body.amc-collapsed #sidebar .sidebar-link{ justify-content:center; gap:0; }
-
-/* --- Minimalist hamburger toggle --- */
-.sidebar-header {
-  height: 28px; /* tighter */
-  padding: 0 8px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-#sidebarToggle {
-  all: unset;                       /* strip default button styles */
-  position: relative;               /* ensure tooltip positions correctly */
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin: 4px 8px;
-}
-
-#sidebarToggle .hamburger {
-  position: relative;
-  width: 18px;
-  height: 2px;
-  background: var(--amc-sidebar-icon, #9ca3af);
-  border-radius: 1px;
-  transition: background 0.2s ease;
-}
-
-#sidebarToggle .hamburger::before,
-#sidebarToggle .hamburger::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  width: 18px;
-  height: 2px;
-  background: inherit;
-  border-radius: 1px;
-  transition: background 0.2s ease;
-}
-
-#sidebarToggle .hamburger::before { top: -6px; }
-#sidebarToggle .hamburger::after { top: 6px; }
-
-#sidebarToggle:hover .hamburger,
-#sidebarToggle:hover .hamburger::before,
-#sidebarToggle:hover .hamburger::after {
-  background: var(--amc-accent, #0b74ff);  /* subtle hover colour only */
-}
-
-/* 🔧 SIMPLE WORKING TOOLTIP - NO CONFLICTS */
-
-button#sidebarToggle {
-  position: relative !important;
-}
-
-/* DYNAMIC HAMBURGER TOOLTIP - ADJUSTS BASED ON SIDEBAR STATE */
-button#sidebarToggle[data-tooltip]:hover::after {
-  content: attr(data-tooltip) !important;
-  position: fixed !important;
-  /* Dynamic positioning based on sidebar state */
-  left: var(--tooltip-left, 270px) !important;
-  top: 80px !important;
-  background: #ffffff !important;
-  color: #1f2937 !important;
-  border: 1px solid #e5e7eb !important;
-  padding: 8px 12px !important;
-  border-radius: 6px !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  white-space: nowrap !important;
-  z-index: 99999 !important;
-  pointer-events: none !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-  display: block !important;
-  opacity: 1 !important;
-}
-
-/* Expanded sidebar - tooltip close to button */
-body:not(.sidebar-collapsed) button#sidebarToggle[data-tooltip]:hover::after {
-  --tooltip-left: 270px;
-}
-
-/* Collapsed sidebar - tooltip close to button */
-body.sidebar-collapsed button#sidebarToggle[data-tooltip]:hover::after {
-  --tooltip-left: 80px;
-}
-
-/* Dark mode version */
-body.dark-mode button#sidebarToggle[data-tooltip]:hover::after {
-  background: #374151 !important;
-  color: #f9fafb !important;
-  border-color: #4b5563 !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
-}
-
-/* --- Fade + slide animation when collapsing sidebar --- */
-
-/* Ensure text + icons transition smoothly */
-#sidebar .sidebar-text,
-#sidebar .sidebar-icon,
-#sidebar .sidebar-section-header {
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-/* Animate the sidebar container width itself */
-#sidebar {
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Collapsed state – smooth fade and slide */
-body.sidebar-collapsed #sidebar .sidebar-text,
-body.sidebar-collapsed #sidebar .sidebar-section-header {
-  opacity: 0;
-  transform: translateX(-8px);
-  pointer-events: none;
-}
-
-/* Icons can fade slightly too */
-body.sidebar-collapsed #sidebar .sidebar-icon {
-  opacity: 0.8;
-  transform: translateX(-4px);
-}
-
-/* Optional: soften background change during collapse */
-body.sidebar-collapsed #sidebar {
-  width: 72px;
-  background: var(--amc-sidebar-bg-collapsed, #f3f4f6);
-}
-
-/* Prevent layout jump */
-#sidebar .sidebar-section,
-#sidebar .sidebar-item {
-  transition: padding 0.25s ease;
-}
-
-/* Optional Extra: Hover Peek (Advanced) */
-body.sidebar-collapsed #sidebar:hover .sidebar-text,
-body.sidebar-collapsed #sidebar:hover .sidebar-section-header {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* --- Tooltip delay for collapsed sidebar link tooltips --- */
-body.sidebar-collapsed .sidebar-link::after,
-body.sidebar-collapsed .sidebar-link::before {
-  transition-delay: 0.15s; /* 150ms delay */
-}
-
-/* Pro Tip: Instant fade-out on mouse-out */
-#sidebarToggle:hover::after,
-#sidebarToggle:hover::before,
-body.sidebar-collapsed .sidebar-link:hover::after,
-body.sidebar-collapsed .sidebar-link:hover::before {
-  transition-delay: 0s;
-}
-
-/* 🔧 SIDEBAR LINK TOOLTIPS - NOW HANDLED BY JAVASCRIPT */
-#sidebar .sidebar-link {
-  position: relative;
-}
-
-/* Disable CSS tooltips for sidebar links only (preserve hamburger tooltip) */
-.sidebar-link[data-tooltip]:hover::after {
-  display: none !important;
-}
-
-/* Style for JavaScript-created tooltips */
-.amc-sidebar-tooltip {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: 0.01em;
-}
-
-        /* Legacy main-content removed - now using enterprise layout */
-        /* CONTENT HEADER - MATCH AUTOMEDIACENTER.HTML EXACTLY */
-        .content-header {
-            margin-bottom: 8px; /* Further reduced to move content higher */
-            padding-bottom: 8px; /* Reduced padding */
-            border-bottom: 1px solid var(--border-primary);
-            margin-top: -8px; /* Negative margin to pull content higher */
-        }
-        .content-header h1 {
-            font-size: 1.8em;
-            font-weight: 600;
-            color: var(--text-headings);
-            margin-bottom: 3px; /* Reduced margin */
-            display: flex;
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            font-family: "Inter", sans-serif;
+            font-weight: 500;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            display: inline-flex;
             align-items: center;
-            gap: 10px;
-            margin-top: 0; /* Ensure no top margin */
+            justify-content: center;
+            white-space: nowrap;
+            line-height: 1.4;
         }
-        .content-header h1 i { color: var(--accent-primary); margin-right: 0; }
-        .content-header p {
-            font-size: var(--font-body);
-            color: var(--text-secondary);
-            line-height: 1.7;
-            max-width: 720px;
-            margin: 0;
-        }
-        
-        /* DARK MODE CONTENT HEADER */
-        body.dark-mode .content-header {
-            background: var(--bg-primary) !important;
-            border-bottom-color: var(--border-primary) !important;
-        }
-        
-        body.dark-mode .content-header h1 {
-            color: var(--text-headings) !important;
-        }
-        
-        body.dark-mode .content-header p {
-            color: var(--text-secondary) !important;
-        }
-        .controls-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; } .search-bar { display: flex; flex-grow: 1; max-width: 450px; }
-        .search-bar input[type="search"] { width: 100%; padding: 10px 15px; border: 1px solid var(--border-secondary); border-radius: 5px 0 0 5px; font-size: 1em; outline: none; background-color: var(--bg-secondary); color: var(--text-primary); font-family: inherit;}
-        .search-bar input[type="search"]:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 0.25rem rgba(var(--accent-primary-rgb), 0.25); } .search-bar button { border-radius: 0 5px 5px 0; border-left: none; }
-        .filter-controls { display: flex; gap: 10px; align-items: center; }
-        .btn { padding: 10px 18px; font-size: 0.95em; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s ease, box-shadow 0.2s ease; display: inline-flex; align-items: center; justify-content: center; font-weight: 500; text-decoration: none; white-space: nowrap; line-height: 1.4;} .btn i { margin-right: 6px; } .btn-primary { background-color: var(--accent-primary); color: #fff; } .btn-primary:hover { background-color: var(--accent-primary-hover); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); text-decoration: none; color: #fff; } .btn-secondary { background-color: var(--accent-secondary); color: #fff; } .btn-secondary:hover { background-color: var(--accent-secondary-hover); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); text-decoration: none; color: #fff; } .btn-light { background-color: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-secondary); } .btn-light:hover { background-color: var(--border-secondary); } .btn-icon { padding: 8px 10px; }
+        .btn i { margin-right: 6px; }
+        .btn-primary { background: var(--accent-primary); color: #fff; }
+        .btn-primary:hover { background: var(--accent-primary-hover); }
+        .btn-secondary { background: #6c757d; color: #fff; }
+        .btn-secondary:hover { background: #5a6268; }
+        .btn-light { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-primary); }
+        .btn-light:hover { background: var(--bg-primary); }
+        .btn-sm { padding: 5px 10px; font-size: 13px; }
+        .btn-icon { padding: 7px 10px; }
 
-        /* --- Radar Grid --- */
+</style>
+
+    <style id="radar-specific">
+        /* Radar card, modal, filter, loading overlay styles */
+
+
         .radar-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
             margin-bottom: 30px;
         }
 
@@ -897,6 +350,18 @@ body.sidebar-collapsed .sidebar-link:hover::before {
             color: var(--accent-primary);
         }
 
+        /* Alert title link - navigates to amc-alert-detail.html */
+        .card-content-area h3 .alert-title-link {
+            color: inherit;
+            text-decoration: none;
+            display: block;
+            transition: color 0.2s ease;
+        }
+
+        .card-content-area h3 .alert-title-link:hover {
+            color: var(--accent-primary);
+        }
+
         /* Bottom meta area - Match AutoMediaCenter layout */
         .card-bottom-meta {
             display: flex;
@@ -1003,7 +468,7 @@ body.sidebar-collapsed .sidebar-link:hover::before {
         .filter-modal.open .filter-modal-content { transform: translateX(0); }
         .filter-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border-secondary); flex-shrink: 0; } .filter-modal-header h3 { font-size: 1.2em; margin: 0; color: var(--text-headings); }
         .filter-modal-header .close-btn { background: none; border: none; font-size: 1.5em; color: var(--text-secondary); cursor: pointer; padding: 5px; line-height: 1; } .filter-modal-header .close-btn:hover { color: var(--text-primary); }
-        .filter-modal-body { padding: 20px; overflow-y: auto; flex-grow: 1; }
+        .filter-modal-/* body padding removed - shell CSS handles layout */
         .filter-group { margin-bottom: 25px; } .filter-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9em; color: var(--text-headings); }
         .filter-group input[type="text"], .filter-group input[type="date"], .filter-group select { width: 100%; padding: 8px 12px; border: 1px solid var(--border-secondary); border-radius: 4px; background-color: var(--bg-primary); color: var(--text-primary); font-size: 0.95em; }
         .filter-group .date-range-inputs { display: flex; gap: 10px; }
@@ -1238,62 +703,187 @@ body.sidebar-collapsed .sidebar-link:hover::before {
             padding: 8px 15px;
             font-size: 0.9em;
         }
-        </style>
-        <!-- Premium Avatar System Styles -->
-        <link rel="stylesheet" href="amc-avatar-styles.css">
+        /* Loading Animation Overlay - AutoMediaRadar */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff5f5 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-content {
+            text-align: center;
+            max-width: 400px;
+            padding: 0 20px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 32px;
+            border: 3px solid rgba(26, 115, 232, 0.1);
+            border-top: 3px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-title {
+            font-size: 24px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .loading-subtitle {
+            font-size: 16px;
+            color: #5f6368;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .loading-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(26, 115, 232, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #1a73e8, #4285f4);
+            border-radius: 2px;
+            animation: progress 2s ease-in-out;
+            transform-origin: left;
+        }
+
+        @keyframes progress {
+            0% { transform: scaleX(0); }
+            50% { transform: scaleX(0.7); }
+            100% { transform: scaleX(1); }
+        }
+
+        .loading-status {
+            font-size: 14px;
+            color: #5f6368;
+            opacity: 0.8;
+        }
+
+        /* Mobile loading adjustments */
+        @media (max-width: 768px) {
+            .loading-title {
+                font-size: 20px;
+            }
+            
+            .loading-subtitle {
+                font-size: 14px;
+            }
+            
+            .loading-spinner {
+                width: 48px;
+                height: 48px;
+                margin-bottom: 24px;
+            }
+        }
+
+        /* Dark mode loading overlay */
+        body.dark-mode .loading-overlay {
+            background: linear-gradient(135deg, #121212 0%, #1a1c1e 100%);
+        }
+
+        body.dark-mode .loading-title {
+            color: #f8f9fa;
+        }
+
+        body.dark-mode .loading-subtitle,
+        body.dark-mode .loading-status {
+            color: #adb5bd;
+        }
+        
+
+    </style>
 </head>
 <body>
-    <!-- Header at the very top, spanning full width -->
-    <header class="app-header">
-        <div class="logo"><h1>AutoMediaCenter</h1></div>
-        <div class="user-actions-group">
-            <div class="amc-header-right">
-                <div class="notification-indicator" id="notification-indicator" title="Notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">0</span>
-                </div>
-                <div class="cart-indicator" id="cart-indicator" title="View Cart (0 items)">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-badge">0</span>
-                </div>
-                <!-- Avatar will be auto-injected by amc-avatar-system.js -->
-                <button class="amc-menu-dots" title="More options">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-            </div>
-        </div>
-    </header>
+    <!-- v6.5 Shell mount points -->
+    <div id="amcShellHeader"></div>
+    <div id="amcShellSidebar"></div>
 
-    <div class="amc-app">
-        <!-- Enterprise Sidebar -->
-        <aside id="sidebar" class="amc-sidebar">
-            <!-- Content will be dynamically generated by components/sidebar.js -->
-        </aside>
-        
-        <!-- Main Content -->
-        <main class="amc-content">
-            <div class="main-content">
-<div class="content-header">
-<h1><i class="fas fa-satellite-dish"></i> AutoMediaRadar</h1>
-<p>Your forward look at upcoming content drops, embargo lifts, and exclusive media releases.</p>
-</div>
-<div class="controls-section">
-<div class="search-bar"> <input placeholder="Search Radar events..." type="search"/> <button class="btn btn-secondary btn-icon"><i class="fas fa-search"></i></button> </div>
-<div class="filter-controls"> <button class="btn btn-light" id="filter-trigger-button" title="Filter Results"><i class="fas fa-filter"></i> Filters</button> <button class="btn btn-light" title="Sort Options"><i class="fas fa-sort-amount-down"></i> Sort</button> </div>
-</div>
-<div class="radar-grid">
-<!-- Content will be dynamically inserted here -->
-</div>
-<div class="pagination">
-<!-- Pagination will also be dynamic -->
+    <!-- Page content -->
+    <main class="mobile-main">
+        <div class="amc-page">
+
+            <!-- Page header -->
+            <header class="amc-page-header">
+                <h1 class="amc-page-title">Media Alerts</h1>
+                <p class="amc-page-subtitle">Your forward look at upcoming content drops, embargo lifts, and exclusive media releases.</p>
+            </header>
+
+            <!-- Search Bar — matches automediacenter-mobile-v6.5.html -->
+            <div class="search-bar">
+                <label for="searchInput" class="sr-only">Search radar alerts</label>
+                <div class="search-input-wrapper">
+                    <input
+                        type="search"
+                        class="search-input"
+                        placeholder="Search Radar events..."
+                        id="searchInput"
+                        aria-label="Search radar alerts by title or brand"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <button class="search-btn" id="searchBtn" title="Open Filters" aria-label="Open filter options">
+                        <i class="fas fa-filter"></i>
+                        <span class="filter-count-badge hidden" id="filterCountBadge">0</span>
+                    </button>
+                </div>
             </div>
-            
-            <footer class="app-footer">
-                 <nav><a href="#">About Us</a> | <a href="#">Help Center</a> | <a href="#">Terms</a> | <a href="#">Privacy</a></nav>
-                 <p>© <span id="currentYearText">2025</span> AutoMediaCenter. All Rights Reserved.</p>
-             </footer>
-        </main>
-    </div>
+
+            <!-- Search context: result count + clear pill -->
+            <div class="search-context-field hidden" id="searchContextField">
+                <div class="search-context-top">
+                    <span class="search-context-count" id="searchContextCount">0 Results</span>
+                    <span class="search-context-for">for</span>
+                    <span class="search-context-pill">
+                        <span id="searchContextTerm"></span>
+                        <button class="search-context-clear" id="searchContextClear" aria-label="Clear search">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </span>
+                </div>
+                <div class="search-context-bottom" id="searchContextBottom">0 of 0</div>
+            </div>
+
+            <!-- Radar grid — populated by JS -->
+            <div class="radar-grid"></div>
+
+            <!-- Pagination — populated by JS -->
+            <div class="pagination"></div>
+
+        </div>
+    </main>
+
+
 <div class="filter-modal" id="filter-modal">
 <div class="filter-modal-content">
 <div class="filter-modal-header"> <h3><i class="fas fa-filter"></i> Filter Radar Items</h3> <button class="close-btn" id="filter-close-button" title="Close Filters">×</button> </div>
@@ -1612,7 +1202,7 @@ body.sidebar-collapsed .sidebar-link:hover::before {
                                     </div>
                                     ${alert.brand ? `<div class="brand-band">${alert.brand}</div>` : ''}
                                     <div class="card-content-area">
-                                        <h3 class="${hasQuickViewContent ? 'radar-heading-clickable' : ''}" ${hasQuickViewContent ? `data-alert-db-id="${alert._id}"` : ''}>${alert.title || 'Untitled Radar Alert'}</h3>
+                                        <h3 class="${hasQuickViewContent ? 'radar-heading-clickable' : ''}" ${hasQuickViewContent ? `data-alert-db-id="${alert._id}"` : ''}><a href="amc-alert-detail.html?uuid=${alert.uuid}" class="alert-title-link">${alert.title || 'Untitled Radar Alert'}</a></h3>
                                         <div class="card-bottom-meta">
                                             <div class="countdown-badge ${urgencyClassNew}">
                                                 <i class="fas fa-stopwatch"></i> ${countdownText}
@@ -1678,6 +1268,7 @@ body.sidebar-collapsed .sidebar-link:hover::before {
                 }
             }
 
+            currentModalAlertData = cardData; window.currentModalAlertData = cardData; // store for calendar/ICS generation
             radarQuickViewTitleEl.textContent = cardData.title || 'Radar Alert Details';
             radarQuickViewBrandEl.textContent = cardData.brand || 'N/A';
             radarQuickViewDateTimeEl.textContent = cardData.eventdatetime ? new Date(cardData.eventdatetime).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) : 'N/A'; 
@@ -1713,7 +1304,28 @@ body.sidebar-collapsed .sidebar-link:hover::before {
                     const id = e.currentTarget.dataset.alertDbId;
                     if(id && action) {
                         logRadarInteraction(id, action);
-                        alert(`Action: ${action} for alert ID ${id} (from modal)`); 
+                        
+                        if (action === 'calendar_add') {
+                            // Route to calendar picker — uses currentModalAlertData set when modal opened
+                            const alertData = window.currentModalAlertData;
+                            if (alertData) {
+                                showCalendarPicker(e.currentTarget, alertData);
+                            } else {
+                                // Fallback: read from card
+                                const card = document.querySelector(`.radar-card[data-alert-db-id="${id}"]`);
+                                if (card) {
+                                    showCalendarPicker(e.currentTarget, {
+                                        title: card.dataset.title,
+                                        brand: card.dataset.brand,
+                                        eventdatetime: card.dataset.eventdatetime,
+                                        region: card.dataset.region,
+                                        tags: card.dataset.tags,
+                                        uuid: card.dataset.uuid
+                                    });
+                                }
+                            }
+                        }
+                        // reminder_set and follow_alert remain as stubs for future implementation
                     }
                 });
             });
@@ -1741,6 +1353,10 @@ body.sidebar-collapsed .sidebar-link:hover::before {
                     // Handle clicks on clickable headings
                     const clickableHeading = event.target.closest('.radar-heading-clickable');
                     if (clickableHeading) {
+                        // If the click was on the <a> link itself, let it navigate normally
+                        if (event.target.closest('.alert-title-link')) {
+                            return; // allow default navigation to amc-alert-detail.html
+                        }
                         event.preventDefault();
                         const card = clickableHeading.closest('.radar-card');
                         const alertDbIdFromHeading = clickableHeading.dataset.alertDbId;
@@ -1785,6 +1401,25 @@ body.sidebar-collapsed .sidebar-link:hover::before {
                              console.warn("Could not find parent .radar-card for quick view button.");
                         }
                     }
+
+                    // ===== CALENDAR BUTTON HANDLER (card hover overlay) =====
+                    const calendarBtn = event.target.closest('.calendar-button-class');
+                    if (calendarBtn) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const card = calendarBtn.closest('.radar-card');
+                        if (card) {
+                            const alertData = {
+                                title: card.dataset.title,
+                                brand: card.dataset.brand,
+                                eventdatetime: card.dataset.eventdatetime,
+                                region: card.dataset.region,
+                                tags: card.dataset.tags,
+                                uuid: card.dataset.uuid
+                            };
+                            showCalendarPicker(calendarBtn, alertData);
+                        }
+                    }
                 });
                 console.log("Quick View delegated listener attached to radar grid (headings and legacy buttons).");
             } else {
@@ -1803,94 +1438,971 @@ body.sidebar-collapsed .sidebar-link:hover::before {
 
 
         document.addEventListener('DOMContentLoaded', () => {
-            setAccentRgbVariable(); 
-            checkRadarPageLoginStatus(); 
+            setAccentRgbVariable();
+            checkRadarPageLoginStatus();
         });
+
+        // ===== DEVICE DETECTION AND ROUTING SYSTEM FOR AUTOMEDIARADAR =====
+        
+        // Configuration and feature flags
+        const LoadingConfig = {
+            enabled: !new URLSearchParams(window.location.search).has('skipLoading'),
+            debugMode: new URLSearchParams(window.location.search).has('debugRouting'),
+            silentMode: localStorage.getItem('silentMode') === 'true',
+            maxDuration: 3000, // Hard timeout: 3 seconds max
+            targetDuration: 1500, // Optimal: 1.5 seconds
+            steps: [
+                { text: 'Analyzing device capabilities...', duration: 400 },
+                { text: 'Detecting screen size and orientation...', duration: 350 },
+                { text: 'Optimizing radar interface layout...', duration: 400 },
+                { text: 'Loading optimal radar experience...', duration: 350 }
+            ]
+        };
+
+        let loadingStartTime = 0;
+        let loadingTimeout = null;
+        let isLoadingComplete = false;
+
+        function showLoadingAnimation() {
+            // Skip if disabled or in silent mode
+            if (!LoadingConfig.enabled || LoadingConfig.silentMode) {
+                if (LoadingConfig.debugMode) console.log('🔧 Loading animation skipped (disabled or silent mode)');
+                return;
+            }
+
+            const overlay = document.getElementById('loadingOverlay');
+            const statusElement = document.getElementById('loadingStatus');
+            
+            if (!overlay) {
+                console.warn('⚠️ Loading overlay not found - fail-safe routing');
+                return;
+            }
+
+            loadingStartTime = performance.now();
+            overlay.classList.remove('hidden');
+            
+            if (LoadingConfig.debugMode) {
+                console.log('🔧 Radar loading animation started', {
+                    startTime: loadingStartTime,
+                    config: LoadingConfig
+                });
+            }
+
+            // Hard timeout protection
+            loadingTimeout = setTimeout(() => {
+                if (!isLoadingComplete) {
+                    console.warn('⚠️ Radar loading animation timeout reached - forcing completion');
+                    completeLoading();
+                }
+            }, LoadingConfig.maxDuration);
+
+            let currentStep = 0;
+
+            function updateStatus() {
+                if (isLoadingComplete || currentStep >= LoadingConfig.steps.length || !statusElement) {
+                    return;
+                }
+
+                const step = LoadingConfig.steps[currentStep];
+                statusElement.textContent = step.text;
+                
+                if (LoadingConfig.debugMode) {
+                    console.log(`🔧 Radar loading step ${currentStep + 1}: ${step.text}`);
+                }
+                
+                currentStep++;
+                
+                if (currentStep < LoadingConfig.steps.length) {
+                    setTimeout(updateStatus, step.duration);
+                }
+            }
+
+            updateStatus();
+        }
+
+        function completeLoading() {
+            if (isLoadingComplete) return;
+            
+            isLoadingComplete = true;
+            
+            // Clear timeout
+            if (loadingTimeout) {
+                clearTimeout(loadingTimeout);
+                loadingTimeout = null;
+            }
+
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                const loadingDuration = performance.now() - loadingStartTime;
+                
+                if (LoadingConfig.debugMode) {
+                    console.log('🔧 Radar loading animation completed', {
+                        duration: Math.round(loadingDuration),
+                        target: LoadingConfig.targetDuration,
+                        withinTarget: loadingDuration <= LoadingConfig.targetDuration
+                    });
+                }
+
+                overlay.classList.add('hidden');
+                // Remove from DOM after transition
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+            }
+        }
+
+        // Enhanced device detection with analytics for AutoMediaRadar
+        function detectDeviceWithAnalytics() {
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const ua = navigator.userAgent || '';
+            const uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+            const smallScreen = windowWidth <= 768;
+            const mediumScreen = windowWidth <= 860;
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            const isPortrait = windowHeight > windowWidth;
+            const isSmallViewport = windowWidth <= 1024;
+            
+            // Test flags
+            const isTestMobile = window.location.search.includes('mobile=true') ||
+                                sessionStorage.getItem('forceMobile') === 'true' ||
+                                localStorage.getItem('testMobile') === 'true';
+
+            // Determine device classification
+            let classification = 'desktop';
+            let detectionMethod = 'viewport-size';
+            
+            if (isTestMobile) {
+                classification = 'mobile';
+                detectionMethod = 'test-flag';
+            } else if (uaMobile) {
+                classification = 'mobile';
+                detectionMethod = 'user-agent';
+            } else if (smallScreen) {
+                classification = 'mobile';
+                detectionMethod = 'small-screen';
+            } else if (isTouchDevice && isSmallViewport) {
+                classification = 'tablet';
+                detectionMethod = 'touch-viewport';
+            } else if (mediumScreen && isTouchDevice) {
+                classification = 'tablet';
+                detectionMethod = 'medium-touch';
+            }
+
+            const shouldUseMobile = classification === 'mobile' ||
+                                   (classification === 'tablet' && isPortrait);
+
+            const targetApp = shouldUseMobile
+                ? 'automediaradar-mobile.html'
+                : 'newradarfe.html';
+
+            const deviceInfo = {
+                classification,
+                detectionMethod,
+                targetApp,
+                shouldUseMobile,
+                metrics: {
+                    windowWidth,
+                    windowHeight,
+                    uaMobile,
+                    smallScreen,
+                    mediumScreen,
+                    isTouchDevice,
+                    isPortrait,
+                    isSmallViewport,
+                    isTestMobile
+                }
+            };
+
+            // Track the routing decision
+            trackDeviceRouting(deviceInfo, {
+                finalDecision: shouldUseMobile ? 'mobile' : 'desktop',
+                targetUrl: targetApp,
+                confidence: calculateConfidence(deviceInfo),
+                application: 'AutoMediaRadar'
+            });
+
+            return deviceInfo;
+        }
+
+        function calculateConfidence(deviceInfo) {
+            let confidence = 0.5; // Base confidence
+            
+            // Higher confidence for clear indicators
+            if (deviceInfo.detectionMethod === 'user-agent') confidence = 0.9;
+            else if (deviceInfo.detectionMethod === 'small-screen') confidence = 0.8;
+            else if (deviceInfo.detectionMethod === 'test-flag') confidence = 1.0;
+            else if (deviceInfo.detectionMethod === 'touch-viewport') confidence = 0.7;
+            
+            return Math.round(confidence * 100) / 100;
+        }
+
+        // Analytics tracking system for AutoMediaRadar
+        function trackDeviceRouting(deviceInfo, routingDecision) {
+            const analyticsData = {
+                timestamp: new Date().toISOString(),
+                application: 'AutoMediaRadar',
+                userAgent: navigator.userAgent,
+                screenResolution: `${window.screen.width}x${window.screen.height}`,
+                viewportSize: `${window.innerWidth}x${window.innerHeight}`,
+                devicePixelRatio: window.devicePixelRatio || 1,
+                touchSupport: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+                orientation: window.innerHeight > window.innerWidth ? 'portrait' : 'landscape',
+                connectionType: navigator.connection ? navigator.connection.effectiveType : 'unknown',
+                platform: navigator.platform,
+                language: navigator.language,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                routingDecision: routingDecision,
+                deviceClassification: deviceInfo.classification,
+                targetApp: deviceInfo.targetApp,
+                detectionMethod: deviceInfo.detectionMethod,
+                sessionId: generateSessionId(),
+                pageLoadTime: performance.now()
+            };
+
+            // Store locally for batch sending
+            const existingAnalytics = JSON.parse(localStorage.getItem('radarDeviceRoutingAnalytics') || '[]');
+            existingAnalytics.push(analyticsData);
+            
+            // Keep only last 50 entries to prevent storage bloat
+            if (existingAnalytics.length > 50) {
+                existingAnalytics.splice(0, existingAnalytics.length - 50);
+            }
+            
+            localStorage.setItem('radarDeviceRoutingAnalytics', JSON.stringify(existingAnalytics));
+
+            // Send to analytics endpoint (if available)
+            sendAnalyticsData(analyticsData);
+
+            console.log('📊 AutoMediaRadar Device Routing Analytics Tracked:', analyticsData);
+        }
+
+        function generateSessionId() {
+            return 'radar_session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        async function sendAnalyticsData(data) {
+            // Fail-safe: Never block UX for analytics
+            try {
+                // Try to send to backend analytics endpoint with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2000); // 2s timeout
+
+                const response = await fetch('/api/v1/analytics/radar-device-routing', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    if (LoadingConfig.debugMode) console.log('📊 Radar analytics data sent successfully');
+                } else {
+                    if (LoadingConfig.debugMode) console.log('📊 Radar analytics endpoint not available, data stored locally');
+                }
+            } catch (error) {
+                // Fail silently - analytics must never break the product
+                if (LoadingConfig.debugMode) {
+                    console.log('📊 Radar analytics endpoint not available, data stored locally:', error.message);
+                }
+            }
+        }
+
+        // Enhanced analytics with fail-safe localStorage
+        function trackDeviceRoutingWithFailsafe(deviceInfo, routingDecision) {
+            try {
+                trackDeviceRouting(deviceInfo, routingDecision);
+            } catch (error) {
+                // Fail-safe: If analytics fails, log but continue
+                console.warn('⚠️ Radar analytics tracking failed, continuing with routing:', error.message);
+            }
+        }
+
+        // AutoMediaRadar device detection initialization
+        function initializeRadarDeviceDetection() {
+            try {
+                // Check if we're already on the correct version
+                const currentPath = window.location.pathname;
+                const isOnMobile = currentPath.includes('automediaradar-mobile.html');
+                const isOnDesktop = currentPath.includes('newradarfe.html');
+                
+                if (LoadingConfig.debugMode) {
+                    console.log('🔧 AutoMediaRadar Device Detection Debug:');
+                    console.log('  - Current path:', currentPath);
+                    console.log('  - Is on mobile:', isOnMobile);
+                    console.log('  - Is on desktop:', isOnDesktop);
+                }
+
+                // Detect device and get routing decision
+                const deviceInfo = detectDeviceWithAnalytics();
+                
+                if (LoadingConfig.debugMode) {
+                    console.log('🔧 Device detection result:', deviceInfo);
+                }
+
+                // Check if we need to redirect
+                const shouldRedirect = (deviceInfo.shouldUseMobile && isOnDesktop) ||
+                                     (!deviceInfo.shouldUseMobile && isOnMobile);
+
+                if (shouldRedirect) {
+                    console.log('🔄 AutoMediaRadar Device Redirect Required:');
+                    console.log('  - Device Info:', deviceInfo);
+                    console.log('  - Target URL:', deviceInfo.targetApp);
+                    
+                    // Show loading animation
+                    showLoadingAnimation();
+                    
+                    // Track analytics with fail-safe
+                    trackDeviceRoutingWithFailsafe(deviceInfo, {
+                        finalDecision: deviceInfo.shouldUseMobile ? 'mobile' : 'desktop',
+                        targetUrl: deviceInfo.targetApp,
+                        confidence: calculateConfidence(deviceInfo),
+                        userType: 'redirect',
+                        sessionType: 'radar-device-detection'
+                    });
+                    
+                    // Enhanced timing: respect target duration
+                    const redirectDelay = Math.min(LoadingConfig.targetDuration, 1800);
+                    setTimeout(() => {
+                        completeLoading();
+                        setTimeout(() => {
+                            window.location.href = deviceInfo.targetApp;
+                        }, 300);
+                    }, redirectDelay);
+                } else {
+                    // We're on the correct version, just track analytics
+                    trackDeviceRoutingWithFailsafe(deviceInfo, {
+                        finalDecision: deviceInfo.shouldUseMobile ? 'mobile' : 'desktop',
+                        targetUrl: deviceInfo.targetApp,
+                        confidence: calculateConfidence(deviceInfo),
+                        userType: 'correct_version',
+                        sessionType: 'radar-no-redirect'
+                    });
+                    
+                    // Hide loading overlay quickly
+                    setTimeout(() => {
+                        completeLoading();
+                    }, 100);
+                    
+                    if (LoadingConfig.debugMode) {
+                        console.log('✅ AutoMediaRadar: Already on correct version, no redirect needed');
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️ AutoMediaRadar device detection failed:', error);
+                // Fail-safe: Hide loading overlay and continue
+                setTimeout(() => {
+                    completeLoading();
+                }, 100);
+            }
+        }
+
+        // Initialize device detection when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeRadarDeviceDetection);
+        } else {
+            initializeRadarDeviceDetection();
+        }
     </script>
     
     <!-- Enterprise Sidebar Component is loaded in head -->
     
     <!-- Premium Avatar System -->
-    <script defer src="amc-avatar-system.js"></script>
 
-    <!-- Profile Modal - HIDDEN BY DEFAULT -->
-    <div id="amc-profile-modal" class="amc-profile-modal" style="display: none;">
-        <div class="amc-profile-modal-content">
-            <div class="amc-profile-modal-header">
-                <div class="amc-profile-modal-user-info">
-                    <div class="amc-profile-modal-avatar">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                    </div>
-                    <div class="amc-profile-modal-details">
-                        <div class="amc-profile-modal-name" id="amc-profile-modal-name">Loading...</div>
-                        <div class="amc-profile-modal-email" id="amc-profile-modal-email">Loading...</div>
-                        <div class="amc-profile-modal-role" id="amc-profile-modal-role">Loading...</div>
-                    </div>
-                </div>
-                <button class="amc-profile-modal-close" id="amc-profile-modal-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="amc-profile-modal-body">
-                <div class="amc-profile-modal-section">
-                    <h3>Account Settings</h3>
-                    <div class="amc-profile-modal-item">
-                        <i class="fas fa-user"></i>
-                        <span>Manage Profile</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                    <div class="amc-profile-modal-item">
-                        <i class="fas fa-key"></i>
-                        <span>Change Password</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                    <div class="amc-profile-modal-item">
-                        <i class="fas fa-bell"></i>
-                        <span>Notification Settings</span>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </div>
-                
-                <div class="amc-profile-modal-section">
-                    <h3>Preferences</h3>
-                    <div class="amc-profile-modal-item">
-                        <i class="fas fa-globe"></i>
-                        <span>Language</span>
-                        <select id="amc-language-select">
-                            <option value="en">English</option>
-                            <option value="de">Deutsch</option>
-                            <option value="fr">Français</option>
-                            <option value="es">Español</option>
-                        </select>
-                    </div>
-                    <div class="amc-profile-modal-item">
-                        <i class="fas fa-palette"></i>
-                        <span>Theme</span>
-                        <div class="amc-theme-toggle">
-                            <button id="amc-theme-light" class="amc-theme-btn active">
-                                <i class="fas fa-sun"></i>
-                                Light
-                            </button>
-                            <button id="amc-theme-dark" class="amc-theme-btn">
-                                <i class="fas fa-moon"></i>
-                                Dark
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="amc-profile-modal-footer">
-                <button class="amc-profile-modal-signout" id="amc-profile-modal-signout">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Sign Out
-                </button>
-            </div>
-        </div>
-    </div>
+
+    <!-- Footer mount - required by shell loader, hidden until redesign -->
+    <div id="amcShellFooter" style="display:none"></div>
+
+    <!-- v6.5 Shell scripts -->
+    <script src="./components/shell/v6_5-shell.js" defer></script>
+    <script src="./components/shell/v6_5-shell-loader.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadV65Shell === 'function') {
+                loadV65Shell({ basePath: './components/shell' });
+            }
+        });
+    </script>
+
+    <style>
+        /* === Layout variables + icon rail + avatar — matches automediacenter-mobile-v6.5.html === */
+        :root {
+            --amc-header-h: 56px;
+            --amc-rail-w: 72px;
+        }
+        /* Avatar visibility — reinforces shell CSS */
+        .amc-avatar {
+            width: 40px; height: 40px;
+            display: flex !important;
+            align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 50%;
+        }
+        .amc-avatar i { font-size: 24px; }
+        .amc-avatar.role-media-user     { color: #3B82F6; }
+        .amc-avatar.role-client-user    { color: #10B981; }
+        .amc-avatar.role-client-admin   { color: #F59E0B; }
+        .amc-avatar.role-platform-admin { color: #EF4444; }
+        body.dark-mode .amc-avatar.role-media-user     { color: #60a5fa; }
+        body.dark-mode .amc-avatar.role-client-user    { color: #34d399; }
+        body.dark-mode .amc-avatar.role-client-admin   { color: #fbbf24; }
+        body.dark-mode .amc-avatar.role-platform-admin { color: #f87171; }
+        /* Icon rail padding — identical to working media releases page */
+        @media (min-width: 1100px) {
+            .mobile-main { padding-left: calc(32px + var(--amc-rail-w)) !important; }
+        }
+        @media (min-width: 1366px) {
+            .mobile-main { padding-left: calc(40px + var(--amc-rail-w)) !important; }
+        }
+    
+        /* ===== SEARCH BAR — matches automediacenter-mobile-v6.5.html exactly ===== */
+        .sr-only {
+            position: absolute; width: 1px; height: 1px;
+            padding: 0; margin: -1px; overflow: hidden;
+            clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+        }
+        .search-bar {
+            margin: 0 0 16px 0;
+            padding: 0;
+            max-width: 400px;
+        }
+        .search-input-wrapper {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+        .search-input {
+            flex: 1;
+            height: 44px;
+            padding: 0 16px;
+            border: 2px solid var(--border-primary);
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .search-input::placeholder { color: var(--text-secondary); }
+        .search-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .search-input.searching {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .search-btn {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            background: var(--accent-primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.15s ease;
+        }
+        .search-btn:hover { background: #2563eb; }
+        .search-btn:active { background: #1d4ed8; }
+        .filter-count-badge {
+            position: absolute;
+            top: -6px; right: -6px;
+            background: #ef4444; color: #fff;
+            font-size: 11px; font-weight: 600;
+            min-width: 18px; height: 18px;
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 4px;
+        }
+        .filter-count-badge.hidden { display: none; }
+        /* Search context field */
+        .search-context-field {
+            max-width: 400px;
+            margin: 0 0 16px 0;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+        }
+        .search-context-field.hidden { display: none; }
+        .search-context-top {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 14px; font-weight: 500; color: var(--text-primary);
+        }
+        .search-context-count { font-weight: 600; }
+        .search-context-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 10px;
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 20px;
+            color: var(--accent-primary);
+            font-size: 13px; font-weight: 500;
+            max-width: 200px;
+        }
+        #searchContextTerm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .search-context-clear {
+            background: none; border: none; color: var(--accent-primary);
+            cursor: pointer; padding: 0;
+            width: 16px; height: 16px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+        }
+        .search-context-clear:hover { background: rgba(59,130,246,0.2); }
+        .search-context-clear i { font-size: 10px; }
+        .search-context-bottom { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+        body.dark-mode .search-context-pill {
+            background: rgba(59,130,246,0.15);
+            border-color: rgba(59,130,246,0.4);
+        }
+    
+        /* ===== CALENDAR PICKER POPOVER ===== */
+        #amc-cal-picker {
+            background: var(--bg-secondary, #1e293b);
+            border: 1px solid var(--border-primary, #334155);
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: calPickerIn 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        @keyframes calPickerIn {
+            from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .amc-cal-picker-header {
+            padding: 10px 14px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-secondary, #94a3b8);
+            border-bottom: 1px solid var(--border-primary, #334155);
+        }
+        .amc-cal-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 14px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            color: var(--text-primary, #f1f5f9);
+            transition: background 0.1s ease;
+        }
+        .amc-cal-option:hover {
+            background: var(--bg-hover, rgba(255,255,255,0.06));
+        }
+        .amc-cal-option + .amc-cal-option {
+            border-top: 1px solid var(--border-primary, #334155);
+        }
+        .amc-cal-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .amc-cal-label {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+        .amc-cal-label strong {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary, #f1f5f9);
+        }
+        .amc-cal-label small {
+            font-size: 11px;
+            color: var(--text-secondary, #94a3b8);
+        }
+        body:not(.dark-mode) #amc-cal-picker {
+            background: #ffffff;
+            border-color: #e2e8f0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+        }
+        body:not(.dark-mode) .amc-cal-picker-header {
+            border-bottom-color: #e2e8f0;
+            color: #64748b;
+        }
+        body:not(.dark-mode) .amc-cal-option {
+            color: #1e293b;
+        }
+        body:not(.dark-mode) .amc-cal-option:hover {
+            background: #f8fafc;
+        }
+        body:not(.dark-mode) .amc-cal-option + .amc-cal-option {
+            border-top-color: #e2e8f0;
+        }
+        body:not(.dark-mode) .amc-cal-label strong { color: #1e293b; }
+        body:not(.dark-mode) .amc-cal-label small  { color: #64748b; }
+    </style>
+
+    <script>
+    /* ===== CALENDAR / ICS SYSTEM — enterprise .ics pattern ===== */
+
+    // ---- Generate ICS file content ----
+    function generateICS(alertData) {
+        const title = (alertData.title || 'AutoMediaCenter Radar Alert').replace(/[\r\n]/g, ' ');
+        const brand = alertData.brand && alertData.brand !== 'N/A' ? alertData.brand : '';
+        const region = alertData.region && alertData.region !== 'N/A' ? alertData.region : '';
+        const tags = alertData.tags && alertData.tags !== 'N/A' ? alertData.tags : '';
+        const uuid = alertData.uuid || ('amc-' + Date.now());
+
+        // Parse event date
+        const eventDate = new Date(alertData.eventdatetime);
+        if (isNaN(eventDate.getTime())) {
+            console.error('Invalid eventdatetime for ICS:', alertData.eventdatetime);
+            return null;
+        }
+
+        // Format date as YYYYMMDDTHHMMSSZ (UTC)
+        function toICSDate(d) {
+            return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+        }
+
+        // End time = start + 1 hour
+        const endDate = new Date(eventDate.getTime() + 60 * 60 * 1000);
+
+        // Build description
+        const descParts = ['AutoMediaCenter: Media Alert'];
+        if (brand) descParts.push('Brand: ' + brand);
+        if (region) descParts.push('Region: ' + region);
+        if (tags) descParts.push('Tags: ' + tags);
+        descParts.push('Source: AutoMediaCenter');
+        const description = descParts.join('\n');
+
+        // Fold long lines per RFC 5545 (max 75 chars per line)
+        function fold(str) {
+            const lines = [];
+            while (str.length > 75) {
+                lines.push(str.substring(0, 75));
+                str = ' ' + str.substring(75);
+            }
+            lines.push(str);
+            return lines.join('\r\n');
+        }
+
+        const ics = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//AutoMediaCenter//Radar Alert//EN',
+            'CALSCALE:GREGORIAN',
+            'METHOD:PUBLISH',
+            'BEGIN:VEVENT',
+            fold('UID:' + uuid + '@automediacenter.com'),
+            fold('DTSTART:' + toICSDate(eventDate)),
+            fold('DTEND:' + toICSDate(endDate)),
+            fold('SUMMARY:' + title),
+            fold('DESCRIPTION:' + description.replace(/\n/g, '\\n')),
+            'STATUS:CONFIRMED',
+            'SEQUENCE:0',
+            fold('DTSTAMP:' + toICSDate(new Date())),
+            'END:VEVENT',
+            'END:VCALENDAR'
+        ].join('\r\n');
+
+        return ics;
+    }
+
+    // ---- Trigger .ics download ----
+    function downloadICS(alertData) {
+        const ics = generateICS(alertData);
+        if (!ics) { alert('Could not generate calendar event — invalid date.'); return; }
+        const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const safeTitle = (alertData.title || 'radar-alert').replace(/[^a-zA-Z0-9-_]/g, '_').substring(0, 50);
+        a.href = url;
+        a.download = safeTitle + '.ics';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+    }
+
+    // ---- Build Google Calendar link ----
+    function buildGoogleCalendarURL(alertData) {
+        const title = alertData.title || 'AutoMediaCenter Radar Alert';
+        const brand = alertData.brand && alertData.brand !== 'N/A' ? alertData.brand : '';
+        const eventDate = new Date(alertData.eventdatetime);
+        if (isNaN(eventDate.getTime())) return null;
+        const endDate = new Date(eventDate.getTime() + 60 * 60 * 1000);
+
+        function toGCDate(d) {
+            return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z/, 'Z');
+        }
+
+        const details = ['AutoMediaCenter: Media Alert', brand ? 'Brand: ' + brand : ''].filter(Boolean).join('%0A');
+        return 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+            + '&text=' + encodeURIComponent(title)
+            + '&dates=' + toGCDate(eventDate) + '/' + toGCDate(endDate)
+            + '&details=' + details
+            + '&sf=true&output=xml';
+    }
+
+    // ---- Calendar picker popover ----
+    let activePickerBtn = null;
+
+    function removeCalendarPicker() {
+        const existing = document.getElementById('amc-cal-picker');
+        if (existing) existing.remove();
+        activePickerBtn = null;
+    }
+
+    function showCalendarPicker(triggerEl, alertData) {
+        // Toggle: if already open for this button, close it
+        if (activePickerBtn === triggerEl) {
+            removeCalendarPicker();
+            return;
+        }
+        removeCalendarPicker();
+        activePickerBtn = triggerEl;
+
+        const googleUrl = buildGoogleCalendarURL(alertData);
+
+        const picker = document.createElement('div');
+        picker.id = 'amc-cal-picker';
+        picker.innerHTML = `
+            <div class="amc-cal-picker-header">Add to Calendar</div>
+            <button class="amc-cal-option" id="amc-cal-ics">
+                <span class="amc-cal-icon">📅</span>
+                <span class="amc-cal-label">
+                    <strong>Download .ics</strong>
+                    <small>Apple Calendar · Outlook · All apps</small>
+                </span>
+            </button>
+            ${googleUrl ? `<button class="amc-cal-option" id="amc-cal-google">
+                <span class="amc-cal-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                </span>
+                <span class="amc-cal-label">
+                    <strong>Google Calendar</strong>
+                    <small>Opens in new tab</small>
+                </span>
+            </button>` : ''}
+        `;
+
+        // Position the picker relative to the trigger button
+        document.body.appendChild(picker);
+        const rect = triggerEl.getBoundingClientRect();
+        const pickerW = 240;
+        let left = rect.left + window.scrollX;
+        let top = rect.bottom + window.scrollY + 6;
+
+        // Keep within viewport
+        if (left + pickerW > window.innerWidth - 16) {
+            left = window.innerWidth - pickerW - 16;
+        }
+        picker.style.cssText = `position:absolute;left:${left}px;top:${top}px;width:${pickerW}px;z-index:9999;`;
+
+        // Wire up buttons
+        document.getElementById('amc-cal-ics').addEventListener('click', (e) => {
+            e.stopPropagation();
+            downloadICS(alertData);
+            removeCalendarPicker();
+        });
+
+        if (googleUrl) {
+            document.getElementById('amc-cal-google').addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.open(googleUrl, '_blank', 'noopener');
+                removeCalendarPicker();
+            });
+        }
+
+        // Close on outside click
+        setTimeout(() => {
+            document.addEventListener('click', removeCalendarPicker, { once: true });
+        }, 0);
+    }
+
+    // ---- Wire modal calendar button ----
+    // Modal uses event delegation on the quick view modal backdrop
+    document.addEventListener('click', (e) => {
+        const modalCalBtn = e.target.closest('.radar-modal-action-btn[data-action="calendar_add"]');
+        if (modalCalBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            // Use currentModalAlertData stored when modal opened
+            if (window.currentModalAlertData) {
+                showCalendarPicker(modalCalBtn, window.currentModalAlertData);
+            } else {
+                // Fallback: find card by alert-db-id
+                const alertDbId = modalCalBtn.dataset.alertDbId;
+                const card = document.querySelector(`.radar-card[data-alert-db-id="${alertDbId}"]`);
+                if (card) {
+                    showCalendarPicker(modalCalBtn, {
+                        title: card.dataset.title,
+                        brand: card.dataset.brand,
+                        eventdatetime: card.dataset.eventdatetime,
+                        region: card.dataset.region,
+                        tags: card.dataset.tags,
+                        uuid: card.dataset.uuid
+                    });
+                }
+            }
+        }
+    });
+    </script>
+    <script>
+    /* ===== RADAR SEARCH — matches automediacenter-mobile-v6.5.html pattern ===== */
+    (function() {
+        // State
+        let allAlerts = [];          // populated after fetchAndDisplayRadarAlerts completes
+        let currentModalAlertData = null; // stores full alert data when quick view modal is open
+        let currentSearchTerm = '';
+        let searchResults = [];
+        let searchTimeout;
+        const searchInput = document.getElementById('searchInput');
+        const searchContextField = document.getElementById('searchContextField');
+        const searchContextCount = document.getElementById('searchContextCount');
+        const searchContextTerm = document.getElementById('searchContextTerm');
+        const searchContextBottom = document.getElementById('searchContextBottom');
+
+        // ---- Normalise text (German umlauts + French accents, same as v6.5) ----
+        function normalizeText(text) {
+            if (!text) return '';
+            return text.toLowerCase()
+                .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+                .replace(/[àáâãäå]/g,'a').replace(/[èéêë]/g,'e').replace(/[ìíîï]/g,'i')
+                .replace(/[òóôõö]/g,'o').replace(/[ùúûü]/g,'u').replace(/[ç]/g,'c')
+                .replace(/[ñ]/g,'n');
+        }
+
+        // ---- Match alert against search words ----
+        function matchesAlert(alert, words) {
+            const searchable = normalizeText([
+                alert.dataset.title  || '',
+                alert.dataset.brand  || '',
+                alert.dataset.region || '',
+                alert.dataset.tags   || ''
+            ].join(' '));
+            return words.every(w => searchable.includes(w));
+        }
+
+        // ---- Get all rendered radar cards ----
+        function getCards() {
+            return Array.from(document.querySelectorAll('.radar-grid .radar-card'));
+        }
+
+        // ---- Perform search against rendered cards ----
+        function performSearch(term) {
+            const trimmed = term.trim();
+            const cards = getCards();
+
+            if (!trimmed) {
+                // Clear — show all cards
+                currentSearchTerm = '';
+                searchResults = [];
+                searchInput.classList.remove('searching');
+                searchContextField.classList.add('hidden');
+                cards.forEach(c => c.style.display = '');
+                return;
+            }
+
+            currentSearchTerm = trimmed;
+            searchInput.classList.add('searching');
+
+            const words = normalizeText(trimmed).split(/\s+/).filter(Boolean);
+            searchResults = cards.filter(c => matchesAlert(c, words));
+            const hidden = cards.filter(c => !matchesAlert(c, words));
+
+            searchResults.forEach(c => c.style.display = '');
+            hidden.forEach(c => c.style.display = 'none');
+
+            // Update context field
+            const count = searchResults.length;
+            searchContextField.classList.remove('hidden');
+            searchContextCount.textContent = `${count} Result${count !== 1 ? 's' : ''}`;
+            searchContextTerm.textContent = currentSearchTerm;
+            searchContextBottom.textContent = `${count} of ${cards.length}`;
+
+            // Show empty state if no results
+            const grid = document.querySelector('.radar-grid');
+            const existingEmpty = grid.querySelector('.search-empty-state');
+            if (count === 0) {
+                if (!existingEmpty) {
+                    const empty = document.createElement('div');
+                    empty.className = 'search-empty-state';
+                    empty.style.cssText = 'grid-column:1/-1;text-align:center;padding:40px;color:var(--text-secondary)';
+                    empty.innerHTML = `<i class="fas fa-search" style="font-size:2rem;margin-bottom:12px;display:block;opacity:0.4"></i>
+                        <p>No alerts found for "<strong>${currentSearchTerm}</strong>"</p>
+                        <p style="font-size:14px;margin-top:8px">Try different keywords or check spelling</p>`;
+                    grid.appendChild(empty);
+                }
+            } else {
+                if (existingEmpty) existingEmpty.remove();
+            }
+        }
+
+        // ---- Wire up events ----
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value;
+                searchInput.classList.toggle('searching', !!term.trim());
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => performSearch(term), 300);
+            });
+
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    clearTimeout(searchTimeout);
+                    performSearch(e.target.value);
+                    searchInput.blur();
+                }
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    searchInput.value = '';
+                    performSearch('');
+                }
+            });
+        }
+
+        // Clear button in context field
+        const clearBtn = document.getElementById('searchContextClear');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                performSearch('');
+            });
+        }
+
+        // Filter btn — wire to existing filterPanel from shell (same as v6.5)
+        const searchBtn = document.getElementById('searchBtn');
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                const filterPanel = document.getElementById('filterPanel');
+                const backdrop = document.getElementById('drawerBackdrop');
+                if (filterPanel) {
+                    filterPanel.classList.toggle('active');
+                    if (backdrop) backdrop.classList.toggle('visible', filterPanel.classList.contains('active'));
+                }
+            });
+        }
+    })();
+    </script>
 </body>
 </html>

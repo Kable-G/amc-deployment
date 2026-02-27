@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Settings - AutoMediaCenter</title>
+    
+    <!-- Fonts - Inter like other pages -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Shell CSS -->
+    <link rel="stylesheet" href="./components/shell/v6_5-shell.css">
+    
+    <!-- Font Awesome (load after shell to ensure icons work) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    
+    <!-- Brand Hierarchy -->
+    
+    <style>
+        /* ============================================
+           CONTENT SETTINGS PAGE STYLES
+           Uses shell CSS variables for theming
+           ============================================ */
+        
+        /* Map shell variables to page-specific names */
+        :root {
+            --bg-primary: var(--amc-bg-primary, #ffffff);
+            --bg-secondary: var(--amc-bg-secondary, #f8f9fa);
+            --text-primary: var(--amc-text-primary, #212529);
+            --text-secondary: var(--amc-text-secondary, #6c757d);
+            --accent-primary: var(--amc-accent, #0d6efd);
+            --amc-border: var(--amc-border-color, #dee2e6);
+            --hover-bg: var(--amc-hover, #e9ecef);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        /* Use Inter font like other pages */
+        body,
+        .content-settings-container,
+        .content-settings-container * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        }
+        
+        /* Override shell bold text for page content */
+        .content-settings-container {
+            font-weight: 400 !important;
+        }
+        
+        .content-settings-container h1,
+        .content-settings-container h2,
+        .content-settings-container h3 {
+            font-weight: 600 !important;
+        }
+        
+        .content-settings-container p,
+        .content-settings-container label,
+        .content-settings-container span:not(.status-chip),
+        .content-settings-container input,
+        .content-settings-container select {
+            font-weight: 400 !important;
+        }
+        
+        /* Force FontAwesome icons to display */
+        .content-settings-container .fas,
+        .content-settings-container .far,
+        .content-settings-container .fa {
+            font-family: 'Font Awesome 6 Free' !important;
+            font-weight: 900 !important;
+            display: inline-block !important;
+            font-style: normal !important;
+            font-variant: normal !important;
+            text-rendering: auto !important;
+            -webkit-font-smoothing: antialiased !important;
+        }
+        
+        /* Ensure main content has overflow */
+        .amc-main-content {
+            overflow-y: auto !important;
+            height: 100vh !important;
+            padding-bottom: 100px !important;
+        }
+        
+        /* Thin scrollbar styling to match other pages */
+        .amc-main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .amc-main-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .amc-main-content::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        
+        .amc-main-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        body.dark-mode .amc-main-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        body.dark-mode .amc-main-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Dark mode hover fix - prevent white background and ensure text visible */
+        html[data-theme="dark"] .content-settings-container input:not([type="radio"]):not([type="checkbox"]):hover,
+        html[data-theme="dark"] .content-settings-container select:hover,
+        html[data-theme="dark"] .content-settings-container textarea:hover,
+        body.dark-mode .content-settings-container input:not([type="radio"]):not([type="checkbox"]):hover,
+        body.dark-mode .content-settings-container select:hover,
+        body.dark-mode .content-settings-container textarea:hover {
+            background-color: #2d3748 !important;
+            color: #e2e8f0 !important;
+            border-color: #4a5568 !important;
+        }
+        
+        /* Dark mode - keep checkbox/radio labels visible on hover */
+        body.dark-mode .content-settings-container label:hover,
+        body.dark-mode .content-settings-container .quick-select-option:hover {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: #e2e8f0 !important;
+        }
+        
+        /* Dark mode - ensure text in labels stays visible */
+        body.dark-mode .content-settings-container label,
+        body.dark-mode .content-settings-container .checkbox-item label {
+            color: #e2e8f0 !important;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ============================================
+           LAYOUT STRUCTURE
+           ============================================ */
+        .content-settings-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            padding-bottom: 100px; /* Space for footer */
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .settings-header-content {
+            flex: 1;
+        }
+
+        .settings-header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            line-height: 1.2;
+        }
+
+        .settings-header h1 i {
+            color: var(--accent-primary);
+        }
+
+        .settings-header p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--amc-border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-top: 0;
+            align-self: flex-start;
+            height: fit-content;
+        }
+
+        .back-button:hover {
+            background: var(--hover-bg);
+            transform: translateX(-4px);
+        }
+        
+        /* Dark mode back button - prevent white background */
+        body.dark-mode .back-button:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #e2e8f0 !important;
+        }
+
+        /* ============================================
+           BENTO BOX SYSTEM (matching AssetDBmenu1.6.html)
+           ============================================ */
+        .settings-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .bento-box {
+            position: relative;
+            background: var(--bg-secondary);
+            border: 2px solid var(--amc-border);
+            border-radius: 12px;
+            overflow: visible;
+            transition: all 0.3s ease;
+        }
+
+        .bento-box[data-type="filter"] {
+            border-color: #3b82f6;
+        }
+
+        .bento-box.has-selections {
+            border-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        body.dark-mode .bento-box.has-selections {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .bento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: var(--bg-primary);
+            cursor: pointer;
+            user-select: none;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .bento-header:hover {
+            background: var(--hover-bg);
+        }
+        
+        /* Dark mode - prevent white hover background and text */
+        body.dark-mode .bento-header:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        body.dark-mode .bento-header:hover * {
+            color: inherit !important;
+        }
+        
+        body.dark-mode .bento-header:hover .bento-title h3 {
+            color: #e2e8f0 !important;
+        }
+        
+        body.dark-mode .bento-header:hover .bento-title i {
+            color: var(--accent-primary) !important;
+        }
+
+        .bento-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bento-title i {
+            font-size: 1.2rem;
+            color: var(--accent-primary);
+        }
+
+        .bento-title h3 {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        /* Prevent bento titles from turning white on hover in dark mode */
+        body.dark-mode .bento-header:hover .bento-title h3 {
+            color: var(--text-primary) !important;
+        }
+
+        .bento-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-chip {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .status-chip.none {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-chip.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        body.dark-mode .status-chip.none {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+
+        body.dark-mode .status-chip.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+
+        .toggle-icon {
+            transition: transform 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .bento-box.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .bento-body {
+            padding: 20px;
+            border-top: 1px solid var(--amc-border);
+            display: block;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .bento-box.collapsed .bento-body {
+            display: none;
+        }
+
+        .bento-description {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* ============================================
+           QUICK SELECT OPTIONS
+           ============================================ */
+        .quick-select-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-select-option {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            background: var(--bg-primary);
+            border: 2px solid var(--amc-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-select-option:hover {
+            background: var(--hover-bg);
+            border-color: var(--accent-primary);
+        }
+
+        .quick-select-option input[type="radio"] {
+            margin: 0;
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent-primary);
+        }
+
+        .quick-select-option label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            flex: 1;
+        }
+
+        .quick-select-option.selected {
+            background: rgba(13, 110, 253, 0.1);
+            border-color: var(--accent-primary);
+        }
+
+        /* ============================================
+           BRAND SEARCH & LIST
+           ============================================ */
+        .brand-search-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .brand-search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 2px solid var(--amc-border);
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.2s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .brand-search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+
+        .brand-search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .selected-chips {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding: 14px;
+            background: var(--bg-primary);
+            border: 2px dashed var(--amc-border);
+            border-radius: 8px;
+            min-height: 56px;
+            align-items: flex-start;
+        }
+
+        .selected-chips.empty {
+            align-items: center;
+            justify-content: center;
+        }
+
+        .selected-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            background: var(--accent-primary);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            gap: 8px;
+        }
+
+        .selected-chip-remove {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            transition: background 0.2s;
+        }
+
+        .selected-chip-remove:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .selected-count {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-style: italic;
+        }
+
+        .brand-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid var(--amc-border);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            order: 999; /* Force to bottom */
+        }
+
+        .brand-group {
+            border-bottom: 1px solid var(--amc-border);
+        }
+
+        .brand-group:last-child {
+            border-bottom: none;
+        }
+
+        .brand-group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            background: var(--bg-secondary);
+            cursor: pointer;
+            transition: background 0.2s;
+            user-select: none;
+        }
+
+        .brand-group-header:hover {
+            background: var(--hover-bg);
+        }
+
+        .brand-group-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .brand-group-toggle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            transition: transform 0.2s;
+        }
+
+        .brand-group.expanded .brand-group-toggle {
+            transform: rotate(90deg);
+        }
+
+        .brand-group-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .brand-group-count {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            background: var(--bg-primary);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .brand-group-select-all {
+            font-size: 0.8125rem;
+            color: var(--accent-primary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: background 0.2s;
+            font-weight: 500;
+        }
+
+        .brand-group-select-all:hover {
+            background: rgba(13, 110, 253, 0.15);
+        }
+
+        .brand-group-brands {
+            display: none;
+            padding: 12px 18px 16px 52px;
+            background: var(--bg-primary);
+        }
+
+        .brand-group.expanded .brand-group-brands {
+            display: block;
+        }
+
+        .brand-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 6px;
+        }
+
+        .brand-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .brand-item input[type="checkbox"] {
+            margin: 0;
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent-primary);
+        }
+
+        .brand-item-label {
+            cursor: pointer;
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+            user-select: none;
+        }
+
+        .brand-item input[type="checkbox"]:checked ~ .brand-item-label {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           CHECKBOX GRID (matching AssetDBmenu1.6.html)
+           ============================================ */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .checkbox-grid-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            background: var(--bg-primary);
+            border: 2px solid var(--amc-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-grid-item:hover {
+            background: var(--hover-bg);
+            border-color: var(--accent-primary);
+        }
+
+        .checkbox-grid-item input[type="checkbox"],
+        .checkbox-grid-item input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            margin-right: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+            accent-color: var(--accent-primary);
+        }
+
+        .checkbox-label {
+            cursor: pointer;
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+            user-select: none;
+            font-weight: 500;
+        }
+
+        .checkbox-grid-item input[type="checkbox"]:checked + .checkbox-label,
+        .checkbox-grid-item input[type="radio"]:checked + .checkbox-label {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           TIMEZONE DROPDOWN
+           ============================================ */
+        .timezone-dropdown {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--amc-border);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .timezone-dropdown:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .timezone-dropdown:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+
+        .timezone-dropdown optgroup {
+            font-weight: 600;
+            color: var(--text-primary);
+            padding: 8px 0;
+        }
+
+        .timezone-dropdown option {
+            padding: 8px 12px;
+            color: var(--text-primary);
+        }
+
+        /* ============================================
+           ACTION BUTTONS
+           ============================================ */
+        .settings-actions {
+            position: static;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border-top: 2px solid var(--amc-border);
+            padding: 20px;
+            margin-top: 32px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-settings {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-settings-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-settings-primary:hover {
+            background: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(13, 110, 253, 0.3);
+        }
+
+        .btn-settings-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 2px solid var(--amc-border);
+        }
+
+        .btn-settings-secondary:hover {
+            background: var(--hover-bg);
+        }
+
+        .btn-settings-danger {
+            background: var(--bg-secondary);
+            color: var(--danger);
+            border: 2px solid var(--amc-border);
+        }
+
+        .btn-settings-danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            .settings-header {
+                flex-direction: column-reverse;
+                gap: 16px;
+            }
+            
+            .back-button {
+                align-self: flex-start;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .settings-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .settings-header p {
+                font-size: 0.9375rem;
+            }
+            
+            .checkbox-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-actions {
+                flex-direction: column;
+            }
+
+            .btn-settings {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .brand-list {
+                max-height: 300px;
+            }
+        }
+        
+        /* Tablet-specific adjustments */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .content-settings-container {
+                padding: 32px 20px;
+            }
+            
+            .settings-header h1 {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* ============================================
+        /* ============================================
+           DARK MODE SPECIFIC
+           ============================================ */
+        body.dark-mode .bento-box[data-type="filter"] {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        body.dark-mode .settings-actions {
+            background: var(--amc-bg-primary);
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Shell Header -->
+    <div id="amcShellHeader"></div>
+    
+    <!-- Shell Sidebar -->
+    <div id="amcShellSidebar"></div>
+
+    <!-- Main Content -->
+    <main class="amc-main-content">
+    <div class="content-settings-container">
+        <!-- Header with Back Button -->
+        <div class="settings-header">
+            <div class="settings-header-content">
+                <h1>
+                    <i class="fas fa-sliders-h"></i>
+                    Content Settings
+                </h1>
+                <p>Customize what content you see when you log in. Set filters by brand, category, language, and market.</p>
+            </div>
+            <a href="automediacenter-mobile-v6.5.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Back to AutoMediaCenter
+            </a>
+        </div>
+
+        <!-- Settings Grid -->
+        <div class="settings-grid">
+
+            <!-- Bento Box 1: Brand Filter -->
+            <div class="bento-box" data-type="filter" id="brandFilterBox">
+                <div class="bento-header" onclick="toggleBentoBox(this)">
+                    <div class="bento-title">
+                        <i class="fas fa-building"></i>
+                        <h3>Filter by Brand</h3>
+                    </div>
+                    <div class="bento-controls">
+                        <span class="status-chip none" id="brandStatusChip">All brands</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="bento-body">
+                    <p class="bento-description">
+                        Choose which automotive brands you want to see in your feed.
+                    </p>
+
+                    <!-- Quick Select Options -->
+                    <div class="quick-select-options">
+                        <div class="quick-select-option selected" data-mode="all">
+                            <input type="radio" name="brandMode" value="all" id="modeAll" checked>
+                            <label for="modeAll">Show all brands (default)</label>
+                        </div>
+                        <div class="quick-select-option" data-mode="custom">
+                            <input type="radio" name="brandMode" value="custom" id="modeCustom">
+                            <label for="modeCustom">Select specific companies or brands</label>
+                        </div>
+                    </div>
+
+                    <!-- Custom Brand/Company Selection (hidden by default) -->
+                    <div id="customBrandSelection" style="display: none; flex-direction: column;">
+                        
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 12px; font-style: italic; order: 1;">
+                            💡 Tip: Select entire companies to get all their brands, or pick individual brands. We'll prevent duplicates automatically.
+                        </p>
+                        
+                        <!-- Search Box (TOP) -->
+                        <div class="brand-search-container" style="order: 2;">
+                            <i class="fas fa-search brand-search-icon"></i>
+                            <input 
+                                type="text" 
+                                class="brand-search-input" 
+                                id="brandSearchInput"
+                                placeholder="Search companies or brands... (case-insensitive)"
+                            >
+                        </div>
+
+                        <!-- Brand List / Search Results (MIDDLE) -->
+                        <div class="brand-list" id="brandList" style="order: 3;">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                        
+                        <!-- Selected Items (BOTTOM - grows downward) -->
+                        <div class="selected-chips empty" id="selectedBrandsChips" style="order: 4; margin-top: 16px;">
+                            <span class="selected-count">No selections</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bento Box 2: Category Filter -->
+            <div class="bento-box" data-type="filter" id="categoryFilterBox">
+                <div class="bento-header" onclick="toggleBentoBox(this)">
+                    <div class="bento-title">
+                        <i class="fas fa-tags"></i>
+                        <h3>Filter by Category</h3>
+                    </div>
+                    <div class="bento-controls">
+                        <span class="status-chip none" id="categoryStatusChip">No filters</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="bento-body">
+                    <p class="bento-description">
+                        Select specific content categories (leave empty to show all).
+                    </p>
+
+                    <div class="checkbox-grid" id="categoryCheckboxGrid">
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="categoryPreference" value="general">
+                            <span class="checkbox-label">General News</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="categoryPreference" value="product-launch">
+                            <span class="checkbox-label">Product Unveil/Launch</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="categoryPreference" value="corporate-financial">
+                            <span class="checkbox-label">Corporate & Financial</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="categoryPreference" value="production-manufacturing">
+                            <span class="checkbox-label">Production/Manufacturing</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="categoryPreference" value="technology-innovation">
+                            <span class="checkbox-label">Technology & Innovation</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="categoryPreference" value="mobility-car-sharing">
+                            <span class="checkbox-label">Mobility/Car Sharing</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="categoryPreference" value="classic-heritage">
+                            <span class="checkbox-label">Classic/Heritage</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="categoryPreference" value="motorsport-sport">
+                            <span class="checkbox-label">Motorsport/Sport</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="categoryPreference" value="partnerships">
+                            <span class="checkbox-label">Partnerships & Collaborations</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="categoryPreference" value="sustainability">
+                            <span class="checkbox-label">Sustainability</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="categoryPreference" value="events-awards">
+                            <span class="checkbox-label">Events/Awards/Auto Shows</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="categoryPreference" value="other">
+                            <span class="checkbox-label">Other</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bento Box 3: Content Type Filter -->
+            <div class="bento-box" data-type="filter" id="contentTypeFilterBox">
+                <div class="bento-header" onclick="toggleBentoBox(this)">
+                    <div class="bento-title">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>Filter by Content Type</h3>
+                    </div>
+                    <div class="bento-controls">
+                        <span class="status-chip none" id="contentTypeStatusChip">All types</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="bento-body">
+                    <p class="bento-description">
+                        Select specific content formats (leave empty to show all types).
+                    </p>
+
+                    <div class="checkbox-grid" id="contentTypeCheckboxGrid">
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="contentTypePreference" value="press-release">
+                            <span class="checkbox-label">Press Releases</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="contentTypePreference" value="media-kit">
+                            <span class="checkbox-label">Media Kits</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="contentTypePreference" value="images">
+                            <span class="checkbox-label">High-Res Images</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="contentTypePreference" value="video">
+                            <span class="checkbox-label">Video Content</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="contentTypePreference" value="financial-report">
+                            <span class="checkbox-label">Financial Reports</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="contentTypePreference" value="product-specs">
+                            <span class="checkbox-label">Product Specifications</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="contentTypePreference" value="infographic">
+                            <span class="checkbox-label">Infographics</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="contentTypePreference" value="white-paper">
+                            <span class="checkbox-label">White Papers</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bento Box 4: Publication Recency Filter -->
+            <div class="bento-box" data-type="filter" id="recencyFilterBox">
+                <div class="bento-header" onclick="toggleBentoBox(this)">
+                    <div class="bento-title">
+                        <i class="fas fa-clock"></i>
+                        <h3>Filter by Recency</h3>
+                    </div>
+                    <div class="bento-controls">
+                        <span class="status-chip none" id="recencyStatusChip">All time</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="bento-body">
+                    <p class="bento-description">
+                        Show only content published within a specific timeframe.
+                    </p>
+
+                    <div class="quick-select-options">
+                        <div class="quick-select-option selected" data-recency="all">
+                            <input type="radio" name="recencyPreference" value="all" id="recencyAll" checked>
+                            <label for="recencyAll">All time (default)</label>
+                        </div>
+                        <div class="quick-select-option" data-recency="24h">
+                            <input type="radio" name="recencyPreference" value="24h" id="recency24h">
+                            <label for="recency24h">Last 24 hours</label>
+                        </div>
+                        <div class="quick-select-option" data-recency="7d">
+                            <input type="radio" name="recencyPreference" value="7d" id="recency7d">
+                            <label for="recency7d">Last 7 days</label>
+                        </div>
+                        <div class="quick-select-option" data-recency="30d">
+                            <input type="radio" name="recencyPreference" value="30d" id="recency30d">
+                            <label for="recency30d">Last 30 days</label>
+                        </div>
+                        <div class="quick-select-option" data-recency="3m">
+                            <input type="radio" name="recencyPreference" value="3m" id="recency3m">
+                            <label for="recency3m">Last 3 months</label>
+                        </div>
+                        <div class="quick-select-option" data-recency="6m">
+                            <input type="radio" name="recencyPreference" value="6m" id="recency6m">
+                            <label for="recency6m">Last 6 months</label>
+                        </div>
+                        <div class="quick-select-option" data-recency="1y">
+                            <input type="radio" name="recencyPreference" value="1y" id="recency1y">
+                            <label for="recency1y">Last year</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bento Box 5: Language Filter -->
+            <div class="bento-box" data-type="filter" id="languageFilterBox">
+                <div class="bento-header" onclick="toggleBentoBox(this)">
+                    <div class="bento-title">
+                        <i class="fas fa-language"></i>
+                        <h3>Filter by Language</h3>
+                    </div>
+                    <div class="bento-controls">
+                        <span class="status-chip none" id="languageStatusChip">No filters</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="bento-body">
+                    <p class="bento-description">
+                        Select languages (leave empty to show all).
+                    </p>
+
+                    <div class="checkbox-grid" id="languageCheckboxGrid">
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="languagePreference" value="en">
+                            <span class="checkbox-label">English</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="languagePreference" value="de">
+                            <span class="checkbox-label">German</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="languagePreference" value="fr">
+                            <span class="checkbox-label">French</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="languagePreference" value="es">
+                            <span class="checkbox-label">Spanish</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="languagePreference" value="it">
+                            <span class="checkbox-label">Italian</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="languagePreference" value="ja">
+                            <span class="checkbox-label">Japanese</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="languagePreference" value="zh">
+                            <span class="checkbox-label">Chinese</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="languagePreference" value="pt">
+                            <span class="checkbox-label">Portuguese</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bento Box 6: Market Filter -->
+            <div class="bento-box" data-type="filter" id="marketFilterBox">
+                <div class="bento-header" onclick="toggleBentoBox(this)">
+                    <div class="bento-title">
+                        <i class="fas fa-globe"></i>
+                        <h3>Filter by Market</h3>
+                    </div>
+                    <div class="bento-controls">
+                        <span class="status-chip none" id="marketStatusChip">No filters</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="bento-body">
+                    <p class="bento-description">
+                        Select target markets (leave empty to show all).
+                    </p>
+
+                    <div class="checkbox-grid" id="marketCheckboxGrid">
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="marketPreference" value="Global">
+                            <span class="checkbox-label">Global</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="marketPreference" value="Germany">
+                            <span class="checkbox-label">Germany</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="marketPreference" value="France">
+                            <span class="checkbox-label">France</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="marketPreference" value="UK">
+                            <span class="checkbox-label">UK</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="marketPreference" value="Italy">
+                            <span class="checkbox-label">Italy</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="marketPreference" value="Spain">
+                            <span class="checkbox-label">Spain</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="marketPreference" value="USA">
+                            <span class="checkbox-label">USA</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="marketPreference" value="China">
+                            <span class="checkbox-label">China</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="marketPreference" value="Japan">
+                            <span class="checkbox-label">Japan</span>
+                        </label>
+                        <label class="checkbox-grid-item">
+                            <input type="checkbox" name="marketPreference" value="Korea">
+                            <span class="checkbox-label">South Korea</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bento Box 7: Timezone Settings -->
+            <div class="bento-box" data-type="filter" id="timezoneFilterBox">
+                <div class="bento-header" onclick="toggleBentoBox(this)">
+                    <div class="bento-title">
+                        <i class="fas fa-globe-americas"></i>
+                        <h3>Timezone Preference</h3>
+                    </div>
+                    <div class="bento-controls">
+                        <span class="status-chip none" id="timezoneStatusChip">Auto-detect</span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                </div>
+                <div class="bento-body">
+                    <p class="bento-description">
+                        All release times and dates will be displayed in your selected timezone.
+                    </p>
+
+                    <!-- Quick Select Options -->
+                    <div class="quick-select-options">
+                        <div class="quick-select-option selected" data-timezone-mode="auto" onclick="document.getElementById('timezoneAuto').click()">
+                            <input type="radio" name="timezoneMode" value="auto" id="timezoneAuto" checked>
+                            <label for="timezoneAuto">Auto-detect from browser (recommended)</label>
+                        </div>
+                        <div class="quick-select-option" data-timezone-mode="manual" onclick="document.getElementById('timezoneManual').click()">
+                            <input type="radio" name="timezoneMode" value="manual" id="timezoneManual">
+                            <label for="timezoneManual">Set manually</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Browser timezone and live time confirmation -->
+                    <div style="margin-top: 16px; padding: 16px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--amc-border);">
+                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 8px;">
+                            <strong>Browser timezone:</strong> <span id="detectedTimezone" style="color: var(--text-primary); font-weight: 500;">Loading...</span>
+                        </div>
+                        <div style="font-size: 0.9375rem; color: var(--text-primary); font-weight: 500;">
+                            <span id="liveTime">Loading...</span>
+                        </div>
+                    </div>
+
+                    <!-- Manual Timezone Selection (hidden by default) -->
+                    <div id="manualTimezoneSelection" style="display: none; margin-top: 16px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">
+                            Select Your Timezone:
+                        </label>
+                        <select id="timezoneSelect" class="timezone-dropdown">
+                            <option value="" disabled selected>Select timezone...</option>
+                            <optgroup label="⭐ Frequently Used">
+                                <option value="Europe/Berlin">Europe/Berlin (CET/CEST)</option>
+                                <option value="UTC">UTC</option>
+                                <option value="Europe/London">Europe/London (GMT/BST)</option>
+                                <option value="America/New_York">America/New_York (ET)</option>
+                                <option value="America/Chicago">America/Chicago (CT)</option>
+                                <option value="America/Los_Angeles">America/Los_Angeles (PT)</option>
+                                <option value="Asia/Shanghai">Asia/Shanghai (China)</option>
+                                <option value="Asia/Tokyo">Asia/Tokyo (Japan)</option>
+                            </optgroup>
+                            <optgroup label="🌍 All Timezones" id="allTimezonesGroup">
+                                <!-- Populated automatically via JavaScript -->
+                            </optgroup>
+                        </select>
+                        
+                        <!-- Selected timezone live time display -->
+                        <div id="manualTimezoneDisplay" style="display: none; margin-top: 16px; padding: 16px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--amc-border);">
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 8px;">
+                                <strong>Selected timezone:</strong> <span id="selectedTimezoneName" style="color: var(--text-primary); font-weight: 500;"></span>
+                            </div>
+                            <div style="font-size: 0.9375rem; color: var(--text-primary); font-weight: 500;">
+                                <span id="manualLiveTime">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="settings-actions">
+            <button class="btn-settings btn-settings-danger" onclick="resetAllFilters()">
+                <i class="fas fa-redo"></i>
+                Reset All
+            </button>
+            <button class="btn-settings btn-settings-secondary" onclick="cancelSettings()">
+                Cancel
+            </button>
+            <button class="btn-settings btn-settings-primary" onclick="saveSettings()">
+                <i class="fas fa-save"></i>
+                Save Preferences
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <!-- Brand Hierarchy -->
+    <script src="./brands-hierarchy.js"></script>
+    
+    <!-- Content Settings Logic -->
+    <script src="./content-settings.js"></script>
+
+    </div><!-- End content-settings-container -->
+    </main><!-- End amc-main-content -->
+
+    <!-- Shell Footer -->
+    <div id="amcShellFooter"></div>
+
+    <!-- Shell Scripts -->
+    <script src="./components/shell/v6_5-shell.js"></script>
+    <script src="./components/shell/v6_5-shell-loader.js"></script>
+    <script>
+        // Wait for DOM to be ready before initializing shell
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                loadV65Shell({
+                    basePath: './components/shell',
+                    currentPage: 'content-settings',
+                    enableDarkMode: true
+                });
+            });
+        } else {
+            // DOM already loaded
+            loadV65Shell({
+                basePath: './components/shell',
+                currentPage: 'content-settings',
+                enableDarkMode: true
+            });
+        }
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

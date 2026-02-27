@@ -17,26 +17,33 @@
 /* ---------- Global layout tokens ---------- */
 :root {
   /* header + sidebar sizes set by your components */
-  --amc-header-height: 64px;
+  --amc-header-height: 56px;
   --amc-sidebar-expanded: 260px;
   --amc-sidebar-collapsed: 56px;
 
   /* default page paddings (used by base preset) */
-  --amc-page-padding-x: 32px;
-  --amc-page-padding-y: 24px;
+  --amc-page-padding-x: 24px;
+  --amc-page-padding-y: 16px;
 
   /* default content max width (overridden by presets) */
   --amc-content-max: 1240px;
 
-  /* default page header typography (overridden by presets) */
-  --amc-title-size: 22px;
-  --amc-title-weight: 700;
-  --amc-subtitle-size: 14px;
-  --amc-subtitle-color: rgba(148,163,184,.95);
+  /* AutoMediaCenter Typography System v1.0 - February 2026 */
+  /* Page title: Inter Display 800, 42px desktop, 28px mobile */
+  --amc-title-size: 42px;
+  --amc-title-weight: 800;
+  --amc-title-tracking: -0.04em;
+  --amc-title-line-height: 1.05;
+  
+  /* Subtitle: Inter 300, 16px */
+  --amc-subtitle-size: 16px;
+  --amc-subtitle-weight: 300;
+  --amc-subtitle-line-height: 1.55;
+  --amc-subtitle-color: #6b7280;
 
   /* default header block spacing */
   --amc-pagehead-gap: 8px;
-  --amc-pagehead-margin-bottom: 16px;
+  --amc-pagehead-margin-bottom: 20px;
 }
 
 /* keep body under the fixed header */
@@ -73,17 +80,36 @@ body.sidebar-collapsed .amc-content {
 .amc-page-title {
   font-size: var(--amc-title-size);
   font-weight: var(--amc-title-weight);
-  line-height: 1.35;
-  letter-spacing: .1px;
-  margin: 0;
+  line-height: var(--amc-title-line-height, 1.05);
+  letter-spacing: var(--amc-title-tracking, -0.04em);
+  margin: 0 0 8px 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .amc-page-subtitle {
   font-size: var(--amc-subtitle-size);
+  font-weight: var(--amc-subtitle-weight, 300);
   color: var(--amc-subtitle-color);
-  line-height: 1.45;
+  line-height: var(--amc-subtitle-line-height, 1.55);
   margin: 0;
   max-width: 90ch;
+}
+
+/* Dark mode typography colors */
+body.dark-mode .amc-page-title {
+  color: #f8fafc;
+}
+
+body.dark-mode .amc-page-subtitle {
+  color: #64748b;
+}
+
+body:not(.dark-mode) .amc-page-title {
+  color: #0f172a;
+}
+
+body:not(.dark-mode) .amc-page-subtitle {
+  color: #6b7280;
 }
 
 /* =========================================================
@@ -96,18 +122,19 @@ body.sidebar-collapsed .amc-content {
 .amc-layout--mgmt {
   /* gutters & column width tuned to your table/card pages */
   --amc-page-padding-x: 24px;
-  --amc-page-padding-y: 20px;
+  --amc-page-padding-y: 16px;
   --amc-content-max: 1160px;
 
-  /* page header typography cadence */
-  --amc-title-size: 20px;
-  --amc-title-weight: 700;
-  --amc-subtitle-size: 13px;
-  --amc-subtitle-color: rgba(99,115,129,.95);
+  /* page header typography - use same as base for consistency */
+  --amc-title-size: 42px;
+  --amc-title-weight: 800;
+  --amc-subtitle-size: 16px;
+  --amc-subtitle-weight: 300;
+  --amc-subtitle-color: #6b7280;
 
   /* header block spacing */
-  --amc-pagehead-gap: 6px;              /* between title and subtitle */
-  --amc-pagehead-margin-bottom: 14px;   /* space below header block */
+  --amc-pagehead-gap: 8px;
+  --amc-pagehead-margin-bottom: 20px;
 }
 
 /* ----- Wide preset (use when you need a broader canvas) ----- */
@@ -137,17 +164,22 @@ body.sidebar-collapsed .amc-content {
 
 @media (max-width: 640px) {
   :root {
-    --amc-page-padding-x: 16px;
-    --amc-page-padding-y: 16px;
+    --amc-title-size: 32px;
+    --amc-subtitle-size: 14px;
+    --amc-page-padding-x: 12px;
+    --amc-pagehead-margin-bottom: 16px;
   }
-  .amc-page-title { line-height: 1.3; }
+  .amc-page-title { 
+    line-height: 1.1; 
+    letter-spacing: -0.03em;
+  }
 }
 
 /* ===== AMC layout: opt-in mgmt preset (supports dash + BEM) ===== */
 
 /* tokens */
 :root{
-  --amc-header-height:64px;
+  --amc-header-height:56px;
   --amc-sidebar-expanded:260px;
   --amc-sidebar-collapsed:56px;
   --amc-page-padding-x:24px;
@@ -183,7 +215,7 @@ body.sidebar-collapsed .amc-content.amc-layout--mgmt{
 /* title (dash + BEM) - EXACT manage_releases.html values */
 .amc-content.amc-layout--mgmt .amc-page-title,
 .amc-content.amc-layout--mgmt .amc-page__title{
-  font-size:28.8px !important;
+  font-size: var(--amc-title-size, 42px) !important;
   font-weight:600 !important;
   margin-top:0 !important;
   margin-bottom:3px !important;
@@ -212,3 +244,5 @@ body.sidebar-collapsed .amc-content.amc-layout--mgmt{
     padding-left:calc(var(--amc-sidebar-collapsed) + var(--amc-page-padding-x));
   }
 }
+.amc-page-title { font-size: 42px !important; font-weight: 800 !important; letter-spacing: -0.04em !important; line-height: 1.05 !important; }
+.amc-page-title, #main-content-title { font-size: 42px !important; font-weight: 800 !important; letter-spacing: -0.04em !important; line-height: 1.05 !important; }

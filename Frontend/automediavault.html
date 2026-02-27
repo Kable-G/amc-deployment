@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoMediaVault — Secure Asset Portal</title>
+
+<!-- Inter — opsz 14..32 for UI, 32..144 for display headings (AMC standard spec) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,32..144,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+<!-- AMC Shell CSS — must load before page CSS -->
+<link rel="stylesheet" href="./components/shell/v6_5-shell.css">
+
+<style>
+/* ============================================================
+   VAULT PAGE — DESIGN TOKENS
+   These extend (not override) the shell's base tokens.
+   Shell uses: --bg-primary, --bg-secondary, --bg-tertiary,
+               --text-primary, --text-secondary, --border-primary,
+               --accent-primary (blue), --color-danger (red)
+               dark mode class: body.dark-mode
+   ============================================================ */
+:root {
+  --font:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sig: 'Caveat', cursive;
+
+  /* Vault layout — shell occupies top 56px (--amc-header-h) */
+  --vault-sidebar-w:     240px;
+  --vault-sidebar-w-col: 64px;
+
+  /* Vault semantic palette — fully isolated names, no collision with shell */
+  --v-blue:   #2563eb;  --v-blue-h:  #1d4ed8;
+  --v-blue-l: #eff6ff;  --v-blue-b:  rgba(37,99,235,0.15);
+
+  --v-green:  #059669;  --v-green-h: #047857;
+  --v-green-l:#ecfdf5;  --v-green-b: rgba(5,150,105,0.15);
+
+  --v-amber:  #d97706;  --v-amber-h: #b45309;
+  --v-amber-l:#fffbeb;  --v-amber-b: rgba(217,119,6,0.15);
+
+  --v-red:    #dc2626;  --v-red-h:   #b91c1c;
+  --v-red-l:  #fef2f2;  --v-red-b:   rgba(220,38,38,0.12);
+
+  --v-slate:  #64748b;  --v-slate-l: #f1f5f9;
+
+  /* Surface — light mode. These map to the shell's bg tokens contextually. */
+  --v-bg-app:     #f0f4f8;
+  --v-bg-surface: #ffffff;
+  --v-bg-raised:  #f8fafc;
+  --v-bg-hover:   #f1f5f9;
+  --v-bg-input:   #f8fafc;
+
+  --v-text-1: #0f172a;
+  --v-text-2: #475569;
+  --v-text-3: #94a3b8;
+
+  --v-border:     #e2e8f0;
+  --v-border-med: #cbd5e1;
+
+  /* Shadows */
+  --vs1: 0 1px 2px rgba(0,0,0,0.05);
+  --vs2: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --vs3: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --vs4: 0 10px 28px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.05);
+  --vs-modal: 0 24px 64px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.08);
+
+  --r-sm:  6px;  --r-md:  10px;  --r-lg:  14px;
+  --r-xl:  18px; --r-2xl: 24px;
+}
+
+/* ============================================================
+   SHELL OVERRIDES — vault-specific corrections
+   ============================================================ */
+
+/* The shell's desktop breakpoint sets html,body { overflow: hidden }
+   and scrolls via .mobile-main. The vault uses .vmain instead.
+   We override here so the vault page layout works correctly. */
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+  html, body {
+    overflow: auto !important;
+    height: auto !important;
+  }
+  /* Shell's .mobile-main scroll lock — not used in vault, no-op */
+  .mobile-main {
+    position: static !important;
+    overflow: visible !important;
+  }
+}
+
+/* Icon rail background needs to respect vault's dark palette */
+body.dark-mode .amc-icon-rail {
+  background: #0d1628;
+  border-right-color: #1e3050;
+}
+
+/* ── Dark mode ─────────────────────────────────────────────
+   Shell dark class is body.dark-mode  (key: 'amcTheme')
+   All vault dark overrides must use body.dark-mode selector.
+   ────────────────────────────────────────────────────────── */
+body.dark-mode {
+  --v-blue-l:  #0d1f4a;
+  --v-green-l: #052b1e;
+  --v-amber-l: #2a1800;
+  --v-red-l:   #2a0808;
+  --v-slate-l: #0d1628;
+
+  --v-bg-app:     #0a0f1a;
+  --v-bg-surface: #131b2e;
+  --v-bg-raised:  #1a2540;
+  --v-bg-hover:   #1e2d45;
+  --v-bg-input:   #0f1829;
+
+  --v-text-1: #f0f6ff;
+  --v-text-2: #8ba3c4;
+  --v-text-3: #445d7a;
+
+  --v-border:     #1e3050;
+  --v-border-med: #2a4060;
+
+  --vs2: 0 1px 3px rgba(0,0,0,0.3);
+  --vs3: 0 4px 12px rgba(0,0,0,0.4);
+  --vs4: 0 10px 28px rgba(0,0,0,0.5);
+  --vs-modal: 0 24px 64px rgba(0,0,0,0.7), 0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* ============================================================
+   RESET — only what shell doesn't already provide
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+a { color: var(--v-blue); text-decoration: none; }
+button { font-family: var(--font); cursor: pointer; border: none; background: none; }
+
+/* ============================================================
+   VAULT PAGE LAYOUT
+   Shell header: sticky, 56px high, z-index 1000.
+   Icon rail: fixed left, 72px wide, z-index 900.
+   Page sits below header. On desktop, we add left padding for rail.
+   ============================================================ */
+.vault-page-wrap {
+  display: flex;
+  min-height: calc(100vh - var(--amc-header-h, 56px));
+  background: var(--v-bg-app);
+  /* On desktop the shell forces body overflow:auto via our override above.
+     vault-page-wrap fills remaining viewport below the sticky header. */
+}
+
+/* On desktop (where icon rail shows), the shell's .mobile-main handles
+   left padding for the icon rail automatically. No override needed here. */
+
+/* ── Vault-specific left sidebar (desktop) ─────────────────
+   This is the secondary "vault nav" sidebar (My Vaults, History, etc.)
+   It lives INSIDE .vault-page-wrap, right of the icon rail.
+   ────────────────────────────────────────────────────────── */
+.vsidebar {
+  width: var(--vault-sidebar-w);
+  min-height: calc(100vh - var(--amc-header-h, 56px));
+  background: var(--v-bg-surface);
+  border-right: 1px solid var(--v-border);
+  display: flex; flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto; overflow-x: hidden;
+  position: sticky;
+  top: var(--amc-header-h, 56px);
+  height: calc(100vh - var(--amc-header-h, 56px));
+  transition: width 0.22s cubic-bezier(0.4,0,0.2,1);
+  z-index: 100;
+  /* Thin scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100,116,139,0.3) transparent;
+}
+.vsidebar::-webkit-scrollbar { width: 5px; }
+.vsidebar::-webkit-scrollbar-track { background: transparent; }
+.vsidebar::-webkit-scrollbar-thumb { background: var(--v-border-med); border-radius: 10px; }
+
+.vsidebar.col { width: var(--vault-sidebar-w-col); }
+
+.vsb-toggle {
+  display: flex; align-items: center; justify-content: flex-end;
+  padding: 12px 10px 6px;
+}
+.vsb-toggle-btn {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r-sm);
+  color: var(--v-text-3); font-size: 13px;
+  transition: background 0.12s, color 0.12s;
+}
+.vsb-toggle-btn:hover { background: var(--v-bg-hover); color: var(--v-text-1); }
+
+.vsb-section { padding: 14px 10px 8px; }
+.vsb-section + .vsb-section { border-top: 1px solid var(--v-border); padding-top: 12px; }
+
+.vsb-label {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--v-text-3);
+  padding: 0 8px; margin-bottom: 4px;
+  white-space: nowrap; overflow: hidden;
+  transition: opacity 0.15s;
+}
+.vsidebar.col .vsb-label { opacity: 0; }
+
+.vsb-nav { list-style: none; display: flex; flex-direction: column; gap: 1px; }
+
+.vsb-nav li a, .vsb-nav li button {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px;
+  border-radius: var(--r-sm);
+  color: var(--v-text-2);
+  font-size: 13px; font-weight: 500;
+  white-space: nowrap; overflow: hidden;
+  text-decoration: none; width: 100%; text-align: left;
+  transition: background 0.12s, color 0.12s;
+}
+.vsb-nav li a:hover, .vsb-nav li button:hover {
+  background: var(--v-bg-hover); color: var(--v-text-1);
+}
+.vsb-nav li.active a {
+  background: var(--v-blue-l); color: var(--v-blue); font-weight: 600;
+}
+body.dark-mode .vsb-nav li.active a { background: rgba(37,99,235,0.15); }
+.vsb-nav li.active a .vn-ico { color: var(--v-blue); opacity: 1; }
+
+.vn-ico {
+  width: 15px; text-align: center; font-size: 13px;
+  color: var(--v-text-3); flex-shrink: 0; opacity: 0.8;
+}
+.vsb-nav li a:hover .vn-ico { color: var(--v-text-2); opacity: 1; }
+
+.vn-lbl { transition: opacity 0.15s, width 0.15s; }
+.vsidebar.col .vn-lbl { opacity: 0; width: 0; overflow: hidden; }
+
+.vsb-badge {
+  margin-left: auto; flex-shrink: 0;
+  background: var(--v-blue); color: #fff;
+  font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 20px;
+  transition: opacity 0.15s;
+}
+.vsidebar.col .vsb-badge { opacity: 0; }
+
+.vsb-footer {
+  margin-top: auto;
+  padding: 14px 10px;
+  border-top: 1px solid var(--v-border);
+}
+.vsb-footer-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px;
+  background: var(--v-bg-raised);
+  border: 1px solid var(--v-border);
+  border-radius: var(--r-md); overflow: hidden;
+}
+.vsb-footer-avatar {
+  width: 28px; height: 28px; flex-shrink: 0;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #fff;
+}
+.vsb-footer-text {
+  display: flex; flex-direction: column;
+  overflow: hidden; transition: opacity 0.15s;
+}
+.vsidebar.col .vsb-footer-text { opacity: 0; }
+.vsb-footer-name {
+  font-size: 12px; font-weight: 600; color: var(--v-text-1);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.vsb-footer-role {
+  font-size: 10px; color: var(--v-text-3); white-space: nowrap;
+  display: flex; align-items: center; gap: 4px;
+}
+.vsb-footer-role i { color: var(--v-green); font-size: 9px; }
+
+/* On mobile/tablet — vault sidebar hidden (shell drawer handles nav) */
+@media (max-width: 700px) { .vsidebar { display: none; } }
+
+/* ── Main content area ─────────────────────────────────────── */
+.vmain {
+  flex: 1;
+  overflow-x: hidden;
+  /* Padding handled by shell's mobile-main rules */
+  background: var(--v-bg-app);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100,116,139,0.3) transparent;
+}
+@media (max-width: 1099px) {
+  .vmain {
+    overflow-y: auto;
+    max-height: calc(100vh - var(--amc-header-h, 56px));
+  }
+}
+
+@media (max-width: 960px) { .vmain { padding: 24px 22px 36px; } }
+@media (max-width: 700px) { .vmain { padding: 20px 16px 32px; } }
+
+/* ── Standard page title/subtitle — matches shell template ── */
+.amc-page-title,
+#main-content-title {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 42px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 1.05 !important;
+  margin: 0 0 8px 0 !important;
+}
+body:not(.dark-mode) .amc-page-title { color: #0f172a !important; }
+body.dark-mode .amc-page-title { color: #f8fafc !important; }
+
+.amc-page-subtitle {
+  font-size: 16px !important;
+  font-weight: 300 !important;
+  line-height: 1.55 !important;
+  letter-spacing: 0 !important;
+  margin: 0 0 16px 0 !important;
+  padding: 0 !important;
+  border-bottom: none !important;
+}
+body:not(.dark-mode) .amc-page-subtitle { color: #6b7280 !important; }
+body.dark-mode .amc-page-subtitle { color: #64748b !important; }
+
+.amc-page-header { padding: 28px 0 8px 0; }
+
+/* ============================================================
+   SECURITY STATUS BAR
+   ============================================================ */
+.sec-bar {
+  display: flex; align-items: center;
+  background: var(--v-bg-surface);
+  border: 1px solid var(--v-border);
+  border-radius: var(--r-lg);
+  margin-bottom: 28px; overflow: hidden;
+  box-shadow: var(--vs2);
+}
+.sec-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 12px 20px; flex: 1;
+  border-right: 1px solid var(--v-border);
+  font-size: 12px;
+}
+.sec-item:last-child { border-right: none; }
+.sec-item-icon {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center; font-size: 12px;
+}
+.sec-grn { background: var(--v-green-l); color: var(--v-green); }
+.sec-blu { background: var(--v-blue-l);  color: var(--v-blue); }
+.sec-amb { background: var(--v-amber-l); color: var(--v-amber); }
+body.dark-mode .sec-grn { background: rgba(5,150,105,0.15); }
+body.dark-mode .sec-blu  { background: rgba(37,99,235,0.15); }
+body.dark-mode .sec-amb  { background: rgba(217,119,6,0.15); }
+.sec-item-label { font-weight: 600; color: var(--v-text-1); }
+.sec-item-sub   { color: var(--v-text-3); font-size: 11px; }
+
+@media (max-width: 960px) { .sec-bar { flex-wrap: wrap; } .sec-item { min-width: 140px; } }
+
+/* ============================================================
+   CONTROLS
+   ============================================================ */
+.controls {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 24px; flex-wrap: wrap;
+}
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--v-bg-surface);
+  border: 1px solid var(--v-border);
+  border-radius: var(--r-md);
+  padding: 0 13px; width: 300px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-box:focus-within {
+  border-color: var(--v-blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+.search-box i { color: var(--v-text-3); font-size: 12px; flex-shrink: 0; }
+.search-box input {
+  border: none; outline: none; background: none;
+  font-family: var(--font); font-size: 13px;
+  color: var(--v-text-1); height: 38px; flex: 1;
+}
+.search-box input::placeholder { color: var(--v-text-3); }
+
+.filter-tabs {
+  display: flex; gap: 3px;
+  background: var(--v-bg-surface);
+  border: 1px solid var(--v-border);
+  border-radius: var(--r-md); padding: 3px;
+}
+.ftab {
+  padding: 5px 13px; border-radius: var(--r-sm);
+  font-size: 12px; font-weight: 500; color: var(--v-text-3);
+  transition: background 0.12s, color 0.12s; white-space: nowrap;
+}
+.ftab:hover { color: var(--v-text-2); }
+.ftab.on { background: var(--v-blue); color: #fff; }
+
+.ctrl-right { margin-left: auto; display: flex; gap: 8px; }
+
+@media (max-width: 700px) {
+  .search-box { width: 100%; }
+  .filter-tabs { display: none; }
+}
+
+/* ---- Shared button styles ---- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  font-family: var(--font); font-size: 13px; font-weight: 500;
+  border-radius: var(--r-sm); padding: 0 14px; height: 38px;
+  white-space: nowrap;
+  transition: background 0.12s, box-shadow 0.12s, transform 0.08s;
+  text-decoration: none;
+}
+.btn:active { transform: scale(0.98); }
+.btn i { font-size: 12px; }
+
+.btn-ghost {
+  background: var(--v-bg-surface); color: var(--v-text-2);
+  border: 1px solid var(--v-border);
+}
+.btn-ghost:hover { background: var(--v-bg-hover); color: var(--v-text-1); }
+
+.btn-blue  { background: var(--v-blue);  color: #fff; box-shadow: 0 1px 3px rgba(37,99,235,0.3); }
+.btn-blue:hover  { background: var(--v-blue-h); color: #fff; box-shadow: 0 3px 10px rgba(37,99,235,0.35); }
+
+.btn-green { background: var(--v-green); color: #fff; box-shadow: 0 1px 3px rgba(5,150,105,0.3); }
+.btn-green:hover { background: var(--v-green-h); color: #fff; }
+
+.btn-amber { background: var(--v-amber); color: #fff; box-shadow: 0 1px 3px rgba(217,119,6,0.3); }
+.btn-amber:hover { background: var(--v-amber-h); color: #fff; }
+
+.btn-muted { background: var(--v-slate-l); color: var(--v-text-3); cursor: not-allowed; }
+body.dark-mode .btn-muted { background: var(--v-bg-hover); }
+
+.btn-full { width: 100%; }
+.btn-sm { height: 32px; padding: 0 12px; font-size: 12px; }
+
+/* ============================================================
+   VAULT GRID
+   ============================================================ */
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px; margin-bottom: 40px;
+}
+
+.vault-card {
+  background: var(--v-bg-surface);
+  border: 1px solid var(--v-border);
+  border-radius: var(--r-lg); overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: var(--vs2);
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+  cursor: pointer; position: relative;
+}
+.vault-card:hover { box-shadow: var(--vs4); transform: translateY(-2px); }
+.vault-card[data-state="nda"]:hover   { border-color: rgba(217,119,6,0.3); }
+.vault-card[data-state="ready"]:hover { border-color: rgba(37,99,235,0.3); }
+.vault-card[data-state="open"]:hover  { border-color: rgba(5,150,105,0.3); }
+.vault-card[data-state="pending"]     { cursor: default; }
+.vault-card[data-state="pending"]:hover { transform: none; box-shadow: var(--vs2); }
+
+@keyframes unlockGlow {
+  0%   { box-shadow: 0 0 0 0 rgba(5,150,105,0); border-color: var(--v-border); }
+  30%  { box-shadow: 0 0 0 6px rgba(5,150,105,0.2); border-color: var(--v-green); }
+  70%  { box-shadow: 0 0 0 12px rgba(5,150,105,0.08); border-color: var(--v-green); }
+  100% { box-shadow: var(--vs3); border-color: rgba(5,150,105,0.3); }
+}
+.vault-card.unlocking { animation: unlockGlow 1.2s cubic-bezier(0.4,0,0.2,1) forwards; }
+
+.cv {
+  position: relative; width: 100%; padding-top: 52%;
+  background: var(--v-bg-raised); overflow: hidden; flex-shrink: 0;
+}
+.cv-placeholder {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.lock-ico {
+  font-size: 50px;
+  transition: color 0.3s, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.lock-nda   { color: var(--v-amber); }
+.lock-ready { color: var(--v-blue); }
+.lock-open  { color: var(--v-green); }
+.lock-wait  { color: var(--v-text-3); opacity: 0.35; }
+
+.cv-brand {
+  position: absolute; top: 11px; left: 11px; z-index: 2;
+  background: rgba(9,18,34,0.75);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+  padding: 3px 9px; border-radius: 20px;
+}
+.cv-chip {
+  position: absolute; top: 11px; right: 11px; z-index: 2;
+  font-size: 9px; font-weight: 800; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 20px;
+}
+.chip-nda   { background: var(--v-amber-l); color: var(--v-amber); border: 1px solid rgba(217,119,6,0.2); }
+.chip-ready { background: var(--v-blue-l);  color: var(--v-blue);  border: 1px solid rgba(37,99,235,0.2); }
+.chip-open  { background: var(--v-green-l); color: var(--v-green); border: 1px solid rgba(5,150,105,0.2); }
+.chip-wait  { background: var(--v-slate-l); color: var(--v-slate); border: 1px solid var(--v-border); }
+body.dark-mode .chip-nda   { background: rgba(217,119,6,0.12); }
+body.dark-mode .chip-ready { background: rgba(37,99,235,0.12); }
+body.dark-mode .chip-open  { background: rgba(5,150,105,0.12); }
+body.dark-mode .chip-wait  { background: rgba(100,116,139,0.1); }
+
+.cb { padding: 15px 16px 12px; flex: 1; display: flex; flex-direction: column; }
+
+.cb-title {
+  font-size: 14px; font-weight: 600;
+  font-variation-settings: 'opsz' 14;
+  letter-spacing: -0.01em; color: var(--v-text-1);
+  line-height: 1.4; margin-bottom: 11px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; min-height: 2.8em;
+}
+
+/* EMBARGO — always red, always urgent */
+.cb-embargo {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 11.5px; font-weight: 700; color: var(--v-red);
+  padding: 7px 10px;
+  background: var(--v-red-l);
+  border-radius: var(--r-sm);
+  border-left: 3px solid var(--v-red);
+  margin-bottom: 10px;
+}
+body.dark-mode .cb-embargo { background: rgba(220,38,38,0.1); }
+.cb-embargo i { font-size: 10px; flex-shrink: 0; }
+
+.cb-meta {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; color: var(--v-text-3); margin-bottom: 11px;
+}
+.cb-meta-i { display: flex; align-items: center; gap: 5px; }
+.cb-meta-i i { font-size: 10px; }
+
+.cb-status {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 500; margin-bottom: 4px;
+}
+.cb-status i { font-size: 11px; }
+.s-nda   { color: var(--v-amber); }
+.s-ok    { color: var(--v-green); }
+.s-blue  { color: var(--v-blue); }
+.s-muted { color: var(--v-slate); }
+
+.cb-status-sub {
+  font-size: 11px; color: var(--v-text-3);
+  margin-bottom: 13px; padding-left: 18px;
+  display: flex; align-items: center; gap: 5px;
+}
+.cb-status-sub i { font-size: 10px; }
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(6,12,26,0.55);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  z-index: 3000; /* above shell z-indices: header 1000, drawer 2001 */
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s; padding: 20px;
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--v-bg-surface);
+  border: 1px solid var(--v-border);
+  border-radius: var(--r-2xl);
+  box-shadow: var(--vs-modal);
+  width: 100%; max-width: 540px; max-height: 92vh;
+  display: flex; flex-direction: column;
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.25s cubic-bezier(0.34,1.4,0.64,1);
+  overflow: hidden;
+}
+.overlay.open .modal { transform: translateY(0) scale(1); }
+.modal.narrow { max-width: 440px; }
+
+.mhdr {
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid var(--v-border);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+  flex-shrink: 0;
+}
+.mhdr-icon {
+  width: 38px; height: 38px; border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0; margin-bottom: 11px;
+}
+.ico-amb  { background: var(--v-amber-l); color: var(--v-amber); }
+.ico-blu  { background: var(--v-blue-l);  color: var(--v-blue); }
+.ico-grn  { background: var(--v-green-l); color: var(--v-green); }
+body.dark-mode .ico-amb  { background: rgba(217,119,6,0.15); }
+body.dark-mode .ico-blu  { background: rgba(37,99,235,0.15); }
+body.dark-mode .ico-grn  { background: rgba(5,150,105,0.15); }
+
+.mhdr-title {
+  font-size: 17px; font-weight: 700;
+  font-variation-settings: 'opsz' 17;
+  letter-spacing: -0.02em; color: var(--v-text-1); margin-bottom: 3px;
+}
+.mhdr-sub { font-size: 13px; font-weight: 300; color: var(--v-text-2); }
+
+.modal-x {
+  color: var(--v-text-3); font-size: 17px;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r-sm); margin-top: -3px; flex-shrink: 0;
+  transition: background 0.12s, color 0.12s;
+}
+.modal-x:hover { background: var(--v-bg-hover); color: var(--v-text-1); }
+
+.mbody {
+  padding: 20px 24px;
+  overflow-y: auto; flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100,116,139,0.3) transparent;
+}
+.mfoot {
+  padding: 14px 24px;
+  border-top: 1px solid var(--v-border);
+  display: flex; gap: 9px; justify-content: flex-end;
+  flex-shrink: 0; background: var(--v-bg-raised);
+}
+
+/* NDA modal */
+.nda-client-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: var(--v-bg-raised); border: 1px solid var(--v-border);
+  border-radius: var(--r-md); margin-bottom: 14px;
+}
+.nda-c-logo {
+  width: 38px; height: 38px; flex-shrink: 0;
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: #fff;
+}
+.nda-c-name { font-size: 13px; font-weight: 600; color: var(--v-text-1); }
+.nda-c-sub  { font-size: 11px; color: var(--v-text-3); }
+
+.nda-embargo-bar {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 13px;
+  background: var(--v-red-l); border: 1px solid rgba(220,38,38,0.18);
+  border-left: 3px solid var(--v-red);
+  border-radius: var(--r-sm); margin-bottom: 14px;
+  font-size: 12px; font-weight: 700; color: var(--v-red);
+}
+body.dark-mode .nda-embargo-bar { background: rgba(220,38,38,0.09); }
+
+.nda-doc {
+  border: 1px solid var(--v-border); border-radius: var(--r-md);
+  background: var(--v-bg-raised);
+  padding: 15px 16px; height: 175px; overflow-y: auto;
+  margin-bottom: 14px;
+  font-size: 12px; color: var(--v-text-2); line-height: 1.75;
+  scrollbar-width: thin; scrollbar-color: rgba(100,116,139,0.3) transparent;
+}
+.nda-doc h4 {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--v-text-1); margin-bottom: 10px;
+}
+.nda-doc p { margin-bottom: 9px; }
+
+.nda-note {
+  display: flex; gap: 9px; padding: 9px 12px;
+  background: var(--v-blue-l); border-radius: var(--r-sm); margin-bottom: 14px;
+  font-size: 12px; color: var(--v-blue);
+}
+body.dark-mode .nda-note { background: rgba(37,99,235,0.1); }
+.nda-note i { margin-top: 1px; flex-shrink: 0; font-size: 12px; }
+
+.delivery-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.delivery-opt {
+  flex: 1; cursor: pointer;
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 13px;
+  border: 1.5px solid var(--v-border);
+  border-radius: var(--r-md);
+  font-size: 12px; font-weight: 500; color: var(--v-text-2);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  user-select: none;
+}
+.delivery-opt:hover { border-color: var(--v-blue); color: var(--v-text-1); }
+.delivery-opt.sel { border-color: var(--v-blue); background: var(--v-blue-l); color: var(--v-blue); }
+body.dark-mode .delivery-opt.sel { background: rgba(37,99,235,0.1); }
+.delivery-opt input[type="checkbox"] { display: none; }
+.delivery-opt i { font-size: 15px; }
+.delivery-opt-title { font-weight: 600; color: inherit; }
+.delivery-opt-sub   { font-size: 10px; color: var(--v-text-3); }
+
+.nda-check-row {
+  display: flex; align-items: flex-start; gap: 9px;
+  margin-bottom: 14px; cursor: pointer;
+}
+.nda-check-row input[type="checkbox"] {
+  width: 15px; height: 15px; margin-top: 2px;
+  accent-color: var(--v-blue); flex-shrink: 0; cursor: pointer;
+}
+.nda-check-label { font-size: 12px; color: var(--v-text-2); line-height: 1.55; }
+
+.sig-label {
+  font-size: 12px; font-weight: 600; color: var(--v-text-1);
+  display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+}
+.sig-input {
+  width: 100%; border: 1px solid var(--v-border); border-radius: var(--r-sm);
+  background: var(--v-bg-input); color: var(--v-text-1);
+  font-family: var(--font-sig); font-size: 22px;
+  padding: 9px 13px; outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.sig-input:focus { border-color: var(--v-blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.sig-hint { font-size: 11px; color: var(--v-text-3); margin-top: 5px; }
+
+/* Password modal */
+.pwd-sec-row { display: flex; gap: 8px; margin-bottom: 18px; }
+.pwd-sec-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 7px; padding: 13px 8px;
+  background: var(--v-bg-raised); border: 1px solid var(--v-border);
+  border-radius: var(--r-md);
+  font-size: 11px; color: var(--v-text-3); text-align: center;
+}
+.pwd-sec-item i { font-size: 18px; color: var(--v-blue); }
+.pwd-sec-item strong { font-size: 11px; font-weight: 600; color: var(--v-text-2); }
+
+.pwd-wrap { position: relative; margin-bottom: 6px; }
+.pwd-input {
+  width: 100%; border: 1px solid var(--v-border); border-radius: var(--r-sm);
+  background: var(--v-bg-input); color: var(--v-text-1);
+  font-family: var(--font); font-size: 16px; letter-spacing: 0.18em;
+  padding: 11px 42px 11px 14px; outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.pwd-input:focus { border-color: var(--v-blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.pwd-input.shake { animation: shake 0.4s cubic-bezier(0.36,0.07,0.19,0.97); }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-6px); }
+  40%     { transform: translateX(6px); }
+  60%     { transform: translateX(-4px); }
+  80%     { transform: translateX(4px); }
+}
+.pwd-eye {
+  position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--v-text-3); font-size: 13px; padding: 4px; cursor: pointer;
+  transition: color 0.12s;
+}
+.pwd-eye:hover { color: var(--v-text-2); }
+.pwd-hint { font-size: 11px; color: var(--v-text-3); margin-bottom: 14px; }
+.pwd-error {
+  display: none; font-size: 12px; color: var(--v-red);
+  padding: 8px 11px; background: var(--v-red-l);
+  border-radius: var(--r-sm); margin-bottom: 10px;
+}
+body.dark-mode .pwd-error { background: rgba(220,38,38,0.1); }
+.pwd-error i { margin-right: 5px; }
+
+/* NDA success modal */
+.success-icon-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 28px 20px 20px;
+}
+@keyframes popIn {
+  0%   { transform: scale(0.3); opacity: 0; }
+  60%  { transform: scale(1.12); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+.success-check {
+  font-size: 52px; color: var(--v-green);
+  animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+.success-title {
+  font-size: 18px; font-weight: 700;
+  font-variation-settings: 'opsz' 18;
+  letter-spacing: -0.02em; color: var(--v-text-1);
+  margin-top: 14px; margin-bottom: 5px;
+}
+.success-sub { font-size: 13px; font-weight: 300; color: var(--v-text-2); text-align: center; }
+
+.sig-record {
+  background: var(--v-bg-raised); border: 1px solid var(--v-border);
+  border-radius: var(--r-md); padding: 14px 16px;
+}
+.sig-record-row {
+  display: flex; align-items: baseline; gap: 8px;
+  font-size: 12px; margin-bottom: 6px;
+}
+.sig-record-row:last-child { margin-bottom: 0; }
+.sig-key { font-weight: 600; color: var(--v-text-2); min-width: 85px; }
+.sig-val { color: var(--v-text-1); }
+.sig-val.name { font-family: var(--font-sig); font-size: 16px; color: var(--v-blue); }
+
+/* Vault unlock overlay */
+.unlock-overlay {
+  position: fixed; inset: 0;
+  background: rgba(6,12,26,0.55);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  z-index: 3100;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.unlock-overlay.open { opacity: 1; pointer-events: all; }
+.unlock-card {
+  background: var(--v-bg-surface); border: 1px solid var(--v-border);
+  border-radius: var(--r-2xl); box-shadow: var(--vs-modal);
+  padding: 40px 36px; text-align: center;
+  max-width: 340px; width: 90%;
+  transform: scale(0.9);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.unlock-overlay.open .unlock-card { transform: scale(1); }
+@keyframes vaultUnlock {
+  0%   { transform: scale(0.5) rotate(-15deg); opacity: 0; }
+  50%  { transform: scale(1.15) rotate(5deg); }
+  100% { transform: scale(1) rotate(0);       opacity: 1; }
+}
+.unlock-icon {
+  font-size: 56px; color: var(--v-green);
+  animation: vaultUnlock 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  display: inline-block; margin-bottom: 18px;
+}
+.unlock-title {
+  font-size: 20px; font-weight: 800;
+  font-variation-settings: 'opsz' 20;
+  letter-spacing: -0.03em; color: var(--v-text-1); margin-bottom: 6px;
+}
+.unlock-sub { font-size: 13px; font-weight: 300; color: var(--v-text-2); }
+
+/* ============================================================
+   ASSET VIEWER
+   ============================================================ */
+.page-vault.hidden  { display: none; }
+.page-asset         { display: none; }
+.page-asset.visible { display: block; }
+
+.asset-hdr {
+  display: flex; align-items: flex-start; gap: 16px;
+  margin-bottom: 26px; padding-bottom: 24px;
+  border-bottom: 1px solid var(--v-border);
+}
+.back-btn {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 500; color: var(--v-text-2);
+  border: 1px solid var(--v-border); border-radius: var(--r-sm);
+  padding: 0 13px; height: 34px; margin-top: 5px; flex-shrink: 0;
+  transition: background 0.12s, color 0.12s;
+}
+.back-btn:hover { background: var(--v-bg-hover); color: var(--v-text-1); }
+.back-btn i { font-size: 11px; }
+
+.asset-hdr-info { flex: 1; }
+.asset-hdr-brand {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--v-blue); margin-bottom: 5px;
+}
+.asset-hdr-title {
+  font-size: 26px; font-weight: 800;
+  font-variation-settings: 'opsz' 26;
+  letter-spacing: -0.03em; line-height: 1.1; color: var(--v-text-1); margin-bottom: 10px;
+}
+body.dark-mode .asset-hdr-title { color: #f0f6ff; }
+
+.asset-hdr-embargo {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 700; color: var(--v-red);
+  padding: 5px 12px;
+  background: var(--v-red-l); border-radius: 20px;
+  border: 1px solid rgba(220,38,38,0.2);
+}
+body.dark-mode .asset-hdr-embargo { background: rgba(220,38,38,0.1); }
+
+.asset-hdr-meta { margin-top: 11px; display: flex; gap: 18px; flex-wrap: wrap; }
+.asset-meta-it { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--v-text-3); }
+.asset-meta-it i { font-size: 11px; }
+
+.dl-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--v-bg-surface); border: 1px solid var(--v-border);
+  border-radius: var(--r-md); box-shadow: var(--vs1); margin-bottom: 10px;
+}
+.dl-bar-text { font-size: 13px; font-weight: 500; color: var(--v-text-2); }
+.dl-bar-text strong { color: var(--v-text-1); }
+
+.wm-notice {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 14px;
+  background: var(--v-slate-l); border-radius: var(--r-sm);
+  font-size: 11px; color: var(--v-text-3); margin-bottom: 24px;
+}
+body.dark-mode .wm-notice { background: rgba(100,116,139,0.08); }
+.wm-notice i { flex-shrink: 0; }
+
+.audit-bar {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 12px 15px;
+  background: var(--v-amber-l); border: 1px solid rgba(217,119,6,0.18);
+  border-radius: var(--r-md); margin-bottom: 24px;
+  font-size: 12px; color: var(--v-amber-h); font-weight: 500;
+}
+body.dark-mode .audit-bar { background: rgba(217,119,6,0.08); color: #f59e0b; }
+.audit-bar i { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.audit-bar span { font-weight: 400; color: var(--v-text-2); }
+
+.sec-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--v-text-3);
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sec-title::after { content: ''; flex: 1; height: 1px; background: var(--v-border); }
+.sec-cnt {
+  background: var(--v-bg-hover); color: var(--v-text-3);
+  font-size: 10px; font-weight: 700; text-transform: none; letter-spacing: 0;
+  padding: 1px 7px; border-radius: 20px;
+}
+
+.asset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  gap: 12px; margin-bottom: 26px;
+}
+@media (max-width: 700px) { .asset-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.ac {
+  background: var(--v-bg-surface); border: 1px solid var(--v-border);
+  border-radius: var(--r-md); overflow: hidden;
+  transition: box-shadow 0.15s, transform 0.15s, border-color 0.15s; cursor: pointer;
+}
+.ac:hover { box-shadow: var(--vs3); transform: translateY(-1px); border-color: rgba(37,99,235,0.25); }
+.ac-thumb { width: 100%; padding-top: 63%; position: relative; overflow: hidden; }
+.ac-thumb-bg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.ac-thumb-lbl {
+  position: absolute; bottom: 6px; left: 6px;
+  background: rgba(9,18,34,0.68); color: #fff;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; padding: 2px 6px; border-radius: 3px;
+}
+.t1 { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); }
+.t2 { background: linear-gradient(135deg, #064e3b 0%, #059669 100%); }
+.t3 { background: linear-gradient(135deg, #451a03 0%, #d97706 100%); }
+.t4 { background: linear-gradient(135deg, #1e1b4b 0%, #6366f1 100%); }
+.t5 { background: linear-gradient(135deg, #0c4a6e 0%, #0ea5e9 100%); }
+.t6 { background: linear-gradient(135deg, #3f0e0e 0%, #dc2626 100%); }
+
+.ac-info { padding: 9px 11px; }
+.ac-name {
+  font-size: 11.5px; font-weight: 600; color: var(--v-text-1);
+  margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ac-detail { font-size: 11px; color: var(--v-text-3); display: flex; align-items: center; justify-content: space-between; }
+.ac-dl {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 600; color: var(--v-blue);
+  background: none; border: none; cursor: pointer; padding: 0; transition: color 0.12s;
+}
+.ac-dl:hover { color: var(--v-blue-h); }
+.ac-dl i { font-size: 10px; }
+
+.doc-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 26px; }
+.doc-row {
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 15px;
+  background: var(--v-bg-surface); border: 1px solid var(--v-border);
+  border-radius: var(--r-md); cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.doc-row:hover { background: var(--v-bg-hover); border-color: rgba(37,99,235,0.2); }
+.doc-ico {
+  width: 34px; height: 34px; flex-shrink: 0;
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center; font-size: 15px;
+}
+.di-pdf  { background: var(--v-red-l);   color: var(--v-red); }
+.di-word { background: var(--v-blue-l);  color: var(--v-blue); }
+.di-vid  { background: var(--v-amber-l); color: var(--v-amber); }
+body.dark-mode .di-pdf  { background: rgba(220,38,38,0.12); }
+body.dark-mode .di-word { background: rgba(37,99,235,0.12); }
+body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
+.doc-info { flex: 1; }
+.doc-name { font-size: 13px; font-weight: 600; color: var(--v-text-1); margin-bottom: 2px; }
+.doc-meta { font-size: 11px; color: var(--v-text-3); }
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast-wrap {
+  position: fixed; bottom: 22px; right: 22px;
+  z-index: 4000; display: flex; flex-direction: column; gap: 7px;
+  pointer-events: none;
+}
+.toast {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--v-text-1); color: var(--v-bg-surface);
+  font-size: 12.5px; font-weight: 500;
+  padding: 11px 16px; border-radius: var(--r-md);
+  box-shadow: var(--vs4); pointer-events: all;
+  animation: toastIn 0.3s cubic-bezier(0.34,1.4,0.64,1);
+}
+.toast i { color: var(--v-green); font-size: 13px; }
+@keyframes toastIn {
+  from { transform: translateX(14px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+</style>
+</head>
+
+<!-- ============================================================
+     SHELL MOUNT POINTS
+     Shell loads: sticky header (56px), icon rail, mobile drawer
+     ============================================================ -->
+<body>
+
+<!-- Header injected here by shell loader -->
+<div id="amcShellHeader"></div>
+
+<!-- Sidebar/icon-rail injected here by shell loader -->
+<div id="amcShellSidebar"></div>
+
+<!-- ============================================================
+     VAULT PAGE LAYOUT
+     Starts below shell header (margin handled by vault-page-wrap)
+     ============================================================ -->
+<div class="vault-page-wrap">
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main class="vmain mobile-main" id="vmainScroll">
+    <div class="amc-page">
+
+    <!-- ── VAULT DASHBOARD PAGE ── -->
+    <div class="page-vault" id="pageVault">
+
+      <header class="amc-page-header">
+        <h1 class="amc-page-title">Media Vault</h1>
+        <p class="amc-page-subtitle">Embargoed media. Access is identity-verified.</p>
+      </header>
+
+      <!-- Security status bar -->
+      <div class="sec-bar">
+        <div class="sec-item">
+          <div class="sec-item-icon sec-grn"><i class="fas fa-shield-check"></i></div>
+          <div class="sec-item-text">
+            <div class="sec-item-label">MFA Verified</div>
+            <div class="sec-item-sub">Session authenticated</div>
+          </div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-item-icon sec-blu"><i class="fas fa-fingerprint"></i></div>
+          <div class="sec-item-text">
+            <div class="sec-item-label">Identity Confirmed</div>
+            <div class="sec-item-sub">Max Mustermann · Auto Weekly DE</div>
+          </div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-item-icon sec-grn"><i class="fas fa-lock"></i></div>
+          <div class="sec-item-text">
+            <div class="sec-item-label">Encrypted Connection</div>
+            <div class="sec-item-sub">TLS 1.3 · AES-256 at rest</div>
+          </div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-item-icon sec-amb"><i class="fas fa-stamp"></i></div>
+          <div class="sec-item-text">
+            <div class="sec-item-label">Downloads Watermarked</div>
+            <div class="sec-item-sub">Visible · Stego in development</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="search" placeholder="Search vaults, brands, releases…" id="vaultSearch" oninput="filterVaults(this.value)">
+        </div>
+
+        <div class="filter-tabs" id="filterTabs">
+          <button class="ftab on" data-f="all"     onclick="setFilter(this)">All</button>
+          <button class="ftab"    data-f="nda"     onclick="setFilter(this)">NDA Required</button>
+          <button class="ftab"    data-f="ready"   onclick="setFilter(this)">Ready to Enter</button>
+          <button class="ftab"    data-f="open"    onclick="setFilter(this)">Access Granted</button>
+          <button class="ftab"    data-f="pending" onclick="setFilter(this)">Pending</button>
+        </div>
+
+        <div class="ctrl-right">
+          <button class="btn btn-ghost btn-sm">
+            <i class="fas fa-sort-amount-down"></i> Sort
+          </button>
+          <button class="btn btn-ghost btn-sm">
+            <i class="fas fa-filter"></i> Filter
+          </button>
+        </div>
+      </div>
+
+      <!-- Vault Grid -->
+      <div class="vault-grid" id="vaultGrid">
+
+        <!-- STATE A: NDA Required -->
+        <div class="vault-card" data-state="nda" data-vid="1" onclick="openNdaModal(this)">
+          <div class="cv">
+            <span class="cv-brand">BMW Group</span>
+            <span class="cv-chip chip-nda"><i class="fas fa-file-contract" style="margin-right:4px;"></i>NDA Required</span>
+            <div class="cv-placeholder">
+              <i class="fas fa-lock lock-ico lock-nda" id="lock-1"></i>
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-title">Concept ZM Global Reveal — Complete Press Kit</div>
+            <div class="cb-embargo">
+              <i class="fas fa-exclamation-triangle"></i>
+              Embargo: 14:00 CEST &nbsp;·&nbsp; 10 April 2025
+            </div>
+            <div class="cb-meta">
+              <div class="cb-meta-i"><i class="fas fa-images"></i> 47 images</div>
+              <div class="cb-meta-i"><i class="fas fa-film"></i> 3 videos</div>
+              <div class="cb-meta-i"><i class="fas fa-file-pdf"></i> 2 docs</div>
+            </div>
+            <div class="cb-status s-nda">
+              <i class="fas fa-file-signature"></i> NDA signature required
+            </div>
+            <div class="cb-status-sub"><i class="fas fa-key"></i> Sign to receive vault password by email or SMS</div>
+            <button class="btn btn-amber btn-full" onclick="event.stopPropagation(); openNdaModal(this.closest('.vault-card'))">
+              <i class="fas fa-pen-alt"></i> Sign NDA to Access
+            </button>
+          </div>
+        </div>
+
+        <!-- STATE B: NDA Signed, Password Required -->
+        <div class="vault-card" data-state="ready" data-vid="2" onclick="openPwdModal(this)">
+          <div class="cv">
+            <span class="cv-brand">Mercedes-Benz</span>
+            <span class="cv-chip chip-ready"><i class="fas fa-key" style="margin-right:4px;"></i>Password Required</span>
+            <div class="cv-placeholder">
+              <i class="fas fa-lock lock-ico lock-ready" id="lock-2"></i>
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-title">EQS SUV 2026 Facelift — Pre-Release Photography &amp; Specs</div>
+            <div class="cb-embargo">
+              <i class="fas fa-exclamation-triangle"></i>
+              Embargo: 08:00 CET &nbsp;·&nbsp; 11 April 2025
+            </div>
+            <div class="cb-meta">
+              <div class="cb-meta-i"><i class="fas fa-images"></i> 62 images</div>
+              <div class="cb-meta-i"><i class="fas fa-film"></i> 1 video</div>
+              <div class="cb-meta-i"><i class="fas fa-file-pdf"></i> 4 docs</div>
+            </div>
+            <div class="cb-status s-ok">
+              <i class="fas fa-check-circle"></i> NDA signed · 3 April 2025
+            </div>
+            <div class="cb-status-sub"><i class="fas fa-envelope"></i> Password issued — check your email</div>
+            <button class="btn btn-blue btn-full" onclick="event.stopPropagation(); openPwdModal(this.closest('.vault-card'))">
+              <i class="fas fa-key"></i> Enter Password to Access
+            </button>
+          </div>
+        </div>
+
+        <!-- STATE C: Full Access -->
+        <div class="vault-card" data-state="open" data-vid="3" onclick="openAssetPage()">
+          <div class="cv" style="background: linear-gradient(135deg,#052b1e,#065f46);">
+            <span class="cv-brand">Audi</span>
+            <span class="cv-chip chip-open"><i class="fas fa-check-circle" style="margin-right:4px;"></i>Access Granted</span>
+            <div class="cv-placeholder" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+              <i class="fas fa-lock-open lock-ico" style="color:rgba(255,255,255,0.85);font-size:50px;" id="lock-3"></i>
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-title">E-tron GT Facelift — First Official Photos &amp; Spec Sheet</div>
+            <div class="cb-embargo">
+              <i class="fas fa-exclamation-triangle"></i>
+              Embargo: 10:00 CET &nbsp;·&nbsp; 15 April 2025
+            </div>
+            <div class="cb-meta">
+              <div class="cb-meta-i"><i class="fas fa-images"></i> 31 images</div>
+              <div class="cb-meta-i"><i class="fas fa-film"></i> 2 videos</div>
+              <div class="cb-meta-i"><i class="fas fa-file-pdf"></i> 3 docs</div>
+            </div>
+            <div class="cb-status s-ok">
+              <i class="fas fa-check-circle"></i> NDA signed · Access granted
+            </div>
+            <div class="cb-status-sub"><i class="fas fa-eye"></i> Last accessed 6 April 2025</div>
+            <button class="btn btn-green btn-full" onclick="event.stopPropagation(); openAssetPage()">
+              <i class="fas fa-folder-open"></i> View Assets
+            </button>
+          </div>
+        </div>
+
+        <!-- STATE D: Access Pending -->
+        <div class="vault-card" data-state="pending" data-vid="4">
+          <div class="cv">
+            <span class="cv-brand">Volkswagen</span>
+            <span class="cv-chip chip-wait"><i class="fas fa-clock" style="margin-right:4px;"></i>Not Yet Open</span>
+            <div class="cv-placeholder">
+              <i class="fas fa-lock lock-ico lock-wait" id="lock-4"></i>
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-title">ID. Software 4.0 — Technical Briefing &amp; Imagery</div>
+            <div class="cb-embargo">
+              <i class="fas fa-exclamation-triangle"></i>
+              Embargo: 12:00 CET &nbsp;·&nbsp; 20 April 2025
+            </div>
+            <div class="cb-meta">
+              <div class="cb-meta-i"><i class="fas fa-images"></i> 18 images</div>
+              <div class="cb-meta-i"><i class="fas fa-film"></i> 1 video</div>
+              <div class="cb-meta-i"><i class="fas fa-file-pdf"></i> 6 docs</div>
+            </div>
+            <div class="cb-status s-ok">
+              <i class="fas fa-check-circle"></i> NDA signed · 5 April 2025
+            </div>
+            <div class="cb-status-sub" style="color:var(--v-slate);">
+              <i class="fas fa-hourglass-half"></i> Vault opens 20 April 2025 · 14:00 CEST
+            </div>
+            <button class="btn btn-muted btn-full" disabled>
+              <i class="fas fa-clock"></i> Access Pending
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /vault-grid -->
+
+    </div><!-- /page-vault -->
+
+
+    <!-- ── ASSET VIEWER PAGE ── -->
+    <div class="page-asset" id="pageAsset">
+
+      <div class="asset-hdr">
+        <button class="back-btn" onclick="closeAssetPage()">
+          <i class="fas fa-arrow-left"></i> Back to Vaults
+        </button>
+        <div class="asset-hdr-info">
+          <div class="asset-hdr-brand">Audi AG · AutoMediaVault · Vault #0031</div>
+          <div class="asset-hdr-title">E-tron GT Facelift — First Official Photos &amp; Spec Sheet</div>
+          <div class="asset-hdr-embargo">
+            <i class="fas fa-exclamation-triangle"></i>
+            Do Not Publish Before: 10:00 CET · 15 April 2025
+          </div>
+          <div class="asset-hdr-meta">
+            <div class="asset-meta-it"><i class="fas fa-images"></i> 31 images</div>
+            <div class="asset-meta-it"><i class="fas fa-film"></i> 2 videos</div>
+            <div class="asset-meta-it"><i class="fas fa-file-pdf"></i> 3 documents</div>
+            <div class="asset-meta-it"><i class="fas fa-hourglass-end"></i> Vault expires 22 April 2025</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="audit-bar">
+        <i class="fas fa-eye"></i>
+        <div>
+          <strong>All downloads are logged and watermarked.</strong>
+          <span> Each file carries your journalist ID, name, outlet, date, time and IP embedded as a visible watermark. This is an immutable audit record. Invisible steganographic watermarking is in active development.</span>
+        </div>
+      </div>
+
+      <div class="dl-bar">
+        <div class="dl-bar-text"><strong>36 assets</strong> available &nbsp;·&nbsp; Total approx. 2.4 GB</div>
+        <button class="btn btn-blue btn-sm" onclick="toast('Preparing download package…')">
+          <i class="fas fa-download"></i> Download All Assets
+        </button>
+      </div>
+
+      <div class="wm-notice">
+        <i class="fas fa-stamp"></i>
+        Watermark applied to all downloads: Max Mustermann · Auto Weekly DE · <span id="wmDate"></span> · IP logged
+      </div>
+
+      <div class="sec-title">Photography <span class="sec-cnt">31 files</span></div>
+      <div class="asset-grid">
+        <div class="ac" onclick="toast('Downloading: Audi_eTronGT_ext_01.jpg')">
+          <div class="ac-thumb"><div class="ac-thumb-bg t1"></div><span class="ac-thumb-lbl">JPG · 4K</span></div>
+          <div class="ac-info">
+            <div class="ac-name">eTronGT_ext_01.jpg</div>
+            <div class="ac-detail"><span>24.8 MB</span><button class="ac-dl" onclick="event.stopPropagation();toast('Downloading…')"><i class="fas fa-download"></i> DL</button></div>
+          </div>
+        </div>
+        <div class="ac" onclick="toast('Downloading: Audi_eTronGT_ext_02.jpg')">
+          <div class="ac-thumb"><div class="ac-thumb-bg t2"></div><span class="ac-thumb-lbl">JPG · 4K</span></div>
+          <div class="ac-info">
+            <div class="ac-name">eTronGT_ext_02.jpg</div>
+            <div class="ac-detail"><span>22.1 MB</span><button class="ac-dl" onclick="event.stopPropagation();toast('Downloading…')"><i class="fas fa-download"></i> DL</button></div>
+          </div>
+        </div>
+        <div class="ac" onclick="toast('Downloading: Audi_eTronGT_int_01.jpg')">
+          <div class="ac-thumb"><div class="ac-thumb-bg t4"></div><span class="ac-thumb-lbl">JPG · 4K</span></div>
+          <div class="ac-info">
+            <div class="ac-name">eTronGT_int_01.jpg</div>
+            <div class="ac-detail"><span>19.4 MB</span><button class="ac-dl" onclick="event.stopPropagation();toast('Downloading…')"><i class="fas fa-download"></i> DL</button></div>
+          </div>
+        </div>
+        <div class="ac" onclick="toast('Downloading: Audi_eTronGT_int_02.jpg')">
+          <div class="ac-thumb"><div class="ac-thumb-bg t5"></div><span class="ac-thumb-lbl">JPG · 4K</span></div>
+          <div class="ac-info">
+            <div class="ac-name">eTronGT_int_02.jpg</div>
+            <div class="ac-detail"><span>21.0 MB</span><button class="ac-dl" onclick="event.stopPropagation();toast('Downloading…')"><i class="fas fa-download"></i> DL</button></div>
+          </div>
+        </div>
+        <div class="ac" onclick="toast('Downloading: Audi_eTronGT_studio_01.jpg')">
+          <div class="ac-thumb"><div class="ac-thumb-bg t3"></div><span class="ac-thumb-lbl">JPG · 4K</span></div>
+          <div class="ac-info">
+            <div class="ac-name">eTronGT_studio_01.jpg</div>
+            <div class="ac-detail"><span>18.7 MB</span><button class="ac-dl" onclick="event.stopPropagation();toast('Downloading…')"><i class="fas fa-download"></i> DL</button></div>
+          </div>
+        </div>
+        <div class="ac" onclick="toast('Downloading: Audi_eTronGT_action_01.jpg')">
+          <div class="ac-thumb"><div class="ac-thumb-bg t6"></div><span class="ac-thumb-lbl">JPG · 4K</span></div>
+          <div class="ac-info">
+            <div class="ac-name">eTronGT_action_01.jpg</div>
+            <div class="ac-detail"><span>26.3 MB</span><button class="ac-dl" onclick="event.stopPropagation();toast('Downloading…')"><i class="fas fa-download"></i> DL</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-title">Video <span class="sec-cnt">2 files</span></div>
+      <div class="doc-list" style="margin-bottom:26px;">
+        <div class="doc-row" onclick="toast('Preparing: eTronGT_reveal_60s.mp4')">
+          <div class="doc-ico di-vid"><i class="fas fa-film"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">eTronGT_FL_reveal_60s.mp4</div>
+            <div class="doc-meta">MP4 · H.264 · 1920×1080 · 60s · 480 MB</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('Preparing video…')"><i class="fas fa-download"></i> Download</button>
+        </div>
+        <div class="doc-row" onclick="toast('Preparing: eTronGT_b_roll_4K.mp4')">
+          <div class="doc-ico di-vid"><i class="fas fa-film"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">eTronGT_FL_b_roll_4K.mp4</div>
+            <div class="doc-meta">MP4 · H.265 · 3840×2160 · 4m 20s · 1.2 GB</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('Preparing video…')"><i class="fas fa-download"></i> Download</button>
+        </div>
+      </div>
+
+      <div class="sec-title">Documents <span class="sec-cnt">3 files</span></div>
+      <div class="doc-list">
+        <div class="doc-row" onclick="toast('Downloading: Audi_eTronGT_FL_PressRelease_EN.pdf')">
+          <div class="doc-ico di-pdf"><i class="fas fa-file-pdf"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">Audi_eTronGT_FL_PressRelease_EN.pdf</div>
+            <div class="doc-meta">PDF · English · 14 pages · 2.4 MB</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('Downloading press release…')"><i class="fas fa-download"></i> Download</button>
+        </div>
+        <div class="doc-row" onclick="toast('Downloading: Audi_eTronGT_FL_TechSpec_EN.pdf')">
+          <div class="doc-ico di-pdf"><i class="fas fa-file-pdf"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">Audi_eTronGT_FL_TechSpec_EN.pdf</div>
+            <div class="doc-meta">PDF · English · 6 pages · 1.1 MB</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('Downloading tech spec…')"><i class="fas fa-download"></i> Download</button>
+        </div>
+        <div class="doc-row" onclick="toast('Downloading: Audi_eTronGT_FL_QuoteSheet_EN.docx')">
+          <div class="doc-ico di-word"><i class="fas fa-file-word"></i></div>
+          <div class="doc-info">
+            <div class="doc-name">Audi_eTronGT_FL_QuoteSheet_EN.docx</div>
+            <div class="doc-meta">Word · English · 3 pages · 0.4 MB</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('Downloading quote sheet…')"><i class="fas fa-download"></i> Download</button>
+        </div>
+      </div>
+
+    </div><!-- /page-asset -->
+
+    </div><!-- /amc-page -->
+  </main>
+</div><!-- /vault-page-wrap -->
+
+<!-- Footer injected here by shell loader -->
+<div id="amcShellFooter"></div>
+
+
+<!-- ============================================================
+     NDA MODAL
+     ============================================================ -->
+<div class="overlay" id="ndaOverlay" onclick="overlayClick(event,'ndaOverlay')">
+  <div class="modal">
+    <div class="mhdr">
+      <div>
+        <div class="mhdr-icon ico-amb"><i class="fas fa-file-contract"></i></div>
+        <div class="mhdr-title">Non-Disclosure Agreement</div>
+        <div class="mhdr-sub" id="ndaModalSub">BMW Group · Concept ZM Global Reveal</div>
+      </div>
+      <button class="modal-x" onclick="closeModal('ndaOverlay')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mbody">
+      <div class="nda-client-row">
+        <div class="nda-c-logo" id="ndaClientLogo">BM</div>
+        <div>
+          <div class="nda-c-name" id="ndaClientName">BMW Group AG</div>
+          <div class="nda-c-sub">Global Press &amp; Communications · Munich, Germany</div>
+        </div>
+      </div>
+      <div class="nda-embargo-bar">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span id="ndaEmbargoText">Embargo: 14:00 CEST · 10 April 2025 — Do not publish before this date &amp; time</span>
+      </div>
+      <div class="nda-doc">
+        <h4>Non-Disclosure Agreement</h4>
+        <p>This Non-Disclosure Agreement ("Agreement") is entered into between the client ("Disclosing Party") and the undersigned media professional ("Receiving Party").</p>
+        <p><strong>1. Confidential Information.</strong> All assets, documents, specifications, images and materials provided via this AutoMediaVault constitute Confidential Information and must not be disclosed, published, broadcast or shared in any form prior to the Publishing Embargo date and time specified above.</p>
+        <p><strong>2. Permitted Use.</strong> Assets may be used solely for preparing editorial content for publication after the embargo lifts. No asset may be shared with third parties without express written consent of the Disclosing Party.</p>
+        <p><strong>3. Identity Watermarks.</strong> All downloaded assets carry an embedded identity watermark. You acknowledge that any embargo breach can be traced directly to your account and constitutes grounds for legal action.</p>
+        <p><strong>4. Immutable Audit Trail.</strong> Your access, download activity and this NDA signature are logged with timestamp, IP address and device fingerprint. This record is legally admissible in all relevant jurisdictions.</p>
+        <p><strong>5. Term.</strong> This Agreement is effective upon signature and remains in effect indefinitely with respect to the Confidential Information provided.</p>
+        <p><em>AutoMediaCenter acts solely as the technical facilitator. The NDA content and legal obligations are strictly between the Disclosing Party and the Receiving Party.</em></p>
+      </div>
+      <div class="nda-note">
+        <i class="fas fa-info-circle"></i>
+        <div>AutoMediaCenter facilitates this process only. A signed copy will be emailed to both you and the client upon completion. Your vault password will be delivered via your chosen method below.</div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--v-text-1);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+        <i class="fas fa-paper-plane" style="color:var(--v-blue);"></i> Password delivery method
+      </div>
+      <div class="delivery-row" id="deliveryRow">
+        <label class="delivery-opt sel" id="optEmail">
+          <input type="checkbox" id="chkEmail" checked onchange="toggleDelivery('optEmail',this)">
+          <i class="fas fa-envelope"></i>
+          <div class="delivery-opt-text">
+            <div class="delivery-opt-title">Email</div>
+            <div class="delivery-opt-sub">m.mustermann@…de</div>
+          </div>
+        </label>
+        <label class="delivery-opt" id="optSms">
+          <input type="checkbox" id="chkSms" onchange="toggleDelivery('optSms',this)">
+          <i class="fas fa-mobile-alt"></i>
+          <div class="delivery-opt-text">
+            <div class="delivery-opt-title">SMS</div>
+            <div class="delivery-opt-sub">+49 ··· ···· 42</div>
+          </div>
+        </label>
+      </div>
+      <label class="nda-check-row" for="ndaAgree">
+        <input type="checkbox" id="ndaAgree" onchange="checkNdaReady()">
+        <span class="nda-check-label">I have read and fully understand this Non-Disclosure Agreement. I agree to be legally bound by its terms and confirm I am authorised to sign on behalf of my outlet.</span>
+      </label>
+      <div class="sig-label"><i class="fas fa-signature" style="color:var(--v-blue);"></i> Digital signature — type your full legal name</div>
+      <input type="text" class="sig-input" id="ndaSig" placeholder="Your full name as it appears on your press credentials" oninput="checkNdaReady()">
+      <div class="sig-hint">By typing your name you provide a legally binding digital signature. Timestamp, IP and device fingerprint are automatically recorded.</div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeModal('ndaOverlay')">Cancel</button>
+      <button class="btn btn-amber" id="ndaSignBtn" disabled onclick="signNda()">
+        <i class="fas fa-signature"></i> Sign NDA &amp; Send Password
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     NDA SUCCESS MODAL
+     ============================================================ -->
+<div class="overlay" id="ndaSuccessOverlay" onclick="overlayClick(event,'ndaSuccessOverlay')">
+  <div class="modal narrow">
+    <div class="mhdr" style="border-bottom:none;padding-bottom:0;">
+      <div></div>
+      <button class="modal-x" onclick="closeModal('ndaSuccessOverlay')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mbody" style="padding-top:0;">
+      <div class="success-icon-wrap">
+        <i class="fas fa-check-circle success-check"></i>
+        <div class="success-title">NDA Signed Successfully</div>
+        <div class="success-sub">Your vault password has been dispatched via your chosen delivery method(s).</div>
+      </div>
+      <div class="sig-record">
+        <div class="sig-record-row">
+          <span class="sig-key">Signed by:</span>
+          <span class="sig-val name" id="sigName">—</span>
+        </div>
+        <div class="sig-record-row">
+          <span class="sig-key">Timestamp:</span>
+          <span class="sig-val" id="sigTime">—</span>
+        </div>
+        <div class="sig-record-row">
+          <span class="sig-key">Delivery:</span>
+          <span class="sig-val" id="sigDelivery">—</span>
+        </div>
+        <div class="sig-record-row">
+          <span class="sig-key">Audit log:</span>
+          <span class="sig-val" style="color:var(--v-green);">IP · device fingerprint · timestamp recorded</span>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-green btn-full" onclick="closeModal('ndaSuccessOverlay')">
+        <i class="fas fa-envelope"></i> Check Email / SMS for Your Vault Password
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     PASSWORD MODAL
+     ============================================================ -->
+<div class="overlay" id="pwdOverlay" onclick="overlayClick(event,'pwdOverlay')">
+  <div class="modal narrow">
+    <div class="mhdr">
+      <div>
+        <div class="mhdr-icon ico-blu"><i class="fas fa-key"></i></div>
+        <div class="mhdr-title">Enter Vault Password</div>
+        <div class="mhdr-sub" id="pwdModalSub">Mercedes-Benz · EQS SUV 2026 Facelift</div>
+      </div>
+      <button class="modal-x" onclick="closeModal('pwdOverlay')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mbody">
+      <div class="nda-embargo-bar">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span id="pwdEmbargoText">Embargo: 08:00 CET · 11 April 2025</span>
+      </div>
+      <div class="pwd-sec-row">
+        <div class="pwd-sec-item">
+          <i class="fas fa-fingerprint"></i>
+          <strong>MFA Verified</strong>
+          Session active
+        </div>
+        <div class="pwd-sec-item">
+          <i class="fas fa-file-contract"></i>
+          <strong>NDA Signed</strong>
+          3 April 2025
+        </div>
+        <div class="pwd-sec-item">
+          <i class="fas fa-lock"></i>
+          <strong>Vault Password</strong>
+          Final layer
+        </div>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--v-text-1);margin-bottom:7px;">Vault password</div>
+      <div class="pwd-wrap">
+        <input type="password" class="pwd-input" id="pwdInput"
+               placeholder="Enter password from email / SMS"
+               oninput="clearPwdErr()"
+               onkeydown="if(event.key==='Enter')checkPwd()">
+        <button class="pwd-eye" onclick="togglePwdVis()" id="pwdEye"><i class="fas fa-eye"></i></button>
+      </div>
+      <div class="pwd-error" id="pwdErr">
+        <i class="fas fa-exclamation-circle"></i> Incorrect password. Please check and try again.
+      </div>
+      <div class="pwd-hint">
+        Password was sent to your registered email and/or phone when you signed the NDA.<br>
+        Demo: type <strong>vault2025</strong> to unlock.
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeModal('pwdOverlay')">Cancel</button>
+      <button class="btn btn-blue" onclick="checkPwd()">
+        <i class="fas fa-unlock"></i> Enter Vault
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     VAULT UNLOCK ANIMATION
+     ============================================================ -->
+<div class="unlock-overlay" id="unlockOverlay">
+  <div class="unlock-card">
+    <div class="unlock-icon"><i class="fas fa-lock-open"></i></div>
+    <div class="unlock-title">Vault Unlocked</div>
+    <div class="unlock-sub">Access granted. All downloads are watermarked and logged.</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+
+<!-- ============================================================
+     SCRIPTS
+     Load order: FA already in head → Shell JS → Shell loader → Page JS
+     ============================================================ -->
+
+<!-- AMC Shell JS — defines window.AMCShell, must come before loader -->
+<script src="./components/shell/v6_5-shell.js"></script>
+
+<!-- Shell loader — fetches header.html + sidebar.html, injects, calls AMCShell.init() -->
+<script src="./components/shell/v6_5-shell-loader.js"></script>
+
+<script>
+// ── Initialise the shell ────────────────────────────────────
+// basePath must point to your shell components folder.
+// Adjust path if this file lives in a subdirectory.
+loadV65Shell({
+  basePath: './components/shell'
+});
+
+// ── Theme bridge ────────────────────────────────────────────
+// Shell stores theme as 'amcTheme' in localStorage with values 'dark'/'light'.
+// Shell dark class is body.dark-mode.
+// We just need to ensure initial load applies correctly — shell loader handles this,
+// but we guard against a double-apply:
+(function() {
+  const stored = localStorage.getItem('amcTheme');
+  if (stored === 'dark') document.body.classList.add('dark-mode');
+})();
+
+// ── DOM helpers ─────────────────────────────────────────────
+const $  = id => document.getElementById(id);
+const $$ = sel => document.querySelectorAll(sel);
+
+// ── Vault secondary sidebar toggle ─────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Watermark date
+  const wmDate = $('wmDate');
+  if (wmDate) {
+    wmDate.textContent = new Date().toLocaleDateString('en-GB', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    });
+  }
+});
+
+// ── Filter tabs ─────────────────────────────────────────────
+let activeFilter = 'all';
+function setFilter(btn) {
+  $$('#filterTabs .ftab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  activeFilter = btn.dataset.f;
+  applyFilters();
+}
+
+// ── Search ───────────────────────────────────────────────────
+function filterVaults(q) { applyFilters(q); }
+
+function applyFilters(q) {
+  const query = (q || $('vaultSearch').value || '').toLowerCase();
+  $$('#vaultGrid .vault-card').forEach(card => {
+    const state = card.dataset.state;
+    const text  = card.innerText.toLowerCase();
+    const matchFilter = activeFilter === 'all' || state === activeFilter;
+    const matchSearch = !query || text.includes(query);
+    card.style.display = (matchFilter && matchSearch) ? '' : 'none';
+  });
+}
+
+// ── Modal helpers ────────────────────────────────────────────
+function openModal(id) {
+  const el = $(id);
+  el.style.display = 'flex';
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('open')));
+}
+function closeModal(id) {
+  const el = $(id);
+  el.classList.remove('open');
+  setTimeout(() => { el.style.display = 'none'; }, 250);
+}
+function overlayClick(e, id) {
+  if (e.target === $(id)) closeModal(id);
+}
+
+// ── NDA modal ────────────────────────────────────────────────
+let currentVaultCard = null;
+
+function openNdaModal(card) {
+  currentVaultCard = card;
+  $('ndaAgree').checked = false;
+  $('ndaSig').value = '';
+  $('ndaSignBtn').disabled = true;
+  openModal('ndaOverlay');
+  setTimeout(() => $('ndaSig').focus(), 350);
+}
+
+function toggleDelivery(optId, chk) {
+  $(optId).classList.toggle('sel', chk.checked);
+  checkNdaReady();
+}
+
+function checkNdaReady() {
+  const sig     = $('ndaSig').value.trim().length > 2;
+  const agreed  = $('ndaAgree').checked;
+  const emailOk = $('chkEmail').checked;
+  const smsOk   = $('chkSms').checked;
+  $('ndaSignBtn').disabled = !(sig && agreed && (emailOk || smsOk));
+}
+
+function signNda() {
+  const name    = $('ndaSig').value.trim();
+  const methods = [];
+  if ($('chkEmail').checked) methods.push('Email');
+  if ($('chkSms').checked)   methods.push('SMS');
+
+  $('sigName').textContent     = name;
+  $('sigTime').textContent     = new Date().toLocaleString('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  }) + ' · IP & device fingerprint recorded';
+  $('sigDelivery').textContent = methods.join(' & ');
+
+  closeModal('ndaOverlay');
+  setTimeout(() => {
+    openModal('ndaSuccessOverlay');
+    if (currentVaultCard) updateCardToReady(currentVaultCard);
+  }, 200);
+}
+
+function updateCardToReady(card) {
+  card.dataset.state = 'ready';
+  const chip = card.querySelector('.cv-chip');
+  chip.className = 'cv-chip chip-ready';
+  chip.innerHTML = '<i class="fas fa-key" style="margin-right:4px;"></i>Password Required';
+  const lock = card.querySelector('.lock-ico');
+  if (lock) lock.className = 'fas fa-lock lock-ico lock-ready';
+  const statusLine = card.querySelector('.cb-status');
+  statusLine.className = 'cb-status s-ok';
+  statusLine.innerHTML = '<i class="fas fa-check-circle"></i> NDA signed · just now';
+  const sub = card.querySelector('.cb-status-sub');
+  sub.innerHTML = '<i class="fas fa-envelope"></i> Password dispatched — check email/SMS';
+  const btn = card.querySelector('button.btn-full');
+  btn.className = 'btn btn-blue btn-full';
+  btn.innerHTML = '<i class="fas fa-key"></i> Enter Password to Access';
+  btn.disabled = false;
+  btn.onclick = (e) => { e.stopPropagation(); openPwdModal(card); };
+  card.onclick = () => openPwdModal(card);
+}
+
+// ── Password modal ───────────────────────────────────────────
+let currentPwdCard = null;
+const DEMO_PWD = 'vault2025';
+
+function openPwdModal(card) {
+  currentPwdCard = card;
+  $('pwdInput').value = '';
+  $('pwdErr').style.display = 'none';
+  openModal('pwdOverlay');
+  setTimeout(() => $('pwdInput').focus(), 350);
+}
+
+function clearPwdErr() {
+  $('pwdErr').style.display = 'none';
+  $('pwdInput').classList.remove('shake');
+}
+
+function togglePwdVis() {
+  const inp = $('pwdInput');
+  const ico = $('pwdEye').querySelector('i');
+  if (inp.type === 'password') {
+    inp.type = 'text'; ico.className = 'fas fa-eye-slash';
+  } else {
+    inp.type = 'password'; ico.className = 'fas fa-eye';
+  }
+}
+
+function checkPwd() {
+  const val = $('pwdInput').value.trim();
+  if (!val) return;
+  if (val === DEMO_PWD) {
+    closeModal('pwdOverlay');
+    setTimeout(() => showUnlockAnimation(), 150);
+  } else {
+    $('pwdErr').style.display = 'block';
+    $('pwdInput').classList.remove('shake');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      $('pwdInput').classList.add('shake');
+    }));
+  }
+}
+
+// ── Unlock animation ─────────────────────────────────────────
+function showUnlockAnimation() {
+  const overlay = $('unlockOverlay');
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('open')));
+  setTimeout(() => {
+    overlay.classList.remove('open');
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      if (currentPwdCard) updateCardToOpen(currentPwdCard);
+    }, 250);
+  }, 1800);
+}
+
+function updateCardToOpen(card) {
+  card.dataset.state = 'open';
+  card.classList.add('unlocking');
+  const cv = card.querySelector('.cv');
+  cv.style.background = 'linear-gradient(135deg, #052b1e, #065f46)';
+  const chip = card.querySelector('.cv-chip');
+  chip.className = 'cv-chip chip-open';
+  chip.innerHTML = '<i class="fas fa-check-circle" style="margin-right:4px;"></i>Access Granted';
+  const lock = card.querySelector('.lock-ico');
+  if (lock) { lock.className = 'fas fa-lock-open lock-ico'; lock.style.color = 'rgba(255,255,255,0.85)'; }
+  const statusLine = card.querySelector('.cb-status');
+  statusLine.className = 'cb-status s-ok';
+  statusLine.innerHTML = '<i class="fas fa-check-circle"></i> NDA signed · Access granted';
+  const sub = card.querySelector('.cb-status-sub');
+  sub.innerHTML = '<i class="fas fa-eye"></i> Just unlocked';
+  const btn = card.querySelector('button.btn-full');
+  btn.className = 'btn btn-green btn-full';
+  btn.innerHTML = '<i class="fas fa-folder-open"></i> View Assets';
+  btn.disabled = false;
+  btn.onclick = (e) => { e.stopPropagation(); openAssetPage(); };
+  card.onclick = () => openAssetPage();
+  toast('Vault unlocked — access granted');
+}
+
+// ── Asset page navigation ─────────────────────────────────────
+function scrollToTop() {
+  // Desktop: body scrolls. Mobile: vmain container scrolls.
+  window.scrollTo(0, 0);
+  const m = $('vmainScroll');
+  if (m) m.scrollTop = 0;
+}
+
+function openAssetPage() {
+  $('pageVault').classList.add('hidden');
+  $('pageAsset').classList.add('visible');
+  scrollToTop();
+}
+
+function closeAssetPage() {
+  $('pageAsset').classList.remove('visible');
+  $('pageVault').classList.remove('hidden');
+  scrollToTop();
+}
+
+// ── Toast ─────────────────────────────────────────────────────
+function toast(msg, icon = 'fa-check-circle') {
+  const wrap = $('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<i class="fas ${icon}"></i> ${msg}`;
+  wrap.appendChild(t);
+  setTimeout(() => {
+    t.style.transition = 'opacity 0.3s';
+    t.style.opacity = '0';
+    setTimeout(() => t.remove(), 320);
+  }, 3200);
+}
+window.toast = toast;
+</script>
+
+</body>
+</html>
+
+

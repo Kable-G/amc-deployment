@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="module">
+      import { protectPage } from "./auth.js";
+      protectPage("client_user");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Manage AMC Releases</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- ✅ GLOBAL CSS - REPLACES ALL OLD STYLES -->
+    <link rel="stylesheet" href="css/amc-globalshell.css">
+    
+    <!-- Premium Avatar System Styles -->
+    <link rel="stylesheet" href="amc-avatar-styles.css">
+    <!-- Page-specific styles -->
+    <style>
+    /* —— MINIMAL PAGE-SPECIFIC STYLES - GLOBAL SHELL HANDLES LAYOUT —— */
+
+    .app-footer {
+        flex-shrink: 0;
+        margin-top: auto;
+        background: var(--header-bg);
+        color: var(--header-link);
+        text-align: center;
+        padding: 15px 25px;
+        font-size: 0.85em;
+        border-top: 1px solid var(--border-primary);
+    }
+    
+    .app-footer nav a {
+        color: var(--header-link);
+        margin: 0 8px;
+        text-decoration: none;
+    }
+    
+    .app-footer nav a:hover {
+        color: var(--header-text);
+    }
+    
+    /* ============================================
+       MODAL Z-INDEX FIXES
+       ============================================ */
+    .detail-modal-backdrop,
+    .confirm-modal-backdrop {
+        z-index: 10050 !important;
+        position: fixed !important;
+        inset: 0 !important;
+    }
+    
+    .detail-modal,
+    .confirm-modal {
+        z-index: 10051 !important;
+    }
+    
+    /* ============================================
+       FILTER CONTROLS
+       ============================================ */
+    .filter-controls {
+        margin-bottom: 25px;
+        padding: 15px;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        display: flex;
+        gap: 15px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    
+    .filter-controls .form-group {
+        margin-bottom: 0;
+        flex: 1 1 180px;
+    }
+    
+    .filter-controls label {
+        font-size: 0.85em;
+        margin-bottom: 0.3rem;
+        display: block;
+        color: var(--text-secondary);
+    }
+    
+    .filter-controls .form-control {
+        width: 100%;
+        padding: .5rem .75rem;
+        font-size: 0.9em;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: .25rem;
+    }
+    
+    .filter-controls .btn-stack {
+        display: flex;
+        gap: 10px;
+        align-self: flex-end;
+        margin-top: 1.2em;
+    }
+    
+    /* ============================================
+       BUTTONS
+       ============================================ */
+    .btn {
+        padding: 10px 18px;
+        font-size: 0.95em;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+    }
+    
+    .btn i { margin-right: 6px; }
+    
+    .btn-primary {
+        background-color: var(--accent-primary);
+        color: #fff;
+    }
+    
+    .btn-secondary {
+        background-color: var(--bg-tertiary);
+        color: var(--text-primary);
+    }
+    
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+    }
+    
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.85em;
+    }
+    
+    /* ============================================
+       MINIMAL PAGE-SPECIFIC OVERRIDES
+       Global shell handles table styling
+       ============================================ */
+    
+    /* Kebab menu specific styles */
+    .kebab-float{
+      position: fixed;
+      min-width: 176px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-primary, #e5e7eb);
+      box-shadow: 0 18px 48px var(--shadow-primary, rgba(0,0,0,.25));
+      border-radius: 12px;
+      padding: 6px;
+      pointer-events: auto;
+    }
+
+    .kebab-item{
+      display:block; width:100%; text-align:left;
+      background: transparent; border: none;
+      color: var(--text-primary);
+      padding: 9px 12px; border-radius: 8px; cursor: pointer;
+    }
+
+    .kebab-item[data-action="view"]   { background: rgba(16,185,129,.30); }
+    .kebab-item[data-action="edit"]   { background: rgba(59,130,246,.30); }
+    .kebab-item[data-action="delete"] { background: rgba(239,68,68,.30);  }
+
+    .kebab-item[data-action="view"]:hover   { background:#10b981; color:#fff; }
+    .kebab-item[data-action="edit"]:hover   { background:#3b82f6; color:#fff; }
+    .kebab-item[data-action="delete"]:hover { background:#ef4444; color:#fff; }
+
+    .kebab-item + .kebab-item { margin-top: 6px; }
+    
+    /* ============================================
+       CARDS
+       ============================================ */
+    .card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-primary);
+        border-radius: 8px;
+        margin-bottom: 25px;
+    }
+    
+    .card-header {
+        padding: 15px 20px;
+        background: var(--bg-tertiary);
+        border-bottom: 1px solid var(--border-primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-header h2 {
+        font-size: 1.1em;
+        margin: 0;
+    }
+    
+    .card-body {
+        padding: 20px;
+    }
+    
+    .card-body.no-padding {
+        padding: 0;
+    }
+    
+    .card-footer {
+        padding: 15px 20px;
+        background: var(--bg-tertiary);
+        border-top: 1px solid var(--border-primary);
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .card:last-of-type {
+        margin-bottom: 40px;
+    }
+    
+    /* ============================================
+       PAGINATION
+       ============================================ */
+    .pagination-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    /* ============================================
+       MODALS
+       ============================================ */
+    .detail-modal-backdrop,
+    .confirm-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .detail-modal-backdrop.open,
+    .confirm-modal-backdrop.open {
+        display: flex;
+        opacity: 1;
+    }
+    
+    .detail-modal,
+    .confirm-modal {
+        background: var(--bg-secondary);
+        border-radius: 8px;
+        border: 1px solid var(--border-primary);
+        transform: scale(0.95);
+        transition: transform 0.3s;
+    }
+    
+    .detail-modal-backdrop.open .detail-modal,
+    .confirm-modal-backdrop.open .confirm-modal {
+        transform: scale(1);
+    }
+    
+    .detail-modal {
+        max-width: 1200px;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .confirm-modal {
+        max-width: 450px;
+    }
+    
+    .detail-modal-header,
+    .confirm-modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-primary);
+        background: var(--bg-tertiary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .detail-modal-body {
+        padding: 20px;
+        overflow-y: auto;
+        flex: 1;
+    }
+    
+    .confirm-modal-body {
+        padding: 25px 20px;
+        text-align: center;
+    }
+    
+    .detail-modal-footer,
+    .confirm-modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid var(--border-primary);
+        background: var(--bg-tertiary);
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    
+    .detail-modal-close-btn,
+    .confirm-modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 1.7em;
+        cursor: pointer;
+        color: var(--text-secondary);
+    }
+    
+    /* ============================================
+       QUICK VIEW MODAL
+       ============================================ */
+    .amc-quick-view-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .amc-quick-view-top-line {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+    
+    .amc-quick-view-body {
+        display: flex;
+        gap: 30px;
+    }
+    
+    .amc-quick-view-col-media,
+    .amc-quick-view-col-details {
+        flex: 1;
+    }
+    
+    .amc-quick-view-col-media h4,
+    .amc-quick-view-col-details h4 {
+        margin-bottom: 15px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid var(--border-primary);
+    }
+    
+    .amc-quick-view-asset-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border-secondary);
+        font-size: 0.9em;
+    }
+    
+    .amc-quick-view-asset-item .asset-name {
+        flex-grow: 1;
+        font-weight: 500;
+    }
+    
+    .amc-quick-view-asset-item .asset-details {
+        font-size: 0.85em;
+        color: var(--text-secondary);
+    }
+    
+    .amc-quick-view-asset-item img.thumb {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    /* Global shell system handles all table styling */
+    
+    /* Compact controls bar (borrowed from Radar page) */
+    .controls-section{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:16px; padding:12px 0;
+    }
+    .controls-left{ display:flex; gap:12px; align-items:center; }
+    .controls-right .btn{
+      font-size:.95rem; padding:0 18px; font-weight:500;
+      height:38px; display:inline-flex; align-items:center; justify-content:center;
+      box-sizing:border-box; border-radius:8px; text-decoration:none; border:none; cursor:pointer;
+    }
+    .btn-primary{ background:var(--accent-primary); color:white; }
+    .btn-primary:hover{ background:var(--accent-hover,#0056b3); }
+    .btn i{ margin-right:0.5rem; }
+
+    /* Search */
+    .search-container{ position:relative; display:flex; align-items:center; }
+    .search-input{
+      padding:10px 16px 10px 40px;
+      border:1px solid var(--border-primary);
+      border-radius:8px; font-size:.95rem;
+      background:var(--bg-primary); color:var(--text-primary);
+      width:300px; transition:border-color .2s ease, box-shadow .2s ease;
+      height:38px; box-sizing:border-box; line-height:1.5;
+    }
+    .search-input:focus{
+      outline:none; border-color:var(--accent-primary);
+      box-shadow:0 0 0 3px rgba(13,110,253,.1);
+    }
+    .search-input::placeholder{
+      color:var(--text-secondary);
+    }
+    .search-icon{
+      position:absolute; left:12px; top:50%; transform:translateY(-50%);
+      color:var(--text-secondary); pointer-events:none; font-size:0.875rem; z-index:1;
+    }
+
+    /* Divider under the controls row */
+    .section-divider{ height:1px; background:#e5e7eb; margin:16px 0; }
+
+    /* Dark-mode harmonisation */
+    body.dark-mode .search-input{
+      background:var(--bg-secondary); border-color:var(--border-primary); color:var(--text-primary);
+    }
+    body.dark-mode .search-input:focus{
+      border-color:var(--accent-primary); box-shadow:0 0 0 3px rgba(63,145,255,.1);
+    }
+    body.dark-mode .section-divider{ background:var(--border-secondary) !important; opacity:.3; }
+    
+    /* ——— Manage Releases: dark-mode polish for card + table ——— */
+    .manage-releases .amc-card { border-radius: 10px; }
+
+    /* Kill the light gradient on the table header in dark mode */
+    body.dark-mode .manage-releases .amc-table thead th {
+      background: var(--bg-secondary) !important;   /* flat */
+      background-image: none !important;            /* no gradient */
+      border-bottom-color: rgba(255,255,255,.08) !important;
+    }
+
+    /* Remove bright side borders around the table in dark mode */
+    .manage-releases .amc-table { border-collapse: collapse; }
+    body.dark-mode .manage-releases .amc-card,
+    body.dark-mode .manage-releases .amc-card .amc-table {
+      border-left: 0 !important;
+      border-right: 0 !important;
+    }
+
+    /* Harmonise all table grid lines in dark mode */
+    body.dark-mode .manage-releases .amc-table th,
+    body.dark-mode .manage-releases .amc-table td {
+      border-color: rgba(255,255,255,.08) !important;
+    }
+
+    /* Keep the card's chrome consistent in dark mode */
+    body.dark-mode .manage-releases .amc-card {
+      background: var(--bg-secondary) !important;
+      border-color: var(--border-primary) !important;
+    }
+
+    /* If your header row still shows any tint, force inherit */
+    body.dark-mode .manage-releases .amc-table thead tr {
+      background: var(--bg-secondary) !important;
+    }
+
+    /* Extra safety for table-lined utility */
+    body.dark-mode .manage-releases .table-lined {
+      border-left: 0 !important;
+      border-right: 0 !important;
+    }
+    
+    /* VERTICAL LINES FIX: Ensure vertical borders run through zebra rows */
+    .manage-releases .amc-table td + td,
+    .manage-releases .amc-table th + th,
+    .manage-releases .releases-table td + td,
+    .manage-releases .releases-table th + th {
+      border-left: 1px solid var(--border-primary) !important;
+    }
+    
+    /* Ensure zebra rows don't override vertical borders */
+    .manage-releases .amc-table tbody tr:nth-child(even) td,
+    .manage-releases .releases-table tbody tr:nth-child(even) td {
+      border-left: 1px solid var(--border-primary) !important;
+    }
+    
+    /* Dark mode vertical borders */
+    body.dark-mode .manage-releases .amc-table td + td,
+    body.dark-mode .manage-releases .amc-table th + th,
+    body.dark-mode .manage-releases .releases-table td + td,
+    body.dark-mode .manage-releases .releases-table th + th {
+      border-left: 1px solid var(--border-primary) !important;
+    }
+    
+    body.dark-mode .manage-releases .amc-table tbody tr:nth-child(even) td,
+    body.dark-mode .manage-releases .releases-table tbody tr:nth-child(even) td {
+      border-left: 1px solid var(--border-primary) !important;
+    }
+    
+    /* Global shell system handles all layout - no overrides needed */
+</style>
+</head>
+<body>
+    <!-- AMC Header Component -->
+    <amc-header></amc-header>
+
+    <div class="amc-app">
+        <!-- Enterprise Sidebar -->
+        <aside id="sidebar" class="amc-sidebar">
+            <!-- Content will be dynamically generated by components/sidebar.js -->
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="amc-page manage-releases" role="main">
+            <div class="amc-page__container">
+                <header class="amc-page__header">
+                    <h1 class="amc-page__title"><i class="fas fa-list-alt"></i> Manage Media Release Uploads</h1>
+                    <p class="amc-page__sub">View, edit or delete your media release uploads to AutoMediaCenter</p>
+                </header>
+
+                <div class="amc-page__tools">
+                  <div class="controls-section">
+                    <div class="controls-left">
+                      <div class="search-container">
+                        <!-- keep the historical id to avoid breaking existing JS -->
+                        <input type="text" id="filterSearch" placeholder="Search releases." class="search-input" />
+                        <i class="fas fa-search search-icon"></i>
+                      </div>
+                    </div>
+                    <div class="controls-right">
+                      <!-- point this to your Center uploader -->
+                      <a href="AssetDBmenu1.6.html?formType=center" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Upload New Release
+                      </a>
+                    </div>
+                  </div>
+                  <div class="section-divider"></div>
+                  
+                  <!-- Hidden compatibility elements for existing JavaScript -->
+                  <div style="display: none;">
+                    <input type="text" id="filterBrand" value="">
+                    <select id="filterStatus"><option value="" selected></option></select>
+                    <button id="applyFilters"></button>
+                    <button id="clearFilters"></button>
+                  </div>
+                </div>
+
+                <div class="amc-page__body">
+                    <div class="amc-card" style="margin-top:12px;">
+                        <div class="card-header">
+                            <h2>Your Releases</h2>
+                            <div class="table-head-meta">Total Releases: <span id="totalReleases">0</span></div>
+                        </div>
+                        <table class="amc-table table-lined releases-table">
+                            <colgroup>
+                                <col style="width:96px;">   <!-- teaser -->
+                                <col>                        <!-- title (flex / gets the remainder) -->
+                                <col style="width:15%;">     <!-- company -->
+                                <col style="width:8%;">      <!-- status -->
+                                <col style="width:16%;">     <!-- uploaded by -->
+                                <col style="width:12%;">     <!-- release date -->
+                                <col style="width:12%;">     <!-- last updated -->
+                                <col style="width:80px;">    <!-- actions -->
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="cell--teaser">Teaser</th>
+                                    <th>Title</th>
+                                    <th>Company</th>
+                                    <th style="text-align: center;">Status</th>
+                                    <th>Uploaded By</th>
+                                    <th>Release Date &amp; Time</th>
+                                    <th>Last Updated</th>
+                                    <th class="cell--actions" style="text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mr-rows"></tbody>
+                        </table>
+                        <div class="card-footer">
+                            <span id="paginationSummary"></span>
+                            <div class="pagination-controls">
+                                <button class="btn btn-secondary btn-sm" id="prevPageButton" disabled><i class="fas fa-chevron-left"></i></button>
+                                <span id="pageInfo">Page 1 of 1</span>
+                                <button class="btn btn-secondary btn-sm" id="nextPageButton" disabled><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <nav>
+            <a href="#">About Us</a> |
+            <a href="#">Help Center</a> |
+            <a href="#">Terms of Service</a> |
+            <a href="#">Privacy Policy</a>
+        </nav>
+        <p>© <span id="currentYearText"></span> AutoMediaCenter. All rights reserved.</p>
+    </footer>
+    
+    <div class="detail-modal-backdrop" id="assetDetailModalBackdrop">
+        <div class="detail-modal">
+            <div class="detail-modal-header amc-quick-view-header">
+                <div class="amc-quick-view-top-line">
+                    <div class="amc-quick-view-meta">
+                        <span id="assetDetailModalClient"></span> | <span id="assetDetailModalDateTime"></span>
+                    </div>
+                    <button class="detail-modal-close-btn" aria-label="Close">×</button>
+                </div>
+                <h3 id="assetDetailModalTitle">Release Details</h3>
+            </div>
+            <div class="detail-modal-body amc-quick-view-body" style="display: flex; gap: 30px; padding: 20px;">
+                <div class="amc-quick-view-col-media">
+                    <h4>Media Preview</h4>
+                    <div id="assetDetailModalMediaPreview" style="width: 100%; aspect-ratio: 16 / 9; background-color: var(--bg-tertiary); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 1em; overflow: hidden; border: 1px solid var(--border-secondary);">
+                        <span>Loading preview...</span>
+                    </div>
+                </div>
+                <div class="amc-quick-view-col-details">
+                    <h4>Release Information</h4>
+                    <div id="amcQuickViewSummaryArea">
+                        <div style="margin-bottom: 15px;">
+                            <strong>Created/updated on:</strong> <span id="assetDetailModalUploadDate"></span><br>
+                            <strong>Publication/embargo date:</strong> <span id="assetDetailModalPubDate"></span>
+                        </div>
+                    </div>
+                    <h4>Uploaded Assets</h4>
+                    <div id="amcQuickViewAssetListArea" style="max-height: 300px; overflow-y: auto;">
+                        <p style="text-align:center;">Loading assets...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="confirm-modal-backdrop" id="deleteConfirmModalBackdrop">
+        <div class="confirm-modal">
+            <div class="confirm-modal-header"><h3 id="deleteConfirmModalTitle">Confirm Deletion</h3></div>
+            <div class="confirm-modal-body"><p id="deleteConfirmModalText">Are you sure?</p></div>
+            <div class="confirm-modal-footer">
+                <button class="btn btn-secondary" id="deleteConfirmCancel">Cancel</button>
+                <button class="btn btn-danger" id="deleteConfirmButton">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// DEBUG FUNCTION - TEMPORARY
+function debugLayout() {
+    const sidebar = document.querySelector('.amc-sidebar');
+    const page = document.querySelector('.amc-page');
+    const body = document.body;
+    
+    console.log('=== LAYOUT DEBUG ===');
+    console.log('Body classes:', body.className);
+    console.log('Sidebar width:', window.getComputedStyle(sidebar).width);
+    console.log('Page margin-left:', window.getComputedStyle(page).marginLeft);
+    console.log('Page width:', window.getComputedStyle(page).width);
+    console.log('CSS Variables:');
+    console.log('  --amc-sidebar-w:', getComputedStyle(document.documentElement).getPropertyValue('--amc-sidebar-w'));
+    console.log('  --amc-sidebar-w-collapsed:', getComputedStyle(document.documentElement).getPropertyValue('--amc-sidebar-w-collapsed'));
+    console.log('Expected behavior:');
+    console.log('  - Sidebar expanded: 272px, Page should have margin-left: 272px');
+    console.log('  - Sidebar collapsed: 72px, Page should have margin-left: 72px');
+    console.log('====================');
+}
+
+// Make debug function globally available
+window.debugLayout = debugLayout;
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Initial debug
+    setTimeout(debugLayout, 1000);
+    
+    // Debug on sidebar toggle - we'll add this after we find the toggle
+    // Authentication is handled server-side via adminRoutes.js middleware
+    // Client-side authentication removed to prevent conflicts with localStorage tokens
+    let token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    let userString = localStorage.getItem('user') || localStorage.getItem('currentUser');
+    let user = null;
+    
+    console.log('🔍 DEBUG: Token found:', token ? 'Present' : 'Missing');
+    console.log('🔍 DEBUG: User string found:', userString ? 'Present' : 'Missing');
+    
+    if (userString) {
+        try {
+            user = JSON.parse(userString);
+            console.log('🔍 DEBUG: Parsed user:', user);
+        } catch (e) {
+            console.error("Error parsing user from localStorage", e);
+            user = { email: 'User', role: 'client_admin' }; // Fallback for display
+        }
+    }
+    
+    // Fallback user object for display purposes
+    if (!user) {
+        user = { email: 'User', role: 'client_admin' };
+    }
+    
+    // Check if we have authentication - if not, redirect to login
+    if (!token) {
+        console.error('🚨 No authentication token found - redirecting to login');
+        alert('Please log in to access this page');
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    // --- UI Elements ---
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const userEmailDisplay = document.getElementById('user-email-display');
+    const darkModeToggleBtnHeader = document.getElementById('darkModeToggleHeader');
+    const releasesTableBody = document.getElementById('mr-rows');
+    const prevPageButton = document.getElementById('prevPageButton');
+    const nextPageButton = document.getElementById('nextPageButton');
+    const pageInfo = document.getElementById('pageInfo');
+    const totalReleases = document.getElementById('totalReleases');
+    const paginationSummary = document.getElementById('paginationSummary');
+    const applyFiltersButton = document.getElementById('applyFilters');
+    const clearFiltersButton = document.getElementById('clearFilters');
+    const filterSearchInput = document.getElementById('filterSearch');
+    const filterBrandInput = document.getElementById('filterBrand');
+    const filterStatusInput = document.getElementById('filterStatus');
+    const assetDetailModalBackdrop = document.getElementById('assetDetailModalBackdrop');
+    const assetDetailModalTitle = document.getElementById('assetDetailModalTitle');
+    const assetDetailModalClient = document.getElementById('assetDetailModalClient');
+    const assetDetailModalDateTime = document.getElementById('assetDetailModalDateTime');
+    const assetDetailModalUploadDate = document.getElementById('assetDetailModalUploadDate');
+    const assetDetailModalPubDate = document.getElementById('assetDetailModalPubDate');
+    const assetDetailModalMediaPreview = document.getElementById('assetDetailModalMediaPreview');
+    const amcQuickViewAssetListArea = document.getElementById('amcQuickViewAssetListArea');
+    const deleteConfirmModalBackdrop = document.getElementById('deleteConfirmModalBackdrop');
+    const deleteConfirmModalText = document.getElementById('deleteConfirmModalText');
+    const deleteConfirmButton = document.getElementById('deleteConfirmButton');
+    
+    // --- State ---
+    let currentPage = 1; let totalPages = 1; let totalItems = 0; const limitPerPage = 10;
+    let currentReleasesData = []; // Store current releases for client-side filtering
+    
+    // --- UI Functions ---
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            console.log('🔧 Sidebar toggle clicked, collapsed:', sidebar.classList.contains('collapsed'));
+        });
+    }
+    const applyTheme = (theme) => {
+        document.body.classList.toggle('dark-mode', theme === 'dark');
+        // NEW: also drive the attribute the CSS looks at
+        document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
+    };
+    if (darkModeToggleBtnHeader) { darkModeToggleBtnHeader.addEventListener('click', () => { const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark'; applyTheme(newTheme); localStorage.setItem('theme', newTheme); }); }
+    
+    // On load
+    applyTheme(localStorage.getItem('theme') || 'light');
+    document.getElementById('currentYearText').textContent = new Date().getFullYear();
+    
+    // Fix user email display - element might not exist
+    if (userEmailDisplay) {
+        userEmailDisplay.textContent = user.email;
+    }
+    
+    // Fix logout link - element might not exist
+    const logoutLink = document.querySelector('.logout-link');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+    }
+    
+    // --- Main Fetch Function ---
+    async function fetchMyAmcReleases(page = 1, search = '', brand = '', status = '') {
+        console.log('🔍 DEBUG: fetchMyAmcReleases called with:', { page, search, brand, status });
+        console.log('🔍 DEBUG: Token being used:', token ? 'Present' : 'Missing');
+        
+        releasesTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">Loading... <i class="fas fa-spinner fa-spin"></i></td></tr>`;
+        let queryParams = `?page=${page}&limit=${limitPerPage}&title=${encodeURIComponent(search)}&brand=${encodeURIComponent(brand)}&status=${encodeURIComponent(status)}`;
+        const apiUrl = `http://localhost:5000/api/v1/center/my-releases${queryParams}`;
+        
+        console.log('🔍 DEBUG: Making request to:', apiUrl);
+        console.log('🔍 DEBUG: Request headers:', { 'Authorization': `Bearer ${token ? token.substring(0, 20) + '...' : 'MISSING'}` });
+        
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            console.log('🔍 DEBUG: Response status:', response.status);
+            console.log('🔍 DEBUG: Response ok:', response.ok);
+            
+            const result = await response.json();
+            console.log('🔍 DEBUG: Response data:', result);
+            
+            if (!response.ok) {
+                console.error('🚨 API Error:', result);
+                throw new Error(result.error || `HTTP ${response.status}: Failed to fetch data`);
+            }
+            
+            console.log('✅ SUCCESS: Releases fetched:', result.data.releases.length);
+            
+            // Store the releases data for client-side filtering
+            currentReleasesData = result.data.releases;
+            window.currentReleasesData = currentReleasesData; // Make globally available
+            console.log('🔍 DEBUG: Stored releases data:', currentReleasesData.length, 'releases');
+            
+            renderMyAmcReleasesTable(result.data.releases);
+            currentPage = result.data.currentPage;
+            totalPages = result.data.totalPages;
+            totalItems = result.data.totalReleases;
+            if (totalReleases) {
+                totalReleases.textContent = totalItems;
+            }
+            updatePaginationControls();
+        } catch (error) {
+            console.error('🚨 FETCH ERROR:', error);
+            releasesTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--color-danger); padding:20px;">Error: ${error.message}<br><small>Check browser console for details</small></td></tr>`;
+        }
+    }
+
+    // --- Table Rendering ---
+    function renderMyAmcReleasesTable(releases) {
+        // Make function globally available for search
+        window.renderMyAmcReleasesTable = renderMyAmcReleasesTable;
+        window.currentReleasesData = currentReleasesData;
+        console.log('🔍 DEBUG: renderMyAmcReleasesTable called with:', releases);
+        const tableBody = document.getElementById('mr-rows');
+        console.log('🔍 DEBUG: Table body element:', tableBody);
+        
+        if (!tableBody) {
+            console.error('🚨 ERROR: Table body element not found!');
+            return;
+        }
+        
+        // Apply client-side filtering if search term exists
+        const searchTerm = filterSearchInput.value.trim().toLowerCase();
+        let filteredReleases = releases;
+        
+        if (searchTerm) {
+            console.log('🔍 DEBUG: Applying client-side filter for:', searchTerm);
+            filteredReleases = releases.filter(release => {
+                // All searchable fields from the table
+                const title = (release.title || '').toLowerCase();
+                const brand = (release.brand || '').toLowerCase();
+                const description = (release.description || '').toLowerCase();
+                const status = (release.status || '').toLowerCase();
+                const uploaderEmail = (release.user?.email || '').toLowerCase();
+                
+                // Modern 2025 search - check each field individually for partial matches
+                const titleMatch = title.includes(searchTerm);
+                const brandMatch = brand.includes(searchTerm);
+                const descriptionMatch = description.includes(searchTerm);
+                const statusMatch = status.includes(searchTerm);
+                const uploaderMatch = uploaderEmail.includes(searchTerm);
+                
+                const matches = titleMatch || brandMatch || descriptionMatch || statusMatch || uploaderMatch;
+                
+                if (matches) {
+                    console.log('🔍 DEBUG: Match found in release:', release.title);
+                    console.log('  - Title match:', titleMatch, '(', title, ')');
+                    console.log('  - Brand match:', brandMatch, '(', brand, ')');
+                    console.log('  - Description match:', descriptionMatch);
+                    console.log('  - Status match:', statusMatch, '(', status, ')');
+                    console.log('  - Uploader match:', uploaderMatch, '(', uploaderEmail, ')');
+                }
+                
+                return matches;
+            });
+            console.log('🔍 DEBUG: Filtered from', releases.length, 'to', filteredReleases.length, 'releases');
+        }
+        
+        tableBody.innerHTML = '';
+        if (!filteredReleases || filteredReleases.length === 0) {
+            console.log('🔍 DEBUG: No releases to display after filtering');
+            tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">No releases found matching your criteria.</td></tr>`;
+            return;
+        }
+        
+        console.log('🔍 DEBUG: Rendering', filteredReleases.length, 'releases');
+        filteredReleases.forEach((release, index) => {
+            console.log(`🔍 DEBUG: Processing release ${index + 1}:`, release);
+            const sanitizedTitle = (release.title || 'this release').replace(/"/g, '"');
+            const teaserHtml = release.cardTeaserImagePath ?
+                `<span class="thumb"><img src="http://localhost:5000${release.cardTeaserImagePath}" alt=""></span>` :
+                `<span class="thumb"><i class="far fa-image"></i></span>`;
+            const releaseDate = new Date(release.releaseDate);
+            const formattedDate = releaseDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric'});
+            const formattedTime = release.releaseTime || '--:--';
+            const lastUpdated = new Date(release.updatedAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '');
+
+            // Determine actual status based on embargo logic
+            let displayStatus = release.status;
+            let statusClass = release.status;
+            
+            if (release.status === 'published') {
+                try {
+                    // Check if release is embargoed (future date/time) using same logic as backend
+                    const now = new Date();
+                    
+                    // Create the exact release datetime in Europe/Berlin timezone
+                    let releaseDateTime;
+                    const releaseDateStr = new Date(release.releaseDate).toISOString().split('T')[0];
+                    
+                    if (release.releaseTime && release.releaseTime.trim() !== '') {
+                        // Use ISO 8601 format with Berlin timezone offset (+02:00)
+                        releaseDateTime = new Date(`${releaseDateStr}T${release.releaseTime}:00+02:00`);
+                    } else {
+                        // No time specified, use midnight Berlin time
+                        releaseDateTime = new Date(`${releaseDateStr}T00:00:00+02:00`);
+                    }
+
+                    // Compare with current UTC time - if release time is in future, show as Pending
+                    const embargoLifted = releaseDateTime <= now;
+                    
+                    console.log(`EMBARGO CHECK (Manage): "${release.title}"`);
+                    console.log(`  Release time: ${releaseDateStr} ${release.releaseTime || '00:00'} Berlin (${releaseDateTime.toISOString()})`);
+                    console.log(`  Current time: ${now.toISOString()}`);
+                    console.log(`  Embargo lifted: ${embargoLifted}`);
+                    
+                    if (!embargoLifted) {
+                        displayStatus = 'Pending';
+                        statusClass = 'pending';
+                    } else {
+                        displayStatus = 'Published'; // Capitalize for consistency
+                        statusClass = 'published';
+                    }
+                } catch (error) {
+                    console.error('Error parsing release date for embargo check:', error);
+                    // If date parsing fails, keep original status but capitalize
+                    displayStatus = 'Published';
+                    statusClass = 'published';
+                }
+            } else if (release.status === 'archived') {
+                displayStatus = 'Deleted';
+                statusClass = 'deleted';
+            }
+
+            // Get uploader email with fallback
+            const uploaderEmail = release.user?.email || 'Unknown';
+            const truncatedUploader = uploaderEmail.length > 25 ? uploaderEmail.substring(0, 22) + '...' : uploaderEmail;
+            
+            const row = `<tr data-id="${release.uuid}">
+                <td class="cell--teaser">${teaserHtml}</td>
+                <td>${release.title || 'N/A'}</td>
+                <td><strong>${release.brand || 'N/A'}</strong></td>
+                <td><span class="status-pill status--${statusClass}">${displayStatus}</span></td>
+                <td class="cell--uploader">${uploaderEmail}</td>
+                <td>${formattedDate}, ${formattedTime}</td>
+                <td>${lastUpdated}</td>
+                <td class="cell--actions">
+                    <div class="kebab-wrap">
+                        <button class="kebab-btn" aria-haspopup="true" aria-expanded="false" aria-controls="menu-${release.uuid}">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div id="menu-${release.uuid}" class="kebab-menu" role="menu" hidden>
+                            <button type="button" class="kebab-item" data-action="view" data-uuid="${release.uuid}" data-title="${sanitizedTitle}">View</button>
+                            <button type="button" class="kebab-item" data-action="edit" data-uuid="${release.uuid}" data-title="${sanitizedTitle}">Edit</button>
+                            <button type="button" class="kebab-item" data-action="delete" data-uuid="${release.uuid}" data-title="${sanitizedTitle}">Delete</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
+            tableBody.insertAdjacentHTML('beforeend', row);
+        });
+    }
+
+    // --- Actions ---
+    async function deleteRelease(uuid) {
+        try {
+            const response = await fetch(`http://localhost:5000/api/v1/center/releases/${uuid}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error);
+            alert(result.message);
+            fetchMyAmcReleases(currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value);
+        } catch (error) {
+            alert(`Error: ${error.message}`);
+        }
+    }
+
+    async function openAssetDetailModal(uuid) {
+        // Update loading states for new structure
+        assetDetailModalMediaPreview.innerHTML = '<span><i class="fas fa-spinner fa-spin"></i> Loading Preview...</span>';
+        amcQuickViewAssetListArea.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading assets...</p>';
+        assetDetailModalBackdrop.classList.add('open');
+        try {
+            const response = await fetch(`http://localhost:5000/api/v1/center/releases/foredit/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const result = await response.json();
+            if (!result.success) throw new Error(result.error);
+            
+            const release = result.data;
+            
+            // Update header information
+            assetDetailModalTitle.textContent = release.title;
+            assetDetailModalClient.textContent = release.brand || 'Unknown Client';
+            
+            // Format dates to match the header format (like "20 July 2025 09:10 (CEST)")
+            const formatDateTime = (dateString) => {
+                if (!dateString) return 'Not specified';
+                const date = new Date(dateString);
+                const options = {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZoneName: 'short'
+                };
+                return date.toLocaleDateString('en-GB', options);
+            };
+            
+            assetDetailModalDateTime.textContent = formatDateTime(release.updatedAt || release.createdAt);
+            assetDetailModalUploadDate.textContent = formatDateTime(release.updatedAt || release.createdAt);
+            
+            // Construct publication date from releaseDate and releaseTime
+            let publicationDateTime = null;
+            if (release.releaseDate) {
+                const releaseDateStr = new Date(release.releaseDate).toISOString().split('T')[0];
+                if (release.releaseTime && release.releaseTime.trim() !== '') {
+                    publicationDateTime = new Date(`${releaseDateStr}T${release.releaseTime}:00+02:00`);
+                } else {
+                    publicationDateTime = new Date(`${releaseDateStr}T00:00:00+02:00`);
+                }
+            }
+            assetDetailModalPubDate.textContent = publicationDateTime ? formatDateTime(publicationDateTime.toISOString()) : 'Not specified';
+            
+            // Set up media preview (prioritize card teaser image like quick view modal)
+            let previewSet = false;
+            
+            // First try card teaser image (same as quick view modal)
+            if (release.cardTeaserImagePath) {
+                assetDetailModalMediaPreview.innerHTML = `<img src="http://localhost:5000${release.cardTeaserImagePath}" alt="Preview" style="width: 100%; height: 100%; object-fit: contain;">`;
+                previewSet = true;
+            }
+            // Then try first video if available
+            else if (release.videos && release.videos.length > 0) {
+                const firstVideo = release.videos[0];
+                assetDetailModalMediaPreview.innerHTML = `<video controls style="width: 100%; height: 100%; object-fit: contain;"><source src="http://localhost:5000${firstVideo.path}" type="${firstVideo.mimetype}"></video>`;
+                previewSet = true;
+            }
+            // Finally try first image as fallback
+            else if (release.images && release.images.length > 0) {
+                const firstImage = release.images[0];
+                assetDetailModalMediaPreview.innerHTML = `<img src="http://localhost:5000${firstImage.path}" alt="Preview" style="width: 100%; height: 100%; object-fit: contain;">`;
+                previewSet = true;
+            }
+            
+            if (!previewSet) {
+                assetDetailModalMediaPreview.innerHTML = '<span>No media preview available</span>';
+            }
+            const generateAssetList = (assets) => {
+                if (!assets || assets.length === 0) return '';
+                let listHtml = '';
+                assets.forEach(asset => {
+                    // Get file type and extension for enhanced icons
+                    const getFileIconClass = (mimetype, filename) => {
+                        if (!mimetype && !filename) return { icon: 'fa-file-alt', color: '#7f8c8d' };
+                        
+                        // Image files
+                        if (mimetype && mimetype.startsWith('image/')) return { icon: 'fa-image', color: '#3498db' };
+                        
+                        // PDF files
+                        if (mimetype === 'application/pdf' || (filename && filename.toLowerCase().endsWith('.pdf')))
+                            return { icon: 'fa-file-pdf', color: '#e74c3c' };
+                        
+                        // Word documents
+                        if (mimetype && (mimetype.includes('msword') || mimetype.includes('wordprocessingml')) ||
+                            (filename && /\.(doc|docx)$/i.test(filename)))
+                            return { icon: 'fa-file-word', color: '#2980b9' };
+                        
+                        // Excel files
+                        if (mimetype && (mimetype.includes('sheet') || mimetype.includes('excel')) ||
+                            (filename && /\.(xls|xlsx)$/i.test(filename)))
+                            return { icon: 'fa-file-excel', color: '#27ae60' };
+                        
+                        // PowerPoint files
+                        if (mimetype && mimetype.includes('presentation') ||
+                            (filename && /\.(ppt|pptx)$/i.test(filename)))
+                            return { icon: 'fa-file-powerpoint', color: '#d35400' };
+                        
+                        // Video files
+                        if (mimetype && mimetype.startsWith('video/')) return { icon: 'fa-file-video', color: '#9b59b6' };
+                        
+                        // Audio files
+                        if (mimetype && mimetype.startsWith('audio/')) return { icon: 'fa-file-audio', color: '#f39c12' };
+                        
+                        // Archive files
+                        if (filename && /\.(zip|rar|7z|tar|gz)$/i.test(filename))
+                            return { icon: 'fa-file-archive', color: '#95a5a6' };
+                        
+                        // Text files
+                        if (mimetype && mimetype.startsWith('text/') || (filename && /\.(txt|md)$/i.test(filename)))
+                            return { icon: 'fa-file-alt', color: '#34495e' };
+                        
+                        // Default
+                        return { icon: 'fa-file-alt', color: '#7f8c8d' };
+                    };
+
+                    const fileIconData = getFileIconClass(asset.mimetype, asset.originalName);
+                    
+                    // Show actual preview for image and video assets, enhanced icon for others
+                    let iconOrImage;
+                    if (asset.mimetype && asset.mimetype.startsWith('image/')) {
+                        iconOrImage = `<img class="thumb" src="http://localhost:5000${asset.path}" alt="thumbnail">`;
+                    } else if (asset.mimetype && asset.mimetype.startsWith('video/')) {
+                        iconOrImage = `<video class="thumb" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; background-color: var(--bg-tertiary);" muted><source src="http://localhost:5000${asset.path}" type="${asset.mimetype}"></video>`;
+                    } else {
+                        iconOrImage = `<i class="fas ${fileIconData.icon} fa-fw" style="color: ${fileIconData.color}; font-size: 1.2em; flex-shrink: 0;"></i>`;
+                    }
+                    
+                    // Format file size to 1 decimal place
+                    const formatBytes = (bytes) => {
+                        if (!bytes || bytes === 0) return '0 Bytes';
+                        const k = 1024;
+                        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+                        const i = Math.floor(Math.log(bytes) / Math.log(k));
+                        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+                    };
+                    
+                    // Get file type name
+                    const getTypeName = (mimetype, filename) => {
+                        if (mimetype && mimetype.startsWith('image/')) return 'Image';
+                        if (mimetype === 'application/pdf') return 'PDF';
+                        if (mimetype && (mimetype.includes('msword') || mimetype.includes('wordprocessingml'))) return 'Word Document';
+                        if (mimetype && (mimetype.includes('sheet') || mimetype.includes('excel'))) return 'Excel Spreadsheet';
+                        if (mimetype && mimetype.includes('presentation')) return 'PowerPoint';
+                        if (mimetype && mimetype.startsWith('video/')) return 'Video';
+                        if (mimetype && mimetype.startsWith('audio/')) return 'Audio';
+                        if (filename && /\.(zip|rar|7z|tar|gz)$/i.test(filename)) return 'Archive';
+                        if (mimetype && mimetype.startsWith('text/')) return 'Text File';
+                        return 'Document';
+                    };
+                    
+                    const typeName = getTypeName(asset.mimetype, asset.originalName);
+                    
+                    listHtml += `
+                        <div class="amc-quick-view-asset-item">
+                            ${iconOrImage}
+                            <span class="asset-name" title="${asset.originalName}">${asset.originalName}</span>
+                            <span class="asset-details">${typeName}, ${formatBytes(asset.size)}</span>
+                        </div>`;
+                });
+                return listHtml;
+            };
+            
+            // Combine all assets into a single list like in quick view modal
+            let allAssets = [];
+            if (release.releaseDocs) allAssets = allAssets.concat(release.releaseDocs);
+            if (release.images) allAssets = allAssets.concat(release.images);
+            if (release.videos) allAssets = allAssets.concat(release.videos);
+            if (release.supplementaryDocs) allAssets = allAssets.concat(release.supplementaryDocs);
+            
+            const modalHtml = generateAssetList(allAssets);
+            amcQuickViewAssetListArea.innerHTML = modalHtml || '<p>No assets found for this release.</p>';
+        } catch (error) {
+            assetDetailModalTitle.textContent = 'Error';
+            amcQuickViewAssetListArea.innerHTML = `<p style="color:var(--color-danger);">Could not load release details: ${error.message}</p>`;
+            assetDetailModalMediaPreview.innerHTML = '<span>Error loading preview</span>';
+        }
+    }
+
+    function updatePaginationControls(noData = false) {
+        if (noData || totalItems === 0) {
+            if (pageInfo) pageInfo.textContent = 'Page 0 of 0';
+            if (paginationSummary) paginationSummary.textContent = 'Showing 0-0 of 0';
+            if (prevPageButton) prevPageButton.disabled = true;
+            if (nextPageButton) nextPageButton.disabled = true;
+            return;
+        }
+        if (pageInfo) pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        const startItem = (currentPage - 1) * limitPerPage + 1;
+        const endItem = Math.min(currentPage * limitPerPage, totalItems);
+        if (paginationSummary) paginationSummary.textContent = `Showing ${startItem}-${endItem} of ${totalItems}`;
+        if (prevPageButton) prevPageButton.disabled = currentPage <= 1;
+        if (nextPageButton) nextPageButton.disabled = currentPage >= totalPages;
+    }
+
+    // --- KEBAB MENU FUNCTIONALITY (PORTAL APPROACH) ---
+    const portal = document.getElementById('kebab-portal');
+
+    function closeAllKebabs(){
+        portal.innerHTML = ''; // remove any floating menu
+        document.querySelectorAll('.kebab-btn[aria-expanded="true"]')
+            .forEach(b => b.setAttribute('aria-expanded','false'));
+    }
+
+    // Open: build a floating copy in the portal and place it by the button
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.kebab-btn');
+        if (!btn) return;
+
+        const cell = btn.closest('.action-cell') || btn.parentElement;
+        const inlineMenu = cell?.querySelector('.kebab-menu');
+        if (!inlineMenu) return;
+
+        // get viewport coords for the button
+        const r = btn.getBoundingClientRect();
+        closeAllKebabs();
+
+        // clone the inline menu into the portal
+        const float = inlineMenu.cloneNode(true);
+        float.classList.remove('kebab-menu');
+        float.classList.add('kebab-float');
+        float.hidden = false;
+
+        // place it (default: right side)
+        let left = r.right + 8;
+        let top  = r.top + r.height + 6;
+
+        // if too close to the right edge, flip to the left
+        const w = 200; // approx, will reflow below
+        if (left + w > window.innerWidth - 8) left = r.left - w - 8;
+
+        float.style.left = left + 'px';
+        float.style.top  = top  + 'px';
+
+        // carry data-* on buttons
+        float.querySelectorAll('.kebab-item').forEach((b,i)=>{
+            const src = inlineMenu.querySelectorAll('.kebab-item')[i];
+            if (src) [...src.attributes].forEach(a => {
+                if (a.name.startsWith('data-')) b.setAttribute(a.name, a.value);
+            });
+        });
+
+        portal.appendChild(float);
+        btn.setAttribute('aria-expanded','true');
+        e.stopPropagation();
+    });
+
+    // Action handlers (View/Edit/Delete)
+    document.addEventListener('click', (e) => {
+        const item = e.target.closest('#kebab-portal .kebab-item');
+        if (!item) return;
+        const uuid  = item.dataset.uuid;
+        const title = item.dataset.title || 'this release';
+        const act   = item.dataset.action;
+
+        if (act === 'view') {
+            if (typeof openAssetDetailModal === 'function') openAssetDetailModal(uuid);
+            else location.href = `release_view.html?uuid=${encodeURIComponent(uuid)}`;
+        } else if (act === 'edit') {
+            location.href = `AssetDBmenu1.6.html?formType=center&editReleaseUUID=${uuid}`;
+        } else if (act === 'delete') {
+            deleteConfirmModalText.innerHTML = `Are you sure you want to permanently delete the release:<br><strong>"${title}"</strong>?<br><br>This action cannot be undone.`;
+            deleteConfirmModalBackdrop.classList.add('open');
+            deleteConfirmButton.onclick = () => {
+                deleteConfirmModalBackdrop.classList.remove('open');
+                deleteRelease(uuid);
+            };
+        }
+        closeAllKebabs();
+    });
+
+    // close on outside click / ESC / resize / scroll
+    document.addEventListener('click', (e)=>{
+        if (!e.target.closest('#kebab-portal') && !e.target.closest('.kebab-btn')) closeAllKebabs();
+    });
+    document.addEventListener('keydown', e=>{ if (e.key==='Escape') closeAllKebabs(); });
+    window.addEventListener('resize', closeAllKebabs);
+    window.addEventListener('scroll', closeAllKebabs, true);
+    
+    [...document.querySelectorAll('.detail-modal-close-btn')].forEach(btn => btn.addEventListener('click', () => assetDetailModalBackdrop.classList.remove('open')));
+    assetDetailModalBackdrop.addEventListener('click', e => { if (e.target === assetDetailModalBackdrop) assetDetailModalBackdrop.classList.remove('open'); });
+    document.getElementById('deleteConfirmCancel').addEventListener('click', () => deleteConfirmModalBackdrop.classList.remove('open'));
+
+    applyFiltersButton.addEventListener('click', () => { 
+        currentPage = 1; 
+        fetchMyAmcReleases(currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value); 
+    });
+    clearFiltersButton.addEventListener('click', () => {
+        filterSearchInput.value = ''; filterBrandInput.value = ''; filterStatusInput.value = '';
+        currentPage = 1; fetchMyAmcReleases(currentPage);
+    });
+    prevPageButton.addEventListener('click', () => { if (currentPage > 1) fetchMyAmcReleases(--currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value); });
+    nextPageButton.addEventListener('click', () => { if (currentPage < totalPages) fetchMyAmcReleases(++currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value); });
+    
+    // --- Initial Load ---
+    console.log('🔍 DEBUG: Starting initial load...');
+    
+    // Add a small delay to ensure DOM is fully ready
+    setTimeout(() => {
+        console.log('🔍 DEBUG: Calling fetchMyAmcReleases...');
+        fetchMyAmcReleases();
+    }, 200);
+
+    // Prevent row "wobble" when images fail to load
+    document.querySelectorAll('.manage-releases .teaser-wrap img').forEach(img=>{
+        img.addEventListener('error', ()=> img.closest('.teaser-wrap')?.classList.add('is-missing'));
+    });
+});
+</script>
+    <!-- ✅ ADD COMPONENT SCRIPTS -->
+    <script src="components/amc-header.js"></script>
+    <script src="components/sidebar.js"></script>
+    
+    <!-- Premium Avatar System -->
+    <script defer src="amc-avatar-system.js"></script>
+    
+    <!-- Kebab menu portal -->
+    <div id="kebab-portal" style="position:fixed; inset:0; pointer-events:none; z-index:1000;"></div>
+    
+<script>
+  // Real-time search functionality - client-side filtering
+  (function(){
+    const input = document.getElementById('filterSearch');
+    if(!input) return;
+
+    console.log('🔍 DEBUG: Setting up real-time search...');
+
+    // Real-time search function
+    const performSearch = () => {
+      console.log('🔍 DEBUG: performSearch called');
+      
+      // Use stored data for client-side filtering
+      if (window.currentReleasesData && window.currentReleasesData.length > 0) {
+        console.log('🔍 DEBUG: Using stored data for search, releases:', window.currentReleasesData.length);
+        window.renderMyAmcReleasesTable(window.currentReleasesData);
+      } else {
+        console.log('🔍 DEBUG: No stored data, triggering API call');
+        // Fallback to API call if no stored data
+        const btn = document.getElementById('applyFilters');
+        if (btn) btn.click();
+      }
+    };
+
+    // Real-time search on input
+    input.addEventListener('input', () => {
+      console.log('🔍 DEBUG: Search input changed:', input.value);
+      performSearch();
+    });
+    
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        console.log('🔍 DEBUG: Enter key pressed');
+        performSearch();
+      }
+    });
+
+    // ESC clears the field & shows all results
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        console.log('🔍 DEBUG: Escape key pressed - clearing search');
+        input.value = '';
+        performSearch(); // Show all results
+      }
+    });
+
+    // Make functions globally available
+    window.performSearch = performSearch;
+  })();
+</script>
+
+</body>
+</html>

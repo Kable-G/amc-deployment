@@ -1,0 +1,55 @@
+<!-- Icon Rail (Laptop/Desktop) -->
+<nav class="amc-icon-rail" id="iconRail" aria-label="AutoMediaCenter quick navigation">
+  <div class="amc-icon-rail-inner">
+    <button class="amc-rail-open" id="iconRailOpen" type="button" title="Open menu">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="amc-rail-items" id="iconRailItems"></div>
+  </div>
+</nav>
+
+<!-- Desktop-Style Drawer -->
+<nav class="mobile-drawer" id="mobileDrawer">
+    <button class="drawer-close" id="drawerCloseBtn" aria-label="Close menu">
+        <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="drawer-content" id="drawerContent">
+        <!-- Dynamic content will be rendered here by JavaScript -->
+    </div>
+</nav>
+
+<!-- Drawer Backdrop -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+<!-- Filter Panel -->
+<div class="filter-panel" id="filterPanel">
+    <div class="filter-panel-header">
+        <h3 class="filter-panel-title">Filters</h3>
+        <button class="filter-panel-close" id="filterPanelClose">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="filter-panel-content">
+        <div class="filter-section">
+            <div class="filter-section-title">Brand</div>
+            <div class="filter-chips">
+                <button class="filter-chip active" data-filter="brand" data-value="all">All Brands</button>
+                <button class="filter-chip" data-filter="brand" data-value="Mercedes-Benz">Mercedes-Benz</button>
+                <button class="filter-chip" data-filter="brand" data-value="BMW">BMW</button>
+                <button class="filter-chip" data-filter="brand" data-value="Audi">Audi</button>
+                <button class="filter-chip" data-filter="brand" data-value="Porsche">Porsche</button>
+            </div>
+        </div>
+        
+        <div class="filter-section">
+            <div class="filter-section-title">Asset Type</div>
+            <div class="filter-chips">
+                <button class="filter-chip active" data-filter="asset" data-value="all">All Assets</button>
+                <button class="filter-chip" data-filter="asset" data-value="images">Images</button>
+                <button class="filter-chip" data-filter="asset" data-value="videos">Videos</button>
+                <button class="filter-chip" data-filter="asset" data-value="docs">Documents</button>
+            </div>
+        </div>
+    </div>
+</div>

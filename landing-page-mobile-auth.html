@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMediaCenter - Where Automotive Stories Begin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body { 
+            font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff5f5 100%);
+            color: #3c4043;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(218, 220, 224, 0.2);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1a73e8;
+            text-decoration: none;
+            letter-spacing: -0.8px;
+            transition: all 0.2s ease;
+            text-shadow: 0 1px 2px rgba(26, 115, 232, 0.1);
+        }
+
+        .logo:hover {
+            opacity: 0.8;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-signin {
+            color: #1a73e8;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .btn-signin:hover {
+            background: rgba(26, 115, 232, 0.08);
+        }
+
+        .btn-create-account {
+            background: #1a73e8;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        .btn-create-account:hover {
+            background: #1557b0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 140px 32px 120px;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 120px;
+            align-items: flex-start;
+        }
+
+        .hero-content h1 {
+            font-size: 64px;
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 32px;
+            color: #202124;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-content p {
+            font-size: 22px;
+            color: #5f6368;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* Signup Section */
+        .signup-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .signup-section h2 {
+            font-size: 52px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            color: #202124;
+            letter-spacing: -1px;
+            white-space: nowrap;
+        }
+
+        .signup-section h3 {
+            font-size: 36px;
+            font-weight: 400;
+            margin-bottom: 56px;
+            color: #202124;
+        }
+
+        .signup-form {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .btn-google, .btn-apple {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 12px 24px;
+            border: 1px solid #dadce0;
+            border-radius: 24px;
+            background: white;
+            color: #3c4043;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-google:hover, .btn-apple:hover {
+            background: #f8f9fa;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: #5f6368;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #dadce0;
+        }
+
+        .divider span {
+            padding: 0 16px;
+            font-size: 14px;
+        }
+
+        .btn-create-account-form {
+            background: #1a73e8;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-create-account-form:hover {
+            background: #1557b0;
+        }
+
+        .terms-text {
+            font-size: 12px;
+            color: #5f6368;
+            margin-top: 16px;
+            line-height: 1.4;
+        }
+
+        .terms-text a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+
+        .terms-text a:hover {
+            text-decoration: underline;
+        }
+
+        .signin-section {
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        .signin-section p {
+            font-size: 16px;
+            color: #5f6368;
+            margin-bottom: 16px;
+        }
+
+        .btn-signin-form {
+            background: #1a73e8;
+            color: white;
+            padding: 12px 32px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.25);
+        }
+
+        .btn-signin-form:hover {
+            background: #1557b0;
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* Mobile sign-in emphasis (landing page) */
+        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+        .mobile-auth-card{display:none;border-radius:18px;padding:18px 18px 14px;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);box-shadow:0 16px 40px rgba(0,0,0,0.08);border:1px solid rgba(0,0,0,0.06)}
+        .mobile-auth-title{margin:0 0 6px;font-size:22px;line-height:1.15;font-weight:800;letter-spacing:-0.02em}
+        .mobile-auth-subtitle{margin:0 0 14px;font-size:14px;opacity:.82}
+        .mobile-login-form{display:flex;flex-direction:column;gap:10px}
+        .mobile-login-form input{height:44px;border-radius:999px;border:1px solid rgba(0,0,0,0.12);padding:0 14px;font-size:15px;outline:none}
+        .mobile-login-form input:focus{border-color:rgba(29,155,240,0.9);box-shadow:0 0 0 4px rgba(29,155,240,0.18)}
+        .mobile-login-form .primary-btn{height:44px;border-radius:999px;font-weight:700;background:#1a73e8;color:white;border:none;cursor:pointer}
+        .mobile-auth-links{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;font-size:13px;opacity:.9}
+        .link-btn{background:none;border:none;color:rgb(29,155,240);padding:4px 6px;border-radius:8px;cursor:pointer}
+        .link-btn:hover{background:rgba(29,155,240,0.08)}
+        .mobile-auth-links .dot{opacity:.45}
+        .mobile-sso{margin-top:12px}
+        .mobile-sso summary{cursor:pointer;font-size:13px;opacity:.85}
+        .mobile-sso-buttons{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+        .mobile-sso-buttons button{width:100%;border-radius:999px;height:42px}
+
+        /* Desktop-only wrapper */
+        .desktop-auth{display:block}
+
+        @media (max-width: 860px){
+          /* Make sign-in the first thing people see */
+          .hero-content{flex-direction:column;gap:16px}
+          .signup-section{width:100%;max-width:520px;margin:0 auto}
+          .mobile-auth-card{display:block}
+          .desktop-auth{display:none}
+          /* Reduce headline size slightly to keep auth card above the fold */
+          .hero-text h1{font-size:42px;line-height:1.05}
+        }
+
+        /* Tight landscape phones: keep auth card visible without pushing below fold */
+        @media (max-width: 860px) and (orientation: landscape){
+          .hero{padding-top:18px;padding-bottom:18px}
+          .hero-text h1{font-size:34px}
+          .mobile-auth-card{padding:14px 14px 12px}
+          .mobile-auth-title{font-size:18px}
+          .mobile-login-form input,.mobile-login-form .primary-btn{height:40px}
+        }
+
+        /* Features */
+        .features {
+            padding: 120px 32px;
+            background: linear-gradient(135deg, #fff5f5 0%, #f0f8ff 100%);
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 56px;
+            font-weight: 400;
+            margin-bottom: 24px;
+            color: #202124;
+            letter-spacing: -0.5px;
+        }
+
+        .features-description {
+            font-size: 22px;
+            color: #5f6368;
+            margin-bottom: 80px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            text-align: left;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(218, 220, 224, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card h4 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 16px 0;
+            color: #1a73e8;
+        }
+
+        .feature-card p {
+            color: #5f6368;
+            line-height: 1.7;
+            font-size: 17px;
+            margin-bottom: 0;
+            font-weight: 300;
+        }
+
+        /* Footer */
+        .footer {
+            background: #202124;
+            color: white;
+            padding: 64px 32px 32px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+        }
+
+        .footer-section h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            color: #9aa0a6;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-section ul li a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid #3c4043;
+            text-align: center;
+            color: #9aa0a6;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 48px;
+                text-align: center;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 16px 20px;
+            }
+
+            .hero {
+                padding: 100px 20px 60px;
+            }
+
+            .hero-content h1 {
+                font-size: 40px;
+            }
+
+            .signup-section h2 {
+                font-size: 48px;
+            }
+
+            .signup-section h3 {
+                font-size: 24px;
+            }
+
+            .features {
+                padding: 60px 20px;
+            }
+
+            .features h2 {
+                font-size: 36px;
+            }
+
+            .footer-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 32px;
+            }
+
+            .signup-section h2 {
+                font-size: 36px;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="#" class="logo">
+            AutoMediaCenter
+        </a>
+        <div class="header-buttons">
+            <a href="Frontend/login-dropbox-style.html" class="btn-signin">Sign in</a>
+            <a href="Frontend/register.html" class="btn-create-account">Create an account</a>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Where automotive stories begin.</h1>
+            <p>
+                AutoMediaCenter is your central source for global automotive media assets – from verified media releases to images, videos and much more. All accessible and instantly downloadable.
+            </p>
+        </div>
+        
+        <div class="signup-section">
+            
+      <!-- Mobile-first sign-in (shown on small screens) -->
+      <div class="mobile-auth-card" aria-label="Sign in">
+        <h2 class="mobile-auth-title">Stop searching. Start reporting.</h2>
+        <p class="mobile-auth-subtitle">Sign in to access releases and download assets.</p>
+
+        <form id="mobileLoginForm" class="mobile-login-form" autocomplete="on">
+          <label class="sr-only" for="mobileLoginEmail">Email</label>
+          <input id="mobileLoginEmail" type="email" placeholder="Email" autocomplete="email" required />
+
+          <label class="sr-only" for="mobileLoginPassword">Password</label>
+          <input id="mobileLoginPassword" type="password" placeholder="Password" autocomplete="current-password" required />
+
+          <button id="mobileLoginSubmit" type="submit" class="primary-btn">Sign in</button>
+
+          <div class="mobile-auth-links">
+            <button type="button" class="link-btn" id="mobileOpenSignup">Create an account</button>
+            <span class="dot">•</span>
+            <button type="button" class="link-btn" id="mobileOpenLoginModal">Use advanced sign-in</button>
+          </div>
+        </form>
+
+        <details class="mobile-sso">
+          <summary>More sign-in options</summary>
+          <div class="mobile-sso-buttons">
+            <button class="google-btn" type="button" onclick="alert('Google OAuth - implement with your provider')">
+              <span class="icon">G</span> Continue with Google
+            </button>
+            <button class="apple-btn" type="button" onclick="alert('Apple OAuth - implement with your provider')">
+              <span class="icon">🍎</span> Continue with Apple
+            </button>
+          </div>
+        </details>
+      </div>
+
+      <div class="desktop-auth">
+        <h2>Stop searching. Start reporting.</h2>
+        <h3>Join AutoMediaCenter today</h3>
+        
+        <div class="signup-form">
+            <button class="btn-google">
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Sign up with Google
+            </button>
+            
+            <button class="btn-apple">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                </svg>
+                Sign up with Apple
+            </button>
+            
+            <div class="divider">
+                <span>OR</span>
+            </div>
+            
+            <button class="btn-create-account-form">Create an account - it's free!</button>
+            
+            <p class="terms-text">
+                By signing up, you agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>, including <a href="#">Cookie Use</a>.
+            </p>
+            
+            <div class="signin-section">
+                <p>Already have an account?</p>
+                <button class="btn-signin-form">Sign in</button>
+            </div>
+      </div><!-- /desktop-auth -->
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <h2>Built for Media Professionals</h2>
+            <p class="features-description">Stop chasing assets across endless portals and inboxes. AutoMediaCenter consolidates the entire media-gathering process into one secure, streamlined platform, complete with specialized tools for demanding workflows.</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>AutoMediaCenter</h4>
+                    <p>Central hub for media releases, images, videos, documents and more. Download what you need, when you need it.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>AutoMediaRadar</h4>
+                    <p>See what's coming before it lands. Stay ahead with official embargo alerts.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>AutoMediaVault</h4>
+                    <p>Pre-release content under NDA. Watermarked, secured, always respected.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>AutoMediaLive</h4>
+                    <p>Follow launches and events in real time. Stream coverage as it happens.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Product</h3>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#api">API</a></li>
+                    <li><a href="#integrations">Integrations</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#careers">Careers</a></li>
+                    <li><a href="#press">Press</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="#help">Help Center</a></li>
+                    <li><a href="#docs">Documentation</a></li>
+                    <li><a href="#blog">Blog</a></li>
+                    <li><a href="#community">Community</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#privacy">Privacy</a></li>
+                    <li><a href="#terms">Terms</a></li>
+                    <li><a href="#security">Security</a></li>
+                    <li><a href="#compliance">Compliance</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 AutoMediaCenter. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simplified mobile detection that works better with Chrome DevTools
+        function shouldUseMobileApp() {
+            const windowWidth = window.innerWidth;
+            const ua = navigator.userAgent || '';
+            const uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+            const smallScreen = windowWidth <= 768;
+            const mediumScreen = windowWidth <= 860;
+            
+            // Chrome DevTools mobile simulation check
+            const isDevToolsMobile = ua.includes('Mobile') || ua.includes('iPhone') || ua.includes('Android');
+            
+            // More aggressive mobile detection for testing
+            const result = uaMobile || smallScreen || (isDevToolsMobile && mediumScreen);
+            
+            // Debug logging
+            console.log('🔍 Device Detection Debug:');
+            console.log('  - Window width:', windowWidth);
+            console.log('  - Small screen (≤768px):', smallScreen);
+            console.log('  - Medium screen (≤860px):', mediumScreen);
+            console.log('  - User Agent:', ua);
+            console.log('  - UA Mobile match:', uaMobile);
+            console.log('  - DevTools Mobile:', isDevToolsMobile);
+            console.log('  - Final result (shouldUseMobileApp):', result);
+            
+            return result;
+        }
+
+        // Simple mobile authentication handler
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileForm = document.getElementById('mobileLoginForm');
+            if (mobileForm) {
+                mobileForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('mobileLoginEmail')?.value?.trim() || '';
+                    const password = document.getElementById('mobileLoginPassword')?.value || '';
+                    
+                    if (!email || !password) {
+                        alert('Please enter both email and password');
+                        return;
+                    }
+
+                    const submitBtn = document.getElementById('mobileLoginSubmit');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Signing In...';
+
+                    try {
+                        const response = await fetch('/api/v1/auth/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ email, password })
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            
+                            // Store authentication token and user data
+                            localStorage.setItem('token', data.token);
+                            localStorage.setItem('user', JSON.stringify(data.user));
+                            sessionStorage.setItem('justLoggedIn', 'true');
+                            
+                            // Redirect to appropriate app version based on device
+                            const isMobile = shouldUseMobileApp();
+                            const target = isMobile
+                                ? 'Frontend/automediacenter-mobile-v6.5.html?welcome=true'
+                                : 'Frontend/automediacenter.html?welcome=true';
+                            
+                            console.log('🚀 Login Success Redirect:');
+                            console.log('  - Is Mobile:', isMobile);
+                            console.log('  - Target URL:', target);
+                            
+                            window.location.href = target;
+                        } else {
+                            const error = await response.json();
+                            alert('Login failed: ' + (error.error || error.message || 'Invalid credentials'));
+                        }
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        alert('Network error: ' + error.message);
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Sign in';
+                    }
+                });
+
+                // Handle other buttons
+                document.getElementById('mobileOpenSignup')?.addEventListener('click', () => {
+                    alert('Signup functionality - implement modal or redirect to signup page');
+                });
+                
+                document.getElementById('mobileOpenLoginModal')?.addEventListener('click', () => {
+                    alert('Advanced login - implement full modal system');
+                });
+            }
+
+            // Desktop button handlers
+            document.querySelector('.btn-google')?.addEventListener('click', () => {
+                alert('Google OAuth - implement with your provider');
+            });
+            
+            document.querySelector('.btn-apple')?.addEventListener('click', () => {
+                alert('Apple OAuth - implement with your provider');
+            });
+            
+            document.querySelector('.btn-create-account-form')?.addEventListener('click', () => {
+                alert('Create account - implement signup modal or redirect');
+            });
+            
+            document.querySelector('.btn-signin-form')?.addEventListener('click', () => {
+                alert('Sign in - implement login modal or redirect');
+            });
+
+            // Session redirect - check if user is already logged in
+            try {
+                const storedUser = JSON.parse(
+                    localStorage.getItem('user') || localStorage.getItem('currentUser')
+                );
+                if (storedUser && storedUser.role) {
+                    console.log('🔄 FOUND EXISTING SESSION - Auto-Skip Redirect Starting...');
+                    console.log('  - Stored User:', storedUser);
+                    
+                    // User already authenticated → Skip landing page
+                    const isMobile = shouldUseMobileApp();
+                    const target = isMobile
+                        ? "Frontend/automediacenter-mobile-v6.5.html"
+                        : "Frontend/automediacenter.html";
+                    
+                    console.log('🔄 Auto-Skip Redirect:');
+                    console.log('  - Is Mobile:', isMobile);
+                    console.log('  - Target URL:', target);
+                    console.log('  - About to redirect in 1 second...');
+                    
+                    // Add a small delay so we can see the debug output
+                    setTimeout(() => {
+                        window.location.href = target;
+                    }, 1000);
+                } else {
+                    console.log('🔄 No existing session found, staying on landing page');
+                }
+            } catch (e) {
+                console.warn("No valid user session detected:", e);
+            }
+        });
+    </script>
+</body>
+</html>

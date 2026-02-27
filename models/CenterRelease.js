@@ -1,9 +1,9 @@
 // File: models/CenterRelease.js
+// UPDATED: Added companyName, categories, primaryLanguage, markets fields for content filtering
 
 const mongoose = require('mongoose');
 
 // Reusable sub-schema for file information
-// <<< MODIFICATION: The '{ _id: false }' option is REMOVED. This is the root cause of the entire problem and allows Mongoose to generate unique IDs for each asset. >>>
 const fileSchemaInfo = new mongoose.Schema({
     originalName: { type: String, required: true },
     path: { type: String, required: true }, // Relative path like /uploads/center_assets/filename.jpg
@@ -11,7 +11,6 @@ const fileSchemaInfo = new mongoose.Schema({
     size: { type: Number, required: true },
     thumbPath: { type: String, required: false } // Thumbnail path for videos
 });
-// <<< END MODIFICATION >>>
 
 const centerReleaseSchema = new mongoose.Schema({
     uuid: {
@@ -38,6 +37,36 @@ const centerReleaseSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please specify the brand']
     },
+    
+    // ==========================================
+    // NEW FIELDS FOR CONTENT FILTERING
+    // ==========================================
+    companyName: {
+        type: String,
+        required: false, // Optional for backward compatibility
+        trim: true,
+        index: true // Index for faster filtering
+    },
+    categories: {
+        type: [String], // Array of category values: ['general', 'product-launch', etc.]
+        required: false,
+        default: []
+    },
+    primaryLanguage: {
+        type: String, // Language code: 'en', 'de', 'fr', etc.
+        required: false,
+        trim: true,
+        index: true
+    },
+    markets: {
+        type: [String], // Array of market values: ['Global', 'Germany', 'USA', etc.]
+        required: false,
+        default: []
+    },
+    // ==========================================
+    // END NEW FIELDS
+    // ==========================================
+    
     tags: {
         type: [String],
         required: false
@@ -68,9 +97,7 @@ const centerReleaseSchema = new mongoose.Schema({
         required: false 
     },
     
-    // <<< MODIFICATION: This field was missing, causing a conflict with routes/centerRoutes.js. It is now added. >>>
     cardTeaserImageMeta: fileSchemaInfo,
-    // <<< END MODIFICATION >>>
 
     releaseDocs: [fileSchemaInfo],
     images: [fileSchemaInfo],
@@ -103,5 +130,11 @@ const centerReleaseSchema = new mongoose.Schema({
 }, {
     timestamps: true 
 });
+
+// Add indexes for faster filtering queries
+centerReleaseSchema.index({ companyName: 1, brand: 1 });
+centerReleaseSchema.index({ categories: 1 });
+centerReleaseSchema.index({ primaryLanguage: 1 });
+centerReleaseSchema.index({ markets: 1 });
 
 module.exports = mongoose.model('CenterRelease', centerReleaseSchema);

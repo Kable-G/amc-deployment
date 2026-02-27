@@ -17,12 +17,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
     
     <!-- ✅ GLOBAL CSS - REPLACES ALL OLD STYLES -->
-    <link rel="stylesheet" href="css/amc-globalshell.css">
     
     <!-- Premium Avatar System Styles -->
     <link rel="stylesheet" href="amc-avatar-styles.css">
     <!-- Page-specific styles -->
+  <!-- v6.5 Shell -->
+  <link rel="stylesheet" href="/components/shell/v6_5-shell.css">
+
     <style>
+/* --- Shell integration overrides (Manage Releases) --- */
+html, body { height: 100%; }
+body { overflow: hidden; }
+#mainContent {
+  position: relative;
+  height: calc(100vh - var(--amc-header-h, 56px));
+  margin-top: var(--amc-header-h, 56px);
+  margin-left: var(--amc-rail-w, 72px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+/* Keep table teaser thumbnails from being blown up by global img rules */
+#releasesTableBody img, .teaser-thumb, .release-teaser, .release-teaser img {
+  width: 56px !important;
+  height: 40px !important;
+  object-fit: cover !important;
+  border-radius: 8px !important;
+  display: block;
+}
+/* Ensure shell sidebar stays fixed and never scrolls with main content */
+#amcShellSidebar { position: fixed; left: 0; top: 0; z-index: 999; }
+#amcShellHeader { position: fixed; left: 0; top: 0; right: 0; z-index: 1000; }
+#amcShellFooter { margin-top: 18px; }
+
     /* —— MINIMAL PAGE-SPECIFIC STYLES - GLOBAL SHELL HANDLES LAYOUT —— */
 
     .app-footer {
@@ -496,20 +522,888 @@
     }
     
     /* Global shell system handles all layout - no overrides needed */
+
+
+    /* Teaser thumbnails: prevent global img rules from blowing up */
+    .mr-table td.cell--teaser img{
+      width: 68px !important;
+      height: 44px !important;
+      object-fit: cover !important;
+      border-radius: 8px !important;
+      display: block;
+    }
+
+  
+/* teaser thumb fix */
+.mr-table td.cell--teaser .thumb{width:56px;height:42px;border-radius:10px;overflow:hidden;display:inline-block;background:rgba(255,255,255,.06)}
+.mr-table td.cell--teaser img{width:56px;height:42px;object-fit:cover;display:block}
+    /* ============================================================
+       COMPREHENSIVE TABLE STYLING FROM AMC-GLOBALSHELL.CSS
+       ============================================================ */
+    
+    /* ── Manage Releases table skin (opt-in) ─────────────────────────── */
+    .releases-table {
+      border-collapse: separate;            /* prevent border artifacts */
+      border-spacing: 0;
+      width: 100%;
+      table-layout: fixed;                  /* predictable column widths */
+      background: var(--bg-secondary);
+    }
+
+    .releases-table thead th {
+      font: 600 12.5px/1.2 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: var(--text-secondary);
+      background: var(--table-header-bg, rgba(0,0,0,.04));
+      border-bottom: 1px solid var(--border-primary);
+      padding: 10px 12px;
+      text-align: left;
+      user-select: none;
+    }
+
+    .releases-table tbody td {
+      font: 500 13px/1.45 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial; /* smaller data font */
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-primary);
+      padding: 12px;
+      vertical-align: middle;
+      position: relative;                   /* keeps internal elements from drawing outside */
+    }
+
+    /* ============================================================
+       LIGHT MODE TABLE STYLING - CRITICAL FIX
+       ============================================================ */
+
+    /* Light mode: White background for table */
+    body:not(.dark-mode) .releases-table {
+      background: #ffffff !important;
+      color: #212529 !important;
+    }
+
+    body:not(.dark-mode) .releases-table thead th {
+      background: #f8f9fa !important;
+      color: #495057 !important;
+      border-bottom: 1px solid #dee2e6 !important;
+    }
+
+    body:not(.dark-mode) .releases-table tbody td {
+      color: #212529 !important;
+      border-bottom: 1px solid #dee2e6 !important;
+    }
+
+    /* Light mode vertical lines */
+    body:not(.dark-mode) .releases-table td + td,
+    body:not(.dark-mode) .releases-table th + th {
+      border-left: 1px solid #dee2e6 !important;
+    }
+
+    body:not(.dark-mode) .releases-table th.col-teaser,
+    body:not(.dark-mode) .releases-table td.col-teaser {
+      border-right: 1px solid #dee2e6 !important;
+    }
+
+    /* Zebra rows (light & dark) */
+    .releases-table tbody tr:nth-child(even) { background: rgba(0,0,0,0.025); }
+    body.dark-mode .releases-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.04); }
+
+    /* Light mode zebra rows */
+    body:not(.dark-mode) .releases-table tbody tr:nth-child(even) {
+      background: rgba(0,0,0,0.025) !important;
+    }
+
+    /* ============================================================
+       IMPROVED COLUMN WIDTHS - GIVES TITLE MORE BREATHING ROOM
+       ============================================================ */
+
+    /* Teaser — fixed boxy thumb */
+    .releases-table td.col-teaser { width: 96px; }
+    .releases-table td.cell--teaser img {
+      display:block; width: 68px; height: 42px; object-fit: cover; border-radius: 6px;
+    }
+
+    /* Force rounded corners with higher specificity */
+    table.releases-table td.cell--teaser img,
+    table.releases-table td.cell--teaser .thumb img,
+    .amc-table td.cell--teaser img,
+    .amc-table td.cell--teaser .thumb img {
+      border-radius: 6px !important;
+      overflow: hidden !important;
+    }
+
+    /* Title and Company truncation */
+    .releases-table .truncate {
+      display: block;
+    }
+
+    /* Company column - slightly reduced from 16% to 15% */
+    .releases-table td.col-company { width: 15%; }
+    .releases-table td.col-company .truncate { font-weight: 600; }
+
+    /* Status column - narrower from 10% to 8% with centered pills */
+    .releases-table td.col-status {
+      width: 8%;
+      text-align: center;
+    }
+
+    /* Uploaded By — reduced from 260px to 16% */
+    .releases-table td.col-uploader { width: 16%; }
+    .releases-table td.col-uploader a,
+    .releases-table td.col-uploader .email {
+      display:block;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+      text-decoration:none; border:0 !important;           /* ← kills any underline/border tricks */
+      background:none !important;                           /* ← prevents background underline hacks */
+    }
+    .releases-table td.col-uploader * { border:0 !important; } /* belt & suspenders */
+
+    /* Style uploader emails in blue - using correct class name */
+    .releases-table td.cell--uploader,
+    .amc-table td.cell--uploader {
+      color: var(--accent-primary) !important;
+      font-weight: 500;
+    }
+
+    /* Light mode uploader styling - explicit rule */
+    body:not(.dark-mode) .releases-table td.cell--uploader,
+    body:not(.dark-mode) .amc-table td.cell--uploader {
+      color: var(--accent-primary) !important;
+    }
+
+    /* Dark mode uploader styling */
+    body.dark-mode .releases-table td.cell--uploader,
+    body.dark-mode .amc-table td.cell--uploader {
+      color: var(--accent-primary) !important;
+    }
+
+    /* Date columns - reduced from 170px to 12% each */
+    .releases-table td.col-release,
+    .releases-table td.col-updated { width: 12%; }
+
+    /* Actions (kebab) - increased from 56px to 80px to show "Actions" title */
+    .releases-table td.col-actions {
+      width: 80px;
+      text-align: center;
+    }
+
+    /* Title column gets the remainder (approximately 25% on typical desktop) */
+    .releases-table td.col-title {
+      /* No width specified = gets remaining space after other columns */
+      min-width: 200px; /* Ensure minimum readable width */
+    }
+
+    /* Centered pills, same look as Platform Admin */
+    .status-pill {
+      display:inline-flex; align-items:center; justify-content:center;
+      min-width: 92px; height: 28px; padding: 0 10px;
+      border-radius:999px; font: 700 12px/1 Inter, system-ui; letter-spacing:.25px;
+      border:1px solid transparent;
+    }
+    .status-pill.status--published { color:#10b981; background:rgba(16,185,129,.12); border-color:rgba(16,185,129,.35); }
+    .status-pill.status--pending   { color:#3b82f6; background:rgba(59,130,246,.12); border-color:rgba(59,130,246,.35); }
+    .status-pill.status--active    { color:#10b981; background:rgba(16,185,129,.12); border-color:rgba(16,185,129,.35); }
+    .status-pill.status--archived  { color:#6b7280; background:rgba(107,114,128,.12); border-color:rgba(107,114,128,.35); }
+    .status-pill.status--deleted   { color:#ef4444; background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.35); }
+    body.dark-mode .status-pill.status--published { background:rgba(16,185,129,.16); border-color:rgba(16,185,129,.45); }
+    body.dark-mode .status-pill.status--pending   { background:rgba(59,130,246,.16); border-color:rgba(59,130,246,.45); }
+    body.dark-mode .status-pill.status--active    { background:rgba(16,185,129,.16); border-color:rgba(16,185,129,.45); }
+    body.dark-mode .status-pill.status--archived  { background:rgba(107,114,128,.16); border-color:rgba(107,114,128,.45); }
+    body.dark-mode .status-pill.status--deleted   { background:rgba(239,68,68,.16); border-color:rgba(239,68,68,.45); }
+
+    /* ───────────── Vertical divider lines for AMC tables ───────────── */
+    .releases-table td + td,
+    .releases-table th + th {
+      border-left: 1px solid var(--border-primary);
+    }
+
+    /* Make sure the last column (Actions) doesn't double up */
+    .releases-table td:last-child,
+    .releases-table th:last-child {
+      border-right: none;
+    }
+
+    /* ───────────────────────────────
+       Manage Releases – teaser/title divider + centered kebab
+       ─────────────────────────────── */
+
+    /* 1) Stop drawing the generic left border on the Title column boundary */
+    .releases-table th.col-title,
+    .releases-table td.col-title {
+      border-left: none !important;
+    }
+
+    /* 2) Draw the divider on the right edge of the Teaser column instead,
+          and add a little padding so the line sits away from the thumbnail. */
+    .releases-table th.col-teaser,
+    .releases-table td.col-teaser {
+      border-right: 1px solid var(--border-primary) !important;
+      padding-right: 12px;              /* pushes the divider off the image */
+    }
+
+    /* 3) Center the kebab icon in the Actions column */
+    .releases-table th.col-actions,
+    .releases-table td.col-actions {
+      text-align: center;
+    }
+
+    .releases-table .kebab-btn {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      padding: 0;
+      margin: 0 auto;                   /* guarantees centering */
+    }
+
+    /* === Re-usable table skin (use on all data tables) ================ */
+    .amc-table{
+      width: 100%;
+      border-collapse: separate;   /* needed so vertical rules sit cleanly */
+      border-spacing: 0;
+      table-layout: fixed;         /* columns don't jump */
+    }
+
+    .amc-table th,
+    .amc-table td{
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      vertical-align: middle;
+      box-sizing: border-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* NUCLEAR OPTION: Remove ellipsis from teaser column - CORRECT CLASS NAMES */
+    table.releases-table td.cell--teaser,
+    table.releases-table th.cell--teaser,
+    .amc-table td.cell--teaser,
+    .amc-table th.cell--teaser {
+      text-overflow: clip !important;
+      overflow: visible !important;
+      white-space: normal !important;
+    }
+
+    /* Remove ellipsis from ALL content inside teaser cells - CORRECT CLASS NAMES */
+    table.releases-table td.cell--teaser *,
+    table.releases-table th.cell--teaser *,
+    .amc-table td.cell--teaser *,
+    .amc-table th.cell--teaser * {
+      text-overflow: clip !important;
+      overflow: visible !important;
+      white-space: normal !important;
+    }
+
+    /* Vertical column dividers (both themes) */
+    .table.table-lined th,
+    .table.table-lined td,
+    .amc-table th:not(:last-child),
+    .amc-table td:not(:last-child) {
+      border-right: 1px solid var(--border-primary);
+    }
+
+    .table.table-lined th:last-child,
+    .table.table-lined td:last-child,
+    .amc-table th:last-child,
+    .amc-table td:last-child {
+      border-right: none;
+    }
+
+    /* vertical rules */
+    .amc-table th + th,
+    .amc-table td + td{
+      border-left: 1px solid var(--border-primary);
+    }
+
+    /* zebra rows */
+    .amc-table tr:nth-child(even) td{
+      background: var(--amc-row-stripe);
+    }
+    html[data-theme="light"] .amc-table tr:nth-child(even) td{
+      background: var(--amc-row-stripe-light);
+    }
+
+    /* Teaser column: centered thumbnails with clean separator */
+    .amc-table .cell--teaser{
+      width: 88px;                      /* header and body align perfectly */
+      text-align: center;
+    }
+    .amc-table .cell--teaser .thumb{
+      width: 72px;
+      height: 48px;
+      border-radius: 8px;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .amc-table .cell--teaser img{
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+    }
+
+    /* Status pill (borrowed from Platform Admin) */
+    .status-pill{
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .2px;
+      border: 1px solid transparent;
+    }
+    .status--published{ color:#0fbf7f; background: rgba(15,191,127,.12); border-color: rgba(15,191,127,.25); }
+    .status--pending  { color:#22a6f2; background: rgba(34,166,242,.12); border-color: rgba(34,166,242,.25); }
+    .status--deleted  { color:#ff5a67; background: rgba(255,90,103,.12); border-color: rgba(255,90,103,.25); }
+
+    /* Actions (kebab) cell – centered icon, menu above other content */
+    .amc-table .cell--actions{
+      width: 56px;
+      text-align: center;
+    }
+    .kebab-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:32px;
+      height:32px;
+      border-radius:8px;
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+    }
+    .kebab-btn:hover{ background: rgba(255,255,255,.08); }
+
+    /* Dark mode kebab button */
+    body.dark-mode .kebab-btn {
+      background: transparent !important;
+      border: none !important;
+      color: var(--text-primary) !important;
+    }
+
+    body.dark-mode .kebab-btn:hover {
+      background: rgba(255,255,255,.08) !important;
+    }
+
+    /* Light mode kebab button */
+    body:not(.dark-mode) .kebab-btn {
+      background: transparent !important;
+      border: none !important;
+      color: var(--text-primary) !important;
+    }
+    .kebab-menu{ position:absolute; z-index: 20; }
+
+    /* Light mode tweaks (if you use a data-theme toggle) */
+    html[data-theme="light"] .amc-card{ background:#fff; border-color: rgba(0,0,0,.06); box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+    html[data-theme="light"] .amc-table th,
+    html[data-theme="light"] .amc-table td{ border-bottom-color: rgba(0,0,0,.06); }
+    html[data-theme="light"] .amc-table th + th,
+    html[data-theme="light"] .amc-table td + td{ border-left-color: rgba(0,0,0,.06); }
+    html[data-theme="light"] .kebab-btn:hover{ background: rgba(0,0,0,.06); }
+
+    /* Light mode table borders for body class system */
+    body:not(.dark-mode) .amc-table th,
+    body:not(.dark-mode) .amc-table td {
+      border-bottom-color: rgba(0,0,0,.06) !important;
+    }
+    body:not(.dark-mode) .amc-table th + th,
+    body:not(.dark-mode) .amc-table td + td {
+      border-left-color: rgba(0,0,0,.06) !important;
+    }
+    body:not(.dark-mode) .kebab-btn:hover {
+      background: rgba(0,0,0,.06) !important;
+    }
+
+    /* ============================================================
+       POLISHED TABLE METADATA TYPOGRAPHY
+       Consistent with enterprise design system
+       ============================================================ */
+
+    /* Table header metadata (Total Releases: X) */
+    .table-head-meta {
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.01em;
+    }
+
+    /* Pagination summary (Showing X-Y of Z) */
+    #paginationSummary {
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.01em;
+    }
+
+    /* Page info (Page X of Y) */
+    #pageInfo {
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: 0.01em;
+      margin: 0 12px;
+    }
+
+    /* Enhanced pagination controls styling */
+    .pagination-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', -apple-system, sans-serif;
+    }
+
+    /* Card footer styling for better visual hierarchy */
+    .card-footer {
+      padding: 12px 20px;
+      background: var(--bg-tertiary);
+      border-top: 1px solid var(--border-primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Inter', -apple-system, sans-serif;
+    }
+
+    /* Dark mode support for metadata */
+    body.dark-mode .table-head-meta,
+    body.dark-mode #paginationSummary {
+      color: var(--text-secondary);
+    }
+
+    body.dark-mode #pageInfo {
+      color: var(--text-primary);
+    }
+
+    /* ============================================================
+       CSS VARIABLES FOR TABLE STYLING COMPATIBILITY
+       ============================================================ */
+    :root {
+        /* card + table styling helpers */
+        --amc-card-radius: 10px;
+        --amc-card-shadow: 0 4px 18px rgba(0,0,0,.10);
+        --amc-row-stripe: rgba(255,255,255,.04);       /* dark mode */
+        --amc-row-stripe-light: rgba(0,0,0,.03);       /* light mode */
+    }
+
+
+
+/* === FIX (2026-02-06): Dark-mode vertical grid lines must stay visible across zebra rows === */
+/* Root cause: borders were defined too low-contrast and (in places) only on table-row, so on lighter zebra rows they visually disappear.
+   Fix: force cell-level borders with slightly higher-contrast RGBA in dark mode, and keep them continuous with border-collapse. */
+body.dark-mode .releases-table,
+body.dark-mode .amc-table{
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+}
+
+body.dark-mode .releases-table th,
+body.dark-mode .releases-table td,
+body.dark-mode .amc-table th,
+body.dark-mode .amc-table td{
+  /* Use cell borders so the divider line is continuous even when the row background changes */
+  border-right: 1px solid rgba(255,255,255,0.10) !important;
+  border-left: 1px solid rgba(255,255,255,0.10) !important;
+  background-clip: padding-box; /* prevents background paint over border in some browsers */
+}
+
+/* Slightly lift contrast on the lighter zebra rows so lines don't vanish */
+body.dark-mode .releases-table tbody tr:nth-child(even) td,
+body.dark-mode .amc-table tbody tr:nth-child(even) td{
+  border-right-color: rgba(255,255,255,0.12) !important;
+  border-left-color: rgba(255,255,255,0.12) !important;
+}
+
+/* Avoid double borders on edges */
+body.dark-mode .releases-table th:first-child,
+body.dark-mode .releases-table td:first-child,
+body.dark-mode .amc-table th:first-child,
+body.dark-mode .amc-table td:first-child{
+  border-left: none !important;
+}
+body.dark-mode .releases-table th:last-child,
+body.dark-mode .releases-table td:last-child,
+body.dark-mode .amc-table th:last-child,
+body.dark-mode .amc-table td:last-child{
+  border-right: none !important;
+}
+
+
+
+/* ===== Footer styles (synced from automediacenter-mobile-v6.5.html) ===== */
+.amc-footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-primary);
+            margin-top: 60px;
+            padding: 48px 0 0 0;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 40px 24px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+        
+        .footer-column {
+            min-width: 0;
+        }
+        
+        .footer-heading {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+            letter-spacing: 0.3px;
+        }
+        
+        .footer-tagline {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin: 8px 0 16px 0;
+            opacity: 0.7;
+        }
+        
+        .footer-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        .footer-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s ease;
+            display: inline-block;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent-primary);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid var(--border-primary);
+            background: var(--bg-primary);
+        }
+        
+        .footer-bottom-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-copyright {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .footer-social a {
+            color: var(--text-secondary);
+            font-size: 18px;
+            transition: color 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .footer-social a:hover {
+            color: var(--accent-primary);
+        }
+        
+        /* Footer Responsive */
+        @media (max-width: 1024px) {
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 32px;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .amc-footer {
+                margin-top: 40px;
+                padding: 32px 0 0 0;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                padding: 0 20px 32px 20px;
+            }
+            
+            .footer-bottom-content {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+                padding: 16px 20px;
+            }
+            
+            .footer-copyright {
+                order: 2;
+            }
+            
+            .footer-social {
+                order: 1;
+            }
+        }
+        
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: var(--border-card);
+            margin-bottom: 16px;
+        }
+        
+        .empty-state p {
+            font-size: 16px;
+        }
+        
+        /* ===== ACCESSIBILITY: SCREEN READER ONLY ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        /* ========================================
+           TABLET SUPPORT - ADDED BREAKPOINTS ONLY
+           ======================================== */
+        
+        
+/* ===== End synced footer styles ===== */
+
+/* Extra breathing room between main content and footer (do not alter footer component styling) */
+.manage-releases .amc-card:last-of-type{
+  margin-bottom: 28px;
+}
+@media (max-width: 1024px){
+  .manage-releases .amc-card:last-of-type{ margin-bottom: 22px; }
+}
+@media (max-width: 640px){
+  .manage-releases .amc-card:last-of-type{ margin-bottom: 18px; }
+}
+
+
+/* ===========================
+   Footer (MATCH automediacenter-mobile-v6.5.html)
+   =========================== */
+#amcShellFooter{
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  /* space between end of content and footer */
+  margin-top: 64px;
+}
+#amcShellFooter .amc-footer{
+  border-radius: 0 !important;
+}
+.amc-footer{
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-primary);
+  margin-top: 0; /* wrapper controls spacing */
+  padding: 40px 24px 24px;
+}
+.footer-content{
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 40px;
+}
+.footer-column{ display:flex; flex-direction:column; gap:16px; }
+.footer-heading{ color: var(--text-primary); font-size:14px; font-weight:600; margin:0; text-transform:uppercase; letter-spacing:.5px; }
+.footer-logo{ color: var(--text-primary); font-size:18px; font-weight:700; margin:0; }
+.footer-tagline{ color: var(--text-secondary); font-size:14px; margin:0; font-style:italic; }
+.footer-links{ display:flex; flex-direction:column; gap:10px; }
+.footer-link{ color: var(--text-secondary); text-decoration:none; font-size:14px; transition:color .2s; }
+.footer-link:hover{ color: var(--text-primary); }
+.footer-bottom{
+  border-top: 1px solid var(--border-primary);
+  padding-top: 20px;
+}
+.footer-bottom-content{
+  max-width: 1200px;
+  margin: 0 auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+.footer-copyright{ color: var(--text-secondary); font-size:13px; margin:0; }
+.footer-social{ display:flex; gap:12px; }
+.footer-social-link{
+  color: var(--text-secondary);
+  font-size:16px;
+  text-decoration:none;
+  width:32px; height:32px;
+  border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .2s;
+}
+.footer-social-link:hover{
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+@media (max-width: 768px){
+  .footer-content{ grid-template-columns: 1fr 1fr; gap:32px; }
+  .footer-bottom-content{ flex-direction:column; text-align:center; }
+}
+@media (max-width: 480px){
+  .footer-content{ grid-template-columns: 1fr; gap:28px; }
+}
+
+
+/* ===== Footer styling (from automediacenter-mobile-v6.5.html) ===== */
+.amc-footer-spacer{height:56px}
+.amc-footer{
+  margin-top:0;
+  padding:0;
+  background: transparent;
+  border-top: 1px solid rgba(148,163,184,.35);
+  border-bottom: 1px solid rgba(148,163,184,.25);
+  border-left: none;
+  border-right: none;
+  border-radius: 0 !important;
+}
+.amc-footer .footer-content{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 28px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr;
+  gap: 28px;
+}
+.amc-footer .footer-brand h3{
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text, #e5e7eb);
+}
+.amc-footer .footer-brand p{
+  margin: 0;
+  font-size: 13px;
+  color: rgba(148,163,184,.95);
+  font-style: italic;
+}
+.amc-footer .footer-section h4{
+  margin: 0 0 10px;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(226,232,240,.95);
+}
+.amc-footer .footer-section a{
+  display: block;
+  margin: 8px 0;
+  font-size: 13px;
+  color: rgba(148,163,184,.95);
+  text-decoration: none;
+}
+.amc-footer .footer-section a:hover{ color:#fff; text-decoration: underline; }
+.amc-footer .footer-bottom{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 24px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(148,163,184,.20);
+}
+.amc-footer .footer-bottom p{
+  margin: 0;
+  font-size: 12px;
+  color: rgba(148,163,184,.90);
+}
+.amc-footer .footer-social{
+  display: flex;
+  gap: 12px;
+}
+.amc-footer .footer-social a{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(148,163,184,.10);
+  border: 1px solid rgba(148,163,184,.18);
+  color: rgba(226,232,240,.95);
+}
+.amc-footer .footer-social a:hover{
+  background: rgba(148,163,184,.18);
+  border-color: rgba(148,163,184,.28);
+  color:#fff;
+}
+@media (max-width: 960px){
+  .amc-footer .footer-content{grid-template-columns:1fr; gap:18px; padding:24px 18px 18px;}
+  .amc-footer .footer-bottom{flex-direction:column; align-items:flex-start; gap:12px; padding:14px 18px 18px;}
+}
+
+/* ===== Scroll containment (Option A) ===== */
+:root{ --amc-shell-header-h: 64px; }
+html, body{ height:100%; }
+body{ overflow:hidden; }
+.amc-shell-app{ height:100vh; }
+.amc-shell-app main.mobile-main.manage-releases{
+  overflow-y:auto;
+  height:100vh;
+  padding-top: calc(var(--amc-shell-header-h) + 18px);
+  padding-bottom: 18px;
+}
 </style>
 </head>
 <body>
     <!-- AMC Header Component -->
-    <amc-header></amc-header>
+    <div id="amcShellHeader"></div>
 
     <div class="amc-app">
         <!-- Enterprise Sidebar -->
-        <aside id="sidebar" class="amc-sidebar">
-            <!-- Content will be dynamically generated by components/sidebar.js -->
-        </aside>
+        <div id="amcShellSidebar"></div>
         
         <!-- Main Content -->
-        <main class="amc-page manage-releases" role="main">
+        <main class=" mobile-main manage-releases" role="main">
             <div class="amc-page__container">
                 <header class="amc-page__header">
                     <h1 class="amc-page__title"><i class="fas fa-list-alt"></i> Manage Media Release Uploads</h1>
@@ -585,21 +1479,80 @@
                     </div>
                 </div>
             </div>
-        </main>
+
+<!-- AMC MOBILE FOOTER (matched to automediacenter-mobile-v6.5.html) -->
+<div class="amc-footer-spacer" aria-hidden="true"></div>
+<footer class="amc-footer">
+        <div class="footer-content">
+            <!-- Column 1: Company -->
+            <div class="footer-column">
+                <h4 class="footer-heading">AutoMediaCenter</h4>
+                <p class="footer-tagline">Where Automotive Stories Begin</p>
+            </div>
+            
+            <!-- Column 2: Product -->
+            <div class="footer-column">
+                <h4 class="footer-heading">Product</h4>
+                <ul class="footer-links">
+                    <li><a href="/features">Features</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/api-docs">API Documentation</a></li>
+                    <li><a href="https://status.automediacenter.com" target="_blank">System Status</a></li>
+                    <li><a href="/changelog">Changelog</a></li>
+                </ul>
+            </div>
+            
+            <!-- Column 3: Company -->
+            <div class="footer-column">
+                <h4 class="footer-heading">Company</h4>
+                <ul class="footer-links">
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/help">Help Center</a></li>
+                    <li><a href="/security">Security</a></li>
+                    <li><a href="/careers">Careers</a></li>
+                </ul>
+            </div>
+            
+            <!-- Column 4: Legal & Resources -->
+            <div class="footer-column">
+                <h4 class="footer-heading">Legal & Resources</h4>
+                <ul class="footer-links">
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/cookies">Cookie Policy</a></li>
+                    <li><a href="/dpa">Data Processing Agreement</a></li>
+                    <li><a href="/accessibility">Accessibility</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p class="footer-copyright">
+                    © 2026 AutoMediaCenter. All rights reserved.
+                </p>
+                <div class="footer-social">
+                    <a href="https://twitter.com/automediacenter" target="_blank" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://linkedin.com/company/automediacenter" target="_blank" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="https://github.com/automediacenter" target="_blank" aria-label="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+<div id="amcShellFooter" style="display:none"></div>
+</main>
     </div>
 
     <!-- Footer -->
-    <footer class="app-footer">
-        <nav>
-            <a href="#">About Us</a> |
-            <a href="#">Help Center</a> |
-            <a href="#">Terms of Service</a> |
-            <a href="#">Privacy Policy</a>
-        </nav>
-        <p>© <span id="currentYearText"></span> AutoMediaCenter. All rights reserved.</p>
-    </footer>
-    
-    <div class="detail-modal-backdrop" id="assetDetailModalBackdrop">
+<div class="detail-modal-backdrop" id="assetDetailModalBackdrop">
         <div class="detail-modal">
             <div class="detail-modal-header amc-quick-view-header">
                 <div class="amc-quick-view-top-line">
@@ -646,32 +1599,8 @@
 
 <script>
 // DEBUG FUNCTION - TEMPORARY
-function debugLayout() {
-    const sidebar = document.querySelector('.amc-sidebar');
-    const page = document.querySelector('.amc-page');
-    const body = document.body;
-    
-    console.log('=== LAYOUT DEBUG ===');
-    console.log('Body classes:', body.className);
-    console.log('Sidebar width:', window.getComputedStyle(sidebar).width);
-    console.log('Page margin-left:', window.getComputedStyle(page).marginLeft);
-    console.log('Page width:', window.getComputedStyle(page).width);
-    console.log('CSS Variables:');
-    console.log('  --amc-sidebar-w:', getComputedStyle(document.documentElement).getPropertyValue('--amc-sidebar-w'));
-    console.log('  --amc-sidebar-w-collapsed:', getComputedStyle(document.documentElement).getPropertyValue('--amc-sidebar-w-collapsed'));
-    console.log('Expected behavior:');
-    console.log('  - Sidebar expanded: 272px, Page should have margin-left: 272px');
-    console.log('  - Sidebar collapsed: 72px, Page should have margin-left: 72px');
-    console.log('====================');
-}
-
-// Make debug function globally available
-window.debugLayout = debugLayout;
-
 document.addEventListener('DOMContentLoaded', () => {
     // Initial debug
-    setTimeout(debugLayout, 1000);
-    
     // Debug on sidebar toggle - we'll add this after we find the toggle
     // Authentication is handled server-side via adminRoutes.js middleware
     // Client-side authentication removed to prevent conflicts with localStorage tokens
@@ -706,8 +1635,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // --- UI Elements ---
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('amcShellSidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle') || document.getElementById('sidebarToggleBtn');
     const userEmailDisplay = document.getElementById('user-email-display');
     const darkModeToggleBtnHeader = document.getElementById('darkModeToggleHeader');
     const releasesTableBody = document.getElementById('mr-rows');
@@ -736,12 +1665,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State ---
     let currentPage = 1; let totalPages = 1; let totalItems = 0; const limitPerPage = 10;
     let currentReleasesData = []; // Store current releases for client-side filtering
-    
     // --- UI Functions ---
-    if (sidebarToggle) {
+    // Sidebar toggling is handled by the v6.5 shell. Keep a safe fallback if elements exist.
+    if (sidebarToggle && sidebar) {
         sidebarToggle.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
-            console.log('🔧 Sidebar toggle clicked, collapsed:', sidebar.classList.contains('collapsed'));
         });
     }
     const applyTheme = (theme) => {
@@ -753,7 +1681,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // On load
     applyTheme(localStorage.getItem('theme') || 'light');
-    document.getElementById('currentYearText').textContent = new Date().getFullYear();
+    const __yr=document.getElementById('currentYearText'); if(__yr) __yr.textContent = new Date().getFullYear();
     
     // Fix user email display - element might not exist
     if (userEmailDisplay) {
@@ -1294,13 +2222,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
     <!-- ✅ ADD COMPONENT SCRIPTS -->
-    <script src="components/amc-header.js"></script>
-    <script src="components/sidebar.js"></script>
     
     <!-- Premium Avatar System -->
-    <script defer src="amc-avatar-system.js"></script>
-    
-    <!-- Kebab menu portal -->
+<!-- Kebab menu portal -->
     <div id="kebab-portal" style="position:fixed; inset:0; pointer-events:none; z-index:1000;"></div>
     
 <script>
@@ -1353,6 +2277,56 @@ document.addEventListener('DOMContentLoaded', () => {
     window.performSearch = performSearch;
   })();
 </script>
+  <!-- v6.5 Shell Scripts -->
+  <script src="/components/shell/v6_5-shell.js"></script>
+  <script src="/components/shell/v6_5-shell-loader.js" defer></script>
+  <script defer>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof loadV65Shell === 'function') {
+        loadV65Shell({ basePath: '/components/shell' });
+      }
+    });
+  </script>
 
+
+<script>
+  async function initShellAndAvatar(){
+    try{
+      if(typeof window.loadV65Shell === "function"){
+        await window.loadV65Shell({ basePath: "/components/shell" });
+      }
+      // Load avatar system AFTER header is injected
+      const s = document.createElement("script");
+      s.src = "/js/amc-avatar-system.js";
+      s.onerror = () => { s.onerror = null; s.src = "/amc-avatar-system.js"; };
+      s.defer = true;
+      document.body.appendChild(s);
+    }catch(e){
+      console.error("Shell init failed:", e);
+    }
+  }
+  document.addEventListener("DOMContentLoaded", initShellAndAvatar);
+</script>
+
+
+<script>
+(function(){
+  function syncShellHeaderHeight(){
+    try{
+      const headerMount = document.getElementById('amcShellHeader');
+      // header HTML usually injects a .amc-topbar / header element inside the mount
+      const headerEl = headerMount ? (headerMount.querySelector('header') || headerMount.firstElementChild) : null;
+      const h = headerEl ? headerEl.getBoundingClientRect().height : 64;
+      document.documentElement.style.setProperty('--amc-shell-header-h', Math.max(56, Math.round(h)) + 'px');
+    }catch(e){}
+  }
+  window.addEventListener('resize', syncShellHeaderHeight);
+  window.addEventListener('load', function(){ setTimeout(syncShellHeaderHeight, 250); setTimeout(syncShellHeaderHeight, 800); });
+})();
+</script>
 </body>
 </html>
+
+
+
+
