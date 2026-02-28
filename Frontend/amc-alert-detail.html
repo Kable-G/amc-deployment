@@ -101,7 +101,15 @@
            ============================================================ */
         /* mobile-main — matches .mobile-main.amc-release-detail-main */
         .mobile-main {
-            padding-top: 70px;
+            padding: 16px 12px;
+            min-height: calc(100vh - 56px);
+        }
+
+        /* On mobile (<1100px), header is fixed so we need top clearance */
+        @media (max-width: 1099px) {
+            .mobile-main {
+                padding-top: 72px;
+            }
         }
 
         @media (min-width: 1100px) {
@@ -1181,7 +1189,7 @@ async function _alertRenderAllPages() {
 
     // Measure the main column for accurate scaling — wrapper may not be laid out yet
     const mainCol = document.querySelector('.alert-main-col');
-    const wrapperWidth = (mainCol ? mainCol.clientWidth : wrapper.clientWidth) || 800;
+    const wrapperWidth = (mainCol ? mainCol.clientWidth : wrapper.clientWidth) || window.innerWidth || 800;
     const pagesToRender = _alertShowFull ? _alertTotalPages : Math.min(3, _alertTotalPages);
 
     for (let pageNum = 1; pageNum <= pagesToRender; pageNum++) {
@@ -1749,7 +1757,7 @@ function renderAlert(alert) {
         });
         if (firstPdf) {
             const pdfUrl = firstPdf.url || firstPdf.path;
-            setTimeout(() => loadPDF(pdfUrl), 250); // slight delay ensures column is laid out
+            setTimeout(() => loadPDF(pdfUrl), 500); // increased delay for mobile layout settle
         }
     }
 
