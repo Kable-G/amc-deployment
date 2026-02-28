@@ -240,6 +240,18 @@ app.get('/admin', (req, res) => {
 
 console.log('✅ Portal routes configured');
 
+// --- EXPLICIT ROUTE FOR AssetDBmenu1.6.html (MUST BE BEFORE adminPageRoutes) ---
+app.get('/AssetDBmenu1.6.html', (req, res) => {
+  const filePath = path.join(__dirname, 'Frontend', 'AssetDBmenu1.6.html');
+  console.log('Serving AssetDBmenu1.6.html from:', filePath);
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error sending AssetDBmenu1.6.html:', err);
+      res.status(404).send('File not found at: ' + filePath);
+    }
+  });
+});
+
 // --- MOUNT ADMIN PAGE ROUTES (for protected page serving) ---
 console.log('🔧 Mounting admin page routes...');
 app.use('/', adminPageRoutes); // PAGE PROTECTION - Admin page serving with authentication
@@ -307,18 +319,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 // (optional) ensure direct file route works:
 app.get('/amc-analytics-saved.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'Frontend', 'amc-analytics-saved.html'));
-});
-
-// Explicit route for AssetDBmenu1.6.html (bypass dot issue)
-app.get('/AssetDBmenu1.6.html', (req, res) => {
-  const filePath = path.join(__dirname, 'Frontend', 'AssetDBmenu1.6.html');
-  console.log('Serving AssetDBmenu1.6.html from:', filePath);
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      console.error('Error sending AssetDBmenu1.6.html:', err);
-      res.status(404).send('File not found');
-    }
-  });
 });
 
 console.log('✅ Static file serving configured');
