@@ -1595,9 +1595,8 @@
             const shouldUseMobile = classification === 'mobile' ||
                                    (classification === 'tablet' && isPortrait);
 
-            const targetApp = shouldUseMobile
-                ? 'automediaradar-mobile.html'
-                : 'newradarfe.html';
+            // Don't redirect - stay on newradarfe.html for all devices
+            const targetApp = 'newradarfe.html';
 
             const deviceInfo = {
                 classification,
@@ -1772,9 +1771,10 @@
                     const redirectDelay = Math.min(LoadingConfig.targetDuration, 1800);
                     setTimeout(() => {
                         completeLoading();
-                        setTimeout(() => {
-                            window.location.href = deviceInfo.targetApp;
-                        }, 300);
+                        // Don't redirect - stay on newradarfe.html for all devices
+                        // setTimeout(() => {
+                        //     window.location.href = deviceInfo.targetApp;
+                        // }, 300);
                     }, redirectDelay);
                 } else {
                     // We're on the correct version, just track analytics
