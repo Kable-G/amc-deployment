@@ -3158,13 +3158,13 @@ body.dark-mode .bento-box[data-section="supplementary"] .file-upload-area {
   border-color: rgba(147, 51, 234, 0.9) !important;
 }
 
-/* -- RADAR BENTO: coloured dashed stitch on file upload areas -- */
-/* Required upload zones ? blue */
+/* ── RADAR BENTO: coloured dashed stitch on file upload areas ── */
+/* Required upload zones → blue */
 .bento-box[data-section="radar-teaser-image"] .file-upload-area,
 .bento-box[data-section="radar-alert-doc"] .file-upload-area {
   border-color: rgba(59, 130, 246, 0.9) !important;
 }
-/* Optional upload zones ? purple */
+/* Optional upload zones → purple */
 .bento-box[data-section="radar-images"] .file-upload-area,
 .bento-box[data-section="radar-videos"] .file-upload-area,
 .bento-box[data-section="radar-supplementary"] .file-upload-area {
@@ -3548,6 +3548,50 @@ body.dark-mode .mobile-main::-webkit-scrollbar-corner{
   color: var(--accent-primary) !important;
 }
 
+
+        /* ── Vault bento form styles ── */
+        .v-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width: 600px) { .v-form-row { grid-template-columns: 1fr; } }
+        .v-form-group { margin-bottom: 14px; }
+        .v-form-group:last-child { margin-bottom: 0; }
+        .v-req { color: var(--accent-primary, #3b82f6); margin-left: 2px; }
+        .v-opt { color: var(--text-secondary); font-weight: 400; font-size: 11px; margin-left: 4px; }
+        .v-hint { font-size: 11px; color: var(--text-secondary); margin-top: 5px; line-height: 1.5; }
+        .v-info-block { display: flex; gap: 10px; padding: 10px 12px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.2); border-radius: 8px; font-size: 12px; color: var(--text-primary); line-height: 1.6; margin-bottom: 14px; }
+        .v-info-block i { color: var(--accent-primary, #3b82f6); flex-shrink: 0; margin-top: 1px; }
+        .v-check-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-primary, #e2e8f0); }
+        .v-check-item:last-child { border-bottom: none; }
+        .v-check-item input[type="checkbox"], .v-check-item input[type="radio"] { width: 16px; height: 16px; margin-top: 2px; flex-shrink: 0; accent-color: var(--accent-primary, #3b82f6); cursor: pointer; }
+        .v-check-text .v-clabel { font-size: 13px; font-weight: 500; color: var(--text-primary); display: block; }
+        .v-check-text .v-cdesc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.5; display: block; }
+        .v-expiry-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+        @media (max-width: 500px) { .v-expiry-grid { grid-template-columns: repeat(2, 1fr); } }
+        .v-expiry-opt { border: 2px solid var(--border-primary, #e2e8f0); border-radius: 8px; padding: 10px 8px; text-align: center; cursor: pointer; transition: all .15s; position: relative; display: block; }
+        .v-expiry-opt:hover { border-color: var(--accent-primary, #3b82f6); }
+        .v-expiry-opt.selected { border-color: var(--accent-primary, #3b82f6); background: rgba(59,130,246,.08); }
+        .v-expiry-opt input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+        .v-exp-val { font-size: 16px; font-weight: 700; color: var(--text-primary); display: block; }
+        .v-expiry-opt.selected .v-exp-val { color: var(--accent-primary, #3b82f6); }
+        .v-exp-lbl { font-size: 11px; color: var(--text-secondary); display: block; }
+        .v-sec-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+        @media (max-width: 500px) { .v-sec-grid { grid-template-columns: 1fr; } }
+        .v-sec-card { border: 2px solid var(--border-primary, #e2e8f0); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: all .15s; position: relative; display: block; }
+        .v-sec-card:hover { border-color: var(--accent-primary, #3b82f6); }
+        .v-sec-card.selected { border-color: var(--accent-primary, #3b82f6); background: rgba(59,130,246,.08); }
+        .v-sec-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+        .v-sec-icon { font-size: 18px; margin-bottom: 4px; display: block; }
+        .v-sec-name { font-size: 12px; font-weight: 700; color: var(--text-primary); display: block; }
+        .v-sec-card.selected .v-sec-name { color: var(--accent-primary, #3b82f6); }
+        .v-sec-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; display: block; }
+        .v-encrypt-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: #10b981; background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.25); border-radius: 99px; padding: 3px 10px; margin-bottom: 4px; }
+        .v-ri-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border-primary, #e2e8f0); font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+        .v-ri-item:last-child { border-bottom: none; }
+        .v-ri-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border-primary); }
+        .v-ri-item.v-done .v-ri-icon { background: rgba(16,185,129,.15); color: #10b981; border-color: transparent; }
+        .v-ri-item.v-done { color: #10b981; }
+        .v-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 8px; background: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: 99px; font-size: 12px; color: var(--text-primary); margin: 3px 4px 3px 0; }
+        .v-chip button { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0 0 0 2px; font-size: 11px; line-height: 1; }
+        .v-chip button:hover { color: #ef4444; }
 </style>
 
 <style id="amc-final-layout-fix">
@@ -3628,7 +3672,7 @@ main.amc-content{
   min-height: 0 !important;
 }
 
-/* Dark-mode calendar/clock pickers: invert the indicator icon so it�s visible */
+/* Dark-mode calendar/clock pickers: invert the indicator icon so it’s visible */
 .dark-mode input[type="date"]::-webkit-calendar-picker-indicator,
 .dark-mode input[type="time"]::-webkit-calendar-picker-indicator{
   filter: invert(1) brightness(1.2) !important;
@@ -3754,7 +3798,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-inner-spin-button{
 
 
 /* ==================================================================================
-   ?? ADOPT WORKING PATTERN (from clean GlobalShell version)
+   🎯 ADOPT WORKING PATTERN (from clean GlobalShell version)
    This overrides ALL previous conflicting rules to match the working version
    ================================================================================== */
 
@@ -3773,7 +3817,7 @@ main.amc-content {
     align-items: center !important;
     width: 100% !important;
     max-width: 1400px !important;
-    padding: 40px 60px !important;  /* ? Padding on PARENT */
+    padding: 40px 60px !important;  /* ← Padding on PARENT */
     box-sizing: border-box !important;
     margin: 0 auto !important;
 }
@@ -3791,7 +3835,7 @@ body.sidebar-collapsed .amc-page {
     width: 100% !important;
     max-width: 1200px !important;
     margin: 0 auto !important;
-    padding: 0 !important;  /* ? NO padding on children */
+    padding: 0 !important;  /* ← NO padding on children */
 }
 
 /* When sidebar collapses, expand max-width */
@@ -3871,7 +3915,7 @@ body.sidebar-collapsed .bento-grid {
 }
 
 /* ==================================================================================
-   ?? AUTHORIZATION BOX - ORANGE COLOR (FINAL OVERRIDE)
+   🎨 AUTHORIZATION BOX - ORANGE COLOR (FINAL OVERRIDE)
    Added at the very end to ensure it overrides all other rules
    ================================================================================== */
 
@@ -3973,7 +4017,7 @@ body.dark-mode .bento-box.legal-authorisation.ready .status-chip {
 /* ================================================================================== */
 
 /* ==================================================================================
-   ?? ICON VISIBILITY FIXES - Dark Mode Date/Time Pickers + Save Draft Button
+   🔧 ICON VISIBILITY FIXES - Dark Mode Date/Time Pickers + Save Draft Button
    ================================================================================== */
 
 /* Dark mode - Invert date/time picker icons so they're visible on dark inputs */
@@ -4015,7 +4059,7 @@ body.dark-mode input[type="time"] {
 /* ================================================================================== */
 
 /* ==================================================================================
-   ?? MODAL CONSISTENCY - Make Success & Review Modals Match (Contemporary Style)
+   🎨 MODAL CONSISTENCY - Make Success & Review Modals Match (Contemporary Style)
    ================================================================================== */
 
 /* Both modals - consistent dimensions and modern styling */
@@ -4106,7 +4150,7 @@ main.mobile-main{
   padding-bottom: 14px !important; /* keeps divider close to title but not cramped */
 }
 
-/* 4) Service cards were too close to divider line � add space */
+/* 4) Service cards were too close to divider line — add space */
 .service-card-grid-2x2{
   margin-top: 22px !important;
 }
@@ -4256,7 +4300,7 @@ main.mobile-main{
   scrollbar-gutter: stable both-edges;        /* reserve space */
 }
 
-/* Higher-contrast thumb + track so it�s unmistakable */
+/* Higher-contrast thumb + track so it’s unmistakable */
 main.mobile-main::-webkit-scrollbar{ width: 10px !important; }
 main.mobile-main::-webkit-scrollbar-track{ background: rgba(15,23,42,0.06) !important; }
 main.mobile-main::-webkit-scrollbar-thumb{
@@ -4390,19 +4434,19 @@ main.mobile-main::-webkit-scrollbar-thumb{ box-shadow: none !important; }
   font-weight: 400 !important;
 }
 
-/* -- RADAR BENTO: schedule-ready state -- */
+/* ── RADAR BENTO: schedule-ready state ── */
 .bento-box.schedule-ready { border-color: #fb923c; background: #fff7ed; }
 .bento-box.schedule-ready .status-chip { background: #fb923c; color: #fff; }
 body.dark-mode .bento-box.schedule-ready { background: #3d2b0d; border-color: #fb923c; }
-/* -- RADAR BENTO: optional boxes -- */
+/* ── RADAR BENTO: optional boxes ── */
 .bento-box[data-section^="radar-"][data-required="false"] { border-color: #a78bfa; background: #f5f3ff; }
 .bento-box[data-section^="radar-"][data-required="false"] .status-chip { background: #ede9fe; color: #5b21b6; }
 body.dark-mode .bento-box[data-section^="radar-"][data-required="false"] { border-color: #7c3aed; background: #2d1d4e; }
 body.dark-mode .bento-box[data-section^="radar-"][data-required="false"] .status-chip { background: #4c1d95; color: #ddd6fe; }
-/* -- STICKY PREVIEW SIDEBAR -- */
+/* ── STICKY PREVIEW SIDEBAR ── */
 .bento-sidebar .preview-card.sticky { position:sticky; top:calc(var(--amc-header-h,56px) + 16px); max-height:calc(100vh - var(--amc-header-h,56px) - 40px); overflow-y:auto; }
 
-/* -- FORM BACK LINK � enterprise subtle nav (matches amc-alert-detail) -- */
+/* ── FORM BACK LINK — enterprise subtle nav (matches amc-alert-detail) ── */
 a.form-back-link {
     display: inline-flex;
     align-items: center;
@@ -4414,7 +4458,7 @@ a.form-back-link {
     letter-spacing: 0.01em;
     transition: color 0.15s ease;
     cursor: pointer;
-    /* Sits above the h1 in the page header � matches amc-alert-detail pattern */
+    /* Sits above the h1 in the page header — matches amc-alert-detail pattern */
     margin-bottom: 10px;
     margin-top: 0;
 }
@@ -4426,13 +4470,13 @@ body.dark-mode a.form-back-link:hover { color: #60a5fa; }
 /* Remove the old container spacing that caused the gap */
 .back-to-hub-container { display: none !important; }
 
-/* Tighten top of dynamic form container � no dead space above bento grid */
+/* Tighten top of dynamic form container — no dead space above bento grid */
 #dynamic-form-container {
     padding-top: 0 !important;
 }
 
 
-/* -- Page divider � full content-column width, sits between header and form -- */
+/* ── Page divider — full content-column width, sits between header and form ── */
 hr.amc-page-divider {
     border: none;
     border-top: 1px solid var(--border-primary, #e2e8f0);
@@ -4693,17 +4737,17 @@ body.dark-mode hr.amc-page-divider {
                     <div class="metadata-row-two">
                         <div class="metadata-field">
                             <span class="metadata-label-orange">COMPANY</span>
-                            <span class="metadata-value" id="m-company">�</span>
+                            <span class="metadata-value" id="m-company">—</span>
                         </div>
                         <div class="metadata-field">
                             <span class="metadata-label-orange">BRAND</span>
-                            <span class="metadata-value" id="m-brand">�</span>
+                            <span class="metadata-value" id="m-brand">—</span>
                         </div>
                     </div>
                     <div class="metadata-row-full">
                         <div class="metadata-field metadata-field-title">
                             <span class="metadata-label-orange">MEDIA RELEASE TITLE</span>
-                            <span class="metadata-value metadata-value-title" id="m-title" title="Click to expand">�</span>
+                            <span class="metadata-value metadata-value-title" id="m-title" title="Click to expand">—</span>
                         </div>
                     </div>
                 </div>
@@ -4711,7 +4755,7 @@ body.dark-mode hr.amc-page-divider {
                 <!-- Section 2: Go Live - THE HERO (MOVED TO MIDDLE) -->
                 <div class="review-section review-section-hero">
                     <div class="hero-label">For release:</div>
-                    <div class="hero-value" id="m-time">�</div>
+                    <div class="hero-value" id="m-time">—</div>
                     <div class="hero-help">Please confirm the release date, time and time zone.</div>
                 </div>
 
@@ -4721,25 +4765,25 @@ body.dark-mode hr.amc-page-divider {
                         <!-- Row 1: Media Release & Images -->
                         <div class="data-chip">
                             <span class="data-label">MEDIA RELEASE:</span>
-                            <span class="data-count" id="m-docs">�</span>
-                            <span class="data-payload" id="m-payload-docs">�</span>
+                            <span class="data-count" id="m-docs">—</span>
+                            <span class="data-payload" id="m-payload-docs">—</span>
                         </div>
                         <div class="data-chip">
                             <span class="data-label">IMAGE(S):</span>
-                            <span class="data-count" id="m-imgs">�</span>
-                            <span class="data-payload" id="m-payload-imgs">�</span>
+                            <span class="data-count" id="m-imgs">—</span>
+                            <span class="data-payload" id="m-payload-imgs">—</span>
                         </div>
                         
                         <!-- Row 2: Videos & Supplementary -->
                         <div class="data-chip">
                             <span class="data-label">VIDEO(S):</span>
-                            <span class="data-count" id="m-vids">�</span>
-                            <span class="data-payload" id="m-payload-vids">�</span>
+                            <span class="data-count" id="m-vids">—</span>
+                            <span class="data-payload" id="m-payload-vids">—</span>
                         </div>
                         <div class="data-chip">
                             <span class="data-label">SUPPLEMENTARY:</span>
-                            <span class="data-count" id="m-supp">�</span>
-                            <span class="data-payload" id="m-payload-supp">�</span>
+                            <span class="data-count" id="m-supp">—</span>
+                            <span class="data-payload" id="m-payload-supp">—</span>
                         </div>
                     </div>
                 </div>
@@ -4923,18 +4967,350 @@ let markedForDeletion = {
 
         const vaultFormHtml = `
             <form id="vault-form">
-                <input type="hidden" name="vaultAssetUUID" id="vaultUUID" value="">
-                <div class="form-card"> <div class="form-card-header" data-bs-toggle="collapse" data-bs-target="#collapse-vault-0"> <h2><i class="fas fa-info-circle"></i> Vault Details & Timings</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body" id="collapse-vault-0"> <div class="form-group"> <label for="vaultName">Vault Name * <i class="fas fa-question-circle service-help-icon" style="margin-left: 5px;" data-service="Vault" data-help-content="Enter a clear, descriptive name for this secure vault (e.g., 'Project Titan Pre-Launch Kit'). This name is shown internally and to authorized media." role="button" tabindex="0"></i></label> <input type="text" class="form-control" id="vaultName" name="title" placeholder="e.g., Concept ZM Global Reveal Media Kit" required> <small>Internal reference and title shown to authorized media.</small> </div> <fieldset class="fieldset"> <legend><i class="far fa-clock"></i> Availability & Embargo Dates</legend> <p class="form-text" style="padding-left: 0; margin-bottom: 1rem;"><i class="fas fa-info-circle"></i> Define when media can access the vault and when they are permitted to publish content.</p> <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="availabilityDate">Vault Availability Date *</label> <input type="date" class="form-control" id="availabilityDate" name="availabilityDate" required> </div> </div> <div class="form-col"> <div class="form-group"> <label for="availabilityTime">Vault Availability Time *</label> <input type="time" class="form-control" id="availabilityTime" name="availabilityTime" required> </div> </div> <div class="form-col"> <div class="form-group"> <label for="availabilityTimezone">Availability Timezone *</label> <select class="form-control" id="availabilityTimezone" name="availabilityTimezone" required> <option value="" disabled selected>Select...</option><option>Berlin</option><option>London</option><option>New York</option> </select> </div> </div> </div> <small class="form-text" style="margin-top: -0.75rem; margin-bottom: 1.25rem; padding-left: 0;">Date/Time when invited media can *first access* the Vault (post-NDA if required).</small> <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="embargoUntil"><strong>Publishing Embargo Date & Time *</strong> <i class="fas fa-question-circle service-help-icon" style="margin-left: 5px;" data-service="Vault" data-help-content="Media **cannot publish** any content derived from this Vault **before** this specific date and time. This is legally binding based on the terms agreed upon (often via NDA). Select with extreme care!" role="button" tabindex="0"></i></label> <input type="datetime-local" class="form-control" id="embargoUntil" name="embargoUntil" required> </div> </div> <div class="form-col">  </div> </div> <small class="form-text alert-danger" style="margin-top: -0.75rem; margin-bottom: 0.5rem; color: var(--color-danger); font-weight: 500; padding-left: 0;">Media **MUST NOT PUBLISH** content derived from this Vault before this Date/Time.</small> </fieldset> <div class="form-group"> <label for="vaultDesc">Vault Description (Internal Note)</label> <textarea class="form-control" id="vaultDesc" name="internalDescription" rows="2" placeholder="Notes about this Vault's contents or purpose. Not shown to media."></textarea> </div> <div class="form-group"> <label for="vaultTeaserImage">Vault Card Teaser Image (Optional)</label> <div class="custom-file-input-wrapper" style="max-width: 400px;"> <input type="file" class="custom-file-input" id="vaultTeaserImage" name="teaserImage" accept="image/jpeg, image/png, image/webp"> <span class="custom-file-input-button">Browse</span> <label class="custom-file-input-label" id="vaultTeaserLabel" for="vaultTeaserImage">Select file to upload...</label> </div> <small>Image for the Vault card shown to media. If empty, a default icon/client logo may be used.</small> </div> </div> </div>
-                <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-vault-1"> <h2><i class="fas fa-file-signature"></i> NDA & Clearance</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-vault-1"> <div class="form-check mb-3"> <input class="form-check-input" type="checkbox" value="yes" id="requireNda" name="requireNDA"> <label class="form-check-label" for="requireNda" style="font-weight: 500;"> Require NDA signing before granting Vault access </label> <small class="form-text">Invited users must digitally sign your company's NDA via AutoMediaVault before they can access this Vault's content.</small> </div> <div id="ndaUploadSection" style="display: none;"> <div class="form-group"> <label for="vaultNdaUpload">Upload Your Company's NDA Document (.pdf) *</label> <div class="custom-file-input-wrapper" style="max-width: 400px;"> <input type="file" class="custom-file-input" id="vaultNdaUpload" name="ndaDocument" accept=".pdf"> <span class="custom-file-input-button">Browse</span> <label class="custom-file-input-label" id="vaultNdaLabel" for="vaultNdaUpload">Select NDA PDF...</label> </div> <small>Required if NDA is enabled. Ensure this is your official, legally approved document.</small> <p class="form-text" style="margin-top: 10px; font-size: 0.8em;"><i class="fas fa-info-circle"></i> AutoMediaCenter facilitates the secure signing process but is not a party to this specific agreement between your company and the media professional.</p> </div> </div> <hr style="margin: 20px 0;"> <div class="form-group"> <label for="clearanceLevel">Clearance Level * <i class="fas fa-question-circle service-help-icon" style="margin-left: 5px;" data-service="Vault" data-help-content="Determines the baseline access group, potentially used for filtering or additional backend access control logic." role="button" tabindex="0"></i></label> <select class="form-control" id="clearanceLevel" name="clearanceLevel" required style="max-width: 300px;"> <option value="restricted" selected>Restricted (Default)</option> <option value="private">Private Preview (Specific Group)</option> <option value="global">Global Press (Wider Access)</option> </select> <small>Used in access control logic on the delivery side.</small> </div> </div> </div>
-                <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-vault-releasedocs"> <h2><i class="fas fa-file-invoice"></i> Upload Main Vault Document(s)/Media Release(s) * <i class="fas fa-question-circle service-help-icon" style="margin-left: 5px;" data-service="Vault" data-help-content="Upload the primary, core documents for this Vault (e.g., main press kit PDF, key announcement document). At least one is usually required." role="button" tabindex="0"></i> </h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-vault-releasedocs"> <div class="file-upload-area"> <input type="file" id="vaultReleaseDocs" name="vaultReleaseDocs" multiple accept=".pdf,.doc,.docx,.txt"> <i class="fas fa-cloud-upload-alt" style="font-size: 2em; color: var(--text-secondary); margin-bottom: 10px;"></i><br> <label for="vaultReleaseDocs">Choose main document(s)</label> or drag and drop here. <p class="form-text">Content will remain secured by Vault access rules.</p> </div> <div class="file-list" id="uploadedVaultReleaseDocsList"> <p style="color: var(--text-secondary); font-style: italic; text-align: center; margin-top: 10px;">No main documents selected yet.</p> </div> </div> </div>
-                <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-vault-images"> <h2><i class="fas fa-images"></i> Upload Images (Optional)</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-vault-images"> <div class="file-upload-area"> <input type="file" id="vaultImages" name="vaultImages" multiple accept="image/*"> <i class="fas fa-cloud-upload-alt" style="font-size: 2em; color: var(--text-secondary); margin-bottom: 10px;"></i><br> <label for="vaultImages">Choose image files</label> or drag and drop here. <p class="form-text">Upload high-resolution images (JPG, PNG, WEBP).</p> </div> <div class="file-list" id="uploadedVaultImagesList"> <p style="color: var(--text-secondary); font-style: italic; text-align: center; margin-top: 10px;">No images selected yet.</p> </div> </div> </div>
-                <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-vault-videos"> <h2><i class="fas fa-video"></i> Upload Videos (Optional)</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-vault-videos"> <div class="file-upload-area"> <input type="file" id="vaultVideos" name="vaultVideos" multiple accept="video/*"> <i class="fas fa-cloud-upload-alt" style="font-size: 2em; color: var(--text-secondary); margin-bottom: 10px;"></i><br> <label for="vaultVideos">Choose video files</label> or drag and drop here. <p class="form-text">Upload videos (MP4, MOV, etc.). Large files supported.</p> </div> <div class="file-list" id="uploadedVaultVideosList"> <p style="color: var(--text-secondary); font-style: italic; text-align: center; margin-top: 10px;">No videos selected yet.</p> </div> </div> </div>
-                <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-vault-supplementarydocs"> <h2><i class="fas fa-paperclip"></i> Upload Supplementary Documents (Optional)</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-vault-supplementarydocs"> <div class="file-upload-area"> <input type="file" id="vaultSupplementaryDocs" name="vaultSupplementaryDocs" multiple accept="application/pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.zip,.txt"> <i class="fas fa-cloud-upload-alt" style="font-size: 2em; color: var(--text-secondary); margin-bottom: 10px;"></i><br> <label for="vaultSupplementaryDocs">Choose supplementary files</label> or drag and drop here. <p class="form-text">Upload additional materials like spec sheets, graphs, etc.</p> </div> <div class="file-list" id="uploadedVaultSupplementaryDocsList"> <p style="color: var(--text-secondary); font-style: italic; text-align: center; margin-top: 10px;">No supplementary documents selected yet.</p> </div> </div> </div>
-                <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-vault-3"> <h2><i class="fas fa-users"></i> Access Control & Distribution</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-vault-3"> <div class="info-block"><i class="fas fa-info-circle"></i> Only verified media professionals and pre-approved groups in your AutoMediaCenter account can be invited. Manage groups under Account > User Access.</div> <div class="form-group"> <label for="inviteUsers">Invite Media Professionals / Groups *</label> <select class="form-control multi-select" id="inviteUsers" name="invitedUsers[]" multiple="multiple" style="width: 100%;" data-placeholder="Search verified users or groups..." > <option value="testuser@example.com">testuser@example.com (Test User)</option> <option value="pressgroupalpha@example.com">Press Group Alpha (Test Group)</option> <option value="anothercontact@example.com">Another Contact (Test)</option> </select> <small>Select recipients who will be granted access after meeting requirements (e.g., NDA signing).</small> </div> <fieldset class="fieldset" style="margin-top: 20px;"> <legend><i class="fas fa-envelope"></i> Distribution Method</legend> <div class="form-check"> <input class="form-check-input" type="radio" name="distributionMethod" id="distNotify" value="notify" checked> <label class="form-check-label" for="distNotify"> Notify Invited Media via Secure Email (Upon Publish) </label> <small class="form-text">Sends Vault link & details (incl. **embargo**) upon publish (sends NDA link first if required).</small> </div> <div class="form-check"> <input class="form-check-input" type="radio" name="distributionMethod" id="distManual" value="manual"> <label class="form-check-label" for="distManual"> Manual Distribution (View Link & Password after Publish) </label> <small class="form-text">No emails sent. Link/Password shown to you post-publish for secure manual sharing.</small> </div> </fieldset> <div id="customMessageSection"> <div class="form-group"> <label for="customMessage">Custom Message for Notification Email (Optional)</label> <textarea class="form-control" id="customMessage" name="customNotificationMessage" rows="4" placeholder="e.g., Hi [Name], The assets for [Vault Name] are now available... PUBLISHING EMBARGO: [Date/Time]. Best, [Your Name]"></textarea> <small>Displayed in the notification email. Embargo details are added automatically.</small> </div> </div> <div id="manualDistributionInfo" style="display: none; margin-top: 15px;"> <div class="info-block"><i class="fas fa-exclamation-triangle"></i> After clicking "Publish Vault", the unique Vault Link and Password (if generated) will be displayed here for you to copy and distribute securely. </div> </div> <div class="form-group" style="margin-top: 20px;"> <label>Currently Granted Access:</label> <div id="accessListPlaceholder" style="font-size: 0.9em; color: var(--text-secondary); font-style: italic;">(Access list populated after publishing and successful invites/NDA signing)</div> </div> </div> </div>
-                <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-vault-4"> <h2><i class="fas fa-shield-alt"></i> Vault Security & Watermarking</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-vault-4"> <div class="form-group"> <label>Additional Security Options</label> <div class="form-check"> <input class="form-check-input" type="checkbox" value="true" id="applyWatermark" name="watermark"> <label class="form-check-label" for="applyWatermark"> Enable Dynamic Watermarking (Recommended) </label> <small class="form-text">Adds User ID + Timestamp overlay to downloaded images/videos; helps trace leaks.</small> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" value="true" id="enableGeoLock" name="geoLock"> <label class="form-check-label" for="enableGeoLock"> Restrict Access by Region/IP (Optional Override) </label> <small class="form-text">Allows defining specific allowed IP ranges or countries (configure in settings or via API). If unchecked, access is global for authorized users.</small> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" value="true" id="requireMfaOnAccess"> <label class="form-check-label" for="requireMfaOnAccess"> Require MFA Re-authentication upon Vault Entry </label> <small class="form-text">Forces users to re-verify with MFA when accessing this specific Vault, even if already logged in.</small> </div> <div class="form-check" style="margin-top: 15px;"> <input class="form-check-input" type="checkbox" value="agreed" id="vaultLegalTermsAck" name="vaultLegalTermsAck"> <label class="form-check-label" for="vaultLegalTermsAck"> Asset Usage Rights Acknowledged </label> <small class="form-text">Confirm that media downloading these assets agree to your standard usage terms. <a href="/legal/asset-usage-policy" target="_blank">(View Terms Template)</a></small> </div> </div> </div> </div>
-                <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-vault-5"> <h2><i class="far fa-bell"></i> Notifications & Expiration</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-vault-5"> <fieldset class="fieldset"> <legend><i class="far fa-bell"></i> Client Notifications</legend> <div class="form-check"> <input class="form-check-input" type="checkbox" value="true" id="notifyClientOnAccess" name="notifyClientOnAccess"> <label class="form-check-label" for="notifyClientOnAccess"> Receive email when invited user first accesses Vault </label> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" value="true" id="notifyClientOnDownload" name="notifyClientOnDownload"> <label class="form-check-label" for="notifyClientOnDownload"> Receive email for each asset download </label> </div> </fieldset> <hr style="margin: 20px 0;"> <div class="form-group"> <label for="vaultExpiration">Deactivate Vault Access After Publishing Embargo Lifts</label> <select class="form-control" id="vaultExpiration" name="vaultExpirationDays" style="max-width: 250px;"> <option value="7" selected>After 7 Days</option> <option value="14">After 14 Days</option> <option value="30">After 30 Days</option> <option value="never">Never (Requires Manual Deactivation/Archival)</option> </select> <small>Vault link/password access automatically expires relative to the embargo date. Assets remain securely in your main Asset Library.</small> </div> </div> </div>
-                <div class="form-card-footer preview-bar"> <button type="button" class="btn btn-secondary preview-btn"><i class="fas fa-eye"></i> Preview Access</button> <div> <button type="submit" name="action" value="draft" class="btn btn-primary"><i class="fas fa-save"></i> Save Vault as Draft</button> <button type="submit" name="action" value="publish" class="btn btn-success"><i class="fas fa-lock-open"></i> Publish Vault & Notify</button> </div> </div>
+              <input type="hidden" id="vaultSubmitAction" value="draft">
+              <div class="bento-grid">
+                <div class="bento-main">
+
+                  <!-- Box 1: Vault Details -->
+                  <div class="bento-box" data-section="identity" data-required="true" id="vbox-identity">
+                    <div class="bento-header" onclick="toggleVaultBento(this)">
+                      <div class="bento-title"><i class="fas fa-info-circle"></i><h3>Vault Details</h3></div>
+                      <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+                    </div>
+                    <div class="bento-body">
+                      <div class="v-form-row">
+                        <div class="v-form-group">
+                          <label>Company name <span class="v-req">*</span></label>
+                          <input type="text" class="form-control" id="vCompany" placeholder="e.g., BMW Group AG" oninput="vCheckComplete('identity')">
+                        </div>
+                        <div class="v-form-group">
+                          <label>Brand <span class="v-req">*</span></label>
+                          <input type="text" class="form-control" id="vBrand" placeholder="e.g., BMW" oninput="vCheckComplete('identity')">
+                        </div>
+                      </div>
+                      <div class="v-form-group">
+                        <label>Vault title <span class="v-req">*</span></label>
+                        <input type="text" class="form-control" id="vTitle" placeholder="e.g., All-New 5 Series — First Official Photography" oninput="vCheckComplete('identity')">
+                      </div>
+                      <div class="v-form-group">
+                        <label>Brief description <span class="v-opt">(optional)</span></label>
+                        <textarea class="form-control" id="vDescription" rows="2" placeholder="Contextual note for invited journalists about what this vault contains."></textarea>
+                      </div>
+                      <div class="v-form-group">
+                        <label>Tags / keywords <span class="v-opt">(optional)</span></label>
+                        <input type="text" class="form-control" id="vTags" placeholder="e.g., SUV, Electric, Luxury, Reveal">
+                        <div class="v-hint">Comma-separated. Helps journalists search for this vault.</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Box 2: Embargo & Timing -->
+                  <div class="bento-box" data-section="schedule" data-required="true" id="vbox-schedule">
+                    <div class="bento-header" onclick="toggleVaultBento(this)">
+                      <div class="bento-title"><i class="fas fa-clock"></i><h3>Embargo &amp; Timing</h3></div>
+                      <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+                    </div>
+                    <div class="bento-body">
+                      <div class="v-info-block"><i class="fas fa-info-circle"></i><span>The <strong>embargo date/time</strong> is when journalists may first publish. The <strong>pre-access window</strong> is how long before that they gain vault access to prepare. The <strong>expiry</strong> closes access.</span></div>
+                      <div class="v-form-row">
+                        <div class="v-form-group">
+                          <label>Embargo lift date <span class="v-req">*</span></label>
+                          <input type="date" class="form-control" id="vEmbargoDate" oninput="vUpdateSchedulePreview();vCheckComplete('schedule')">
+                        </div>
+                        <div class="v-form-group">
+                          <label>Embargo lift time <span class="v-req">*</span></label>
+                          <input type="time" class="form-control" id="vEmbargoTime" value="00:00" oninput="vUpdateSchedulePreview();vCheckComplete('schedule')">
+                        </div>
+                      </div>
+                      <div class="v-form-group">
+                        <label>Timezone <span class="v-req">*</span></label>
+                        <select class="form-control" id="vTimezone" onchange="vUpdateSchedulePreview();vCheckComplete('schedule')">
+                          <optgroup label="Common">
+                            <option value="Europe/Berlin">Europe/Berlin (CET/CEST)</option>
+                            <option value="UTC">UTC</option>
+                            <option value="America/New_York">America/New_York (ET)</option>
+                            <option value="America/Los_Angeles">America/Los_Angeles (PT)</option>
+                            <option value="Europe/London">Europe/London (GMT/BST)</option>
+                            <option value="Asia/Shanghai">Asia/Shanghai (CST)</option>
+                            <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+                          </optgroup>
+                          <optgroup label="All timezones" id="vAllTzOptgroup"></optgroup>
+                        </select>
+                        <div id="vEmbargoPreview" style="margin-top:6px;font-size:12px;color:var(--text-secondary);"></div>
+                      </div>
+                      <div class="schedule-verification-gate" id="vEmbargoGate">
+                        <div class="schedule-gate-inner">
+                          <div id="vEmbargoSummary" class="schedule-summary">Fill in embargo date, time and timezone — then verify &amp; lock.</div>
+                          <button type="button" id="vVerifyEmbargoBtn" class="btn-verify-schedule" onclick="vVerifyEmbargo()">
+                            <i class="fas fa-lock"></i> Verify &amp; Lock Embargo
+                          </button>
+                          <div class="schedule-edit-link" id="vEmbargoEditLink" style="display:none;">
+                            <a href="#" onclick="vUnlockEmbargo(event)"><i class="fas fa-pencil-alt"></i> Edit embargo</a>
+                            <small style="display:block;color:#64748b;font-size:11px;margin-top:4px;">(requires re-verification)</small>
+                          </div>
+                        </div>
+                      </div>
+                      <hr style="margin:16px 0;border-color:var(--border-primary, #e2e8f0);">
+                      <div class="v-form-group">
+                        <label>Journalist pre-access window</label>
+                        <div class="v-info-block" style="margin-bottom:10px;"><i class="fas fa-eye"></i><span>Journalists get vault access this long <em>before</em> the embargo lifts so they can prepare articles. They cannot publish until the embargo lifts.</span></div>
+                        <select class="form-control" id="vPreAccess" style="max-width:260px;">
+                          <option value="0">No pre-access (access at embargo lift)</option>
+                          <option value="1">1 hour before</option>
+                          <option value="2">2 hours before</option>
+                          <option value="6">6 hours before</option>
+                          <option value="12" selected>12 hours before</option>
+                          <option value="24">24 hours before</option>
+                          <option value="48">48 hours before</option>
+                        </select>
+                      </div>
+                      <div class="v-form-group">
+                        <label>Vault expiry after embargo lift</label>
+                        <div class="v-expiry-grid">
+                          <label class="v-expiry-opt selected"><input type="radio" name="vExpiry" value="7" checked><span class="v-exp-val">7</span><span class="v-exp-lbl">days</span></label>
+                          <label class="v-expiry-opt"><input type="radio" name="vExpiry" value="14"><span class="v-exp-val">14</span><span class="v-exp-lbl">days</span></label>
+                          <label class="v-expiry-opt"><input type="radio" name="vExpiry" value="30"><span class="v-exp-val">30</span><span class="v-exp-lbl">days</span></label>
+                          <label class="v-expiry-opt"><input type="radio" name="vExpiry" value="never"><span class="v-exp-val">&#8734;</span><span class="v-exp-lbl">manual</span></label>
+                        </div>
+                        <div class="v-hint" id="vExpiryHint">Vault access closes 7 days after embargo lift.</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Box 3: NDA -->
+                  <div class="bento-box" data-section="nda" data-required="true" id="vbox-nda">
+                    <div class="bento-header" onclick="toggleVaultBento(this)">
+                      <div class="bento-title"><i class="fas fa-file-contract"></i><h3>NDA &amp; Access Requirements</h3></div>
+                      <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+                    </div>
+                    <div class="bento-body">
+                      <div class="v-check-item">
+                        <input type="checkbox" id="vRequireNda" onchange="vToggleNdaSection();vCheckComplete('nda')">
+                        <div class="v-check-text">
+                          <span class="v-clabel">Require NDA signing to enter vault</span>
+                          <span class="v-cdesc">Journalists must digitally sign your NDA before receiving the vault password. Signature is logged with IP, timestamp, and identity confirmation.</span>
+                        </div>
+                      </div>
+                      <div id="vNdaUploadSection" style="margin-top:14px;display:none;">
+                        <label>NDA document <span class="v-req">*</span></label>
+                        <div class="file-upload-area" id="vNdaDropZone">
+                          <input type="file" id="vNdaFile" accept=".pdf,.docx" onchange="vHandleNdaUpload(this)">
+                          <i class="fas fa-file-signature" style="font-size:24px;color:var(--text-secondary);margin-bottom:8px;display:block;"></i>
+                          <label for="vNdaFile">Drop NDA here or <span style="color:var(--accent-primary,#3b82f6);text-decoration:underline;">browse</span></label>
+                          <p class="form-text">PDF or DOCX — max 10MB</p>
+                        </div>
+                        <div id="vNdaUploaded" style="display:none;align-items:center;gap:12px;padding:12px;background:var(--bg-secondary);border:1px solid var(--border-primary);border-radius:8px;margin-top:8px;">
+                          <i class="fas fa-file-alt" style="color:#10b981;font-size:18px;flex-shrink:0;"></i>
+                          <span id="vNdaFileName" style="flex:1;font-size:13px;font-weight:500;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+                          <button type="button" onclick="vRemoveNda()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:13px;padding:2px 6px;"><i class="fas fa-times"></i></button>
+                        </div>
+                        <hr style="margin:14px 0;border-color:var(--border-primary,#e2e8f0);">
+                        <div class="v-check-item">
+                          <input type="checkbox" id="vNdaEmailDelivery" checked>
+                          <div class="v-check-text"><span class="v-clabel">Deliver vault password by email after NDA signed</span><span class="v-cdesc">Password sent to journalist's registered email only after NDA signature is confirmed.</span></div>
+                        </div>
+                        <div class="v-check-item">
+                          <input type="checkbox" id="vNdaSmsDelivery">
+                          <div class="v-check-text"><span class="v-clabel">Also send password by SMS (Twilio)</span><span class="v-cdesc">Requires journalist to have a verified mobile number on their profile.</span></div>
+                        </div>
+                      </div>
+                      <hr style="margin:14px 0;border-color:var(--border-primary,#e2e8f0);">
+                      <div class="v-check-item">
+                        <input type="checkbox" id="vRequireMfa" checked onchange="vCheckComplete('nda')">
+                        <div class="v-check-text"><span class="v-clabel">Require MFA re-authentication on vault entry</span><span class="v-cdesc">Forces journalists to re-verify with MFA when accessing this vault, even if already logged in.</span></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Box 4: Access List -->
+                  <div class="bento-box" data-section="access" data-required="true" id="vbox-access">
+                    <div class="bento-header" onclick="toggleVaultBento(this)">
+                      <div class="bento-title"><i class="fas fa-users"></i><h3>Access List</h3></div>
+                      <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+                    </div>
+                    <div class="bento-body">
+                      <div class="v-info-block"><i class="fas fa-info-circle"></i><span>Only verified media professionals in your AutoMediaCenter account can be invited. <a href="#" style="color:var(--accent-primary,#3b82f6);">Manage media contacts</a></span></div>
+                      <div class="v-form-group">
+                        <label>Invite journalists <span class="v-req">*</span></label>
+                        <div style="display:flex;gap:8px;margin-bottom:10px;">
+                          <input type="email" class="form-control" id="vRecipientInput" placeholder="journalist@publication.com" onkeydown="if(event.key==='Enter'){event.preventDefault();vAddRecipient();}">
+                          <button type="button" class="btn btn-primary" style="white-space:nowrap;flex-shrink:0;" onclick="vAddRecipient()"><i class="fas fa-plus"></i> Add</button>
+                        </div>
+                        <div id="vRecipientList"></div>
+                        <div class="v-hint" id="vRecipientHint" style="font-style:italic;">No recipients added yet.</div>
+                      </div>
+                      <hr style="margin:14px 0;border-color:var(--border-primary,#e2e8f0);">
+                      <div class="v-form-group">
+                        <label>Distribution method</label>
+                        <div class="v-check-item"><input type="radio" name="vDistMethod" value="email" checked><div class="v-check-text"><span class="v-clabel">Notify journalists by secure email on publish</span><span class="v-cdesc">Sends vault link and embargo details. NDA link sent first if required.</span></div></div>
+                        <div class="v-check-item"><input type="radio" name="vDistMethod" value="manual"><div class="v-check-text"><span class="v-clabel">Manual distribution</span><span class="v-cdesc">No emails sent. Vault link and password shown to you after publish for manual sharing.</span></div></div>
+                      </div>
+                      <div class="v-form-group">
+                        <label>Custom message <span class="v-opt">(optional)</span></label>
+                        <textarea class="form-control" id="vCustomMsg" rows="3" placeholder="Hi [Name], the assets for [Vault Name] are now available..."></textarea>
+                        <div class="v-hint">Included in the notification email. Embargo details appended automatically.</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Box 5: Teaser Image -->
+                  <div class="bento-box" data-section="teaser" data-required="true" id="vbox-teaser">
+                    <div class="bento-header" onclick="toggleVaultBento(this)">
+                      <div class="bento-title"><i class="fas fa-image"></i><h3>Teaser Image</h3></div>
+                      <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+                    </div>
+                    <div class="bento-body">
+                      <p class="form-text" style="margin-bottom:12px;">Displayed on the vault card in the journalist portal. Blurred until access is granted. Recommended: 1200x675px JPG/PNG.</p>
+                      <div class="file-upload-area" id="vTeaserZone">
+                        <input type="file" id="vTeaserImage" accept="image/*" onchange="vHandleTeaserUpload(this)">
+                        <i class="fas fa-image" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br>
+                        <label for="vTeaserImage">Choose teaser image</label> or drag and drop here.
+                        <p class="form-text">JPG, PNG, WebP — max 5MB — 16:9 recommended</p>
+                      </div>
+                      <div id="vTeaserPreviewWrap" style="display:none;margin-top:12px;">
+                        <img id="vTeaserPreviewImg" src="" alt="Teaser preview" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid var(--border-primary);">
+                        <button type="button" class="btn btn-secondary" style="margin-top:8px;font-size:12px;padding:5px 12px;" onclick="vRemoveTeaserImage()"><i class="fas fa-times"></i> Remove</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Box 6: Images -->
+                  <div class="bento-box collapsed" data-section="images" data-required="false" id="vbox-images">
+                    <div class="bento-header" onclick="toggleVaultBento(this)">
+                      <div class="bento-title"><i class="fas fa-images"></i><h3>Upload Images</h3></div>
+                      <div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+                    </div>
+                    <div class="bento-body">
+                      <div class="v-encrypt-badge"><i class="fas fa-shield-alt"></i> AES-256 client-side encrypted before upload</div>
+                      <div class="file-upload-area" style="margin-top:12px;">
+                        <input type="file" id="vImages" accept="image/*" multiple onchange="vHandleAssetUpload(this,'vImagesList','image')">
+                        <i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br>
+                        <label for="vImages">Choose images</label> or drag and drop here.
+                        <p class="form-text">JPG, PNG, WebP, TIFF — multiple files — max 50MB each</p>
+                      </div>
+                      <div class="file-list" id="vImagesList"></div>
+                    </div>
+                  </div>
+
+                  <!-- Box 7: Videos -->
+                  <div class="bento-box collapsed" data-section="videos" data-required="false" id="vbox-videos">
+                    <div class="bento-header" onclick="toggleVaultBento(this)">
+                      <div class="bento-title"><i class="fas fa-video"></i><h3>Upload Videos</h3></div>
+                      <div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+                    </div>
+                    <div class="bento-body">
+                      <div class="v-encrypt-badge"><i class="fas fa-shield-alt"></i> AES-256 client-side encrypted before upload</div>
+                      <div class="file-upload-area" style="margin-top:12px;">
+                        <input type="file" id="vVideos" accept="video/*" multiple onchange="vHandleAssetUpload(this,'vVideosList','video')">
+                        <i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br>
+                        <label for="vVideos">Choose videos</label> or drag and drop here.
+                        <p class="form-text">MP4, MOV, WebM — multiple files — max 2GB each</p>
+                      </div>
+                      <div class="file-list" id="vVideosList"></div>
+                    </div>
+                  </div>
+
+                  <!-- Box 8: Documents -->
+                  <div class="bento-box collapsed" data-section="docs" data-required="false" id="vbox-docs">
+                    <div class="bento-header" onclick="toggleVaultBento(this)">
+                      <div class="bento-title"><i class="fas fa-file-alt"></i><h3>Upload Documents</h3></div>
+                      <div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+                    </div>
+                    <div class="bento-body">
+                      <div class="v-encrypt-badge"><i class="fas fa-shield-alt"></i> AES-256 client-side encrypted before upload</div>
+                      <div class="file-upload-area" style="margin-top:12px;">
+                        <input type="file" id="vDocs" accept=".pdf,.docx,.doc,.pptx,.xlsx,.zip,.txt" multiple onchange="vHandleAssetUpload(this,'vDocsList','doc')">
+                        <i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br>
+                        <label for="vDocs">Choose documents</label> or drag and drop here.
+                        <p class="form-text">PDF, DOCX, PPTX, XLSX, ZIP — max 200MB each</p>
+                      </div>
+                      <div class="file-list" id="vDocsList"></div>
+                    </div>
+                  </div>
+
+                  <!-- Box 9: Security -->
+                  <div class="bento-box collapsed" data-section="security" data-required="false" id="vbox-security">
+                    <div class="bento-header" onclick="toggleVaultBento(this)">
+                      <div class="bento-title"><i class="fas fa-shield-alt"></i><h3>Security &amp; Watermarking</h3></div>
+                      <div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+                    </div>
+                    <div class="bento-body">
+                      <div class="v-sec-grid">
+                        <label class="v-sec-card selected"><input type="radio" name="vSecLevel" value="standard" checked onclick="vSelectSecLevel(this)"><span class="v-sec-icon">&#128274;</span><span class="v-sec-name">Standard</span><span class="v-sec-desc">NDA + password + watermark</span></label>
+                        <label class="v-sec-card"><input type="radio" name="vSecLevel" value="enhanced" onclick="vSelectSecLevel(this)"><span class="v-sec-icon">&#128737;</span><span class="v-sec-name">Enhanced</span><span class="v-sec-desc">+ MFA re-auth + geo-lock</span></label>
+                        <label class="v-sec-card"><input type="radio" name="vSecLevel" value="maximum" onclick="vSelectSecLevel(this)"><span class="v-sec-icon">&#128272;</span><span class="v-sec-name">Maximum</span><span class="v-sec-desc">+ download limits + forensic watermark</span></label>
+                      </div>
+                      <div class="v-check-item"><input type="checkbox" id="vWatermark" checked><div class="v-check-text"><span class="v-clabel">Dynamic watermarking on downloads</span><span class="v-cdesc">Overlays journalist name + timestamp + user ID on every downloaded image/video. Enables leak tracing.</span></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vGeoLock"><div class="v-check-text"><span class="v-clabel">Geo-restrict access by region/IP</span><span class="v-cdesc">Limit vault access to specific countries or IP ranges. Configure post-creation.</span></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vDownloadLimit"><div class="v-check-text"><span class="v-clabel">Limit downloads per journalist</span></div></div>
+                    </div>
+                  </div>
+
+                  <!-- Box 10: Notifications -->
+                  <div class="bento-box collapsed" data-section="notifications" data-required="false" id="vbox-notifications">
+                    <div class="bento-header" onclick="toggleVaultBento(this)">
+                      <div class="bento-title"><i class="fas fa-bell"></i><h3>Notifications</h3></div>
+                      <div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+                    </div>
+                    <div class="bento-body">
+                      <div class="v-check-item"><input type="checkbox" id="vNotifyAccess" checked><div class="v-check-text"><span class="v-clabel">Notify me when a journalist first accesses the vault</span></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vNotifyDownload"><div class="v-check-text"><span class="v-clabel">Notify me on each asset download</span><span class="v-cdesc">Can generate high volume for large vaults.</span></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vNotifyNda"><div class="v-check-text"><span class="v-clabel">Notify me when an NDA is signed</span></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vNotifyEmbargoLift" checked><div class="v-check-text"><span class="v-clabel">Remind me 1 hour before embargo lifts</span></div></div>
+                    </div>
+                  </div>
+
+                  <!-- Box 11: Legal -->
+                  <div class="bento-box" data-section="legal" data-required="true" id="vbox-legal">
+                    <div class="bento-header" onclick="toggleVaultBento(this)">
+                      <div class="bento-title"><i class="fas fa-gavel"></i><h3>Authorisation &amp; Rights</h3></div>
+                      <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+                    </div>
+                    <div class="bento-body">
+                      <div class="v-check-item"><input type="checkbox" id="vAuthOwnership" onchange="vCheckComplete('legal')"><div class="v-check-text"><span class="v-clabel">I am authorised to distribute these assets on behalf of the brand <span class="v-req">*</span></span></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vAuthEmbargo" onchange="vCheckComplete('legal')"><div class="v-check-text"><span class="v-clabel">The embargo date and time are correct and binding <span class="v-req">*</span></span></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vAuthUsageRights" onchange="vCheckComplete('legal')"><div class="v-check-text"><span class="v-clabel">Media accessing these assets agree to standard asset usage terms <span class="v-req">*</span></span></div></div>
+                    </div>
+                  </div>
+
+                </div><!-- /bento-main -->
+
+                <!-- SIDEBAR -->
+                <div class="bento-sidebar">
+                  <div class="bento-box" style="position:sticky;top:80px;">
+                    <div class="bento-header" style="cursor:default;pointer-events:none;">
+                      <div class="bento-title"><i class="fas fa-check-circle"></i><h3>Readiness</h3></div>
+                    </div>
+                    <div class="bento-body" style="padding:10px 14px;">
+                      <div class="v-ri-item" id="vri-identity"><div class="v-ri-icon"><i class="fas fa-circle"></i></div><span>Vault details</span></div>
+                      <div class="v-ri-item" id="vri-schedule"><div class="v-ri-icon"><i class="fas fa-circle"></i></div><span>Embargo &amp; timing</span></div>
+                      <div class="v-ri-item" id="vri-nda"><div class="v-ri-icon"><i class="fas fa-circle"></i></div><span>NDA requirements</span></div>
+                      <div class="v-ri-item" id="vri-access"><div class="v-ri-icon"><i class="fas fa-circle"></i></div><span>Access list</span></div>
+                      <div class="v-ri-item" id="vri-teaser"><div class="v-ri-icon"><i class="fas fa-circle"></i></div><span>Teaser image</span></div>
+                      <div class="v-ri-item" id="vri-legal"><div class="v-ri-icon"><i class="fas fa-circle"></i></div><span>Authorisation</span></div>
+                      <div style="margin-top:14px;padding:10px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:8px;font-size:11px;color:#10b981;display:flex;gap:8px;align-items:flex-start;">
+                        <i class="fas fa-shield-alt" style="margin-top:1px;flex-shrink:0;"></i>
+                        <span><strong>AES-256 encrypted</strong> client-side before upload — staff cannot access vault content.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bento-box" style="margin-top:12px;">
+                    <div class="bento-header" style="cursor:default;pointer-events:none;">
+                      <div class="bento-title"><i class="fas fa-lock-open"></i><h3>Publish</h3></div>
+                    </div>
+                    <div class="bento-body">
+                      <div style="display:flex;flex-direction:column;gap:8px;">
+                        <button type="submit" name="action" value="publish" class="btn btn-success" style="width:100%;"><i class="fas fa-lock-open"></i> Publish Vault &amp; Notify</button>
+                        <button type="submit" name="action" value="draft" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> Save Vault as Draft</button>
+                        <button type="button" class="btn btn-secondary" style="width:100%;" onclick="window.open('automediavault.html','_blank')"><i class="fas fa-eye"></i> Preview Access View</button>
+                      </div>
+                    </div>
+                  </div>
+                </div><!-- /bento-sidebar -->
+
+              </div><!-- /bento-grid -->
             </form>
+
         `;
         const centerFormHtml = `
             <form id="center-form">
@@ -5030,7 +5406,7 @@ let markedForDeletion = {
                                 <div class="schedule-verification-gate" id="scheduleGate">
                                     <div class="schedule-gate-inner">
                                         <div id="scheduleSummary" class="schedule-summary">
-                                            Please fill in Release Date, Release Time, and Time Zone � then verify & lock.
+                                            Please fill in Release Date, Release Time, and Time Zone — then verify & lock.
                                         </div>
 
                                         <button type="button"
@@ -5630,7 +6006,7 @@ const radarFormHtml = `
                  <div class="form-card"> <div class="form-card-header" data-bs-toggle="collapse" data-bs-target="#collapse-live-0"> <h2><i class="fas fa-info-circle"></i> Basic Information & Announcement</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body" id="collapse-live-0">  <div class="form-group"> <label for="streamTitle">Stream Title * <i class="fas fa-question-circle service-help-icon" style="margin-left: 5px;" data-service="Live" data-help-content="Public title for the event listing." role="button" tabindex="0"></i></label> <input type="text" class="form-control" id="streamTitle" name="title" placeholder="e.g., World Premiere Event - BMW Concept ZM" required> <small>Appears publicly on AutoMediaLive listings.</small> </div> <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="streamDate">Scheduled Start Date *</label> <input type="date" class="form-control" id="streamDate" name="streamDate" required> </div> </div> <div class="form-col"> <div class="form-group"> <label for="streamTime">Scheduled Start Time *</label> <input type="time" class="form-control" id="streamTime" name="streamTime" required> </div> </div> <div class="form-col"> <div class="form-group"> <label for="streamTimezone">Timezone *</label> <select class="form-control" id="streamTimezone" name="streamTimezone" required> <option value="" disabled selected>Select Timezone...</option> <option value="Europe/Berlin">(GMT+02:00) Berlin</option> <option value="Europe/London">(GMT+01:00) London</option> <option value="America/New_York">(GMT-04:00) New York</option> <option value="America/Los_Angeles">(GMT-07:00) Los Angeles</option> <option value="Asia/Tokyo">(GMT+09:00) Tokyo</option> </select> </div> </div> </div> <div class="form-group"> <label for="streamDesc">Public Description</label> <textarea class="form-control" id="streamDesc" name="description" rows="3" placeholder="Join us live for the unveiling of... (Displayed on the stream listing page)"></textarea> </div> <div class="form-group"> <label for="streamThumbnail">Stream Thumbnail</label> <div class="custom-file-input-wrapper" style="max-width: 400px;"> <input type="file" class="custom-file-input" id="streamThumbnail" name="thumbnailImage" accept="image/jpeg, image/png, image/webp"> <span class="custom-file-input-button">Browse</span> <label class="custom-file-input-label" for="streamThumbnail">Select thumbnail...</label> </div> <small>Preview image shown on listings (Recommended: 16:9 ratio, e.g., 1920x1080px).</small> </div> </div> <div class="form-card-footer space-between" style="border-top: 1px solid var(--border-primary);"> <small style="align-self: center;">Publish basic info to announce the upcoming stream now?</small> <button type="button" class="btn btn-success"><i class="fas fa-bullhorn"></i> Announce Upcoming Stream</button> </div> </div>
                  <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-1"> <h2><i class="fas fa-tags"></i> Metadata & Analytics</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-1">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="eventType">Event Type</label> <select class="form-control" id="eventType" name="eventType"> <option selected>Press Conference</option> <option>Product Launch</option> <option>Technical Deep Dive</option> <option>Q&A / Interview</option> <option>Motorsport Event</option> <option>Other</option> </select> <small>Categorize the stream for filtering and analytics.</small> </div> <div class="form-group"> <label for="keyTopics">Key Topics / Keywords</label> <select class="form-control tags-input" id="keyTopics" name="keyTopics[]" multiple="multiple"> </select> <small>Add relevant tags (e.g., Sustainability, Autonomous Driving). Type and press Enter or Comma.</small> </div> </div> <div class="form-col"> <div class="form-group"> <label for="productsFeatured">Product(s) / Subject(s) Featured</label> <select class="form-control tags-input" id="productsFeatured" name="productsFeatured[]" multiple="multiple"> </select> <small>Tag specific vehicles or main subjects.</small> </div> <div class="form-group"> <label for="targetRegions">Target Region(s)</label> <select class="form-control multi-select" id="targetRegions" name="targetRegions[]" multiple="multiple"> <option>Global</option> <option>EMEA</option> <option>North America</option> <option>DACH</option> <option>Asia Pacific</option> </select> <small>Select primary geographic focus, if any.</small> </div> </div> </div> <div class="form-group"> <label for="campaignId">Internal Campaign ID (Optional)</label> <input type="text" class="form-control" id="campaignId" name="campaignId" placeholder="e.g., ZM_LAUNCH_Q3"> <small>For your internal tracking and reporting.</small> </div> </div> </div>
                   <hr style="border: none; border-top: 1px solid var(--border-primary); margin: 30px 0;"> <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">Complete the technical details below before going live.</p>
-                 <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-2"> <h2><i class="fas fa-sign-in-alt"></i> Source & Input</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-2">  <div class="form-group"> <label for="streamSourceType">Input Source Type</label> <select class="form-control" id="streamSourceType" name="streamSourceType"> <option value="rtmp_push" selected>RTMP Push (from Encoder)</option> <option value="srt_listener">SRT Listener</option> <option value="srt_caller">SRT Caller</option> <option value="hls_pull">Pull from HLS/DASH Source</option> </select> <small>How will you send your video feed to AutoMediaCenter?</small> </div> <div id="sourceDetailsRtmp"> <div class="form-group"> <label>RTMP Server URL</label> <input type="text" class="form-control" value="rtmp://live.automediacenter.provider/app/" readonly> </div> <div class="form-group"> <label>Stream Key</label> <div class="stream-key-display"> <span>•••••••••••••••••••••••••••••••• (Generated on Save)</span> <button type="button" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i> Show</button> <button type="button" class="btn btn-sm btn-secondary"><i class="fas fa-copy"></i> Copy</button> </div> <small class="form-text">Enter this URL and Key into your streaming software (OBS, Wirecast, etc.).</small> </div> </div> </div> </div>
+                 <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-2"> <h2><i class="fas fa-sign-in-alt"></i> Source & Input</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-2">  <div class="form-group"> <label for="streamSourceType">Input Source Type</label> <select class="form-control" id="streamSourceType" name="streamSourceType"> <option value="rtmp_push" selected>RTMP Push (from Encoder)</option> <option value="srt_listener">SRT Listener</option> <option value="srt_caller">SRT Caller</option> <option value="hls_pull">Pull from HLS/DASH Source</option> </select> <small>How will you send your video feed to AutoMediaCenter?</small> </div> <div id="sourceDetailsRtmp"> <div class="form-group"> <label>RTMP Server URL</label> <input type="text" class="form-control" value="rtmp://live.automediacenter.provider/app/" readonly> </div> <div class="form-group"> <label>Stream Key</label> <div class="stream-key-display"> <span>â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢ (Generated on Save)</span> <button type="button" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i> Show</button> <button type="button" class="btn btn-sm btn-secondary"><i class="fas fa-copy"></i> Copy</button> </div> <small class="form-text">Enter this URL and Key into your streaming software (OBS, Wirecast, etc.).</small> </div> </div> </div> </div>
                  <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-3"> <h2><i class="fas fa-cogs"></i> Processing & Output</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-3">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="transcodingProfile">Transcoding Profile</label> <select class="form-control" id="transcodingProfile" name="transcodingProfile"> <option selected>Auto-Detect & Adaptive Bitrate (Recommended)</option> <option>HD 1080p (Up to 6 Mbps)</option> <option>HD 720p (Up to 4 Mbps)</option> <option>SD 576p (Up to 2 Mbps)</option> <option disabled>Custom (Advanced)</option> </select> <small>Determines the output quality and resolutions available to viewers.</small> </div> </div> <div class="form-col"> <div class="form-group"> <label for="latencySetting">Latency Setting</label> <select class="form-control" id="latencySetting" name="latencySetting"> <option>Normal (~15-20 seconds delay)</option> <option selected>Low (~5-10 seconds delay)</option> <option>Ultra-Low (~1-5 seconds delay)</option> </select> <small>Lower latency allows faster interaction but may be less stable on poor networks.</small> </div> </div> </div> <div class="form-group"> <label>Recording</label> <div class="form-check"> <input class="form-check-input" type="checkbox" id="recordStream" name="recordStream" value="true" checked> <label class="form-check-label" for="recordStream"> Record this stream to the Asset Library </label> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" id="autoArchive" name="autoArchive" value="true" checked> <label class="form-check-label" for="autoArchive"> Automatically add recording to public AutoMediaLive Archive after stream ends </label> </div> </div> <div class="form-group"> <label>Captions</label> <select class="form-control" id="captionSource" name="captionSource"> <option>None</option> <option selected>Auto-Generate Live Captions (English)</option> <option>Expect Embedded CEA-608/708</option> <option>Expect RTMP onCaptionInfo</option> </select> <small>Select caption source or use AI-powered live captions.</small> </div> </div> </div>
                  <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-4"> <h2><i class="fas fa-photo-video"></i> Content & Interaction</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-4">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <label>Enable Features</label> <div class="form-check"> <input class="form-check-input" type="checkbox" id="enableQA" name="enableQA" value="true" checked> <label class="form-check-label" for="enableQA"> Live Q&A Tab (Moderated) </label> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" id="enableTranscript" name="enableTranscript" value="true" checked> <label class="form-check-label" for="enableTranscript"> Live Transcript Tab </label> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" id="enableAssets" name="enableAssets" value="true" checked> <label class="form-check-label" for="enableAssets"> Related Assets Tab </label> </div> </div> </div> <div class="form-col"> <div class="form-group"> <label for="linkedAssets">Link Related Assets</label> <div class="asset-link-placeholder" style="border: 1px dashed var(--border-primary); padding: 15px; text-align: center; cursor: pointer; background-color: var(--bg-tertiary); border-radius: 4px;"> <i class="fas fa-plus"></i> Click to select assets (Press Kits, Images...) </div> <small>Choose files from your Asset Library to show in the 'Assets' tab during the stream.</small> </div> </div> </div> </div> </div>
                  <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-5"> <h2><i class="fas fa-paint-brush"></i> Appearance & Branding</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-5">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="playerLogo">Player Logo Overlay (Optional)</label> <div class="custom-file-input-wrapper" style="max-width: 400px;"> <input type="file" class="custom-file-input" id="playerLogo" name="playerLogo" accept="image/png"> <span class="custom-file-input-button">Browse</span> <label class="custom-file-input-label" for="playerLogo">Select logo PNG...</label> </div> <small>Small PNG with transparency to overlay on the video player (e.g., bottom-right).</small> </div> </div> <div class="form-col">  </div> </div> </div> </div>
@@ -5719,7 +6095,7 @@ const radarFormHtml = `
                 manageReleasesContainer.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Fetching releases...</p></div>';
 
                 try {
-                    const response = await fetch(`/api/v1/center/my-releases?page=${page}&limit=${limit}`, {
+                    const response = await fetch(`http://localhost:5000/api/v1/center/my-releases?page=${page}&limit=${limit}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     const result = await response.json();
@@ -5877,7 +6253,7 @@ const radarFormHtml = `
                 if (!eventType || !assetId) { console.error('trackAssetEvent: eventType and assetId required.'); return; }
                 if (!token) { console.warn('trackAssetEvent: No token found for tracking.'); return; }
 
-                const apiUrl = `/api/v1/events/log`; 
+                const apiUrl = `http://localhost:5000/api/v1/events/log`; 
                 fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
@@ -5978,7 +6354,7 @@ function updatePublishAtPreview() {
     }
 
     const utcIso = utcDate.toISOString().replace('.000Z', 'Z');
-    out.textContent = `Publishes: ${dateStr} ${timeStr} (${tz}) ? ${utcIso} (UTC)`;
+    out.textContent = `Publishes: ${dateStr} ${timeStr} (${tz}) → ${utcIso} (UTC)`;
 }
 
 function initCenterTimezoneLanguagesMarkets() {
@@ -6113,13 +6489,13 @@ function updateVariantMarketDisplays() {
 const AMC_LANGUAGE_LABELS = {
     en: 'English',
     de: 'German (Deutsch)',
-    es: 'Spanish (Espa�ol)',
-    zh: 'Chinese (??)',
-    fr: 'French (Fran�ais)',
+    es: 'Spanish (Español)',
+    zh: 'Chinese (中文)',
+    fr: 'French (Français)',
     it: 'Italian (Italiano)',
-    pt: 'Portuguese (Portugu�s)',
-    ja: 'Japanese (???)',
-    ko: 'Korean (???)'
+    pt: 'Portuguese (Português)',
+    ja: 'Japanese (日本語)',
+    ko: 'Korean (한국어)'
 };
 
 function getCurrentVariantLanguages() {
@@ -6150,13 +6526,13 @@ function updateVariantsStatusChip() {
     const ok = variants.every(v => v.language && v.title && (v.hasReleaseDocs === true));
     chip.classList.toggle('complete', ok);
     chip.classList.toggle('optional', !ok);
-    chip.textContent = ok ? `${variants.length} added` : `${variants.length} added � incomplete`;
+    chip.textContent = ok ? `${variants.length} added` : `${variants.length} added • incomplete`;
 
     // Keep primary language out of variants
     if (primaryLang && variants.some(v => v.language === primaryLang.value)) {
         chip.classList.remove('complete');
         chip.classList.add('optional');
-        chip.textContent = `${variants.length} added � fix needed`;
+        chip.textContent = `${variants.length} added • fix needed`;
     }
 }
 
@@ -6191,7 +6567,7 @@ function buildVariantCard(lang) {
             <div class="variant-card-body" id="variantBody_${safeLang}">
                 <div class="form-group">
                     <label for="variantTitle_${safeLang}">Heading (${label}) *</label>
-                    <input type="text" class="form-control" id="variantTitle_${safeLang}" name="variantTitles[${safeLang}]" placeholder="e.g., BMW enth�llt den neuen X5" required>
+                    <input type="text" class="form-control" id="variantTitle_${safeLang}" name="variantTitles[${safeLang}]" placeholder="e.g., BMW enthüllt den neuen X5" required>
                     <small>This is the card heading users will see in ${label}.</small>
                 </div>
                 
@@ -6315,7 +6691,7 @@ function initCenterLanguageVariants() {
                     formData.append('filesToDelete', JSON.stringify([filePath]));
                     formData.append('action', 'update');
 
-                    const response = await fetch(`/api/v1/center/releases/${currentEditingReleaseUUID}`, {
+                    const response = await fetch(`http://localhost:5000/api/v1/center/releases/${currentEditingReleaseUUID}`, {
                         method: 'PUT',
                         headers: { 'Authorization': `Bearer ${token}` },
                         body: formData
@@ -6416,7 +6792,7 @@ function initCenterLanguageVariants() {
                     formData.append('filesToDelete', JSON.stringify([filePath]));
                     formData.append('action', 'update');
 
-                    const response = await fetch(`/api/v1/center/releases/${currentEditingReleaseUUID}`, {
+                    const response = await fetch(`http://localhost:5000/api/v1/center/releases/${currentEditingReleaseUUID}`, {
                         method: 'PUT',
                         headers: { 'Authorization': `Bearer ${token}` },
                         body: formData
@@ -6543,7 +6919,7 @@ function initCenterLanguageVariants() {
                             headers['X-User-Email'] = user.email;
                         }
 
-                        const response = await fetch('/api/v1/auth/validate-permissions', {
+                        const response = await fetch('http://localhost:5000/api/v1/auth/validate-permissions', {
                             headers: headers
                         });
                         
@@ -6641,7 +7017,7 @@ function initCenterLanguageVariants() {
                                 console.log("DEBUG: Final check passed - User authorized:", backendUser.role);
                                 
                                 // REBUILD SIDEBAR: Update role and rebuild sidebar with correct permissions
-                                console.log("?? Rebuilding sidebar with role:", backendUser.role);
+                                console.log("🔄 Rebuilding sidebar with role:", backendUser.role);
                                 
                                 // Update window.AMC.role to match backend
                                 if (window.AMC) {
@@ -6661,7 +7037,7 @@ function initCenterLanguageVariants() {
                                             userRole: backendUser.role
                                         });
                                         
-                                        console.log("? Sidebar rebuilt with role:", backendUser.role);
+                                        console.log("✅ Sidebar rebuilt with role:", backendUser.role);
                                     }
                                 } else if (typeof AMCSidebar !== 'undefined') {
                                     // If amcSidebar doesn't exist yet, create it
@@ -6669,11 +7045,11 @@ function initCenterLanguageVariants() {
                                         container: '#sidebar',
                                         userRole: backendUser.role
                                     });
-                                    console.log("? Sidebar created with role:", backendUser.role);
+                                    console.log("✅ Sidebar created with role:", backendUser.role);
                                 }
                                 
                                 // REBUILD AVATAR: Update avatar with correct role and ring color
-                                console.log("?? Manually updating avatar with role:", backendUser.role);
+                                console.log("🔄 Manually updating avatar with role:", backendUser.role);
                                 
                                 // Update window.AMC.role
                                 if (window.AMC) {
@@ -6695,7 +7071,7 @@ function initCenterLanguageVariants() {
                                 if (avatarRing) {
                                     avatarRing.style.borderColor = ringColor;
                                     avatarRing.style.boxShadow = `0 0 0 2px ${ringColor}`;
-                                    console.log("? Avatar ring color updated to:", ringColor);
+                                    console.log("✅ Avatar ring color updated to:", ringColor);
                                 }
                                 
                                 // Update avatar container data
@@ -6714,12 +7090,12 @@ function initCenterLanguageVariants() {
                                     }));
                                 }
                                 
-                                console.log("? Avatar manually updated with role:", backendUser.role);
+                                console.log("✅ Avatar manually updated with role:", backendUser.role);
                                 
                                 // Show avatar now that role is validated (removes blue flash)
                                 if (avatarContainer) {
                                     avatarContainer.classList.add('role-validated');
-                                    console.log("? Avatar made visible after role validation");
+                                    console.log("✅ Avatar made visible after role validation");
                                 }
                                 
                                 // CRITICAL FIX: Force shell to reload with correct role
@@ -6742,7 +7118,7 @@ function initCenterLanguageVariants() {
                                         const correctColor = roleColors[backendUser.role] || roleColors['media_user'];
                                         avatarRingRetry.style.borderColor = correctColor;
                                         avatarRingRetry.style.boxShadow = `0 0 0 2px ${correctColor}`;
-                                        console.log("? Avatar ring FORCED to correct color:", correctColor, "for role:", backendUser.role);
+                                        console.log("✅ Avatar ring FORCED to correct color:", correctColor, "for role:", backendUser.role);
                                     }
                                     
                                     // Dispatch event again in case shell wasn't listening the first time
@@ -6858,7 +7234,7 @@ function initCenterLanguageVariants() {
                     return;
                 }
 
-                const loginUrl = `/api/v1/auth/login`; 
+                const loginUrl = `http://localhost:5000/api/v1/auth/login`; 
                 const loginButton = loginForm.querySelector('button[type="submit"]');
                 const originalButtonText = loginButton.innerHTML;
                 loginButton.disabled = true;
@@ -6907,7 +7283,7 @@ function initCenterLanguageVariants() {
                 }
 
                 try {
-                    const response = await fetch(`/api/v1/center/releases/foredit/${uuid}`, {
+                    const response = await fetch(`http://localhost:5000/api/v1/center/releases/foredit/${uuid}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     const result = await response.json();
@@ -6972,7 +7348,7 @@ function initCenterLanguageVariants() {
                         currentCardTeaserDisplay.innerHTML = `
                             <div class="existing-file-row" data-path="${existingCenterTeaserPath}" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 0;">
                                 <div style="display: flex; align-items: center;">
-                                    <span>Current: <a href="${existingCenterTeaserPath}" target="_blank">${fileName}</a></span>
+                                    <span>Current: <a href="http://localhost:5000${existingCenterTeaserPath}" target="_blank">${fileName}</a></span>
                                 </div>
                                 <button type="button" class="mini-remove" onclick="toggleExistingDeletion('teaser', '${existingCenterTeaserPath}', this)"
                                         style="background: none; border: none; color: var(--color-danger); cursor: pointer; padding: 2px 8px; font-size: 0.875em;">
@@ -6998,7 +7374,7 @@ function initCenterLanguageVariants() {
                             filesHtml += `
                                 <div class="existing-file-row" data-path="${filePath}" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border-primary);">
                                     <span>
-                                        <a href="${filePath}" target="_blank">${fileName}</a>
+                                        <a href="http://localhost:5000${filePath}" target="_blank">${fileName}</a>
                                         ${fileSize}
                                     </span>
                                     <button type="button" class="mini-remove" onclick="toggleExistingDeletion('${type}', '${filePath}', this)"
@@ -7064,7 +7440,7 @@ function initCenterLanguageVariants() {
                 }
 
                 try {
-                    const response = await fetch(`/api/v1/radar/alerts/foredit/${uuid}`, {
+                    const response = await fetch(`http://localhost:5000/api/v1/radar/alerts/foredit/${uuid}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     const result = await response.json();
@@ -7114,8 +7490,8 @@ function initCenterLanguageVariants() {
                 if (data.primaryLanguage) { const h = form.querySelector('#radarPrimaryLang'); if (h) h.value = data.primaryLanguage; form.querySelectorAll('input[name="radarLangRadio"]').forEach(r => { r.checked = r.value === data.primaryLanguage; }); }
                 if (data.targetMarkets) { const h = form.querySelector('#radarTargetMarkets'); if (h) h.value = data.targetMarkets; const mkts = data.targetMarkets.split(',').map(m => m.trim()); form.querySelectorAll('input[name="radarMktCb"]').forEach(cb => { cb.checked = mkts.includes(cb.value); }); }
                 const tList = document.getElementById('uploadedRadarTeaserImageList');
-                if (tList && data.teaserImagePath) { const fn = data.teaserImagePath.split('/').pop(); tList.innerHTML = '<div class="form-text" style="display:flex;align-items:center;gap:8px;margin-top:5px;"><img src="' + data.teaserImagePath + '" style="width:60px;height:40px;object-fit:cover;border-radius:4px;"><span>Current: <a href="' + data.teaserImagePath + '" target="_blank">' + fn + '</a> <em>(choose new to replace)</em></span></div>'; }
-                if (data.alertDocPath) { const dList = document.getElementById('uploadedRadarAlertDocList'); if (dList) { const fn = data.alertDocPath.split('/').pop(); dList.innerHTML = '<p class="form-text">Current: <a href="' + data.alertDocPath + '" target="_blank">' + fn + '</a> <em>(choose new to replace)</em></p>'; } }
+                if (tList && data.teaserImagePath) { const fn = data.teaserImagePath.split('/').pop(); tList.innerHTML = '<div class="form-text" style="display:flex;align-items:center;gap:8px;margin-top:5px;"><img src="http://localhost:5000' + data.teaserImagePath + '" style="width:60px;height:40px;object-fit:cover;border-radius:4px;"><span>Current: <a href="http://localhost:5000' + data.teaserImagePath + '" target="_blank">' + fn + '</a> <em>(choose new to replace)</em></span></div>'; }
+                if (data.alertDocPath) { const dList = document.getElementById('uploadedRadarAlertDocList'); if (dList) { const fn = data.alertDocPath.split('/').pop(); dList.innerHTML = '<p class="form-text">Current: <a href="http://localhost:5000' + data.alertDocPath + '" target="_blank">' + fn + '</a> <em>(choose new to replace)</em></p>'; } }
                 if (data.languageVariantsJson) { const el = form.querySelector('#radarLangVariantsJson'); if (el) el.value = data.languageVariantsJson; }
                 setTimeout(() => { radarUpdateIdentityState(); radarComputeScheduleState(); radarUpdateCategoryState(); radarUpdateLangMarketsState(); radarUpdateTeaserState(); radarUpdateDocState(); radarUpdateLegalState(); updateRadarCardPreview(); }, 150);
             }
@@ -7332,7 +7708,7 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                     let apiUrl = '';
                     let httpMethod = 'POST'; 
                     let successMessage = '';
-                    const backendBaseUrl = '/api/v1'; 
+                    const backendBaseUrl = 'http://localhost:5000/api/v1'; 
 
                     if (formType === 'center') {
                         if (currentEditingReleaseUUID) { 
@@ -7375,8 +7751,8 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                         }
                         
 
-                        // ?? DEBUG: FormData key audit
-                        console.log("?? FormData keys being sent:");
+                        // 🧾 DEBUG: FormData key audit
+                        console.log("🧾 FormData keys being sent:");
                         for (const pair of formData.entries()) {
                             const [k, v] = pair;
                             if (v instanceof File) {
@@ -7407,8 +7783,8 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                         
                         const responseData = JSON.parse(responseText);
                         if (responseData.success) {
-                            console.log('✅ Form submission successful:', responseData);
-                            console.log('📋 Form details:', { formType, action, currentEditingReleaseUUID, currentEditingAlertUUID });
+                            console.log('âœ… Form submission successful:', responseData);
+                            console.log('ðŸ“‹ Form details:', { formType, action, currentEditingReleaseUUID, currentEditingAlertUUID });
                             
                             let assetIdentifier = currentEditingReleaseUUID || currentEditingAlertUUID;
                             if (!assetIdentifier) {
@@ -7422,10 +7798,10 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                                 trackAssetEvent(action, assetIdentifier, `Form: ${formType} ${currentEditingReleaseUUID || currentEditingAlertUUID ? 'updated' : 'created'}`);
                                 
                                 if (formType === 'center' && currentEditingReleaseUUID) {
-                                    console.log('🔄 Redirecting to manage releases (editing existing release)');
+                                    console.log('ðŸ”„ Redirecting to manage releases (editing existing release)');
                                     window.location.href = 'manage_releases.html';
                                 } else if (formType === 'radar' && currentEditingAlertUUID) {
-                                    console.log('🔄 Redirecting to radar history (editing existing alert)');
+                                    console.log('ðŸ”„ Redirecting to radar history (editing existing alert)');
                                     window.location.href = 'radar_history.html';
                                 } else if (formType === 'center' && action === 'publish') {
                                     // Show success modal instead of redirect
@@ -7433,8 +7809,8 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                                     const releaseTime = document.getElementById('releaseTime')?.value || '00:00';
                                     const releaseTitle = document.getElementById('releaseTitle')?.value;
                                     
-                                    console.log('🎉 Showing success modal for published release');
-                                    console.log('📅 Release details:', { releaseDate, releaseTime, releaseTitle });
+                                    console.log('ðŸŽ‰ Showing success modal for published release');
+                                    console.log('ðŸ“… Release details:', { releaseDate, releaseTime, releaseTitle });
                                     
                                     // Determine if this was an update or create
                             const wasUpdate = httpMethod === 'PUT' || httpMethod === 'PATCH' || currentEditingReleaseUUID;
@@ -7442,16 +7818,16 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                             
                             showSuccessModal(releaseTitle, releaseDate, releaseTime);
                                 } else if (formType === 'center' && action === 'draft') {
-                                    console.log('💾 Draft saved, staying on hub');
+                                    console.log('ðŸ’¾ Draft saved, staying on hub');
                                     alert(responseData.message || successMessage);
                                     showHubGrid();
                                 } else {
-                                    console.log('🏠 Returning to hub grid');
+                                    console.log('ðŸ  Returning to hub grid');
                                     alert(responseData.message || successMessage);
                                     showHubGrid();
                                 }
                             } else {
-                                console.error("❌ Could not get identifier from submission response.", responseData.data);
+                                console.error("âŒ Could not get identifier from submission response.", responseData.data);
                                 alert(responseData.message || successMessage);
                                 showHubGrid();
                             }
@@ -7475,13 +7851,13 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                     console.error("ERROR: dynamicFormContainer not found for displaying release detail.");
                     return;
                 }
-                const backendBaseUrl = '/api/v1'; 
+                const backendBaseUrl = 'http://localhost:5000/api/v1'; 
                 const detailApiUrl = `${backendBaseUrl}/center/releases/${releaseUUID}`;
                 
                 dynamicFormContainer.innerHTML = `<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Loading release details...</p></div>`;
                 const _gbl1 = document.getElementById('global-back-link');
                 if (_gbl1) { _gbl1.style.display = 'inline-flex'; _gbl1.onclick = (e) => { e.preventDefault(); showHubGrid(); }; }
-                const backBtnDetail = null; // legacy � now using global-back-link
+                const backBtnDetail = null; // legacy — now using global-back-link
                 if(backBtnDetail) backBtnDetail.addEventListener('click', showHubGrid);
                 if (!dynamicFormContainer.classList.contains('visible')) {
                      dynamicFormContainer.style.display = 'block';
@@ -7524,14 +7900,14 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                     
                     if (release.cardTeaserImagePath) {
                          releaseHtml += `<h3>Card Teaser Image:</h3>
-                                        <img src="${release.cardTeaserImagePath}" alt="Card Teaser" style="max-width: 300px; max-height: 200px; border: 1px solid var(--border-primary); border-radius: 4px; margin-bottom: 15px;">`;
+                                        <img src="http://localhost:5000${release.cardTeaserImagePath}" alt="Card Teaser" style="max-width: 300px; max-height: 200px; border: 1px solid var(--border-primary); border-radius: 4px; margin-bottom: 15px;">`;
                     }
 
                     const createFileLinkList = (files, title) => {
                         if (files && files.length > 0) {
                             let list = `<h3>${title}:</h3><ul style="list-style:none; padding-left:0; margin-bottom:15px;">`;
                             files.forEach(file => {
-                                const fileUrl = `${file.path}`; 
+                                const fileUrl = `http://localhost:5000${file.path}`; 
                                 list += `<li style="margin-bottom:5px;"><a href="${fileUrl}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas ${file.mimetype && file.mimetype.startsWith('image/') ? 'fa-image' : (file.mimetype && file.mimetype.startsWith('video/') ? 'fa-video' : 'fa-file-alt')}"></i> ${file.originalName || 'Document'} (${(file.size / 1024).toFixed(1)}KB)</a></li>`;
                             });
                             list += `</ul>`;
@@ -7562,17 +7938,271 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
             }
 
 
-            function initializeVaultFormJS() { /* ... (Keep existing vault form JS) ... */ } 
+            function initializeVaultFormJS() {
+                window.vEmbargoVerified = false;
+                window.vRecipients = [];
+                window.vTeaserUploaded = false;
+                window.vBentoState = {};
+
+                // Populate all timezones
+                const allTz = document.getElementById('vAllTzOptgroup');
+                if (allTz && Intl && Intl.supportedValuesOf) {
+                    try {
+                        const common = ['Europe/Berlin','UTC','America/New_York','America/Los_Angeles','Europe/London','Asia/Shanghai','Asia/Tokyo'];
+                        Intl.supportedValuesOf('timeZone').filter(function(tz){ return !common.includes(tz); }).forEach(function(tz){
+                            const opt = document.createElement('option');
+                            opt.value = tz; opt.textContent = tz;
+                            allTz.appendChild(opt);
+                        });
+                    } catch(e) {}
+                }
+
+                // Expiry grid clicks
+                document.querySelectorAll('.v-expiry-opt').forEach(function(opt) {
+                    opt.addEventListener('click', function() {
+                        document.querySelectorAll('.v-expiry-opt').forEach(function(o){ o.classList.remove('selected'); });
+                        this.classList.add('selected');
+                        const v = this.querySelector('input[type="radio"]').value;
+                        const hint = document.getElementById('vExpiryHint');
+                        if (hint) hint.textContent = v === 'never' ? 'Vault remains open until manually deactivated.' : 'Vault access closes ' + v + ' days after embargo lift.';
+                    });
+                });
+
+                // Drag-drop on all file-upload-area zones inside vault form
+                document.querySelectorAll('#vault-form .file-upload-area').forEach(function(zone) {
+                    zone.addEventListener('dragover', function(e){ e.preventDefault(); zone.classList.add('drag-over'); });
+                    zone.addEventListener('dragleave', function(){ zone.classList.remove('drag-over'); });
+                    zone.addEventListener('drop', function(e){
+                        e.preventDefault(); zone.classList.remove('drag-over');
+                        const input = zone.querySelector('input[type="file"]');
+                        if (input && e.dataTransfer.files.length) {
+                            try {
+                                const dt = new DataTransfer();
+                                Array.from(e.dataTransfer.files).forEach(function(f){ dt.items.add(f); });
+                                input.files = dt.files;
+                                input.dispatchEvent(new Event('change'));
+                            } catch(err) {}
+                        }
+                    });
+                });
+            }
+
+            function toggleVaultBento(header) {
+                const box = header.closest('.bento-box');
+                if (box) box.classList.toggle('collapsed');
+            }
+
+            function vCheckComplete(section) {
+                let complete = false;
+                switch(section) {
+                    case 'identity':
+                        const co = document.getElementById('vCompany');
+                        const br = document.getElementById('vBrand');
+                        const ti = document.getElementById('vTitle');
+                        complete = !!(co && co.value.trim() && br && br.value.trim() && ti && ti.value.trim());
+                        break;
+                    case 'schedule':
+                        complete = (window.vEmbargoVerified === true);
+                        break;
+                    case 'nda':
+                        complete = true;
+                        break;
+                    case 'access':
+                        complete = (window.vRecipients && window.vRecipients.length > 0);
+                        break;
+                    case 'teaser':
+                        complete = (window.vTeaserUploaded === true);
+                        break;
+                    case 'legal':
+                        const o = document.getElementById('vAuthOwnership');
+                        const em = document.getElementById('vAuthEmbargo');
+                        const ur = document.getElementById('vAuthUsageRights');
+                        complete = !!(o && o.checked && em && em.checked && ur && ur.checked);
+                        break;
+                }
+                if (window.vBentoState) window.vBentoState[section] = complete;
+                const box = document.getElementById('vbox-' + section);
+                const ri = document.getElementById('vri-' + section);
+                if (box) {
+                    box.classList.toggle('complete', complete);
+                    const chip = box.querySelector('.status-chip');
+                    if (chip) chip.textContent = complete ? 'Complete' : (box.dataset.required === 'true' ? 'Incomplete' : 'Optional');
+                }
+                if (ri) ri.classList.toggle('v-done', complete);
+            }
+
+            function vUpdateSchedulePreview() {
+                const el = document.getElementById('vEmbargoPreview');
+                const d = document.getElementById('vEmbargoDate');
+                const t = document.getElementById('vEmbargoTime');
+                const tz = document.getElementById('vTimezone');
+                if (el && d && t && tz && d.value && t.value && tz.value) {
+                    el.textContent = 'Will lift: ' + d.value + ' at ' + t.value + ' (' + tz.value + ')';
+                } else if (el) {
+                    el.textContent = '';
+                }
+            }
+
+            function vVerifyEmbargo() {
+                const d = document.getElementById('vEmbargoDate');
+                const t = document.getElementById('vEmbargoTime');
+                const tz = document.getElementById('vTimezone');
+                if (!d || !d.value || !t || !t.value || !tz || !tz.value) {
+                    alert('Please fill in embargo date, time and timezone before verifying.');
+                    return;
+                }
+                const dateObj = new Date(d.value + 'T' + t.value);
+                const formatted = dateObj.toLocaleDateString('en-GB', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+                const summary = formatted + ' at ' + t.value + ' (' + tz.value + ')';
+                if (!confirm('Confirm embargo:\n\n' + summary + '\n\nJournalists may not publish before this date and time.')) return;
+                window.vEmbargoVerified = true;
+                const gate = document.getElementById('vEmbargoGate');
+                const summaryEl = document.getElementById('vEmbargoSummary');
+                const btn = document.getElementById('vVerifyEmbargoBtn');
+                const editLink = document.getElementById('vEmbargoEditLink');
+                if (gate) gate.classList.add('verified');
+                if (summaryEl) { summaryEl.textContent = '\u2713 Verified & Locked: ' + summary; summaryEl.style.color = '#059669'; summaryEl.style.fontWeight = '700'; }
+                if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-check"></i> Verified & Locked'; }
+                if (editLink) editLink.style.display = 'block';
+                [d, t, tz].forEach(function(el){ el.readOnly = true; el.classList.add('schedule-locked'); });
+                vCheckComplete('schedule');
+            }
+
+            function vUnlockEmbargo(e) {
+                e.preventDefault();
+                window.vEmbargoVerified = false;
+                const gate = document.getElementById('vEmbargoGate');
+                const summaryEl = document.getElementById('vEmbargoSummary');
+                const btn = document.getElementById('vVerifyEmbargoBtn');
+                const editLink = document.getElementById('vEmbargoEditLink');
+                if (gate) gate.classList.remove('verified');
+                if (summaryEl) { summaryEl.textContent = 'Fill in embargo date, time and timezone \u2014 then verify & lock.'; summaryEl.style.color = ''; summaryEl.style.fontWeight = ''; }
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-lock"></i> Verify & Lock Embargo'; }
+                if (editLink) editLink.style.display = 'none';
+                const d = document.getElementById('vEmbargoDate');
+                const t = document.getElementById('vEmbargoTime');
+                const tz = document.getElementById('vTimezone');
+                [d, t, tz].forEach(function(el){ if(el){ el.readOnly = false; el.classList.remove('schedule-locked'); } });
+                vCheckComplete('schedule');
+            }
+
+            function vToggleNdaSection() {
+                const checked = document.getElementById('vRequireNda');
+                const section = document.getElementById('vNdaUploadSection');
+                if (section) section.style.display = (checked && checked.checked) ? 'block' : 'none';
+            }
+
+            function vHandleNdaUpload(input) {
+                const file = input.files[0]; if (!file) return;
+                const nameEl = document.getElementById('vNdaFileName');
+                const uploaded = document.getElementById('vNdaUploaded');
+                const dropZone = document.getElementById('vNdaDropZone');
+                if (nameEl) nameEl.textContent = file.name;
+                if (uploaded) uploaded.style.display = 'flex';
+                if (dropZone) dropZone.style.display = 'none';
+                vCheckComplete('nda');
+            }
+
+            function vRemoveNda() {
+                const fileEl = document.getElementById('vNdaFile');
+                const uploaded = document.getElementById('vNdaUploaded');
+                const dropZone = document.getElementById('vNdaDropZone');
+                if (fileEl) fileEl.value = '';
+                if (uploaded) uploaded.style.display = 'none';
+                if (dropZone) dropZone.style.display = 'block';
+                vCheckComplete('nda');
+            }
+
+            function vAddRecipient() {
+                const input = document.getElementById('vRecipientInput');
+                if (!input) return;
+                const email = input.value.trim();
+                if (!email || email.indexOf('@') === -1) { input.focus(); return; }
+                if (!window.vRecipients) window.vRecipients = [];
+                if (window.vRecipients.indexOf(email) !== -1) { input.value = ''; return; }
+                window.vRecipients.push(email);
+                input.value = '';
+                vRenderRecipients();
+                vCheckComplete('access');
+            }
+
+            function vRemoveRecipient(email) {
+                if (!window.vRecipients) return;
+                window.vRecipients = window.vRecipients.filter(function(r){ return r !== email; });
+                vRenderRecipients();
+                vCheckComplete('access');
+            }
+
+            function vRenderRecipients() {
+                const list = document.getElementById('vRecipientList');
+                const hint = document.getElementById('vRecipientHint');
+                if (!list) return;
+                if (!window.vRecipients || !window.vRecipients.length) {
+                    list.innerHTML = '';
+                    if (hint) hint.style.display = 'block';
+                    return;
+                }
+                if (hint) hint.style.display = 'none';
+                list.innerHTML = window.vRecipients.map(function(email) {
+                    return '<span class="v-chip"><i class="fas fa-envelope" style="color:var(--accent-primary,#3b82f6);font-size:11px;"></i>' + email + '<button type="button" onclick="vRemoveRecipient(\'' + email + '\')"><i class="fas fa-times"></i></button></span>';
+                }).join('');
+            }
+
+            function vHandleTeaserUpload(input) {
+                const file = input.files[0]; if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('vTeaserPreviewImg');
+                    const wrap = document.getElementById('vTeaserPreviewWrap');
+                    const zone = document.getElementById('vTeaserZone');
+                    if (img) img.src = e.target.result;
+                    if (wrap) wrap.style.display = 'block';
+                    if (zone) zone.style.display = 'none';
+                    window.vTeaserUploaded = true;
+                    vCheckComplete('teaser');
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function vRemoveTeaserImage() {
+                const fileEl = document.getElementById('vTeaserImage');
+                const wrap = document.getElementById('vTeaserPreviewWrap');
+                const zone = document.getElementById('vTeaserZone');
+                if (fileEl) fileEl.value = '';
+                if (wrap) wrap.style.display = 'none';
+                if (zone) zone.style.display = 'block';
+                window.vTeaserUploaded = false;
+                vCheckComplete('teaser');
+            }
+
+            function vHandleAssetUpload(input, listId, type) {
+                const list = document.getElementById(listId); if (!list) return;
+                const icons = { image: 'fa-image', video: 'fa-video', doc: 'fa-file-alt' };
+                const icon = icons[type] || 'fa-file';
+                Array.from(input.files).forEach(function(file) {
+                    const size = file.size > 1048576 ? (file.size/1048576).toFixed(1)+' MB' : (file.size/1024).toFixed(0)+' KB';
+                    const item = document.createElement('div');
+                    item.className = 'file-list-item';
+                    item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg-secondary);border:1px solid var(--border-primary);border-radius:6px;margin-top:6px;font-size:12px;';
+                    item.innerHTML = '<i class="fas ' + icon + '" style="color:var(--accent-primary,#3b82f6);flex-shrink:0;"></i><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-primary);">' + file.name + '</span><span style="color:var(--text-secondary);flex-shrink:0;">' + size + '</span><button type="button" onclick="this.closest(\'.file-list-item\').remove()" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:12px;padding:2px 4px;"><i class="fas fa-times"></i></button>';
+                    list.appendChild(item);
+                });
+                input.value = '';
+            }
+
+            function vSelectSecLevel(radio) {
+                document.querySelectorAll('.v-sec-card').forEach(function(c){ c.classList.remove('selected'); });
+                const card = radio.closest('.v-sec-card');
+                if (card) card.classList.add('selected');
+            }
+
 
             function initializeCenterFormJS() {
                  console.log("DEBUG: Initializing Center Form JS...");
                  try {
                      const uuidInput = document.getElementById('amcUUID'); 
                      if (uuidInput && !uuidInput.value && !currentEditingReleaseUUID) { 
-                        uuidInput.value = crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                            return v.toString(16);
-                        });
+                        uuidInput.value = crypto.randomUUID();
                      }
                      
                      setupFileList('centerCardTeaserImage', 'uploadedCardTeaserImageList', 'fas fa-image', true, 'currentCardTeaserImageInfo');
@@ -7768,10 +8398,7 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                 console.log("DEBUG: Radar bento form initializing...");
                 try {
                     const uuidInput = document.getElementById('radarUUID');
-                    if (uuidInput && !uuidInput.value && !currentEditingAlertUUID) uuidInput.value = crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                        return v.toString(16);
-                    });
+                    if (uuidInput && !uuidInput.value && !currentEditingAlertUUID) uuidInput.value = crypto.randomUUID();
                     setupFileList('radarTeaserImage', 'uploadedRadarTeaserImageList', 'fas fa-image', true);
                     setupFileList('radarAlertDoc', 'uploadedRadarAlertDocList', 'fas fa-file-alt', false);
                     setupFileList('radarImages', 'uploadedRadarImagesList', 'fas fa-image', false);
@@ -7881,8 +8508,8 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                 if (!confirm('Please confirm this schedule:\n\n' + summary + '\n\nThe alert will reflect this date and time.')) return;
                 radarScheduleVerified = true;
                 const gate = document.getElementById('radarScheduleGate'); if (gate) gate.classList.add('verified');
-                const summaryEl = document.getElementById('radarScheduleSummary'); if (summaryEl) { summaryEl.textContent = '? Verified & Locked: ' + summary; summaryEl.style.color = '#059669'; summaryEl.style.fontWeight = '700'; }
-                const btn = document.getElementById('radarVerifyScheduleBtn'); if (btn) { btn.disabled = true; btn.textContent = '? Verified & Locked'; }
+                const summaryEl = document.getElementById('radarScheduleSummary'); if (summaryEl) { summaryEl.textContent = '✓ Verified & Locked: ' + summary; summaryEl.style.color = '#059669'; summaryEl.style.fontWeight = '700'; }
+                const btn = document.getElementById('radarVerifyScheduleBtn'); if (btn) { btn.disabled = true; btn.textContent = '✓ Verified & Locked'; }
                 const editLink = document.getElementById('radarScheduleEditLink'); if (editLink) editLink.style.display = 'block';
                 if (date) date.readOnly = true; if (time) time.readOnly = true; if (tz) tz.disabled = true;
                 radarComputeScheduleState(); updateRadarCardPreview();
@@ -8072,7 +8699,7 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
 
                 try {
                     const token = localStorage.getItem('token');
-                    const response = await fetch(`/api/v1/center/releases/${currentEditingReleaseUUID}/regenerate-thumbnails`, {
+                    const response = await fetch(`http://localhost:5000/api/v1/center/releases/${currentEditingReleaseUUID}/regenerate-thumbnails`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -8257,11 +8884,11 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
 (function initAMCDropdownsDelegated() {
     // Prevent double-install of DELEGATED listeners only (safe)
     if (window.__AMC_DROPDOWNS_DELEGATED__) {
-        console.log('?? AMC Dropdowns already initialized - skipping');
+        console.log('⚠️ AMC Dropdowns already initialized - skipping');
         return;
     }
     window.__AMC_DROPDOWNS_DELEGATED__ = true;
-    console.log('?? AMC Delegated Dropdowns initializing...');
+    console.log('🚀 AMC Delegated Dropdowns initializing...');
 
     function getDropdownParts(which) {
         if (which === "category") {
@@ -8340,7 +8967,7 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
         }
     });
     
-    console.log('? AMC Delegated Dropdowns READY - single unified handler active');
+    console.log('✅ AMC Delegated Dropdowns READY - single unified handler active');
 })();
 
 // 2. Legal Authorisation Checkbox State Management
@@ -8600,7 +9227,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 })();
 
-console.log('? Menu upgrade JavaScript loaded');
+console.log('✅ Menu upgrade JavaScript loaded');
 
         // ===== SCHEDULE VERIFICATION: STATE MACHINE =====
         let scheduleState = "incomplete"; // "working" | "ready" | "complete"
@@ -8674,14 +9301,14 @@ console.log('? Menu upgrade JavaScript loaded');
             // UI updates
             gate?.classList.add("verified");
             if (summaryEl) {
-                summaryEl.textContent = `? Verified & Locked: ${summary}`;
+                summaryEl.textContent = `✓ Verified & Locked: ${summary}`;
                 summaryEl.style.color = "#059669";
                 summaryEl.style.fontWeight = "700";
             }
             
             if (btn) {
                 btn.disabled = true;
-                btn.textContent = "? Verified & Locked";
+                btn.textContent = "✓ Verified & Locked";
                 
                 // Show edit link
                 const editLink = document.getElementById("scheduleEditLink");
@@ -8734,7 +9361,7 @@ console.log('? Menu upgrade JavaScript loaded');
                 if (editLink) editLink.style.display = "none";
             }
             if (summaryEl) {
-                summaryEl.textContent = "Please fill in Release Date, Release Time, and Time Zone � then verify & lock.";
+                summaryEl.textContent = "Please fill in Release Date, Release Time, and Time Zone — then verify & lock.";
                 summaryEl.style.color = "";
                 summaryEl.style.fontWeight = "";
             }
@@ -9268,7 +9895,7 @@ console.log('? Menu upgrade JavaScript loaded');
                         let humanWhen = 'Not set';
                         if (dateVal) {
                             // Parse date to get day, month name, year
-                            const dateParts = dateVal.split('-'); // "2026-01-15" ? ["2026", "01", "15"]
+                            const dateParts = dateVal.split('-'); // "2026-01-15" → ["2026", "01", "15"]
                             const year = dateParts[0];
                             const monthNum = parseInt(dateParts[1], 10) - 1; // 0-indexed
                             const day = parseInt(dateParts[2], 10);
@@ -9371,9 +9998,9 @@ console.log('? Menu upgrade JavaScript loaded');
                             if (el) el.innerText = val;
                         };
 
-                        setText('m-company', company || '�');
-                        setText('m-brand', brand || '�');
-                        setText('m-title', title || '�');
+                        setText('m-company', company || '—');
+                        setText('m-brand', brand || '—');
+                        setText('m-title', title || '—');
                         setText('m-time', humanWhen);
 
                         setText('m-docs',  String(docs));
@@ -9624,7 +10251,7 @@ console.log('? Menu upgrade JavaScript loaded');
         console.log("DEBUG: Initial setup script finished.");
         });
     </script>
-    <script>document.addEventListener('DOMContentLoaded', function() { if (typeof loadV65Shell === 'function') { loadV65Shell({ basePath: './components/shell' }).then(() => console.log('? V6.5 Shell loaded')).catch(error => console.error('? Shell load failed:', error)); } });</script>
+    <script>document.addEventListener('DOMContentLoaded', function() { if (typeof loadV65Shell === 'function') { loadV65Shell({ basePath: './components/shell' }).then(() => console.log('✅ V6.5 Shell loaded')).catch(error => console.error('❌ Shell load failed:', error)); } });</script>
     <script src="./components/shell/v6_5-shell-loader.js" defer></script>
     <script src="./components/shell/v6_5-shell.js"></script>
 
@@ -9645,7 +10272,7 @@ html, body {
 
 /* ----------------------------------------------------------------
    PAGE TITLE (.amc-page-title / #main-content-title)
-   Inter Display 800 � 36px � -0.04em tracking
+   Inter Display 800 — 36px — -0.04em tracking
    ---------------------------------------------------------------- */
 .amc-page-title,
 #main-content-title {
@@ -9672,7 +10299,7 @@ body:not(.dark-mode) #main-content-title {
 
 /* ----------------------------------------------------------------
    PAGE SUBTITLE (.amc-page-subtitle)
-   Inter 300 Light � 16px � 1.55 line-height
+   Inter 300 Light — 16px — 1.55 line-height
    ---------------------------------------------------------------- */
 .amc-page-subtitle {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -9697,7 +10324,7 @@ body:not(.dark-mode) .amc-page-subtitle {
 
 /* ----------------------------------------------------------------
    SERVICE CARD TITLE (h2 inside .service-title-area)
-   Inter 600 � 17px � -0.01em tracking
+   Inter 600 — 17px — -0.01em tracking
    ---------------------------------------------------------------- */
 .service-title-area h2 {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -9718,8 +10345,8 @@ body:not(.dark-mode) .service-title-area h2 {
 
 /* ----------------------------------------------------------------
    SERVICE CARD DESCRIPTION (p inside .service-card)
-   Inter 300 � 14px � 1.55 line-height
-   Matches subtitle register � secondary, recedes
+   Inter 300 — 14px — 1.55 line-height
+   Matches subtitle register — secondary, recedes
    ---------------------------------------------------------------- */
 .service-card p {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -9739,7 +10366,7 @@ body:not(.dark-mode) .service-card p {
 
 /* ----------------------------------------------------------------
    FORM CARD ACCORDION HEADERS (h2 inside .form-card-header)
-   Inter 600 � 15px � keeps scannable at section-header scale
+   Inter 600 — 15px — keeps scannable at section-header scale
    ---------------------------------------------------------------- */
 .form-card-header h2 {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -9752,7 +10379,7 @@ body:not(.dark-mode) .service-card p {
 
 /* ----------------------------------------------------------------
    BENTO BOX TITLES (h3 inside .bento-title)
-   Inter 600 � 14px
+   Inter 600 — 14px
    ---------------------------------------------------------------- */
 .bento-title h3,
 .bento-header h3 {
@@ -9771,7 +10398,7 @@ body.dark-mode .bento-header h3 {
 
 /* ----------------------------------------------------------------
    HERO VALUE (large stat/metric display)
-   Inter 800 � Display opsz � max impact for key numbers
+   Inter 800 — Display opsz — max impact for key numbers
    ---------------------------------------------------------------- */
 .hero-value {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -9789,7 +10416,7 @@ body.dark-mode .hero-value {
 
 /* ----------------------------------------------------------------
    HERO LABEL & HELP (small caps labels above/below hero values)
-   Inter 500 � 11px � uppercase + tracking
+   Inter 500 — 11px — uppercase + tracking
    ---------------------------------------------------------------- */
 .hero-label,
 .hero-help {
@@ -9813,7 +10440,7 @@ body:not(.dark-mode) .hero-help {
 
 /* ----------------------------------------------------------------
    FORM LABELS (label elements in forms)
-   Inter 500 � 13px
+   Inter 500 — 13px
    ---------------------------------------------------------------- */
 label,
 .form-label {
@@ -9826,7 +10453,7 @@ label,
 
 /* ----------------------------------------------------------------
    FORM HELP TEXT / SMALL (small, .form-text)
-   Inter 300 � 12px � muted, recedes
+   Inter 300 — 12px — muted, recedes
    ---------------------------------------------------------------- */
 small,
 .form-text,
@@ -9849,7 +10476,7 @@ body:not(.dark-mode) .form-text {
 
 /* ----------------------------------------------------------------
    FORM INPUTS, SELECTS, TEXTAREAS
-   Inter 400 � 14px
+   Inter 400 — 14px
    ---------------------------------------------------------------- */
 input,
 select,
@@ -9863,7 +10490,7 @@ textarea,
 
 /* ----------------------------------------------------------------
    SECTION/LEGEND TITLES (fieldset legend)
-   Inter 600 � 12px � uppercase + tracking
+   Inter 600 — 12px — uppercase + tracking
    ---------------------------------------------------------------- */
 legend,
 fieldset legend {
@@ -9883,7 +10510,7 @@ body.dark-mode fieldset legend {
 
 /* ----------------------------------------------------------------
    CRITICAL REVIEW / MODAL HEADERS (h3 in modal/review headers)
-   Inter 600 � 16px
+   Inter 600 — 16px
    ---------------------------------------------------------------- */
 .critical-review-header h3,
 .success-modal-header h3,
@@ -9903,7 +10530,7 @@ body.dark-mode .success-modal-header h3 {
 
 /* ----------------------------------------------------------------
    STEP / PROGRESS LABELS
-   Inter 500 � 12px
+   Inter 500 — 12px
    ---------------------------------------------------------------- */
 .step-label,
 .step-title,
@@ -9916,7 +10543,7 @@ body.dark-mode .success-modal-header h3 {
 
 /* ----------------------------------------------------------------
    BUTTON TEXT
-   Inter 500 � inherit size from button context
+   Inter 500 — inherit size from button context
    ---------------------------------------------------------------- */
 button,
 .btn,
