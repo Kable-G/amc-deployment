@@ -21,7 +21,9 @@ const createAdminRoute = (pageName, requiredRoles) => {
         console.log(`🚫 AUTH DISABLED: Serving ${pageName} without any authentication checks`);
         
         // Serve the file directly without any authentication
-        const filePath = path.join(__dirname, '..', '..', 'Frontend', pageName);
+        // FIX: Use single '..' to go up one directory from routes to amc-deployment
+        const filePath = path.join(__dirname, '..', 'Frontend', pageName);
+        console.log(`📁 Serving file from: ${filePath}`);
         res.sendFile(filePath, (sendErr) => {
             if (sendErr) {
                 console.error(`Error serving admin page ${pageName}:`, sendErr);
@@ -135,7 +137,8 @@ router.get('/admin-content/:pageName', async (req, res, next) => {
         
         // User has permission, serve the actual file
         const path = require('path');
-        const filePath = path.join(__dirname, '..', '..', 'Frontend', pageName);
+        // FIX: Use single '..' to go up one directory from routes to amc-deployment
+        const filePath = path.join(__dirname, '..', 'Frontend', pageName);
         res.sendFile(filePath, (sendErr) => {
             if (sendErr) {
                 console.error(`Error serving admin content ${pageName}:`, sendErr);
