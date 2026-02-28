@@ -6095,7 +6095,7 @@ const radarFormHtml = `
                 manageReleasesContainer.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Fetching releases...</p></div>';
 
                 try {
-                    const response = await fetch(`http://localhost:5000/api/v1/center/my-releases?page=${page}&limit=${limit}`, {
+                    const response = await fetch(`/api/v1/center/my-releases?page=${page}&limit=${limit}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     const result = await response.json();
@@ -6253,7 +6253,7 @@ const radarFormHtml = `
                 if (!eventType || !assetId) { console.error('trackAssetEvent: eventType and assetId required.'); return; }
                 if (!token) { console.warn('trackAssetEvent: No token found for tracking.'); return; }
 
-                const apiUrl = `http://localhost:5000/api/v1/events/log`; 
+                const apiUrl = `/api/v1/events/log`; 
                 fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
@@ -6691,7 +6691,7 @@ function initCenterLanguageVariants() {
                     formData.append('filesToDelete', JSON.stringify([filePath]));
                     formData.append('action', 'update');
 
-                    const response = await fetch(`http://localhost:5000/api/v1/center/releases/${currentEditingReleaseUUID}`, {
+                    const response = await fetch(`/api/v1/center/releases/${currentEditingReleaseUUID}`, {
                         method: 'PUT',
                         headers: { 'Authorization': `Bearer ${token}` },
                         body: formData
@@ -6792,7 +6792,7 @@ function initCenterLanguageVariants() {
                     formData.append('filesToDelete', JSON.stringify([filePath]));
                     formData.append('action', 'update');
 
-                    const response = await fetch(`http://localhost:5000/api/v1/center/releases/${currentEditingReleaseUUID}`, {
+                    const response = await fetch(`/api/v1/center/releases/${currentEditingReleaseUUID}`, {
                         method: 'PUT',
                         headers: { 'Authorization': `Bearer ${token}` },
                         body: formData
@@ -6919,7 +6919,7 @@ function initCenterLanguageVariants() {
                             headers['X-User-Email'] = user.email;
                         }
 
-                        const response = await fetch('http://localhost:5000/api/v1/auth/validate-permissions', {
+                        const response = await fetch('/api/v1/auth/validate-permissions', {
                             headers: headers
                         });
                         
@@ -7181,19 +7181,12 @@ function initCenterLanguageVariants() {
                             return; // Allow the page to continue loading
                         }
                         
-                        // If backend is unavailable, clear authentication to be safe
-                        console.log("DEBUG: Backend unavailable, clearing authentication for security");
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('authToken');
-                        localStorage.removeItem('user');
-                        localStorage.removeItem('currentUser');
-                        
-                        // SECURITY FIX: Force logout and show login form when backend validation fails
-                        console.log("DEBUG: Forcing logout due to backend validation failure");
-                        if (loginContainer) loginContainer.style.display = 'flex';
-                        if (appContainer) appContainer.style.opacity = '0.3';
-                        if (userEmailDisplay) userEmailDisplay.textContent = "Not Logged In";
-                        return; // Prevent any further execution
+                        // Backend unreachable — trust the existing localStorage session
+                        // Do NOT clear auth or force logout: the user is already logged in
+                        console.log("DEBUG: Backend unreachable — trusting existing localStorage session, continuing.");
+                        // Hide login container, show app normally
+                        if (loginContainer) loginContainer.style.display = 'none';
+                        if (appContainer) { appContainer.style.opacity = '1'; appContainer.style.display = 'block'; }
                     }
                 }
                 
@@ -7234,7 +7227,7 @@ function initCenterLanguageVariants() {
                     return;
                 }
 
-                const loginUrl = `http://localhost:5000/api/v1/auth/login`; 
+                const loginUrl = `/api/v1/auth/login`; 
                 const loginButton = loginForm.querySelector('button[type="submit"]');
                 const originalButtonText = loginButton.innerHTML;
                 loginButton.disabled = true;
@@ -7283,7 +7276,7 @@ function initCenterLanguageVariants() {
                 }
 
                 try {
-                    const response = await fetch(`http://localhost:5000/api/v1/center/releases/foredit/${uuid}`, {
+                    const response = await fetch(`/api/v1/center/releases/foredit/${uuid}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     const result = await response.json();
@@ -7348,7 +7341,7 @@ function initCenterLanguageVariants() {
                         currentCardTeaserDisplay.innerHTML = `
                             <div class="existing-file-row" data-path="${existingCenterTeaserPath}" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 0;">
                                 <div style="display: flex; align-items: center;">
-                                    <span>Current: <a href="http://localhost:5000${existingCenterTeaserPath}" target="_blank">${fileName}</a></span>
+                                    <span>Current: <a href="${existingCenterTeaserPath}" target="_blank">${fileName}</a></span>
                                 </div>
                                 <button type="button" class="mini-remove" onclick="toggleExistingDeletion('teaser', '${existingCenterTeaserPath}', this)"
                                         style="background: none; border: none; color: var(--color-danger); cursor: pointer; padding: 2px 8px; font-size: 0.875em;">
@@ -7374,7 +7367,7 @@ function initCenterLanguageVariants() {
                             filesHtml += `
                                 <div class="existing-file-row" data-path="${filePath}" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border-primary);">
                                     <span>
-                                        <a href="http://localhost:5000${filePath}" target="_blank">${fileName}</a>
+                                        <a href="${filePath}" target="_blank">${fileName}</a>
                                         ${fileSize}
                                     </span>
                                     <button type="button" class="mini-remove" onclick="toggleExistingDeletion('${type}', '${filePath}', this)"
@@ -7440,7 +7433,7 @@ function initCenterLanguageVariants() {
                 }
 
                 try {
-                    const response = await fetch(`http://localhost:5000/api/v1/radar/alerts/foredit/${uuid}`, {
+                    const response = await fetch(`/api/v1/radar/alerts/foredit/${uuid}`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     const result = await response.json();
@@ -7490,8 +7483,8 @@ function initCenterLanguageVariants() {
                 if (data.primaryLanguage) { const h = form.querySelector('#radarPrimaryLang'); if (h) h.value = data.primaryLanguage; form.querySelectorAll('input[name="radarLangRadio"]').forEach(r => { r.checked = r.value === data.primaryLanguage; }); }
                 if (data.targetMarkets) { const h = form.querySelector('#radarTargetMarkets'); if (h) h.value = data.targetMarkets; const mkts = data.targetMarkets.split(',').map(m => m.trim()); form.querySelectorAll('input[name="radarMktCb"]').forEach(cb => { cb.checked = mkts.includes(cb.value); }); }
                 const tList = document.getElementById('uploadedRadarTeaserImageList');
-                if (tList && data.teaserImagePath) { const fn = data.teaserImagePath.split('/').pop(); tList.innerHTML = '<div class="form-text" style="display:flex;align-items:center;gap:8px;margin-top:5px;"><img src="http://localhost:5000' + data.teaserImagePath + '" style="width:60px;height:40px;object-fit:cover;border-radius:4px;"><span>Current: <a href="http://localhost:5000' + data.teaserImagePath + '" target="_blank">' + fn + '</a> <em>(choose new to replace)</em></span></div>'; }
-                if (data.alertDocPath) { const dList = document.getElementById('uploadedRadarAlertDocList'); if (dList) { const fn = data.alertDocPath.split('/').pop(); dList.innerHTML = '<p class="form-text">Current: <a href="http://localhost:5000' + data.alertDocPath + '" target="_blank">' + fn + '</a> <em>(choose new to replace)</em></p>'; } }
+                if (tList && data.teaserImagePath) { const fn = data.teaserImagePath.split('/').pop(); tList.innerHTML = '<div class="form-text" style="display:flex;align-items:center;gap:8px;margin-top:5px;"><img src="' + data.teaserImagePath + '" style="width:60px;height:40px;object-fit:cover;border-radius:4px;"><span>Current: <a href="' + data.teaserImagePath + '" target="_blank">' + fn + '</a> <em>(choose new to replace)</em></span></div>'; }
+                if (data.alertDocPath) { const dList = document.getElementById('uploadedRadarAlertDocList'); if (dList) { const fn = data.alertDocPath.split('/').pop(); dList.innerHTML = '<p class="form-text">Current: <a href="' + data.alertDocPath + '" target="_blank">' + fn + '</a> <em>(choose new to replace)</em></p>'; } }
                 if (data.languageVariantsJson) { const el = form.querySelector('#radarLangVariantsJson'); if (el) el.value = data.languageVariantsJson; }
                 setTimeout(() => { radarUpdateIdentityState(); radarComputeScheduleState(); radarUpdateCategoryState(); radarUpdateLangMarketsState(); radarUpdateTeaserState(); radarUpdateDocState(); radarUpdateLegalState(); updateRadarCardPreview(); }, 150);
             }
@@ -7708,7 +7701,7 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                     let apiUrl = '';
                     let httpMethod = 'POST'; 
                     let successMessage = '';
-                    const backendBaseUrl = 'http://localhost:5000/api/v1'; 
+                    const backendBaseUrl = '/api/v1'; 
 
                     if (formType === 'center') {
                         if (currentEditingReleaseUUID) { 
@@ -7851,7 +7844,7 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                     console.error("ERROR: dynamicFormContainer not found for displaying release detail.");
                     return;
                 }
-                const backendBaseUrl = 'http://localhost:5000/api/v1'; 
+                const backendBaseUrl = '/api/v1'; 
                 const detailApiUrl = `${backendBaseUrl}/center/releases/${releaseUUID}`;
                 
                 dynamicFormContainer.innerHTML = `<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Loading release details...</p></div>`;
@@ -7900,14 +7893,14 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                     
                     if (release.cardTeaserImagePath) {
                          releaseHtml += `<h3>Card Teaser Image:</h3>
-                                        <img src="http://localhost:5000${release.cardTeaserImagePath}" alt="Card Teaser" style="max-width: 300px; max-height: 200px; border: 1px solid var(--border-primary); border-radius: 4px; margin-bottom: 15px;">`;
+                                        <img src="${release.cardTeaserImagePath}" alt="Card Teaser" style="max-width: 300px; max-height: 200px; border: 1px solid var(--border-primary); border-radius: 4px; margin-bottom: 15px;">`;
                     }
 
                     const createFileLinkList = (files, title) => {
                         if (files && files.length > 0) {
                             let list = `<h3>${title}:</h3><ul style="list-style:none; padding-left:0; margin-bottom:15px;">`;
                             files.forEach(file => {
-                                const fileUrl = `http://localhost:5000${file.path}`; 
+                                const fileUrl = `${file.path}`; 
                                 list += `<li style="margin-bottom:5px;"><a href="${fileUrl}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas ${file.mimetype && file.mimetype.startsWith('image/') ? 'fa-image' : (file.mimetype && file.mimetype.startsWith('video/') ? 'fa-video' : 'fa-file-alt')}"></i> ${file.originalName || 'Document'} (${(file.size / 1024).toFixed(1)}KB)</a></li>`;
                             });
                             list += `</ul>`;
@@ -8699,7 +8692,7 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
 
                 try {
                     const token = localStorage.getItem('token');
-                    const response = await fetch(`http://localhost:5000/api/v1/center/releases/${currentEditingReleaseUUID}/regenerate-thumbnails`, {
+                    const response = await fetch(`/api/v1/center/releases/${currentEditingReleaseUUID}/regenerate-thumbnails`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
