@@ -543,18 +543,11 @@
              .controls-section { flex-direction: column; align-items: stretch;}
              .search-bar { max-width: none; }
 
-             .radar-card {
-                 width: 100%;
-                 margin: 0;
-             }
+             .radar-card { width: 100%; margin: 0; }
 
-             .card-image-area {
-                 height: 200px;
-             }
+             .card-image-area { height: 200px; }
              
-             .card-image-hover-overlay {
-                 gap: 8px;
-             }
+             .card-image-hover-overlay { gap: 8px; }
              
              .card-image-hover-overlay .btn {
                  min-width: 120px;
@@ -562,9 +555,7 @@
                  font-size: 0.85em;
              }
              
-             .card-content-area {
-                 padding: 10px;
-             }
+             .card-content-area { padding: 10px; }
 
              /* Keep badge left, date right — no stacking */
              .card-bottom-meta {
@@ -573,13 +564,8 @@
                  justify-content: space-between;
                  gap: 8px;
              }
-             .countdown-badge {
-                 align-self: auto;
-             }
-             .drop-time {
-                 align-self: auto;
-                 text-align: right;
-             }
+             .countdown-badge { align-self: auto; }
+             .drop-time { align-self: auto; text-align: right; }
              
              .brand-band {
                  padding: 6px 10px;
@@ -1862,14 +1848,12 @@
             --amc-rail-w: 72px;
         }
 
-        /* ===== MOBILE-MAIN — adds left/right/bottom padding to match v6.5.
-           NOTE: padding-top is intentionally NOT set here — the external
-           v6_5-shell.css already injects padding-top for the fixed header.
-           Setting it again would double the gap. ===== */
+        /* ===== MOBILE-MAIN BASE PADDING =====
+           Shell header is position:sticky so NO padding-top override is needed.
+           Shell CSS has zero base padding for mobile — only sets it at 768px+.
+           This rule fills that gap, matching v6.5's 16px 12px on portrait mobile. */
         .mobile-main {
-            padding-left: 12px !important;
-            padding-right: 12px !important;
-            padding-bottom: 16px !important;
+            padding: 16px 12px;
         }
         /* Avatar visibility — reinforces shell CSS */
         .amc-avatar {
