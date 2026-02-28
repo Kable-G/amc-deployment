@@ -1716,7 +1716,7 @@ function renderAlert(alert) {
     if (alert.teaserImagePath) {
         const imgUrl = alert.teaserImagePath.startsWith('http')
             ? alert.teaserImagePath
-            : '${API_BASE_URL}/' + alert.teaserImagePath;
+            : `${API_BASE_URL}/` + alert.teaserImagePath;
         const imgEl = document.getElementById('alert-teaser-image');
         if (imgEl) {
             imgEl.src = imgUrl;
@@ -1729,7 +1729,7 @@ function renderAlert(alert) {
     if (alert.alertDocPath) {
         const docUrl = alert.alertDocPath.startsWith('http')
             ? alert.alertDocPath
-            : '${API_BASE_URL}' + alert.alertDocPath;
+            : `${API_BASE_URL}` + alert.alertDocPath;
         attachmentsToRender.push({
             url:          docUrl,
             path:         docUrl,
