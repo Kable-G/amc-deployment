@@ -932,6 +932,9 @@
 </div>
 
 <script>
+        // Dynamic API Base URL - works on both localhost and production
+        const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
+        
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebar-toggle');
         const body = document.body;
@@ -1057,7 +1060,7 @@
             if (!alertDbId) { console.error("logRadarInteraction: alertDbId is missing for interaction type:", interactionType); return; }
             console.log(`Attempting to log: alertId=${alertDbId}, type=${interactionType}`);
             try {
-                const response = await fetch('http://localhost:5000/api/v1/events/log-radar-interaction', { 
+                const response = await fetch(`${API_BASE_URL}/api/v1/events/log-radar-interaction`, { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) },
                     body: JSON.stringify({ alertId: alertDbId, interactionType })
@@ -1101,7 +1104,7 @@
             radarGridContainer.innerHTML = '<p style="text-align:center; padding: 20px;">Loading upcoming Radar alerts...</p>';
 
             try {
-                const response = await fetch('http://localhost:5000/api/v1/radar/alerts', { 
+                const response = await fetch(`${API_BASE_URL}/api/v1/radar/alerts`, { 
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
                 });
@@ -1139,7 +1142,7 @@
                             else { countdownText = "Dropped"; urgencyClass = 'urgency-past'; }
                             
                             const imageUrl = alert.teaserImagePath 
-                                ? `http://localhost:5000${alert.teaserImagePath}` 
+                                ? `${API_BASE_URL}${alert.teaserImagePath}` 
                                 : `https://via.placeholder.com/400x200/EEEEEE/BDBDBD?text=${encodeURIComponent(alert.brand || 'Radar Event')}`;
                             
                             // Determine urgency class for new countdown badge
