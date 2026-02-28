@@ -3,19 +3,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<style id="NUCLEAR-TEST-DO-NOT-REMOVE">
-/* NUCLEAR TEST - IF YOU SEE THIS WORKING, CSS IS LOADING */
-.amc-page-title,
-#main-content-title,
-h1.amc-page-title {
-    font-size: 72px !important;
-    color: #ff0000 !important;
-    background: #ffff00 !important;
-    font-weight: 900 !important;
-    border: 4px solid blue !important;
-}
-</style>
-
     <script type="module">
       import { protectPage } from "./auth.js";
       protectPage("client_user");  // AUTHENTICATION RE-ENABLED
@@ -903,7 +890,6 @@ body.dark-mode input[type="time"]{
             letter-spacing: 0 !important;
             margin: 0 0 20px 0 !important;
             padding: 0 0 20px 0 !important;
-            border-bottom: 1px solid var(--border-primary, #e2e8f0);
             color: #6b7280;
             text-align: left !important;
         }
@@ -3172,6 +3158,28 @@ body.dark-mode .bento-box[data-section="supplementary"] .file-upload-area {
   border-color: rgba(147, 51, 234, 0.9) !important;
 }
 
+/* -- RADAR BENTO: coloured dashed stitch on file upload areas -- */
+/* Required upload zones ? blue */
+.bento-box[data-section="radar-teaser-image"] .file-upload-area,
+.bento-box[data-section="radar-alert-doc"] .file-upload-area {
+  border-color: rgba(59, 130, 246, 0.9) !important;
+}
+/* Optional upload zones ? purple */
+.bento-box[data-section="radar-images"] .file-upload-area,
+.bento-box[data-section="radar-videos"] .file-upload-area,
+.bento-box[data-section="radar-supplementary"] .file-upload-area {
+  border-color: rgba(147, 51, 234, 0.9) !important;
+}
+body.dark-mode .bento-box[data-section="radar-teaser-image"] .file-upload-area,
+body.dark-mode .bento-box[data-section="radar-alert-doc"] .file-upload-area {
+  border-color: rgba(59, 130, 246, 0.9) !important;
+}
+body.dark-mode .bento-box[data-section="radar-images"] .file-upload-area,
+body.dark-mode .bento-box[data-section="radar-videos"] .file-upload-area,
+body.dark-mode .bento-box[data-section="radar-supplementary"] .file-upload-area {
+  border-color: rgba(147, 51, 234, 0.9) !important;
+}
+
 
 
 /* =============================
@@ -3620,7 +3628,7 @@ main.amc-content{
   min-height: 0 !important;
 }
 
-/* Dark-mode calendar/clock pickers: invert the indicator icon so it’s visible */
+/* Dark-mode calendar/clock pickers: invert the indicator icon so it�s visible */
 .dark-mode input[type="date"]::-webkit-calendar-picker-indicator,
 .dark-mode input[type="time"]::-webkit-calendar-picker-indicator{
   filter: invert(1) brightness(1.2) !important;
@@ -3746,7 +3754,7 @@ body.dark-mode input[type="datetime-local"]::-webkit-inner-spin-button{
 
 
 /* ==================================================================================
-   🎯 ADOPT WORKING PATTERN (from clean GlobalShell version)
+   ?? ADOPT WORKING PATTERN (from clean GlobalShell version)
    This overrides ALL previous conflicting rules to match the working version
    ================================================================================== */
 
@@ -3765,7 +3773,7 @@ main.amc-content {
     align-items: center !important;
     width: 100% !important;
     max-width: 1400px !important;
-    padding: 40px 60px !important;  /* ← Padding on PARENT */
+    padding: 40px 60px !important;  /* ? Padding on PARENT */
     box-sizing: border-box !important;
     margin: 0 auto !important;
 }
@@ -3783,7 +3791,7 @@ body.sidebar-collapsed .amc-page {
     width: 100% !important;
     max-width: 1200px !important;
     margin: 0 auto !important;
-    padding: 0 !important;  /* ← NO padding on children */
+    padding: 0 !important;  /* ? NO padding on children */
 }
 
 /* When sidebar collapses, expand max-width */
@@ -3863,7 +3871,7 @@ body.sidebar-collapsed .bento-grid {
 }
 
 /* ==================================================================================
-   🎨 AUTHORIZATION BOX - ORANGE COLOR (FINAL OVERRIDE)
+   ?? AUTHORIZATION BOX - ORANGE COLOR (FINAL OVERRIDE)
    Added at the very end to ensure it overrides all other rules
    ================================================================================== */
 
@@ -3965,7 +3973,7 @@ body.dark-mode .bento-box.legal-authorisation.ready .status-chip {
 /* ================================================================================== */
 
 /* ==================================================================================
-   🔧 ICON VISIBILITY FIXES - Dark Mode Date/Time Pickers + Save Draft Button
+   ?? ICON VISIBILITY FIXES - Dark Mode Date/Time Pickers + Save Draft Button
    ================================================================================== */
 
 /* Dark mode - Invert date/time picker icons so they're visible on dark inputs */
@@ -4007,7 +4015,7 @@ body.dark-mode input[type="time"] {
 /* ================================================================================== */
 
 /* ==================================================================================
-   🎨 MODAL CONSISTENCY - Make Success & Review Modals Match (Contemporary Style)
+   ?? MODAL CONSISTENCY - Make Success & Review Modals Match (Contemporary Style)
    ================================================================================== */
 
 /* Both modals - consistent dimensions and modern styling */
@@ -4098,7 +4106,7 @@ main.mobile-main{
   padding-bottom: 14px !important; /* keeps divider close to title but not cramped */
 }
 
-/* 4) Service cards were too close to divider line — add space */
+/* 4) Service cards were too close to divider line � add space */
 .service-card-grid-2x2{
   margin-top: 22px !important;
 }
@@ -4248,7 +4256,7 @@ main.mobile-main{
   scrollbar-gutter: stable both-edges;        /* reserve space */
 }
 
-/* Higher-contrast thumb + track so it’s unmistakable */
+/* Higher-contrast thumb + track so it�s unmistakable */
 main.mobile-main::-webkit-scrollbar{ width: 10px !important; }
 main.mobile-main::-webkit-scrollbar-track{ background: rgba(15,23,42,0.06) !important; }
 main.mobile-main::-webkit-scrollbar-thumb{
@@ -4381,6 +4389,60 @@ main.mobile-main::-webkit-scrollbar-thumb{ box-shadow: none !important; }
   font-style: normal !important;
   font-weight: 400 !important;
 }
+
+/* -- RADAR BENTO: schedule-ready state -- */
+.bento-box.schedule-ready { border-color: #fb923c; background: #fff7ed; }
+.bento-box.schedule-ready .status-chip { background: #fb923c; color: #fff; }
+body.dark-mode .bento-box.schedule-ready { background: #3d2b0d; border-color: #fb923c; }
+/* -- RADAR BENTO: optional boxes -- */
+.bento-box[data-section^="radar-"][data-required="false"] { border-color: #a78bfa; background: #f5f3ff; }
+.bento-box[data-section^="radar-"][data-required="false"] .status-chip { background: #ede9fe; color: #5b21b6; }
+body.dark-mode .bento-box[data-section^="radar-"][data-required="false"] { border-color: #7c3aed; background: #2d1d4e; }
+body.dark-mode .bento-box[data-section^="radar-"][data-required="false"] .status-chip { background: #4c1d95; color: #ddd6fe; }
+/* -- STICKY PREVIEW SIDEBAR -- */
+.bento-sidebar .preview-card.sticky { position:sticky; top:calc(var(--amc-header-h,56px) + 16px); max-height:calc(100vh - var(--amc-header-h,56px) - 40px); overflow-y:auto; }
+
+/* -- FORM BACK LINK � enterprise subtle nav (matches amc-alert-detail) -- */
+a.form-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-secondary, #64748b);
+    text-decoration: none;
+    letter-spacing: 0.01em;
+    transition: color 0.15s ease;
+    cursor: pointer;
+    /* Sits above the h1 in the page header � matches amc-alert-detail pattern */
+    margin-bottom: 10px;
+    margin-top: 0;
+}
+a.form-back-link:hover { color: #3b82f6; }
+a.form-back-link i { font-size: 10px; }
+body.dark-mode a.form-back-link { color: #94a3b8; }
+body.dark-mode a.form-back-link:hover { color: #60a5fa; }
+
+/* Remove the old container spacing that caused the gap */
+.back-to-hub-container { display: none !important; }
+
+/* Tighten top of dynamic form container � no dead space above bento grid */
+#dynamic-form-container {
+    padding-top: 0 !important;
+}
+
+
+/* -- Page divider � full content-column width, sits between header and form -- */
+hr.amc-page-divider {
+    border: none;
+    border-top: 1px solid var(--border-primary, #e2e8f0);
+    margin: 0 0 20px 0;
+    width: 100%;
+    display: block;
+}
+body.dark-mode hr.amc-page-divider {
+    border-top-color: #334155;
+}
 </style>
 
 </head>
@@ -4417,6 +4479,9 @@ main.mobile-main::-webkit-scrollbar-thumb{ box-shadow: none !important; }
             
             <!-- Content Header -->
             <header class="amc-page-header">
+                <a class="form-back-link" id="global-back-link" href="#" style="display:none;">
+                    <i class="fas fa-chevron-left"></i> Back to Upload Hub
+                </a>
                 <h1 class="amc-page-title" id="main-content-title">
                     <i class="fas fa-upload"></i> Upload Hub
                 </h1>
@@ -4424,6 +4489,7 @@ main.mobile-main::-webkit-scrollbar-thumb{ box-shadow: none !important; }
                     Welcome! Select the service you wish to upload assets or create content for.
                 </p>
             </header>
+            <hr class="amc-page-divider" aria-hidden="true">
 
             <!-- Service Cards Grid -->
             <div class="service-card-grid-2x2" id="service-card-grid">
@@ -4470,7 +4536,7 @@ main.mobile-main::-webkit-scrollbar-thumb{ box-shadow: none !important; }
                                data-help-content="Post pre-announcements or 'save the date' alerts for upcoming events or releases, providing key details like date, time, and topic to registered media."></i>
                         </div>
                         <p>Post pre-announcements and 'save the date' alerts for upcoming releases or events.</p>
-                        <a href="#" class="btn btn-primary service-link" data-form-type="radar" data-form-title="Create New Radar Alert">
+                        <a href="#" class="btn btn-primary service-link" data-form-type="radar" data-form-title="Upload Media Alert">
                             <i class="fas fa-bullhorn"></i> Create Radar Alert
                         </a>
                     </div>
@@ -4627,17 +4693,17 @@ main.mobile-main::-webkit-scrollbar-thumb{ box-shadow: none !important; }
                     <div class="metadata-row-two">
                         <div class="metadata-field">
                             <span class="metadata-label-orange">COMPANY</span>
-                            <span class="metadata-value" id="m-company">—</span>
+                            <span class="metadata-value" id="m-company">�</span>
                         </div>
                         <div class="metadata-field">
                             <span class="metadata-label-orange">BRAND</span>
-                            <span class="metadata-value" id="m-brand">—</span>
+                            <span class="metadata-value" id="m-brand">�</span>
                         </div>
                     </div>
                     <div class="metadata-row-full">
                         <div class="metadata-field metadata-field-title">
                             <span class="metadata-label-orange">MEDIA RELEASE TITLE</span>
-                            <span class="metadata-value metadata-value-title" id="m-title" title="Click to expand">—</span>
+                            <span class="metadata-value metadata-value-title" id="m-title" title="Click to expand">�</span>
                         </div>
                     </div>
                 </div>
@@ -4645,7 +4711,7 @@ main.mobile-main::-webkit-scrollbar-thumb{ box-shadow: none !important; }
                 <!-- Section 2: Go Live - THE HERO (MOVED TO MIDDLE) -->
                 <div class="review-section review-section-hero">
                     <div class="hero-label">For release:</div>
-                    <div class="hero-value" id="m-time">—</div>
+                    <div class="hero-value" id="m-time">�</div>
                     <div class="hero-help">Please confirm the release date, time and time zone.</div>
                 </div>
 
@@ -4655,25 +4721,25 @@ main.mobile-main::-webkit-scrollbar-thumb{ box-shadow: none !important; }
                         <!-- Row 1: Media Release & Images -->
                         <div class="data-chip">
                             <span class="data-label">MEDIA RELEASE:</span>
-                            <span class="data-count" id="m-docs">—</span>
-                            <span class="data-payload" id="m-payload-docs">—</span>
+                            <span class="data-count" id="m-docs">�</span>
+                            <span class="data-payload" id="m-payload-docs">�</span>
                         </div>
                         <div class="data-chip">
                             <span class="data-label">IMAGE(S):</span>
-                            <span class="data-count" id="m-imgs">—</span>
-                            <span class="data-payload" id="m-payload-imgs">—</span>
+                            <span class="data-count" id="m-imgs">�</span>
+                            <span class="data-payload" id="m-payload-imgs">�</span>
                         </div>
                         
                         <!-- Row 2: Videos & Supplementary -->
                         <div class="data-chip">
                             <span class="data-label">VIDEO(S):</span>
-                            <span class="data-count" id="m-vids">—</span>
-                            <span class="data-payload" id="m-payload-vids">—</span>
+                            <span class="data-count" id="m-vids">�</span>
+                            <span class="data-payload" id="m-payload-vids">�</span>
                         </div>
                         <div class="data-chip">
                             <span class="data-label">SUPPLEMENTARY:</span>
-                            <span class="data-count" id="m-supp">—</span>
-                            <span class="data-payload" id="m-payload-supp">—</span>
+                            <span class="data-count" id="m-supp">�</span>
+                            <span class="data-payload" id="m-payload-supp">�</span>
                         </div>
                     </div>
                 </div>
@@ -4964,7 +5030,7 @@ let markedForDeletion = {
                                 <div class="schedule-verification-gate" id="scheduleGate">
                                     <div class="schedule-gate-inner">
                                         <div id="scheduleSummary" class="schedule-summary">
-                                            Please fill in Release Date, Release Time, and Time Zone — then verify & lock.
+                                            Please fill in Release Date, Release Time, and Time Zone � then verify & lock.
                                         </div>
 
                                         <button type="button"
@@ -5418,11 +5484,145 @@ let markedForDeletion = {
         `;
 const radarFormHtml = `
             <form id="radar-form">
-                 <input type="hidden" name="radarAlertUUID" id="radarUUID" value="">
-                <div class="form-card"> <div class="form-card-header" data-bs-toggle="collapse" data-bs-target="#collapse-radar-0"> <h2><i class="fas fa-info-circle"></i> Radar Alert Details</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body" id="collapse-radar-0"> <div class="form-group"> <label for="radarTitle">Alert Title * <i class="fas fa-question-circle service-help-icon" style="margin-left: 5px;" data-service="Radar" data-help-content="A concise title for the upcoming event or announcement (e.g., 'Save the Date: Global Product Reveal')." role="button" tabindex="0"></i></label> <input type="text" class="form-control" id="radarTitle" name="title" placeholder="e.g., Save the Date: Global Product Reveal" required> </div> <div class="form-group"> <label for="dropDateTime">Expected Event/Drop Date & Time *</label> <input type="datetime-local" class="form-control" id="dropDateTime" name="dropDate" required> <small>The date and time the actual event or release is scheduled for.</small> </div> <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="radarBrand">Brand</label> <input type="text" class="form-control" id="radarBrand" name="brand" placeholder="e.g., Manufacturer Name"> </div> </div> <div class="form-col"> <div class="form-group"> <label for="radarRegion">Region</label> <select class="form-control" id="radarRegion" name="region"> <option value="Global" selected>Global</option> <option value="Europe">Europe</option> <option value="North America">North America</option> <option value="Asia-Pacific">Asia-Pacific</option> <option value="EMEA">EMEA</option> <option value="DACH">DACH</option> </select> <small>Primary geographic focus, if applicable.</small> </div> </div> </div> <div class="form-group"> <label for="radarTags">Tags / Keywords</label> <input type="text" class="form-control" id="radarTags" name="tags" placeholder="Comma-separated, e.g., Concept, SUV, EV, Press Conference"> <small>Keywords related to the upcoming announcement.</small> </div> <div class="form-group"> <label for="radarDescription">Optional Description</label> <textarea class="form-control" id="radarDescription" name="description" rows="3" placeholder="Provide a brief teaser or context about the upcoming event/release (e.g., 'Further details will follow. Stay tuned for...')."></textarea> <small>Short public note displayed with the alert.</small> </div> </div> </div>
-                <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-radar-image"> <h2><i class="fas fa-image"></i> Optional Teaser Image</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-radar-image"> <div class="form-group"> <label for="radarTeaserImage">Teaser Image</label> <div class="custom-file-input-wrapper" style="max-width: 400px;"> <input type="file" class="custom-file-input" id="radarTeaserImage" name="radarTeaserImage" accept="image/jpeg, image/png, image/gif, image/webp"> <span class="custom-file-input-button">Browse</span> <label class="custom-file-input-label" data-default-text="Select image...">Select image...</label> </div> <small>A small image to represent this Radar alert (e.g., brand logo, event graphic).</small> <small class="form-text" style="display: block; margin-top: 4px;">For best results, upload images close to a 2:1 landscape aspect ratio. Logos are also accepted and will be centered and scaled to fill the space.</small> <div class="file-list" id="uploadedRadarTeaserImageList" style="margin-top: 10px;"> </div> </div> </div> </div>
-                <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-radar-quickview"> <h2><i class="fas fa-eye-slash"></i> Optional Quick View Details</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-radar-quickview"> <div class="form-group"> <label for="radarQuickViewContent">Extended Teaser / Quick View Information</label> <textarea class="form-control" id="radarQuickViewContent" name="quickViewContent" rows="5" placeholder="Provide more in-depth teaser information that will appear in a 'Quick View' modal. Supports basic HTML if enabled."></textarea> <small>This content is optional. If provided, a 'Quick View' option will appear on the Radar card.</small> </div> </div> </div>
-                <div class="form-card-footer preview-bar"> <button type="button" class="btn btn-secondary preview-btn"><i class="fas fa-eye"></i> Preview Alert</button> <div> <button type="submit" name="action" value="draft" class="btn btn-primary"><i class="fas fa-save"></i> Save Draft</button> <button type="submit" name="action" value="publish" class="btn btn-success"><i class="fas fa-bullhorn"></i> Post Radar Alert</button> </div> </div>
+                <input type="hidden" id="radarSubmitAction" name="action" value="draft">
+                <input type="hidden" name="radarAlertUUID" id="radarUUID" value="">
+                <div class="bento-grid">
+                    <div class="bento-main">
+                        <div class="bento-box" data-section="radar-identity" data-required="true">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-info-circle"></i><h3>Media Alert Details</h3></div><div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body">
+                                <div class="form-group"><label for="radarCompanyName">Company name *</label><input type="text" class="form-control" id="radarCompanyName" name="companyName" placeholder="e.g., Mercedes-Benz Group AG" required></div>
+                                <div class="form-group"><label for="radarBrand">Brand *</label><input type="text" class="form-control" id="radarBrand" name="brand" placeholder="e.g., Mercedes-Benz" required></div>
+                                <div class="form-group"><label for="radarTitle">Media Alert title *</label><input type="text" class="form-control" id="radarTitle" name="title" placeholder="e.g., Save the Date: Global Product Reveal" required></div>
+                                <div class="form-group"><label for="radarTags">Tags / Keywords</label><input type="text" class="form-control" id="radarTags" name="tags" placeholder="Comma-separated, e.g., Concept, SUV, EV, Press Conference"></div>
+                            </div>
+                        </div>
+                        <div class="bento-box" data-section="radar-schedule" data-required="true">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-clock"></i><h3>Schedule &amp; Timing</h3></div><div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body">
+                                <div class="form-row">
+                                    <div class="form-col"><div class="form-group"><label for="radarEventDate">Event Date *</label><input type="date" class="form-control" id="radarEventDate" name="eventDate" required><small>Date the event or announcement is scheduled for.</small></div></div>
+                                    <div class="form-col"><div class="form-group"><label for="radarEventTime">Event Time (Optional)</label><input type="time" class="form-control" id="radarEventTime" name="eventTime"></div></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="radarEventTimezone">Time Zone *</label>
+                                    <select class="form-control" id="radarEventTimezone" name="eventTimezone" required>
+                                        <optgroup label="Suggested"><option value="Europe/Berlin">Europe/Berlin (CET/CEST)</option><option value="UTC">UTC</option><option value="Asia/Shanghai">Asia/Shanghai (CST)</option><option value="America/New_York">America/New_York (ET)</option><option value="America/Los_Angeles">America/Los_Angeles (PT)</option><option value="Europe/London">Europe/London (GMT/BST)</option></optgroup>
+                                        <optgroup label="All time zones" id="radarAllTzOptgroup"></optgroup>
+                                    </select>
+                                    <div id="radarSchedulePreview" style="margin-top:6px;font-size:12px;color:var(--text-secondary);"></div>
+                                    <div class="schedule-verification-gate" id="radarScheduleGate">
+                                        <div class="schedule-gate-inner">
+                                            <div id="radarScheduleSummary" class="schedule-summary">Fill in Event Date and Time Zone, then verify &amp; lock.</div>
+                                            <button type="button" id="radarVerifyScheduleBtn" class="btn-verify-schedule" onclick="verifyRadarSchedule()">Verify &amp; Lock Schedule</button>
+                                            <div id="radarScheduleEditLink" style="display:none;margin-top:10px;"><a href="#" onclick="unlockRadarSchedule(event)" style="color:#059669;text-decoration:none;font-size:13px;display:inline-flex;align-items:center;gap:6px;"><i class="fas fa-pencil-alt"></i> Edit schedule</a><small style="display:block;color:#64748b;font-size:11px;margin-top:4px;">(requires re-verification)</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bento-box" data-section="radar-content-category" data-required="true">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-tags"></i><h3>Content Category</h3></div><div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body">
+                                <div class="form-group"><label>Alert Category *</label>
+                                    <div class="checkbox-grid" id="radarCategoryGrid">
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarCatCb" value="save-the-date"><span class="checkbox-label">Save the Date</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarCatCb" value="product-launch"><span class="checkbox-label">Product Unveil/Launch</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarCatCb" value="general"><span class="checkbox-label">General News</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarCatCb" value="corporate-financial"><span class="checkbox-label">Corporate &amp; Financial</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarCatCb" value="technology-innovation"><span class="checkbox-label">Technology &amp; Innovation</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarCatCb" value="motorsport-sport"><span class="checkbox-label">Motorsport/Sport</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarCatCb" value="events-awards"><span class="checkbox-label">Events/Awards/Auto Shows</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarCatCb" value="sustainability"><span class="checkbox-label">Sustainability</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarCatCb" value="partnerships"><span class="checkbox-label">Partnerships &amp; Collaborations</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarCatCb" value="classic-heritage"><span class="checkbox-label">Classic/Heritage</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarCatCb" value="other"><span class="checkbox-label">Other</span></label>
+                                    </div>
+                                    <input type="hidden" id="radarContentCategory" name="contentCategory" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bento-box" data-section="radar-language-markets" data-required="true">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-globe"></i><h3>Language &amp; Markets</h3></div><div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body">
+                                <div class="form-group"><label>Primary Language *</label>
+                                    <div class="checkbox-grid checkbox-grid-single-select" id="radarLangGrid">
+                                        <label class="checkbox-grid-item"><input type="radio" name="radarLangRadio" value="en" required><span class="checkbox-label">English</span></label>
+                                        <label class="checkbox-grid-item"><input type="radio" name="radarLangRadio" value="de"><span class="checkbox-label">German</span></label>
+                                        <label class="checkbox-grid-item"><input type="radio" name="radarLangRadio" value="fr"><span class="checkbox-label">French</span></label>
+                                        <label class="checkbox-grid-item"><input type="radio" name="radarLangRadio" value="es"><span class="checkbox-label">Spanish</span></label>
+                                        <label class="checkbox-grid-item"><input type="radio" name="radarLangRadio" value="it"><span class="checkbox-label">Italian</span></label>
+                                        <label class="checkbox-grid-item"><input type="radio" name="radarLangRadio" value="ja"><span class="checkbox-label">Japanese</span></label>
+                                        <label class="checkbox-grid-item"><input type="radio" name="radarLangRadio" value="zh"><span class="checkbox-label">Chinese</span></label>
+                                        <label class="checkbox-grid-item"><input type="radio" name="radarLangRadio" value="pt"><span class="checkbox-label">Portuguese</span></label>
+                                    </div>
+                                    <input type="hidden" id="radarPrimaryLang" name="primaryLanguage" required>
+                                </div>
+                                <hr style="margin:24px 0;border:none;border-top:1px solid var(--amc-border);">
+                                <div class="form-group"><label>Target Markets *</label>
+                                    <div class="checkbox-grid" id="radarMarketsGrid">
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarMktCb" value="Global"><span class="checkbox-label">Global</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarMktCb" value="Germany"><span class="checkbox-label">Germany</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarMktCb" value="France"><span class="checkbox-label">France</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarMktCb" value="UK"><span class="checkbox-label">UK</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarMktCb" value="Italy"><span class="checkbox-label">Italy</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarMktCb" value="Spain"><span class="checkbox-label">Spain</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarMktCb" value="USA"><span class="checkbox-label">USA</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarMktCb" value="China"><span class="checkbox-label">China</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarMktCb" value="Japan"><span class="checkbox-label">Japan</span></label>
+                                        <label class="checkbox-grid-item"><input type="checkbox" name="radarMktCb" value="Korea"><span class="checkbox-label">South Korea</span></label>
+                                    </div>
+                                    <input type="hidden" id="radarTargetMarkets" name="targetMarkets" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bento-box" data-section="radar-teaser-image" data-required="true">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-image"></i><h3>Media Alert Teaser Image</h3></div><div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body">
+                                <div class="file-upload-area"><input type="file" id="radarTeaserImage" name="radarTeaserImage" required accept="image/jpeg,image/png,image/webp,image/gif"><i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br><label for="radarTeaserImage">Choose teaser image</label> or drag and drop here.<p class="form-text">Recommended: 16:9, 1920x1080px, max 5MB.</p></div>
+                                <div class="file-list" id="uploadedRadarTeaserImageList"><p style="color:var(--text-secondary);font-style:italic;text-align:center;margin-top:10px;">No teaser image selected yet.</p></div>
+                            </div>
+                        </div>
+                        <div class="bento-box" data-section="radar-alert-doc" data-required="false">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-file-alt"></i><h3>Media Alert Document</h3></div><div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body">
+                                <div class="file-upload-area"><input type="file" id="radarAlertDoc" name="radarAlertDoc" accept="application/pdf,.docx"><i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br><label for="radarAlertDoc">Choose alert document</label> or drag and drop here.<p class="form-text">Optional PDF or DOCX. If uploaded, it will be available on the alert detail page. Single file.</p></div>
+                                <div class="file-list" id="uploadedRadarAlertDocList"><p style="color:var(--text-secondary);font-style:italic;text-align:center;margin-top:10px;">No alert document selected yet.</p></div>
+                                <input type="hidden" id="radarDocOptIn" name="radarDocOptIn" value="false">
+                            </div>
+                        </div>
+                        <div class="bento-box" data-section="radar-language-variants" data-required="false">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-language"></i><h3>Language Variants</h3></div><div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body"><p class="form-text">Add translated versions of your media alert.</p><div style="margin-bottom:15px;"><select id="radarVariantLangPicker" class="form-control" style="width:200px;display:inline-block;margin-right:10px;"><option value="">-- Select Language --</option><option value="de">German</option><option value="fr">French</option><option value="es">Spanish</option><option value="it">Italian</option><option value="ja">Japanese</option><option value="zh">Chinese</option><option value="en">English</option></select><button type="button" class="btn btn-secondary"><i class="fas fa-plus"></i> Add Language</button></div><div id="radarLangVariantsContainer"></div><input type="hidden" id="radarLangVariantsJson" name="languageVariantsJson" value="[]"></div>
+                        </div>
+                        <div class="bento-box" data-section="radar-images" data-required="false">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-images"></i><h3>Upload Images</h3></div><div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body"><div class="file-upload-area"><input type="file" id="radarImages" name="radarImages" multiple accept="image/jpeg,image/png,image/webp,image/gif"><i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br><label for="radarImages">Choose image files</label> or drag and drop here.<p class="form-text">JPG, PNG, WebP, GIF. Multiple files.</p></div><div class="file-list" id="uploadedRadarImagesList"><p style="color:var(--text-secondary);font-style:italic;text-align:center;margin-top:10px;">No images selected yet.</p></div></div>
+                        </div>
+                        <div class="bento-box" data-section="radar-videos" data-required="false">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-video"></i><h3>Upload Videos</h3></div><div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body"><div class="file-upload-area"><input type="file" id="radarVideos" name="radarVideos" multiple accept="video/mp4,video/quicktime,video/webm"><i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br><label for="radarVideos">Choose video files</label> or drag and drop here.<p class="form-text">MP4, MOV, WebM. Multiple files.</p></div><div class="file-list" id="uploadedRadarVideosList"><p style="color:var(--text-secondary);font-style:italic;text-align:center;margin-top:10px;">No videos selected yet.</p></div></div>
+                        </div>
+                        <div class="bento-box" data-section="radar-supplementary" data-required="false">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-paperclip"></i><h3>Supplementary Documents</h3></div><div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body"><div class="file-upload-area"><input type="file" id="radarSupDocs" name="radarSupplementaryDocs" multiple accept="application/pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.zip,.txt"><i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br><label for="radarSupDocs">Choose supplementary files</label> or drag and drop here.<p class="form-text">PDF, DOCX, PPTX, XLSX, ZIP, TXT.</p></div><div class="file-list" id="uploadedRadarSupDocsList"><p style="color:var(--text-secondary);font-style:italic;text-align:center;margin-top:10px;">No supplementary documents selected yet.</p></div></div>
+                        </div>
+                        <div class="bento-box legal-authorisation" data-section="radar-legal-auth" data-required="true">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-gavel"></i><h3>Authorisation &amp; Rights</h3></div><div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body"><div class="form-group"><label class="legal-confirm-label"><input type="checkbox" id="radarLegalAck" name="legalTermsAck" value="true" required> I confirm that I have the authorization and legal right to publish and distribute this media alert and respective assets *</label></div></div>
+                        </div>
+                    </div>
+                    <div class="bento-sidebar">
+                        <div class="preview-card sticky" id="radar-preview-card">
+                            <h3><i class="fas fa-eye"></i> Card Preview</h3>
+                            <div id="amc-radar-preview-area"></div>
+                            <div class="preview-actions">
+                                <button type="button" class="btn btn-primary" onclick="radarSetAction('draft');document.getElementById('radar-form').requestSubmit();"><i class="fas fa-save"></i> Save Draft</button>
+                                <button type="button" class="btn btn-success" onclick="radarSetAction('publish');document.getElementById('radar-form').requestSubmit();"><i class="fas fa-bullhorn"></i> Post Alert</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </form>
         `;
         const liveFormHtml = `
@@ -5430,7 +5630,7 @@ const radarFormHtml = `
                  <div class="form-card"> <div class="form-card-header" data-bs-toggle="collapse" data-bs-target="#collapse-live-0"> <h2><i class="fas fa-info-circle"></i> Basic Information & Announcement</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body" id="collapse-live-0">  <div class="form-group"> <label for="streamTitle">Stream Title * <i class="fas fa-question-circle service-help-icon" style="margin-left: 5px;" data-service="Live" data-help-content="Public title for the event listing." role="button" tabindex="0"></i></label> <input type="text" class="form-control" id="streamTitle" name="title" placeholder="e.g., World Premiere Event - BMW Concept ZM" required> <small>Appears publicly on AutoMediaLive listings.</small> </div> <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="streamDate">Scheduled Start Date *</label> <input type="date" class="form-control" id="streamDate" name="streamDate" required> </div> </div> <div class="form-col"> <div class="form-group"> <label for="streamTime">Scheduled Start Time *</label> <input type="time" class="form-control" id="streamTime" name="streamTime" required> </div> </div> <div class="form-col"> <div class="form-group"> <label for="streamTimezone">Timezone *</label> <select class="form-control" id="streamTimezone" name="streamTimezone" required> <option value="" disabled selected>Select Timezone...</option> <option value="Europe/Berlin">(GMT+02:00) Berlin</option> <option value="Europe/London">(GMT+01:00) London</option> <option value="America/New_York">(GMT-04:00) New York</option> <option value="America/Los_Angeles">(GMT-07:00) Los Angeles</option> <option value="Asia/Tokyo">(GMT+09:00) Tokyo</option> </select> </div> </div> </div> <div class="form-group"> <label for="streamDesc">Public Description</label> <textarea class="form-control" id="streamDesc" name="description" rows="3" placeholder="Join us live for the unveiling of... (Displayed on the stream listing page)"></textarea> </div> <div class="form-group"> <label for="streamThumbnail">Stream Thumbnail</label> <div class="custom-file-input-wrapper" style="max-width: 400px;"> <input type="file" class="custom-file-input" id="streamThumbnail" name="thumbnailImage" accept="image/jpeg, image/png, image/webp"> <span class="custom-file-input-button">Browse</span> <label class="custom-file-input-label" for="streamThumbnail">Select thumbnail...</label> </div> <small>Preview image shown on listings (Recommended: 16:9 ratio, e.g., 1920x1080px).</small> </div> </div> <div class="form-card-footer space-between" style="border-top: 1px solid var(--border-primary);"> <small style="align-self: center;">Publish basic info to announce the upcoming stream now?</small> <button type="button" class="btn btn-success"><i class="fas fa-bullhorn"></i> Announce Upcoming Stream</button> </div> </div>
                  <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-1"> <h2><i class="fas fa-tags"></i> Metadata & Analytics</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-1">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="eventType">Event Type</label> <select class="form-control" id="eventType" name="eventType"> <option selected>Press Conference</option> <option>Product Launch</option> <option>Technical Deep Dive</option> <option>Q&A / Interview</option> <option>Motorsport Event</option> <option>Other</option> </select> <small>Categorize the stream for filtering and analytics.</small> </div> <div class="form-group"> <label for="keyTopics">Key Topics / Keywords</label> <select class="form-control tags-input" id="keyTopics" name="keyTopics[]" multiple="multiple"> </select> <small>Add relevant tags (e.g., Sustainability, Autonomous Driving). Type and press Enter or Comma.</small> </div> </div> <div class="form-col"> <div class="form-group"> <label for="productsFeatured">Product(s) / Subject(s) Featured</label> <select class="form-control tags-input" id="productsFeatured" name="productsFeatured[]" multiple="multiple"> </select> <small>Tag specific vehicles or main subjects.</small> </div> <div class="form-group"> <label for="targetRegions">Target Region(s)</label> <select class="form-control multi-select" id="targetRegions" name="targetRegions[]" multiple="multiple"> <option>Global</option> <option>EMEA</option> <option>North America</option> <option>DACH</option> <option>Asia Pacific</option> </select> <small>Select primary geographic focus, if any.</small> </div> </div> </div> <div class="form-group"> <label for="campaignId">Internal Campaign ID (Optional)</label> <input type="text" class="form-control" id="campaignId" name="campaignId" placeholder="e.g., ZM_LAUNCH_Q3"> <small>For your internal tracking and reporting.</small> </div> </div> </div>
                   <hr style="border: none; border-top: 1px solid var(--border-primary); margin: 30px 0;"> <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">Complete the technical details below before going live.</p>
-                 <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-2"> <h2><i class="fas fa-sign-in-alt"></i> Source & Input</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-2">  <div class="form-group"> <label for="streamSourceType">Input Source Type</label> <select class="form-control" id="streamSourceType" name="streamSourceType"> <option value="rtmp_push" selected>RTMP Push (from Encoder)</option> <option value="srt_listener">SRT Listener</option> <option value="srt_caller">SRT Caller</option> <option value="hls_pull">Pull from HLS/DASH Source</option> </select> <small>How will you send your video feed to AutoMediaCenter?</small> </div> <div id="sourceDetailsRtmp"> <div class="form-group"> <label>RTMP Server URL</label> <input type="text" class="form-control" value="rtmp://live.automediacenter.provider/app/" readonly> </div> <div class="form-group"> <label>Stream Key</label> <div class="stream-key-display"> <span>â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢ (Generated on Save)</span> <button type="button" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i> Show</button> <button type="button" class="btn btn-sm btn-secondary"><i class="fas fa-copy"></i> Copy</button> </div> <small class="form-text">Enter this URL and Key into your streaming software (OBS, Wirecast, etc.).</small> </div> </div> </div> </div>
+                 <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-2"> <h2><i class="fas fa-sign-in-alt"></i> Source & Input</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-2">  <div class="form-group"> <label for="streamSourceType">Input Source Type</label> <select class="form-control" id="streamSourceType" name="streamSourceType"> <option value="rtmp_push" selected>RTMP Push (from Encoder)</option> <option value="srt_listener">SRT Listener</option> <option value="srt_caller">SRT Caller</option> <option value="hls_pull">Pull from HLS/DASH Source</option> </select> <small>How will you send your video feed to AutoMediaCenter?</small> </div> <div id="sourceDetailsRtmp"> <div class="form-group"> <label>RTMP Server URL</label> <input type="text" class="form-control" value="rtmp://live.automediacenter.provider/app/" readonly> </div> <div class="form-group"> <label>Stream Key</label> <div class="stream-key-display"> <span>•••••••••••••••••••••••••••••••• (Generated on Save)</span> <button type="button" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i> Show</button> <button type="button" class="btn btn-sm btn-secondary"><i class="fas fa-copy"></i> Copy</button> </div> <small class="form-text">Enter this URL and Key into your streaming software (OBS, Wirecast, etc.).</small> </div> </div> </div> </div>
                  <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-3"> <h2><i class="fas fa-cogs"></i> Processing & Output</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-3">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="transcodingProfile">Transcoding Profile</label> <select class="form-control" id="transcodingProfile" name="transcodingProfile"> <option selected>Auto-Detect & Adaptive Bitrate (Recommended)</option> <option>HD 1080p (Up to 6 Mbps)</option> <option>HD 720p (Up to 4 Mbps)</option> <option>SD 576p (Up to 2 Mbps)</option> <option disabled>Custom (Advanced)</option> </select> <small>Determines the output quality and resolutions available to viewers.</small> </div> </div> <div class="form-col"> <div class="form-group"> <label for="latencySetting">Latency Setting</label> <select class="form-control" id="latencySetting" name="latencySetting"> <option>Normal (~15-20 seconds delay)</option> <option selected>Low (~5-10 seconds delay)</option> <option>Ultra-Low (~1-5 seconds delay)</option> </select> <small>Lower latency allows faster interaction but may be less stable on poor networks.</small> </div> </div> </div> <div class="form-group"> <label>Recording</label> <div class="form-check"> <input class="form-check-input" type="checkbox" id="recordStream" name="recordStream" value="true" checked> <label class="form-check-label" for="recordStream"> Record this stream to the Asset Library </label> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" id="autoArchive" name="autoArchive" value="true" checked> <label class="form-check-label" for="autoArchive"> Automatically add recording to public AutoMediaLive Archive after stream ends </label> </div> </div> <div class="form-group"> <label>Captions</label> <select class="form-control" id="captionSource" name="captionSource"> <option>None</option> <option selected>Auto-Generate Live Captions (English)</option> <option>Expect Embedded CEA-608/708</option> <option>Expect RTMP onCaptionInfo</option> </select> <small>Select caption source or use AI-powered live captions.</small> </div> </div> </div>
                  <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-4"> <h2><i class="fas fa-photo-video"></i> Content & Interaction</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-4">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <label>Enable Features</label> <div class="form-check"> <input class="form-check-input" type="checkbox" id="enableQA" name="enableQA" value="true" checked> <label class="form-check-label" for="enableQA"> Live Q&A Tab (Moderated) </label> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" id="enableTranscript" name="enableTranscript" value="true" checked> <label class="form-check-label" for="enableTranscript"> Live Transcript Tab </label> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" id="enableAssets" name="enableAssets" value="true" checked> <label class="form-check-label" for="enableAssets"> Related Assets Tab </label> </div> </div> </div> <div class="form-col"> <div class="form-group"> <label for="linkedAssets">Link Related Assets</label> <div class="asset-link-placeholder" style="border: 1px dashed var(--border-primary); padding: 15px; text-align: center; cursor: pointer; background-color: var(--bg-tertiary); border-radius: 4px;"> <i class="fas fa-plus"></i> Click to select assets (Press Kits, Images...) </div> <small>Choose files from your Asset Library to show in the 'Assets' tab during the stream.</small> </div> </div> </div> </div> </div>
                  <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-5"> <h2><i class="fas fa-paint-brush"></i> Appearance & Branding</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-5">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="playerLogo">Player Logo Overlay (Optional)</label> <div class="custom-file-input-wrapper" style="max-width: 400px;"> <input type="file" class="custom-file-input" id="playerLogo" name="playerLogo" accept="image/png"> <span class="custom-file-input-button">Browse</span> <label class="custom-file-input-label" for="playerLogo">Select logo PNG...</label> </div> <small>Small PNG with transparency to overlay on the video player (e.g., bottom-right).</small> </div> </div> <div class="form-col">  </div> </div> </div> </div>
@@ -5476,6 +5676,7 @@ const radarFormHtml = `
                         dynamicFormContainer.innerHTML = '';
                         if(serviceCardGrid) serviceCardGrid.classList.remove('hidden');
                         if(mainContentTitle) mainContentTitle.innerHTML = '<i class="fas fa-upload"></i> Upload Hub';
+                        const _gbl = document.getElementById('global-back-link'); if (_gbl) _gbl.style.display = 'none';
                         if(mainContentSubtitle) mainContentSubtitle.textContent = 'Welcome! Select the service you wish to upload assets or create content for.';
                         dynamicFormContainer.removeAttribute('data-current-form');
                         currentEditingReleaseUUID = null; // Clear editing state
@@ -5777,7 +5978,7 @@ function updatePublishAtPreview() {
     }
 
     const utcIso = utcDate.toISOString().replace('.000Z', 'Z');
-    out.textContent = `Publishes: ${dateStr} ${timeStr} (${tz}) → ${utcIso} (UTC)`;
+    out.textContent = `Publishes: ${dateStr} ${timeStr} (${tz}) ? ${utcIso} (UTC)`;
 }
 
 function initCenterTimezoneLanguagesMarkets() {
@@ -5912,13 +6113,13 @@ function updateVariantMarketDisplays() {
 const AMC_LANGUAGE_LABELS = {
     en: 'English',
     de: 'German (Deutsch)',
-    es: 'Spanish (Español)',
-    zh: 'Chinese (中文)',
-    fr: 'French (Français)',
+    es: 'Spanish (Espa�ol)',
+    zh: 'Chinese (??)',
+    fr: 'French (Fran�ais)',
     it: 'Italian (Italiano)',
-    pt: 'Portuguese (Português)',
-    ja: 'Japanese (日本語)',
-    ko: 'Korean (한국어)'
+    pt: 'Portuguese (Portugu�s)',
+    ja: 'Japanese (???)',
+    ko: 'Korean (???)'
 };
 
 function getCurrentVariantLanguages() {
@@ -5949,13 +6150,13 @@ function updateVariantsStatusChip() {
     const ok = variants.every(v => v.language && v.title && (v.hasReleaseDocs === true));
     chip.classList.toggle('complete', ok);
     chip.classList.toggle('optional', !ok);
-    chip.textContent = ok ? `${variants.length} added` : `${variants.length} added • incomplete`;
+    chip.textContent = ok ? `${variants.length} added` : `${variants.length} added � incomplete`;
 
     // Keep primary language out of variants
     if (primaryLang && variants.some(v => v.language === primaryLang.value)) {
         chip.classList.remove('complete');
         chip.classList.add('optional');
-        chip.textContent = `${variants.length} added • fix needed`;
+        chip.textContent = `${variants.length} added � fix needed`;
     }
 }
 
@@ -5990,7 +6191,7 @@ function buildVariantCard(lang) {
             <div class="variant-card-body" id="variantBody_${safeLang}">
                 <div class="form-group">
                     <label for="variantTitle_${safeLang}">Heading (${label}) *</label>
-                    <input type="text" class="form-control" id="variantTitle_${safeLang}" name="variantTitles[${safeLang}]" placeholder="e.g., BMW enthüllt den neuen X5" required>
+                    <input type="text" class="form-control" id="variantTitle_${safeLang}" name="variantTitles[${safeLang}]" placeholder="e.g., BMW enth�llt den neuen X5" required>
                     <small>This is the card heading users will see in ${label}.</small>
                 </div>
                 
@@ -6440,7 +6641,7 @@ function initCenterLanguageVariants() {
                                 console.log("DEBUG: Final check passed - User authorized:", backendUser.role);
                                 
                                 // REBUILD SIDEBAR: Update role and rebuild sidebar with correct permissions
-                                console.log("🔄 Rebuilding sidebar with role:", backendUser.role);
+                                console.log("?? Rebuilding sidebar with role:", backendUser.role);
                                 
                                 // Update window.AMC.role to match backend
                                 if (window.AMC) {
@@ -6460,7 +6661,7 @@ function initCenterLanguageVariants() {
                                             userRole: backendUser.role
                                         });
                                         
-                                        console.log("✅ Sidebar rebuilt with role:", backendUser.role);
+                                        console.log("? Sidebar rebuilt with role:", backendUser.role);
                                     }
                                 } else if (typeof AMCSidebar !== 'undefined') {
                                     // If amcSidebar doesn't exist yet, create it
@@ -6468,11 +6669,11 @@ function initCenterLanguageVariants() {
                                         container: '#sidebar',
                                         userRole: backendUser.role
                                     });
-                                    console.log("✅ Sidebar created with role:", backendUser.role);
+                                    console.log("? Sidebar created with role:", backendUser.role);
                                 }
                                 
                                 // REBUILD AVATAR: Update avatar with correct role and ring color
-                                console.log("🔄 Manually updating avatar with role:", backendUser.role);
+                                console.log("?? Manually updating avatar with role:", backendUser.role);
                                 
                                 // Update window.AMC.role
                                 if (window.AMC) {
@@ -6494,7 +6695,7 @@ function initCenterLanguageVariants() {
                                 if (avatarRing) {
                                     avatarRing.style.borderColor = ringColor;
                                     avatarRing.style.boxShadow = `0 0 0 2px ${ringColor}`;
-                                    console.log("✅ Avatar ring color updated to:", ringColor);
+                                    console.log("? Avatar ring color updated to:", ringColor);
                                 }
                                 
                                 // Update avatar container data
@@ -6513,12 +6714,12 @@ function initCenterLanguageVariants() {
                                     }));
                                 }
                                 
-                                console.log("✅ Avatar manually updated with role:", backendUser.role);
+                                console.log("? Avatar manually updated with role:", backendUser.role);
                                 
                                 // Show avatar now that role is validated (removes blue flash)
                                 if (avatarContainer) {
                                     avatarContainer.classList.add('role-validated');
-                                    console.log("✅ Avatar made visible after role validation");
+                                    console.log("? Avatar made visible after role validation");
                                 }
                                 
                                 // CRITICAL FIX: Force shell to reload with correct role
@@ -6541,7 +6742,7 @@ function initCenterLanguageVariants() {
                                         const correctColor = roleColors[backendUser.role] || roleColors['media_user'];
                                         avatarRingRetry.style.borderColor = correctColor;
                                         avatarRingRetry.style.boxShadow = `0 0 0 2px ${correctColor}`;
-                                        console.log("✅ Avatar ring FORCED to correct color:", correctColor, "for role:", backendUser.role);
+                                        console.log("? Avatar ring FORCED to correct color:", correctColor, "for role:", backendUser.role);
                                     }
                                     
                                     // Dispatch event again in case shell wasn't listening the first time
@@ -6899,53 +7100,24 @@ function initCenterLanguageVariants() {
             }
 
             function populateRadarForm(data) {
-                console.log("DEBUG: populateRadarForm with data:", data);
-                const form = document.getElementById('radar-form');
-                if (!form) {
-                    console.error("ERROR: Radar form not found for pre-population.");
-                    return;
-                }
-
-                form.querySelector('#radarUUID').value = data.uuid || '';
-                form.querySelector('#radarTitle').value = data.title || '';
-                form.querySelector('#radarBrand').value = data.brand || '';
-                form.querySelector('#radarRegion').value = data.region || 'Global';
-                form.querySelector('#radarTags').value = Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags || '');
-                form.querySelector('#radarDescription').value = data.description || '';
-                form.querySelector('#radarQuickViewContent').value = data.quickViewContent || '';
-
-                form.querySelector('#dropDateTime').value = toDateTimeLocal(data.eventDateTime);
-                
-                const teaserPath = data.teaserImagePath;
-                const teaserListDiv = document.getElementById('uploadedRadarTeaserImageList');
-                const teaserLabel = form.querySelector('#radarTeaserImage')?.closest('.custom-file-input-wrapper')?.querySelector('.custom-file-input-label');
-                
-                if (teaserListDiv) {
-                    if (teaserPath) {
-                        const fileName = teaserPath.split('/').pop();
-                        teaserListDiv.innerHTML = `
-                            <div class="form-text" style="margin-top: 5px; display: flex; align-items: center;">
-                                <img src="${teaserPath}" alt="Current Teaser">
-                                <span>Current: <a href="${teaserPath}" target="_blank">${fileName}</a></span>
-                            </div>
-                            <p class="form-text"><em>To replace, choose a new file above.</em></p>`;
-                        if (teaserLabel) {
-                            teaserLabel.textContent = fileName;
-                        }
-                    } else {
-                        teaserListDiv.innerHTML = `<p style="color: var(--text-secondary); font-style: italic; text-align: center; margin-top: 10px;">No teaser image uploaded.</p>`;
-                        if (teaserLabel) {
-                             teaserLabel.textContent = teaserLabel.dataset.defaultText || 'Select image...';
-                        }
-                    }
-                }
-
-                const draftBtn = form.querySelector('button[value="draft"]');
-                const publishBtn = form.querySelector('button[value="publish"]');
-                if (draftBtn) draftBtn.innerHTML = '<i class="fas fa-save"></i> Update Draft';
-                if (publishBtn) publishBtn.innerHTML = '<i class="fas fa-bullhorn"></i> Update & Post Alert';
-
-                updateRadarCardPreview();
+                console.log("DEBUG: populateRadarForm (bento):", data);
+                const form = document.getElementById('radar-form'); if (!form) return;
+                if (form.querySelector('#radarUUID')) form.querySelector('#radarUUID').value = data.uuid || '';
+                if (form.querySelector('#radarCompanyName')) form.querySelector('#radarCompanyName').value = data.companyName || '';
+                if (form.querySelector('#radarBrand')) form.querySelector('#radarBrand').value = data.brand || '';
+                if (form.querySelector('#radarTitle')) form.querySelector('#radarTitle').value = data.title || '';
+                if (form.querySelector('#radarTags')) form.querySelector('#radarTags').value = Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags || '');
+                const dt = data.eventDateTime || data.dropDate;
+                if (dt) { const d = new Date(dt); const pad = n => String(n).padStart(2,'0'); const dateEl = form.querySelector('#radarEventDate'); const timeEl = form.querySelector('#radarEventTime'); if (dateEl) dateEl.value = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); if (timeEl) timeEl.value = pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+                if (data.eventTimezone) { const el = form.querySelector('#radarEventTimezone'); if (el) el.value = data.eventTimezone; }
+                if (data.contentCategory) { const h = form.querySelector('#radarContentCategory'); if (h) h.value = data.contentCategory; const cats = data.contentCategory.split(',').map(c => c.trim()); form.querySelectorAll('input[name="radarCatCb"]').forEach(cb => { cb.checked = cats.includes(cb.value); }); }
+                if (data.primaryLanguage) { const h = form.querySelector('#radarPrimaryLang'); if (h) h.value = data.primaryLanguage; form.querySelectorAll('input[name="radarLangRadio"]').forEach(r => { r.checked = r.value === data.primaryLanguage; }); }
+                if (data.targetMarkets) { const h = form.querySelector('#radarTargetMarkets'); if (h) h.value = data.targetMarkets; const mkts = data.targetMarkets.split(',').map(m => m.trim()); form.querySelectorAll('input[name="radarMktCb"]').forEach(cb => { cb.checked = mkts.includes(cb.value); }); }
+                const tList = document.getElementById('uploadedRadarTeaserImageList');
+                if (tList && data.teaserImagePath) { const fn = data.teaserImagePath.split('/').pop(); tList.innerHTML = '<div class="form-text" style="display:flex;align-items:center;gap:8px;margin-top:5px;"><img src="' + data.teaserImagePath + '" style="width:60px;height:40px;object-fit:cover;border-radius:4px;"><span>Current: <a href="' + data.teaserImagePath + '" target="_blank">' + fn + '</a> <em>(choose new to replace)</em></span></div>'; }
+                if (data.alertDocPath) { const dList = document.getElementById('uploadedRadarAlertDocList'); if (dList) { const fn = data.alertDocPath.split('/').pop(); dList.innerHTML = '<p class="form-text">Current: <a href="' + data.alertDocPath + '" target="_blank">' + fn + '</a> <em>(choose new to replace)</em></p>'; } }
+                if (data.languageVariantsJson) { const el = form.querySelector('#radarLangVariantsJson'); if (el) el.value = data.languageVariantsJson; }
+                setTimeout(() => { radarUpdateIdentityState(); radarComputeScheduleState(); radarUpdateCategoryState(); radarUpdateLangMarketsState(); radarUpdateTeaserState(); radarUpdateDocState(); radarUpdateLegalState(); updateRadarCardPreview(); }, 150);
             }
 
 
@@ -6962,7 +7134,7 @@ function initCenterLanguageVariants() {
 
                 if (mainContentTitle) {
                     const iconClass = getIconForFormType(formType);
-                    mainContentTitle.innerHTML = `<i class="fas ${iconClass}"></i> ${formTitle}`;
+                    mainContentTitle.textContent = formTitle;
                 }
                 if (mainContentSubtitle) mainContentSubtitle.textContent = `Please fill in the details below. Required fields are marked *`;
                 
@@ -6980,8 +7152,15 @@ function initCenterLanguageVariants() {
                     else if (formType === 'radar') formHtml = radarFormHtml;
                     else if (formType === 'live') formHtml = liveFormHtml;
                     
-                    dynamicFormContainer.innerHTML = `<div class="back-to-hub-container"><button class="btn btn-secondary" id="back-to-hub-btn"><i class="fas fa-arrow-left"></i> Back to Upload Hub</button></div>${formHtml}`;
-                    
+                    dynamicFormContainer.innerHTML = formHtml;
+
+                    // Show the global back link above the title
+                    const globalBackLink = document.getElementById('global-back-link');
+                    if (globalBackLink) {
+                        globalBackLink.style.display = 'inline-flex';
+                        globalBackLink.onclick = (e) => { e.preventDefault(); showHubGrid(); };
+                    }
+
                     try {
                         initializeCommonFormElements(dynamicFormContainer);
                         attachFormSubmitListener(formType); 
@@ -7106,25 +7285,24 @@ function initCenterLanguageVariants() {
 
                     if (formType === 'radar') {
                         formData = new FormData();
-                        const textInputs = formElement.querySelectorAll('input[type="text"], input[type="hidden"], textarea, select');
-                        textInputs.forEach(input => {
-                            if (input.name) {
-                                formData.append(input.name, input.value);
-                            }
-                        });
-
-                        const fileInput = formElement.querySelector('input[type="file"]');
-                        if (fileInput && fileInput.files.length > 0) {
-                            formData.append(fileInput.name, fileInput.files[0]);
-                        }
-                        
-                        const dropDateInput = formElement.querySelector('#dropDateTime');
-                        if (dropDateInput && dropDateInput.value) {
-                            const localDate = new Date(dropDateInput.value);
-                            const isoDateString = localDate.toISOString();
-                            formData.set('dropDate', isoDateString); 
-                            console.log(`DEBUG: Converted dropDate to ISO string for submission: ${isoDateString}`);
-                        }
+                        const actionEl = formElement.querySelector('#radarSubmitAction');
+                        formData.append('action', actionEl ? actionEl.value : 'draft');
+                        const uuidEl = formElement.querySelector('#radarUUID');
+                        if (uuidEl) formData.append('radarAlertUUID', uuidEl.value);
+                        ['radarCompanyName','radarBrand','radarTitle','radarTags'].forEach(id => { const el = formElement.querySelector('#' + id); if (el) formData.append(el.name || id, el.value); });
+                        const eDateEl = formElement.querySelector('#radarEventDate');
+                        const eTimeEl = formElement.querySelector('#radarEventTime');
+                        const eTzEl   = formElement.querySelector('#radarEventTimezone');
+                        if (eDateEl?.value) { const iso = new Date(eDateEl.value + 'T' + (eTimeEl?.value || '00:00') + ':00').toISOString(); formData.append('dropDate', iso); formData.append('eventDateTime', iso); }
+                        if (eTzEl?.value) formData.append('eventTimezone', eTzEl.value);
+                        const catVals = [...formElement.querySelectorAll('input[name="radarCatCb"]:checked')].map(c=>c.value); formData.append('contentCategory', catVals.join(','));
+                        const mktVals = [...formElement.querySelectorAll('input[name="radarMktCb"]:checked')].map(c=>c.value); formData.append('targetMarkets', mktVals.join(','));
+                        const langSel = formElement.querySelector('input[name="radarLangRadio"]:checked'); if (langSel) formData.append('primaryLanguage', langSel.value);
+                        const legal = formElement.querySelector('#radarLegalAck'); formData.append('legalTermsAck', legal?.checked ? 'true' : 'false');
+                        const tImg = formElement.querySelector('#radarTeaserImage'); if (tImg?.files?.[0]) formData.append('radarTeaserImage', tImg.files[0]);
+                        const d = formElement.querySelector('#radarAlertDoc'); if (d?.files?.[0]) formData.append('radarAlertDoc', d.files[0]);
+                        [['radarImages','radarImages'],['radarVideos','radarVideos'],['radarSupDocs','radarSupplementaryDocs']].forEach(([id,name]) => { const inp = formElement.querySelector('#'+id); if (inp?.files?.length) [...inp.files].forEach(f => formData.append(name, f)); });
+                        const lv = formElement.querySelector('#radarLangVariantsJson'); if (lv) formData.append('languageVariantsJson', lv.value);
 
                     } else {
                         formData = new FormData(formElement); 
@@ -7197,8 +7375,8 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                         }
                         
 
-                        // 🧾 DEBUG: FormData key audit
-                        console.log("🧾 FormData keys being sent:");
+                        // ?? DEBUG: FormData key audit
+                        console.log("?? FormData keys being sent:");
                         for (const pair of formData.entries()) {
                             const [k, v] = pair;
                             if (v instanceof File) {
@@ -7229,8 +7407,8 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                         
                         const responseData = JSON.parse(responseText);
                         if (responseData.success) {
-                            console.log('âœ… Form submission successful:', responseData);
-                            console.log('ðŸ“‹ Form details:', { formType, action, currentEditingReleaseUUID, currentEditingAlertUUID });
+                            console.log('✅ Form submission successful:', responseData);
+                            console.log('📋 Form details:', { formType, action, currentEditingReleaseUUID, currentEditingAlertUUID });
                             
                             let assetIdentifier = currentEditingReleaseUUID || currentEditingAlertUUID;
                             if (!assetIdentifier) {
@@ -7244,10 +7422,10 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                                 trackAssetEvent(action, assetIdentifier, `Form: ${formType} ${currentEditingReleaseUUID || currentEditingAlertUUID ? 'updated' : 'created'}`);
                                 
                                 if (formType === 'center' && currentEditingReleaseUUID) {
-                                    console.log('ðŸ”„ Redirecting to manage releases (editing existing release)');
+                                    console.log('🔄 Redirecting to manage releases (editing existing release)');
                                     window.location.href = 'manage_releases.html';
                                 } else if (formType === 'radar' && currentEditingAlertUUID) {
-                                    console.log('ðŸ”„ Redirecting to radar history (editing existing alert)');
+                                    console.log('🔄 Redirecting to radar history (editing existing alert)');
                                     window.location.href = 'radar_history.html';
                                 } else if (formType === 'center' && action === 'publish') {
                                     // Show success modal instead of redirect
@@ -7255,8 +7433,8 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                                     const releaseTime = document.getElementById('releaseTime')?.value || '00:00';
                                     const releaseTitle = document.getElementById('releaseTitle')?.value;
                                     
-                                    console.log('ðŸŽ‰ Showing success modal for published release');
-                                    console.log('ðŸ“… Release details:', { releaseDate, releaseTime, releaseTitle });
+                                    console.log('🎉 Showing success modal for published release');
+                                    console.log('📅 Release details:', { releaseDate, releaseTime, releaseTitle });
                                     
                                     // Determine if this was an update or create
                             const wasUpdate = httpMethod === 'PUT' || httpMethod === 'PATCH' || currentEditingReleaseUUID;
@@ -7264,16 +7442,16 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                             
                             showSuccessModal(releaseTitle, releaseDate, releaseTime);
                                 } else if (formType === 'center' && action === 'draft') {
-                                    console.log('ðŸ’¾ Draft saved, staying on hub');
+                                    console.log('💾 Draft saved, staying on hub');
                                     alert(responseData.message || successMessage);
                                     showHubGrid();
                                 } else {
-                                    console.log('ðŸ  Returning to hub grid');
+                                    console.log('🏠 Returning to hub grid');
                                     alert(responseData.message || successMessage);
                                     showHubGrid();
                                 }
                             } else {
-                                console.error("âŒ Could not get identifier from submission response.", responseData.data);
+                                console.error("❌ Could not get identifier from submission response.", responseData.data);
                                 alert(responseData.message || successMessage);
                                 showHubGrid();
                             }
@@ -7300,13 +7478,10 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                 const backendBaseUrl = '/api/v1'; 
                 const detailApiUrl = `${backendBaseUrl}/center/releases/${releaseUUID}`;
                 
-                dynamicFormContainer.innerHTML = `
-                    <div class="back-to-hub-container">
-                        <button class="btn btn-secondary" id="back-to-hub-btn-detail"><i class="fas fa-arrow-left"></i> Back to Upload Hub</button>
-                    </div>
-                    <div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Loading release details...</p></div>
-                `;
-                const backBtnDetail = dynamicFormContainer.querySelector('#back-to-hub-btn-detail');
+                dynamicFormContainer.innerHTML = `<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Loading release details...</p></div>`;
+                const _gbl1 = document.getElementById('global-back-link');
+                if (_gbl1) { _gbl1.style.display = 'inline-flex'; _gbl1.onclick = (e) => { e.preventDefault(); showHubGrid(); }; }
+                const backBtnDetail = null; // legacy � now using global-back-link
                 if(backBtnDetail) backBtnDetail.addEventListener('click', showHubGrid);
                 if (!dynamicFormContainer.classList.contains('visible')) {
                      dynamicFormContainer.style.display = 'block';
@@ -7379,9 +7554,9 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                     if (loadingDivOrContent) {
                         loadingDivOrContent.innerHTML = `<p style="color: var(--color-danger); text-align:center;">${error.message}</p>`;
                     } else {
-                         dynamicFormContainer.innerHTML = `<div class="back-to-hub-container"><button class="btn btn-secondary" id="back-to-hub-btn-detail"><i class="fas fa-arrow-left"></i> Back to Upload Hub</button></div> <p style="color: var(--color-danger); text-align:center;">${error.message}</p>`;
-                         const newBackBtn = dynamicFormContainer.querySelector('#back-to-hub-btn-detail');
-                         if (newBackBtn) newBackBtn.addEventListener('click', showHubGrid);
+                         dynamicFormContainer.innerHTML = `<p style="color: var(--color-danger); text-align:center;">${error.message}</p>`;
+                         const _gbl2 = document.getElementById('global-back-link');
+                         if (_gbl2) { _gbl2.style.display = 'inline-flex'; _gbl2.onclick = (e) => { e.preventDefault(); showHubGrid(); }; }
                     }
                 }
             }
@@ -7586,150 +7761,224 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
             }
 
 
-            function initializeRadarFormJS() { 
-                 console.log("DEBUG: Initializing Radar Form JS...");
-                 try {
-                     const uuidInput = document.getElementById('radarUUID'); 
-                     if (uuidInput && !uuidInput.value && !currentEditingAlertUUID) {
-                         uuidInput.value = crypto.randomUUID();
-                     }
-                     setupFileList('radarTeaserImage', 'uploadedRadarTeaserImageList', 'fas fa-image', true); 
-
-                    const form = document.getElementById('radar-form');
-                    if (form) {
-                         ['radarTitle', 'radarBrand', 'dropDateTime', 'radarDescription'].forEach(id => {
-                            const el = form.querySelector(`#${id}`);
-                            if(el) el.addEventListener('input', updateRadarCardPreview);
-                        });
+            function initializeRadarFormJS() {
+                console.log("DEBUG: Radar bento form initializing...");
+                try {
+                    const uuidInput = document.getElementById('radarUUID');
+                    if (uuidInput && !uuidInput.value && !currentEditingAlertUUID) uuidInput.value = crypto.randomUUID();
+                    setupFileList('radarTeaserImage', 'uploadedRadarTeaserImageList', 'fas fa-image', true);
+                    setupFileList('radarAlertDoc', 'uploadedRadarAlertDocList', 'fas fa-file-alt', false);
+                    setupFileList('radarImages', 'uploadedRadarImagesList', 'fas fa-image', false);
+                    setupFileList('radarVideos', 'uploadedRadarVideosList', 'fas fa-video', false);
+                    setupFileList('radarSupDocs', 'uploadedRadarSupDocsList', 'fas fa-paperclip', false);
+                    const tzOg = document.getElementById('radarAllTzOptgroup');
+                    if (tzOg && window.Intl && Intl.supportedValuesOf) {
+                        try { Intl.supportedValuesOf('timeZone').forEach(tz => { const o = document.createElement('option'); o.value = o.textContent = tz; tzOg.appendChild(o); }); } catch(e) {}
                     }
-                    updateRadarCardPreview(); 
-                     console.log("DEBUG: Radar JS Initialized Successfully.");
-                 } catch (error) { console.error("ERROR initializing Radar JS:", error); }
-            } 
-            
+                    const form = document.getElementById('radar-form');
+                    if (!form) return;
+                    ['radarTitle','radarBrand','radarCompanyName'].forEach(id => {
+                        const el = form.querySelector('#' + id);
+                        if (el) el.addEventListener('input', () => { radarUpdateIdentityState(); updateRadarCardPreview(); });
+                    });
+                    ['radarEventDate','radarEventTime'].forEach(id => {
+                        const el = form.querySelector('#' + id);
+                        if (el) el.addEventListener('change', () => { radarComputeScheduleState(); updateRadarCardPreview(); });
+                    });
+                    const tzSel = form.querySelector('#radarEventTimezone');
+                    if (tzSel) tzSel.addEventListener('change', () => { radarComputeScheduleState(); updateRadarCardPreview(); });
+                    const tImg = form.querySelector('#radarTeaserImage');
+                    if (tImg) tImg.addEventListener('change', () => { radarUpdateTeaserState(); updateRadarCardPreview(); });
+                    const docFile = form.querySelector('#radarAlertDoc');
+                    if (docFile) docFile.addEventListener('change', () => { radarUpdateDocState(); updateRadarCardPreview(); });
+                    form.querySelectorAll('input[name="radarCatCb"]').forEach(cb => {
+                        cb.addEventListener('change', () => {
+                            const vals = [...form.querySelectorAll('input[name="radarCatCb"]:checked')].map(c => c.value);
+                            const h = form.querySelector('#radarContentCategory');
+                            if (h) h.value = vals.join(',');
+                            radarUpdateCategoryState();
+                        });
+                    });
+                    form.querySelectorAll('input[name="radarLangRadio"]').forEach(r => {
+                        r.addEventListener('change', () => {
+                            const sel = form.querySelector('input[name="radarLangRadio"]:checked');
+                            const h = form.querySelector('#radarPrimaryLang');
+                            if (h && sel) h.value = sel.value;
+                            radarUpdateLangMarketsState();
+                        });
+                    });
+                    form.querySelectorAll('input[name="radarMktCb"]').forEach(cb => {
+                        cb.addEventListener('change', () => {
+                            const vals = [...form.querySelectorAll('input[name="radarMktCb"]:checked')].map(c => c.value);
+                            const h = form.querySelector('#radarTargetMarkets');
+                            if (h) h.value = vals.join(',');
+                            radarUpdateLangMarketsState();
+                        });
+                    });
+                    ['radarImages','radarVideos','radarSupDocs'].forEach(id => {
+                        const el = form.querySelector('#' + id);
+                        if (el) el.addEventListener('change', updateRadarCardPreview);
+                    });
+                    const legalCb = form.querySelector('#radarLegalAck');
+                    if (legalCb) legalCb.addEventListener('change', radarUpdateLegalState);
+                    // Initialise states and render the preview card immediately
+                    radarUpdateIdentityState(); radarComputeScheduleState(); radarUpdateCategoryState();
+                    radarUpdateLangMarketsState(); radarUpdateTeaserState(); radarUpdateDocState();
+                    radarUpdateLegalState(); updateRadarCardPreview();
+                    console.log("DEBUG: Radar bento form initialized OK.");
+                } catch(e) { console.error("ERROR initializing radar form:", e); }
+            }
+
+            let radarScheduleVerified = false;
+
+            function radarSetAction(action) { const el = document.getElementById('radarSubmitAction'); if (el) el.value = action; }
+
+            function toggleRadarDocUpload(checked) {
+                const area = document.getElementById('radarDocUploadArea');
+                if (area) area.style.display = checked ? 'block' : 'none';
+                radarUpdateDocState(); updateRadarCardPreview();
+            }
+
+            function radarSetBentoState(section, complete) {
+                const box = document.querySelector('[data-section="' + section + '"]');
+                if (!box) return;
+                const chip = box.querySelector('.status-chip');
+                if (complete) { box.classList.add('complete'); box.classList.remove('schedule-ready'); if (chip) { chip.textContent = 'Complete'; chip.className = 'status-chip chip-complete'; } }
+                else { box.classList.remove('complete'); if (chip) { chip.textContent = 'Incomplete'; chip.className = 'status-chip'; } }
+            }
+
+            function radarUpdateIdentityState() {
+                const f = document.getElementById('radar-form'); if (!f) return;
+                radarSetBentoState('radar-identity', !!(f.querySelector('#radarCompanyName')?.value.trim() && f.querySelector('#radarBrand')?.value.trim() && f.querySelector('#radarTitle')?.value.trim()));
+            }
+
+            function radarComputeScheduleState() {
+                const f = document.getElementById('radar-form'); if (!f) return;
+                const date = f.querySelector('#radarEventDate'), tz = f.querySelector('#radarEventTimezone');
+                const box = document.querySelector('[data-section="radar-schedule"]'); if (!box) return;
+                const chip = box.querySelector('.status-chip');
+                if (radarScheduleVerified) { box.classList.add('complete'); box.classList.remove('schedule-ready'); if (chip) { chip.textContent = 'Complete'; chip.className = 'status-chip chip-complete'; } return; }
+                box.classList.remove('complete');
+                if (date?.value && tz?.value) {
+                    box.classList.add('schedule-ready'); if (chip) { chip.textContent = 'Ready to Verify'; chip.className = 'status-chip chip-ready'; }
+                    const prev = document.getElementById('radarSchedulePreview');
+                    if (prev) { const time = f.querySelector('#radarEventTime')?.value || '00:00'; const d = new Date(date.value + 'T' + time); prev.textContent = 'Event: ' + d.toLocaleDateString('en-GB', {weekday:'long',year:'numeric',month:'long',day:'numeric'}) + (f.querySelector('#radarEventTime')?.value ? ' at ' + f.querySelector('#radarEventTime').value : '') + ' (' + tz.value + ')'; }
+                } else { box.classList.remove('schedule-ready'); if (chip) { chip.textContent = 'Incomplete'; chip.className = 'status-chip'; } }
+            }
+
+            function verifyRadarSchedule() {
+                const f = document.getElementById('radar-form'); if (!f) return;
+                const date = f.querySelector('#radarEventDate'), time = f.querySelector('#radarEventTime'), tz = f.querySelector('#radarEventTimezone');
+                if (!date?.value || !tz?.value) { alert('Please fill in Event Date and Time Zone before verifying.'); return; }
+                const d = new Date(date.value + 'T' + (time?.value || '00:00'));
+                const summary = d.toLocaleDateString('en-US', {weekday:'long',year:'numeric',month:'long',day:'numeric'}) + (time?.value ? ' at ' + time.value : '') + ' (' + tz.value + ')';
+                if (!confirm('Please confirm this schedule:\n\n' + summary + '\n\nThe alert will reflect this date and time.')) return;
+                radarScheduleVerified = true;
+                const gate = document.getElementById('radarScheduleGate'); if (gate) gate.classList.add('verified');
+                const summaryEl = document.getElementById('radarScheduleSummary'); if (summaryEl) { summaryEl.textContent = '? Verified & Locked: ' + summary; summaryEl.style.color = '#059669'; summaryEl.style.fontWeight = '700'; }
+                const btn = document.getElementById('radarVerifyScheduleBtn'); if (btn) { btn.disabled = true; btn.textContent = '? Verified & Locked'; }
+                const editLink = document.getElementById('radarScheduleEditLink'); if (editLink) editLink.style.display = 'block';
+                if (date) date.readOnly = true; if (time) time.readOnly = true; if (tz) tz.disabled = true;
+                radarComputeScheduleState(); updateRadarCardPreview();
+            }
+
+            function unlockRadarSchedule(event) {
+                event.preventDefault();
+                if (!confirm('Unlock schedule for editing? Re-verification will be required.')) return;
+                radarScheduleVerified = false;
+                const f = document.getElementById('radar-form');
+                if (f) { ['radarEventDate','radarEventTime'].forEach(id => { const el = f.querySelector('#'+id); if (el) el.readOnly = false; }); const tz = f.querySelector('#radarEventTimezone'); if (tz) tz.disabled = false; }
+                const gate = document.getElementById('radarScheduleGate'); if (gate) gate.classList.remove('verified');
+                const btn = document.getElementById('radarVerifyScheduleBtn'); if (btn) { btn.disabled = false; btn.textContent = 'Verify & Lock Schedule'; }
+                const editLink = document.getElementById('radarScheduleEditLink'); if (editLink) editLink.style.display = 'none';
+                const summaryEl = document.getElementById('radarScheduleSummary'); if (summaryEl) { summaryEl.textContent = 'Fill in Event Date and Time Zone, then verify & lock.'; summaryEl.style.color = ''; summaryEl.style.fontWeight = ''; }
+                radarComputeScheduleState();
+            }
+
+            function radarUpdateCategoryState() { radarSetBentoState('radar-content-category', !!(document.getElementById('radarContentCategory')?.value.trim())); }
+            function radarUpdateLangMarketsState() { radarSetBentoState('radar-language-markets', !!(document.getElementById('radarPrimaryLang')?.value.trim() && document.getElementById('radarTargetMarkets')?.value.trim())); }
+            function radarUpdateTeaserState() { radarSetBentoState('radar-teaser-image', !!(document.getElementById('radarTeaserImage')?.files?.length)); }
+            function radarUpdateDocState() { /* Doc is optional - box is always "complete" */ radarSetBentoState('radar-alert-doc', true); }
+            function radarUpdateLegalState() { radarSetBentoState('radar-legal-auth', !!(document.getElementById('radarLegalAck')?.checked)); }
+
             function updateRadarCardPreview() {
-                const previewArea = document.getElementById('preview-content-area');
+                const previewArea = document.getElementById('amc-radar-preview-area');
                 const form = document.getElementById('radar-form');
                 if (!previewArea || !form) return;
 
-                const title = form.querySelector('#radarTitle')?.value || 'All-New Lexus ES to Debut at Auto Shanghai 2025 on April 23rd';
-                const brand = form.querySelector('#radarBrand')?.value || 'Lexus';
-                const description = form.querySelector('#radarDescription')?.value || '';
-                const dropDateTimeValue = form.querySelector('#dropDateTime')?.value;
-                const quickViewContent = form.querySelector('#radarQuickViewContent')?.value || '';
-                const teaserImageInput = form.querySelector('#radarTeaserImage');
-                
-                let tempTeaserImageUrl = '';
-                
-                if (currentRadarTeaserUrl) {
-                    URL.revokeObjectURL(currentRadarTeaserUrl);
-                    currentRadarTeaserUrl = null;
-                }
+                const title = form.querySelector('#radarTitle')?.value || 'Sample Alert Title';
+                const brand = form.querySelector('#radarBrand')?.value || 'Brand Name';
+                const eventDateVal = form.querySelector('#radarEventDate')?.value;
+                const eventTimeVal = form.querySelector('#radarEventTime')?.value;
 
-                if (teaserImageInput && teaserImageInput.files && teaserImageInput.files[0]) {
-                    currentRadarTeaserUrl = URL.createObjectURL(teaserImageInput.files[0]);
-                    tempTeaserImageUrl = currentRadarTeaserUrl;
+                // Teaser image
+                let cardTeaserDisplayUrl = '';
+                if (currentRadarTeaserUrl) { URL.revokeObjectURL(currentRadarTeaserUrl); currentRadarTeaserUrl = null; }
+                const teaserInput = form.querySelector('#radarTeaserImage');
+                if (teaserInput?.files?.[0]) {
+                    currentRadarTeaserUrl = URL.createObjectURL(teaserInput.files[0]);
+                    cardTeaserDisplayUrl = currentRadarTeaserUrl;
                 } else {
-                    const currentTeaserDiv = document.getElementById('uploadedRadarTeaserImageList');
-                    const existingTeaserLink = currentTeaserDiv ? currentTeaserDiv.querySelector('a') : null;
-                    if (existingTeaserLink && existingTeaserLink.href) {
-                        tempTeaserImageUrl = existingTeaserLink.href;
-                    }
-                }
-                
-                const imageContent = tempTeaserImageUrl
-                    ? `<img src="${tempTeaserImageUrl}" alt="Teaser Preview">`
-                    : '<i class="fas fa-photo-video placeholder-icon"></i>';
-
-                // Calculate countdown with new urgency logic matching newradarfe.html
-                let eventDate = dropDateTimeValue ? new Date(dropDateTimeValue) : new Date(Date.now() + 3*60*60*1000);
-                const now = new Date();
-                const diffMs = eventDate.getTime() - now.getTime();
-                let countdownText = '';
-                let urgencyClass = 'urgency-medium';
-
-                if (diffMs > 0) {
-                    const totalHours = diffMs / (1000 * 60 * 60);
-                    const days = Math.floor(totalHours / 24);
-                    const hours = Math.floor(totalHours % 24);
-                    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-
-                    if (days > 7) {
-                        countdownText = `In ${days} days`;
-                        urgencyClass = 'urgency-far';
-                    } else if (days > 1) {
-                        countdownText = `In ${days} days`;
-                        urgencyClass = 'urgency-medium';
-                    } else if (days === 1) {
-                        countdownText = `Tomorrow ${eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-                        urgencyClass = 'urgency-medium';
-                    } else if (hours > 0) {
-                        countdownText = `In ${hours}h ${minutes}m`;
-                        urgencyClass = 'urgency-soon';
-                    } else if (minutes > 0) {
-                        countdownText = `In ${minutes}m`;
-                        urgencyClass = 'urgency-soon';
-                    } else if (minutes <= 0 && diffMs > 0) {
-                        countdownText = `Dropping now`;
-                        urgencyClass = 'urgency-soon';
-                    }
-                } else {
-                    countdownText = "Dropped";
-                    urgencyClass = 'urgency-past';
+                    const existingLink = document.getElementById('uploadedRadarTeaserImageList')?.querySelector('a');
+                    if (existingLink?.href) cardTeaserDisplayUrl = existingLink.href;
                 }
 
-                // Format date and time exactly like the live radar cards
-                const formattedDate = dropDateTimeValue ?
-                    new Date(dropDateTimeValue).toLocaleDateString('en-GB', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                    }) : '23 April 2025';
-                
-                const formattedTime = dropDateTimeValue ?
-                    new Date(dropDateTimeValue).toLocaleTimeString('en-GB', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    }) + ' CEST' : '08:47 CEST';
-                
-                // Determine if heading should be clickable
-                const hasQuickView = quickViewContent && quickViewContent.trim() !== '';
-                const headingClass = hasQuickView ? 'radar-heading-clickable' : '';
-                const headingStyle = hasQuickView ? 'cursor: pointer;' : '';
-                
-                // Use the exact structure from newradarfe.html
+                const imageFieldContent = cardTeaserDisplayUrl
+                    ? `<img src="${cardTeaserDisplayUrl}" alt="Card Teaser Preview">`
+                    : `<i class="fas fa-photo-video placeholder-icon"></i>`;
+
+                // Date formatting
+                const eventDateObj = eventDateVal ? new Date(eventDateVal + 'T00:00:00') : new Date();
+                const formattedDate = eventDateObj.toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'});
+
+                // Timezone abbreviation
+                function getRadarTimezone() {
+                    const tzSelect = form.querySelector('#radarEventTimezone');
+                    const selectedTZ = tzSelect ? tzSelect.value : 'UTC';
+                    if (!selectedTZ) return 'UTC';
+                    try {
+                        const dateForTZ = eventDateVal && eventTimeVal ? new Date(eventDateVal + 'T' + eventTimeVal + ':00') : new Date();
+                        const parts = new Intl.DateTimeFormat('en-US', {timeZone: selectedTZ, timeZoneName: 'short'}).formatToParts(dateForTZ);
+                        const tzPart = parts.find(p => p.type === 'timeZoneName');
+                        return tzPart ? tzPart.value : selectedTZ.split('/').pop();
+                    } catch(e) { return selectedTZ.split('/').pop(); }
+                }
+                const timezone = getRadarTimezone();
+                const timeWithTimezone = eventTimeVal ? `${eventTimeVal.substring(0,5)} ${timezone}` : (eventDateVal ? `00:00 ${timezone}` : `Time ${timezone}`);
+
+                // Asset counts
+                const getAssetCount = (inputId, listId) => {
+                    const input = form.querySelector('#' + inputId);
+                    let count = input?.files?.length || 0;
+                    if (count === 0) { const listEl = document.getElementById(listId); if (listEl) { const links = listEl.querySelectorAll('a'); if (links.length) count = links.length; } }
+                    return count;
+                };
+                const docsCount    = getAssetCount('radarAlertDoc', 'uploadedRadarAlertDocList');
+                const imagesCount  = getAssetCount('radarImages', 'uploadedRadarImagesList');
+                const videosCount  = getAssetCount('radarVideos', 'uploadedRadarVideosList');
+                const supDocsCount = getAssetCount('radarSupDocs', 'uploadedRadarSupDocsList');
+
                 previewArea.innerHTML = `
-                <div class="radar-card-preview">
-                    <div class="card-image-area">
-                        ${imageContent}
-                        <div class="card-image-hover-overlay">
-                            <button class="btn btn-calendar">
-                                <i class="far fa-calendar-plus"></i> Add to Calendar
-                            </button>
-                            <button class="btn btn-reminder">
-                                <i class="far fa-bell"></i> Set Reminder
-                            </button>
-                            <button class="btn btn-follow">
-                                <i class="fas fa-bookmark"></i> Follow Topic
-                            </button>
-                        </div>
-                    </div>
-                    ${brand ? `<div class="brand-band">${brand}</div>` : ''}
-                    <div class="card-content-area">
-                        <h3 class="${headingClass}" style="${headingStyle}">${title}${hasQuickView ? ' <small style="color: var(--text-secondary); font-size: 0.8em;">(Click for details)</small>' : ''}</h3>
-                        <div class="card-bottom-meta">
-                            <div class="countdown-badge ${urgencyClass}">
-                                <i class="fas fa-stopwatch"></i> ${countdownText}
-                            </div>
-                            <div class="drop-time">
-                                <span class="date-line">
-                                    <i class="far fa-calendar-alt"></i>${formattedDate}
-                                </span>
-                                <span class="time-line">${formattedTime}</span>
+                    <div class="amc-card-preview">
+                        <div class="card-image-field">${imageFieldContent}</div>
+                        <div class="brand-band" title="${brand}">${brand}</div>
+                        <div class="card-content-body">
+                            <h3>${title}</h3>
+                            <div class="card-bottom-meta">
+                                <div class="card-assets">
+                                    <span class="asset-icon ${docsCount > 0 ? 'available' : ''}" title="Alert Document"><i class="fas fa-file-alt"></i>${docsCount > 0 ? ` <span class="asset-count-badge">${docsCount}</span>` : ''}</span>
+                                    <span class="asset-icon ${imagesCount > 0 ? 'available' : ''}" title="Images"><i class="fas fa-image"></i>${imagesCount > 0 ? ` <span class="asset-count-badge">${imagesCount}</span>` : ''}</span>
+                                    <span class="asset-icon ${videosCount > 0 ? 'available' : ''}" title="Videos"><i class="fas fa-video"></i>${videosCount > 0 ? ` <span class="asset-count-badge">${videosCount}</span>` : ''}</span>
+                                    <span class="asset-icon ${supDocsCount > 0 ? 'available' : ''}" title="Other Docs"><i class="fas fa-folder"></i>${supDocsCount > 0 ? ` <span class="asset-count-badge">${supDocsCount}</span>` : ''}</span>
+                                </div>
+                                <div class="release-date-time-footer">
+                                    <span class="date-part"><i class="far fa-calendar-alt"></i> ${formattedDate}</span>
+                                    <span class="time-part">${timeWithTimezone}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>`;
+                `;
             }
 
 
@@ -8002,11 +8251,11 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
 (function initAMCDropdownsDelegated() {
     // Prevent double-install of DELEGATED listeners only (safe)
     if (window.__AMC_DROPDOWNS_DELEGATED__) {
-        console.log('⚠️ AMC Dropdowns already initialized - skipping');
+        console.log('?? AMC Dropdowns already initialized - skipping');
         return;
     }
     window.__AMC_DROPDOWNS_DELEGATED__ = true;
-    console.log('🚀 AMC Delegated Dropdowns initializing...');
+    console.log('?? AMC Delegated Dropdowns initializing...');
 
     function getDropdownParts(which) {
         if (which === "category") {
@@ -8085,7 +8334,7 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
         }
     });
     
-    console.log('✅ AMC Delegated Dropdowns READY - single unified handler active');
+    console.log('? AMC Delegated Dropdowns READY - single unified handler active');
 })();
 
 // 2. Legal Authorisation Checkbox State Management
@@ -8345,7 +8594,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 })();
 
-console.log('✅ Menu upgrade JavaScript loaded');
+console.log('? Menu upgrade JavaScript loaded');
 
         // ===== SCHEDULE VERIFICATION: STATE MACHINE =====
         let scheduleState = "incomplete"; // "working" | "ready" | "complete"
@@ -8419,14 +8668,14 @@ console.log('✅ Menu upgrade JavaScript loaded');
             // UI updates
             gate?.classList.add("verified");
             if (summaryEl) {
-                summaryEl.textContent = `✓ Verified & Locked: ${summary}`;
+                summaryEl.textContent = `? Verified & Locked: ${summary}`;
                 summaryEl.style.color = "#059669";
                 summaryEl.style.fontWeight = "700";
             }
             
             if (btn) {
                 btn.disabled = true;
-                btn.textContent = "✓ Verified & Locked";
+                btn.textContent = "? Verified & Locked";
                 
                 // Show edit link
                 const editLink = document.getElementById("scheduleEditLink");
@@ -8479,7 +8728,7 @@ console.log('✅ Menu upgrade JavaScript loaded');
                 if (editLink) editLink.style.display = "none";
             }
             if (summaryEl) {
-                summaryEl.textContent = "Please fill in Release Date, Release Time, and Time Zone — then verify & lock.";
+                summaryEl.textContent = "Please fill in Release Date, Release Time, and Time Zone � then verify & lock.";
                 summaryEl.style.color = "";
                 summaryEl.style.fontWeight = "";
             }
@@ -9013,7 +9262,7 @@ console.log('✅ Menu upgrade JavaScript loaded');
                         let humanWhen = 'Not set';
                         if (dateVal) {
                             // Parse date to get day, month name, year
-                            const dateParts = dateVal.split('-'); // "2026-01-15" → ["2026", "01", "15"]
+                            const dateParts = dateVal.split('-'); // "2026-01-15" ? ["2026", "01", "15"]
                             const year = dateParts[0];
                             const monthNum = parseInt(dateParts[1], 10) - 1; // 0-indexed
                             const day = parseInt(dateParts[2], 10);
@@ -9116,9 +9365,9 @@ console.log('✅ Menu upgrade JavaScript loaded');
                             if (el) el.innerText = val;
                         };
 
-                        setText('m-company', company || '—');
-                        setText('m-brand', brand || '—');
-                        setText('m-title', title || '—');
+                        setText('m-company', company || '�');
+                        setText('m-brand', brand || '�');
+                        setText('m-title', title || '�');
                         setText('m-time', humanWhen);
 
                         setText('m-docs',  String(docs));
@@ -9353,6 +9602,12 @@ console.log('✅ Menu upgrade JavaScript loaded');
         window.confirmPublish = confirmPublish;
         window.validateSection = validateSection;
         window.setBentoStatus = setBentoStatus;
+
+        // Radar alert form inline handlers
+        window.verifyRadarSchedule = verifyRadarSchedule;
+        window.unlockRadarSchedule = unlockRadarSchedule;
+        window.radarSetAction = radarSetAction;
+        window.toggleRadarDocUpload = toggleRadarDocUpload;
         
         console.log('DEBUG: Functions exposed to window for inline handlers');
         // Note: Event delegation handles this automatically, but we log it
@@ -9363,7 +9618,7 @@ console.log('✅ Menu upgrade JavaScript loaded');
         console.log("DEBUG: Initial setup script finished.");
         });
     </script>
-    <script>document.addEventListener('DOMContentLoaded', function() { if (typeof loadV65Shell === 'function') { loadV65Shell({ basePath: './components/shell' }).then(() => console.log('✅ V6.5 Shell loaded')).catch(error => console.error('❌ Shell load failed:', error)); } });</script>
+    <script>document.addEventListener('DOMContentLoaded', function() { if (typeof loadV65Shell === 'function') { loadV65Shell({ basePath: './components/shell' }).then(() => console.log('? V6.5 Shell loaded')).catch(error => console.error('? Shell load failed:', error)); } });</script>
     <script src="./components/shell/v6_5-shell-loader.js" defer></script>
     <script src="./components/shell/v6_5-shell.js"></script>
 
@@ -9384,7 +9639,7 @@ html, body {
 
 /* ----------------------------------------------------------------
    PAGE TITLE (.amc-page-title / #main-content-title)
-   Inter Display 800 — 36px — -0.04em tracking
+   Inter Display 800 � 36px � -0.04em tracking
    ---------------------------------------------------------------- */
 .amc-page-title,
 #main-content-title {
@@ -9411,7 +9666,7 @@ body:not(.dark-mode) #main-content-title {
 
 /* ----------------------------------------------------------------
    PAGE SUBTITLE (.amc-page-subtitle)
-   Inter 300 Light — 16px — 1.55 line-height
+   Inter 300 Light � 16px � 1.55 line-height
    ---------------------------------------------------------------- */
 .amc-page-subtitle {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -9436,7 +9691,7 @@ body:not(.dark-mode) .amc-page-subtitle {
 
 /* ----------------------------------------------------------------
    SERVICE CARD TITLE (h2 inside .service-title-area)
-   Inter 600 — 17px — -0.01em tracking
+   Inter 600 � 17px � -0.01em tracking
    ---------------------------------------------------------------- */
 .service-title-area h2 {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -9457,8 +9712,8 @@ body:not(.dark-mode) .service-title-area h2 {
 
 /* ----------------------------------------------------------------
    SERVICE CARD DESCRIPTION (p inside .service-card)
-   Inter 300 — 14px — 1.55 line-height
-   Matches subtitle register — secondary, recedes
+   Inter 300 � 14px � 1.55 line-height
+   Matches subtitle register � secondary, recedes
    ---------------------------------------------------------------- */
 .service-card p {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -9478,7 +9733,7 @@ body:not(.dark-mode) .service-card p {
 
 /* ----------------------------------------------------------------
    FORM CARD ACCORDION HEADERS (h2 inside .form-card-header)
-   Inter 600 — 15px — keeps scannable at section-header scale
+   Inter 600 � 15px � keeps scannable at section-header scale
    ---------------------------------------------------------------- */
 .form-card-header h2 {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -9491,7 +9746,7 @@ body:not(.dark-mode) .service-card p {
 
 /* ----------------------------------------------------------------
    BENTO BOX TITLES (h3 inside .bento-title)
-   Inter 600 — 14px
+   Inter 600 � 14px
    ---------------------------------------------------------------- */
 .bento-title h3,
 .bento-header h3 {
@@ -9510,7 +9765,7 @@ body.dark-mode .bento-header h3 {
 
 /* ----------------------------------------------------------------
    HERO VALUE (large stat/metric display)
-   Inter 800 — Display opsz — max impact for key numbers
+   Inter 800 � Display opsz � max impact for key numbers
    ---------------------------------------------------------------- */
 .hero-value {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -9528,7 +9783,7 @@ body.dark-mode .hero-value {
 
 /* ----------------------------------------------------------------
    HERO LABEL & HELP (small caps labels above/below hero values)
-   Inter 500 — 11px — uppercase + tracking
+   Inter 500 � 11px � uppercase + tracking
    ---------------------------------------------------------------- */
 .hero-label,
 .hero-help {
@@ -9552,7 +9807,7 @@ body:not(.dark-mode) .hero-help {
 
 /* ----------------------------------------------------------------
    FORM LABELS (label elements in forms)
-   Inter 500 — 13px
+   Inter 500 � 13px
    ---------------------------------------------------------------- */
 label,
 .form-label {
@@ -9565,7 +9820,7 @@ label,
 
 /* ----------------------------------------------------------------
    FORM HELP TEXT / SMALL (small, .form-text)
-   Inter 300 — 12px — muted, recedes
+   Inter 300 � 12px � muted, recedes
    ---------------------------------------------------------------- */
 small,
 .form-text,
@@ -9588,7 +9843,7 @@ body:not(.dark-mode) .form-text {
 
 /* ----------------------------------------------------------------
    FORM INPUTS, SELECTS, TEXTAREAS
-   Inter 400 — 14px
+   Inter 400 � 14px
    ---------------------------------------------------------------- */
 input,
 select,
@@ -9602,7 +9857,7 @@ textarea,
 
 /* ----------------------------------------------------------------
    SECTION/LEGEND TITLES (fieldset legend)
-   Inter 600 — 12px — uppercase + tracking
+   Inter 600 � 12px � uppercase + tracking
    ---------------------------------------------------------------- */
 legend,
 fieldset legend {
@@ -9622,7 +9877,7 @@ body.dark-mode fieldset legend {
 
 /* ----------------------------------------------------------------
    CRITICAL REVIEW / MODAL HEADERS (h3 in modal/review headers)
-   Inter 600 — 16px
+   Inter 600 � 16px
    ---------------------------------------------------------------- */
 .critical-review-header h3,
 .success-modal-header h3,
@@ -9642,7 +9897,7 @@ body.dark-mode .success-modal-header h3 {
 
 /* ----------------------------------------------------------------
    STEP / PROGRESS LABELS
-   Inter 500 — 12px
+   Inter 500 � 12px
    ---------------------------------------------------------------- */
 .step-label,
 .step-title,
@@ -9655,7 +9910,7 @@ body.dark-mode .success-modal-header h3 {
 
 /* ----------------------------------------------------------------
    BUTTON TEXT
-   Inter 500 — inherit size from button context
+   Inter 500 � inherit size from button context
    ---------------------------------------------------------------- */
 button,
 .btn,
