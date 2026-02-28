@@ -964,6 +964,9 @@
 </script>
 
 <script>
+// Dynamic API Base URL
+const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
+
 // ================================================================
 // UTILITY
 // ================================================================
@@ -1468,7 +1471,7 @@ async function checkInternalUser(email) {
     try {
         const token = localStorage.getItem('token') || localStorage.getItem('authToken');
         if (!token) return null;
-        const response = await fetch(`http://localhost:5000/api/v1/center/users/lookup-by-email?email=${encodeURIComponent(email)}`, {
+        const response = await fetch(`${API_BASE_URL}/api/v1/center/users/lookup-by-email?email=${encodeURIComponent(email)}`, {
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
         });
         if (!response.ok) return null;
@@ -1713,7 +1716,7 @@ function renderAlert(alert) {
     if (alert.teaserImagePath) {
         const imgUrl = alert.teaserImagePath.startsWith('http')
             ? alert.teaserImagePath
-            : 'http://localhost:5000/' + alert.teaserImagePath;
+            : '${API_BASE_URL}/' + alert.teaserImagePath;
         const imgEl = document.getElementById('alert-teaser-image');
         if (imgEl) {
             imgEl.src = imgUrl;
@@ -1726,7 +1729,7 @@ function renderAlert(alert) {
     if (alert.alertDocPath) {
         const docUrl = alert.alertDocPath.startsWith('http')
             ? alert.alertDocPath
-            : 'http://localhost:5000' + alert.alertDocPath;
+            : '${API_BASE_URL}' + alert.alertDocPath;
         attachmentsToRender.push({
             url:          docUrl,
             path:         docUrl,
@@ -1802,7 +1805,7 @@ async function initAlertDetail() {
     }
 
     try {
-        const res  = await fetch(`http://localhost:5000/api/v1/radar/alerts/${uuid}`, {
+        const res  = await fetch(`${API_BASE_URL}/api/v1/radar/alerts/${uuid}`, {
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
         });
         if (!res.ok) throw new Error('HTTP ' + res.status);
