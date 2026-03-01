@@ -105,16 +105,8 @@
             min-height: calc(100vh - 56px);
         }
 
-        /* On mobile (<1100px), header is fixed so we need top clearance */
-        @media (max-width: 1099px) {
-            .mobile-main {
-                padding-top: 72px;
-            }
-        }
-
         @media (min-width: 1100px) {
             .mobile-main {
-                padding-top: 10px !important;
                 padding-left: calc(32px + var(--amc-rail-w)) !important;
             }
         }
@@ -159,6 +151,8 @@
         @media (max-width: 960px) {
             .alert-body-layout { flex-direction: column; }
             .alert-sidebar-col { width: 100%; position: static; max-height: none; }
+            .amc-page { padding-left: 0 !important; padding-right: 0 !important; }
+            .pdf-viewer-wrap { margin-left: -12px; margin-right: -12px; border-radius: 0; border-left: none; border-right: none; width: calc(100% + 24px); }
         }
 
         /* ============================================================
@@ -863,7 +857,7 @@
                 </div>
 
                 <!-- PDF viewer — structure matches amc-release-detail.html -->
-                <div class="pdf-viewer-wrap hidden" id="pdf-viewer-wrap">
+                <div class="pdf-viewer-wrap" id="pdf-viewer-wrap" style="display:none;">
                     <!-- Control bar: hidden by default, slides in on hover -->
                     <div class="pdf-control-bar control-bar-hidden">
                         <div class="pdf-controls-left">
@@ -1176,6 +1170,7 @@ let _alertShowFull     = false;
 let _alertIsRendering  = false;
 let _alertHideTimeout, _alertMaxVisibleTimeout;
 let _alertControlBarVisible = false;
+let _alertMeasuredWidth = 0; // measured synchronously after display:flex
 
 // ── Render all pages (up to 3 unless expanded) ───────────────────
 async function _alertRenderAllPages() {
@@ -1189,7 +1184,7 @@ async function _alertRenderAllPages() {
 
     // Measure the main column for accurate scaling — wrapper may not be laid out yet
     const mainCol = document.querySelector('.alert-main-col');
-    const wrapperWidth = (mainCol ? mainCol.clientWidth : wrapper.clientWidth) || window.innerWidth || 800;
+    const wrapperWidth = _alertMeasuredWidth || wrapper.clientWidth || 800;
     const pagesToRender = _alertShowFull ? _alertTotalPages : Math.min(3, _alertTotalPages);
 
     for (let pageNum = 1; pageNum <= pagesToRender; pageNum++) {
@@ -1438,8 +1433,11 @@ async function loadPDF(url) {
     const wrapper = document.getElementById('pdf-viewer-wrapper');
     const loading = document.getElementById('pdf-loading');
 
-    wrap.classList.remove('hidden');
+    wrap.style.display = 'flex';
     wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Measure width NOW after display:flex forces synchronous layout — same as release detail
+    _alertMeasuredWidth = wrapper.clientWidth || 800;
 
     // Reset wrapper, show loading
     wrapper.querySelectorAll('.pdf-page-container, .see-full-alert-btn').forEach(el => el.remove());
