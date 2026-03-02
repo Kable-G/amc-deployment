@@ -1194,8 +1194,18 @@ async function _alertRenderAllPages() {
     // Clear existing pages and expand button
     wrapper.querySelectorAll('.pdf-page-container, .see-full-alert-btn').forEach(el => el.remove());
 
-    // Measure the main column for accurate scaling — wrapper may not be laid out yet
-    const wrapperWidth = window.innerWidth;
+    // Measure actual rendered width of the wrapper element.
+    // Falls back to main column or viewport only if wrapper hasn't laid out yet.
+    const isMobile = window.innerWidth <= 960;
+    let wrapperWidth = wrapper.getBoundingClientRect().width;
+    if (!wrapperWidth) {
+        // Not laid out yet — estimate from main column
+        const mainCol = document.querySelector('.alert-main-col');
+        wrapperWidth = mainCol ? mainCol.getBoundingClientRect().width : window.innerWidth;
+    }
+    // On mobile, PDF bleeds edge-to-edge so use full viewport width
+    if (isMobile) wrapperWidth = window.innerWidth;
+
     const pagesToRender = _alertShowFull ? _alertTotalPages : Math.min(3, _alertTotalPages);
 
     for (let pageNum = 1; pageNum <= pagesToRender; pageNum++) {
