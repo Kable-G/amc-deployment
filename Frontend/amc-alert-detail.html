@@ -151,8 +151,20 @@
         @media (max-width: 960px) {
             .alert-body-layout { flex-direction: column; }
             .alert-sidebar-col { width: 100%; position: static; max-height: none; }
-            .amc-page { padding-left: 0 !important; padding-right: 0 !important; }
-            .pdf-viewer-wrap { margin-left: -12px; margin-right: -12px; border-radius: 0; border-left: none; border-right: none; width: calc(100% + 24px); }
+            .pdf-control-bar { display: none !important; }
+            /* Normalise amc-page to symmetric 12px padding on mobile
+               so PDF breakout is simply -12px each side (matching mobile-main) */
+            .amc-page { padding: 16px 12px; }
+            .pdf-viewer-wrap {
+                width: 100vw;
+                margin-left: -24px;  /* 12px amc-page + 12px mobile-main */
+                margin-right: -24px;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+                overflow: hidden;
+            }
+            .pdf-viewer-wrapper { width: 100%; }
         }
 
         /* ============================================================
@@ -321,8 +333,9 @@
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             background: #ffffff;
-            overflow: hidden; /* must clip to stay within main column */
-            display: block;   /* not flex — wrapper grows naturally */
+            overflow-x: auto;  /* allows pan when zoomed */
+            overflow-y: visible;
+            display: block;
             position: relative;
             margin-bottom: 32px;
         }
@@ -857,7 +870,7 @@
                 </div>
 
                 <!-- PDF viewer — structure matches amc-release-detail.html -->
-                <div class="pdf-viewer-wrap" id="pdf-viewer-wrap" style="display:none;">
+                <div class="pdf-viewer-wrap hidden" id="pdf-viewer-wrap">
                     <!-- Control bar: hidden by default, slides in on hover -->
                     <div class="pdf-control-bar control-bar-hidden">
                         <div class="pdf-controls-left">
@@ -1170,7 +1183,6 @@ let _alertShowFull     = false;
 let _alertIsRendering  = false;
 let _alertHideTimeout, _alertMaxVisibleTimeout;
 let _alertControlBarVisible = false;
-let _alertMeasuredWidth = 0; // measured synchronously after display:flex
 
 // ── Render all pages (up to 3 unless expanded) ───────────────────
 async function _alertRenderAllPages() {
@@ -1183,8 +1195,7 @@ async function _alertRenderAllPages() {
     wrapper.querySelectorAll('.pdf-page-container, .see-full-alert-btn').forEach(el => el.remove());
 
     // Measure the main column for accurate scaling — wrapper may not be laid out yet
-    const mainCol = document.querySelector('.alert-main-col');
-    const wrapperWidth = _alertMeasuredWidth || wrapper.clientWidth || 800;
+    const wrapperWidth = window.innerWidth;
     const pagesToRender = _alertShowFull ? _alertTotalPages : Math.min(3, _alertTotalPages);
 
     for (let pageNum = 1; pageNum <= pagesToRender; pageNum++) {
@@ -1197,22 +1208,24 @@ async function _alertRenderAllPages() {
         const canvas = document.createElement('canvas');
         canvas.className = 'pdf-canvas';
 
-        const viewport = page.getViewport({ scale: 1 });
-        const scale    = (wrapperWidth / viewport.width) * _alertCurrentScale;
-        const scaledVp = page.getViewport({ scale });
+        const viewport    = page.getViewport({ scale: 1 });
+        const dpr         = window.devicePixelRatio || 1;
+        const displayScale = (wrapperWidth / viewport.width) * _alertCurrentScale;
+        const renderScale  = displayScale * dpr;
+        const renderVp     = page.getViewport({ scale: renderScale });
 
-        const dpr = window.devicePixelRatio || 2;
-        canvas.width        = scaledVp.width  * dpr;
-        canvas.height       = scaledVp.height * dpr;
-        canvas.style.width  = `${scaledVp.width}px`;
-        canvas.style.height = `${scaledVp.height}px`;
+        // Canvas physical size = full DPR resolution
+        canvas.width  = renderVp.width;
+        canvas.height = renderVp.height;
+        // CSS display size = logical pixels (no DPR)
+        canvas.style.width  = `${Math.round(renderVp.width  / dpr)}px`;
+        canvas.style.height = `${Math.round(renderVp.height / dpr)}px`;
 
         pageContainer.appendChild(canvas);
 
         await page.render({
             canvasContext: canvas.getContext('2d'),
-            viewport: scaledVp,
-            transform: [dpr, 0, 0, dpr, 0, 0]
+            viewport: renderVp
         }).promise;
 
         // Annotation layer — clickable links
@@ -1377,6 +1390,115 @@ function _alertInitSlideControls() {
     });
 }
 
+// ── Mobile touch gestures — pinch zoom, double-tap, pan ──────────
+function _alertSetupTouchGestures() {
+    const wrap    = document.getElementById('pdf-viewer-wrap');
+    const wrapper = document.getElementById('pdf-viewer-wrapper');
+    if (!wrap || !wrapper) return;
+
+    // Only activate on touch-capable devices
+    if (!('ontouchstart' in window)) return;
+
+    // ── Hint toast ────────────────────────────────────────────────
+    const hint = document.createElement('div');
+    hint.id = 'pdf-touch-hint';
+    hint.innerHTML = '<i class="fas fa-expand-alt"></i> Pinch to zoom';
+    hint.style.cssText = `
+        position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+        background: rgba(0,0,0,0.72); color: #fff; font-size: 13px; font-weight: 500;
+        padding: 7px 16px; border-radius: 20px; pointer-events: none; z-index: 30;
+        display: flex; align-items: center; gap: 7px; white-space: nowrap;
+        opacity: 0; transition: opacity 0.4s ease;
+        font-family: 'Inter', sans-serif; letter-spacing: 0.01em;
+    `;
+    wrap.style.position = 'relative';
+    wrap.appendChild(hint);
+
+    // Show hint once per session
+    const hintKey = 'amc_pdf_touch_hint_shown';
+    if (!sessionStorage.getItem(hintKey)) {
+        setTimeout(() => {
+            hint.style.opacity = '1';
+            setTimeout(() => {
+                hint.style.opacity = '0';
+                setTimeout(() => hint.remove(), 400);
+            }, 2200);
+        }, 800);
+        sessionStorage.setItem(hintKey, '1');
+    }
+
+    // ── State ─────────────────────────────────────────────────────
+    let isPinching    = false;
+    let startDist     = 0;
+    let startScale    = 1;
+    let lastTap       = 0;
+    let isPanning     = false;
+    let panStartX     = 0;
+    let panStartScrollX = 0;
+
+    function getTouchDist(touches) {
+        const dx = touches[0].clientX - touches[1].clientX;
+        const dy = touches[0].clientY - touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    // ── Pinch ─────────────────────────────────────────────────────
+    wrap.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+            isPinching = true;
+            startDist  = getTouchDist(e.touches);
+            startScale = _alertCurrentScale;
+            e.preventDefault();
+        } else if (e.touches.length === 1) {
+            // Double-tap detection
+            const now = Date.now();
+            if (now - lastTap < 300) {
+                // Double tap — toggle 1x / 2x
+                const target = _alertCurrentScale > 1.0 ? 1.0 : 2.0;
+                _alertCurrentScale = target;
+                _alertIsRendering = false;
+                _alertRenderAllPages();
+                e.preventDefault();
+            }
+            lastTap = now;
+
+            // Pan setup (only when zoomed in)
+            if (_alertCurrentScale > 1.0) {
+                isPanning    = true;
+                panStartX    = e.touches[0].clientX;
+                panStartScrollX = wrap.scrollLeft;
+            }
+        }
+    }, { passive: false });
+
+    wrap.addEventListener('touchmove', (e) => {
+        if (isPinching && e.touches.length === 2) {
+            const dist  = getTouchDist(e.touches);
+            const ratio = dist / startDist;
+            const raw   = startScale * ratio;
+            // Clamp between 0.5 and 3.0
+            _alertCurrentScale = Math.min(3.0, Math.max(0.5, raw));
+            e.preventDefault();
+        } else if (isPanning && e.touches.length === 1 && _alertCurrentScale > 1.0) {
+            const dx = panStartX - e.touches[0].clientX;
+            wrap.scrollLeft = panStartScrollX + dx;
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    wrap.addEventListener('touchend', async (e) => {
+        if (isPinching) {
+            isPinching = false;
+            // Snap to nearest 0.25 step
+            _alertCurrentScale = Math.round(_alertCurrentScale * 4) / 4;
+            _alertCurrentScale = Math.min(3.0, Math.max(0.5, _alertCurrentScale));
+            _alertIsRendering  = false;
+            await _alertRenderAllPages();
+        }
+        if (e.touches.length === 0) isPanning = false;
+    }, { passive: true });
+}
+
 // ── Wire control buttons ──────────────────────────────────────────
 function _alertSetupControls() {
     const prev   = document.getElementById('pdf-prev-page');
@@ -1433,11 +1555,18 @@ async function loadPDF(url) {
     const wrapper = document.getElementById('pdf-viewer-wrapper');
     const loading = document.getElementById('pdf-loading');
 
-    wrap.style.display = 'flex';
+    // Apply mobile bleed styles before showing
+    if (window.innerWidth <= 960) {
+        wrap.style.width = '100vw';
+        wrap.style.marginLeft = '-12px';
+        wrap.style.marginRight = '-12px';
+        wrap.style.borderRadius = '0';
+        wrap.style.borderLeft = 'none';
+        wrap.style.borderRight = 'none';
+        wrap.style.boxSizing = 'border-box';
+    }
+    wrap.classList.remove('hidden');
     wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    // Measure width NOW after display:flex forces synchronous layout — same as release detail
-    _alertMeasuredWidth = wrapper.clientWidth || 800;
 
     // Reset wrapper, show loading
     wrapper.querySelectorAll('.pdf-page-container, .see-full-alert-btn').forEach(el => el.remove());
@@ -1458,6 +1587,7 @@ async function loadPDF(url) {
 
         await _alertRenderAllPages();
         _alertSetupControls();
+        _alertSetupTouchGestures();
         _alertInitSlideControls();
 
     } catch(e) {
