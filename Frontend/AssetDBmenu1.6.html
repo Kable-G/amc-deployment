@@ -7555,7 +7555,21 @@ function initCenterLanguageVariants() {
                     setTimeout(() => {
                         dynamicFormContainer.classList.add('visible');
                         console.log(`DEBUG: Form display transition triggered for ${formType}.`);
+                        // Force preview render after DOM is fully visible
+                        if (formType === 'center' && typeof updateCenterCardPreview === 'function') {
+                            updateCenterCardPreview();
+                        } else if (formType === 'radar' && typeof updateRadarCardPreview === 'function') {
+                            updateRadarCardPreview();
+                        }
                     }, 50);
+                    // Safety net: re-render preview after full transition completes
+                    setTimeout(() => {
+                        if (formType === 'center' && typeof updateCenterCardPreview === 'function') {
+                            updateCenterCardPreview();
+                        } else if (formType === 'radar' && typeof updateRadarCardPreview === 'function') {
+                            updateRadarCardPreview();
+                        }
+                    }, 300);
                 } else {
                     console.error("ERROR: dynamicFormContainer element not found!");
                 }
@@ -8239,6 +8253,28 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
         updateCenterCardPreview();
         
                     console.log("DEBUG: Center JS Initialized Successfully with Card Preview.");
+
+                    // Drag-drop on all file-upload-area zones inside center form
+                    document.querySelectorAll('#center-form .file-upload-area').forEach(function(zone) {
+                        zone.addEventListener('click', function(e) {
+                            const input = zone.querySelector('input[type="file"]');
+                            if (input && e.target !== input) input.click();
+                        });
+                        zone.addEventListener('dragover', function(e){ e.preventDefault(); zone.classList.add('drag-over'); });
+                        zone.addEventListener('dragleave', function(){ zone.classList.remove('drag-over'); });
+                        zone.addEventListener('drop', function(e){
+                            e.preventDefault(); zone.classList.remove('drag-over');
+                            const input = zone.querySelector('input[type="file"]');
+                            if (input && e.dataTransfer.files.length) {
+                                try {
+                                    const dt = new DataTransfer();
+                                    Array.from(e.dataTransfer.files).forEach(function(f){ dt.items.add(f); });
+                                    input.files = dt.files;
+                                    input.dispatchEvent(new Event('change'));
+                                } catch(err) {}
+                            }
+                        });
+                    });
                     
                     // Initialize bento box workflow system
                     if (typeof initBentoBoxSystem === "function") {
@@ -8447,6 +8483,27 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                     });
                     const legalCb = form.querySelector('#radarLegalAck');
                     if (legalCb) legalCb.addEventListener('change', radarUpdateLegalState);
+                    // Drag-drop on all file-upload-area zones inside radar form
+                    document.querySelectorAll('#radar-form .file-upload-area').forEach(function(zone) {
+                        zone.addEventListener('click', function(e) {
+                            const input = zone.querySelector('input[type="file"]');
+                            if (input && e.target !== input) input.click();
+                        });
+                        zone.addEventListener('dragover', function(e){ e.preventDefault(); zone.classList.add('drag-over'); });
+                        zone.addEventListener('dragleave', function(){ zone.classList.remove('drag-over'); });
+                        zone.addEventListener('drop', function(e){
+                            e.preventDefault(); zone.classList.remove('drag-over');
+                            const input = zone.querySelector('input[type="file"]');
+                            if (input && e.dataTransfer.files.length) {
+                                try {
+                                    const dt = new DataTransfer();
+                                    Array.from(e.dataTransfer.files).forEach(function(f){ dt.items.add(f); });
+                                    input.files = dt.files;
+                                    input.dispatchEvent(new Event('change'));
+                                } catch(err) {}
+                            }
+                        });
+                    });
                     // Initialise states and render the preview card immediately
                     radarUpdateIdentityState(); radarComputeScheduleState(); radarUpdateCategoryState();
                     radarUpdateLangMarketsState(); radarUpdateTeaserState(); radarUpdateDocState();
@@ -8497,7 +8554,7 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                 const date = f.querySelector('#radarEventDate'), time = f.querySelector('#radarEventTime'), tz = f.querySelector('#radarEventTimezone');
                 if (!date?.value || !tz?.value) { alert('Please fill in Event Date and Time Zone before verifying.'); return; }
                 const d = new Date(date.value + 'T' + (time?.value || '00:00'));
-                const summary = d.toLocaleDateString('en-US', {weekday:'long',year:'numeric',month:'long',day:'numeric'}) + (time?.value ? ' at ' + time.value : '') + ' (' + tz.value + ')';
+                const summary = d.toLocaleDateString('en-GB', {weekday:'long',year:'numeric',month:'long',day:'numeric'}) + (time?.value ? ' at ' + time.value : '') + ' (' + tz.value + ')';
                 if (!confirm('Please confirm this schedule:\n\n' + summary + '\n\nThe alert will reflect this date and time.')) return;
                 radarScheduleVerified = true;
                 const gate = document.getElementById('radarScheduleGate'); if (gate) gate.classList.add('verified');
@@ -9279,7 +9336,7 @@ console.log('✅ Menu upgrade JavaScript loaded');
             
             // Build a human-readable summary
             const scheduleDate = new Date(date.value + "T" + time.value);
-            const formattedDate = scheduleDate.toLocaleDateString("en-US", {
+            const formattedDate = scheduleDate.toLocaleDateString("en-GB", {
                 weekday: "long", year: "numeric", month: "long", day: "numeric"
             });
             const summary = `${formattedDate} at ${time.value} (${tz.value})`;
