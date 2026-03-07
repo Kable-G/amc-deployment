@@ -873,7 +873,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         alertsTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">Loading... <i class="fas fa-spinner fa-spin"></i></td></tr>`;
         let queryParams = `?page=${page}&limit=${limitPerPage}&title=${encodeURIComponent(search)}&brand=${encodeURIComponent(brand)}&status=${encodeURIComponent(status)}`;
-        const apiUrl = `http://localhost:5000/api/v1/radar/all-alerts${queryParams}`;
+        const apiUrl = `/api/v1/radar/all-alerts${queryParams}`;
         
         console.log('🔍 DEBUG: Making request to:', apiUrl);
         console.log('🔍 DEBUG: Request headers:', { 'Authorization': `Bearer ${token ? token.substring(0, 20) + '...' : 'MISSING'}` });
@@ -983,7 +983,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`🔍 DEBUG: Processing alert ${index + 1}:`, alert);
             const sanitizedTitle = (alert.title || 'this alert').replace(/"/g, '"');
             const teaserHtml = alert.teaserImagePath ?
-                `<span class="thumb"><img src="http://localhost:5000${alert.teaserImagePath}" alt=""></span>` :
+                `<span class="thumb"><img src="${alert.teaserImagePath}" alt=""></span>` :
                 `<span class="thumb"><i class="far fa-image"></i></span>`;
             
             const alertDate = alert.eventDateTime ? new Date(alert.eventDateTime).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '') : '--/--/---- --:--';
@@ -1042,7 +1042,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Actions ---
     async function deleteAlert(uuid) {
         try {
-            const response = await fetch(`http://localhost:5000/api/v1/radar/alerts/${uuid}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            const response = await fetch(`/api/v1/radar/alerts/${uuid}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
             const result = await response.json();
             if (!response.ok) throw new Error(result.error);
             alert(result.message);
@@ -1058,11 +1058,11 @@ document.addEventListener('DOMContentLoaded', () => {
         amcQuickViewAssetListArea.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading details...</p>';
         assetDetailModalBackdrop.classList.add('open');
         try {
-            let res = await fetch(`http://localhost:5000/api/v1/radar/alerts/foredit/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            let res = await fetch(`/api/v1/radar/alerts/foredit/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
             
             let alertData;
             if (res.status === 404) {
-                res = await fetch(`http://localhost:5000/api/v1/radar/history/by-uuid/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                res = await fetch(`/api/v1/radar/history/by-uuid/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
                 if (!res.ok) throw new Error('Alert not found in active or archived records.');
             }
             
@@ -1085,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Set media preview
             if (alertData.teaserImagePath) {
-                assetDetailModalMediaPreview.innerHTML = `<img src="http://localhost:5000${alertData.teaserImagePath}" alt="Alert Preview" style="width: 100%; height: 100%; object-fit: cover;">`;
+                assetDetailModalMediaPreview.innerHTML = `<img src="${alertData.teaserImagePath}" alt="Alert Preview" style="width: 100%; height: 100%; object-fit: cover;">`;
             } else {
                 assetDetailModalMediaPreview.innerHTML = '<i class="far fa-image" style="font-size: 3em; color: var(--text-secondary);"></i>';
             }
