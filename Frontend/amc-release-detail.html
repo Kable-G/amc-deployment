@@ -9,7 +9,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet"/>
+    <!-- Inter variable font — exact per AMC Typography Specification v1.0
+         opsz 14..32 covers all UI text; opsz 32..144 activates Display optical refinements for headings.
+         Explicit weight declarations only — no wildcard range, per spec §1.3. -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,32..144,800&display=swap" rel="stylesheet"/>
     
     <!-- ✅ GLOBAL CSS - REPLACES ALL OLD STYLES -->
     <link rel="stylesheet" href="./components/shell/v6_5-shell.css">
@@ -5278,6 +5281,400 @@ body.dark-mode .amc-rail-items::-webkit-scrollbar-thumb:hover {
 <link rel="stylesheet" href="./components/shell/v6_5-shell.css">
 <script src="./components/shell/v6_5-shell.js"></script>
 <script src="./components/shell/v6_5-shell-loader.js" defer></script>
+
+<!-- =====================================================================
+     AMC TYPOGRAPHY SYSTEM — v1.0
+     Source: AMC-Typography-Specification-v1_0.docx  ·  February 2026
+     Single typeface. Extreme weight contrast. No decorative elements.
+     All values are verbatim from the spec — do not modify without
+     updating the specification document first.
+     ===================================================================== -->
+<style>
+
+/* ----------------------------------------------------------------
+   §1.4  BASE FONT STACK
+   Every element on the page inherits Inter — EXCEPT Font Awesome
+   icon elements, which must retain their own font-family to render.
+   Plus Jakarta Sans is removed — Inter only, per spec §1.
+   Tabular numbers + ss01 (alternate '1') for data legibility.
+   ---------------------------------------------------------------- */
+*:not(i):not(.fa):not(.fas):not(.far):not(.fal):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands):not([class*="fa-"]),
+*:not(i):not(.fa):not(.fas):not(.far):not(.fal):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands):not([class*="fa-"])::before,
+*:not(i):not(.fa):not(.fas):not(.far):not(.fal):not(.fab):not(.fa-solid):not(.fa-regular):not(.fa-brands):not([class*="fa-"])::after {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-feature-settings: 'tnum' 1, 'ss01' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* ----------------------------------------------------------------
+   §3  RELEASE / PAGE TITLE  (h1)
+   Spec table §12 row 1: 42px · 800 · -0.04em · 1.05lh
+   opsz 42 activates Inter Display optical refinements.
+   Colours: §11.2 light #0f172a · §11.1 dark #f8fafc
+   ---------------------------------------------------------------- */
+.pr-header h1,
+#release-title {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 42px !important;
+    font-weight: 800 !important;
+    font-variation-settings: 'opsz' 42 !important;
+    letter-spacing: -0.04em !important;
+    line-height: 1.05 !important;
+    margin: 0 0 8px 0 !important;
+    text-transform: none !important;
+}
+
+body:not(.dark-mode) .pr-header h1,
+body:not(.dark-mode) #release-title {
+    color: #0f172a !important;
+}
+
+body.dark-mode .pr-header h1,
+body.dark-mode #release-title {
+    color: #f8fafc !important;
+}
+
+/* Responsive: §12 phone landscape ≤767px landscape */
+@media (max-width: 767px) and (orientation: landscape) {
+    .pr-header h1,
+    #release-title {
+        font-size: 28px !important;
+        font-variation-settings: 'opsz' 28 !important;
+        letter-spacing: -0.03em !important;
+    }
+}
+
+/* Portrait mobile — scale gracefully, not in spec but necessary for this page type */
+@media (max-width: 640px) {
+    .pr-header h1,
+    #release-title {
+        font-size: 28px !important;
+        font-variation-settings: 'opsz' 28 !important;
+        letter-spacing: -0.03em !important;
+        line-height: 1.1 !important;
+    }
+}
+
+
+/* ----------------------------------------------------------------
+   §4  PAGE / SECTION SUBTITLE
+   Spec §12 row 10: 16px · 300 · 0 tracking · 1.55lh
+   Colours: dark #64748b · light #6b7280
+   ---------------------------------------------------------------- */
+.pr-header p,
+.pr-header .pr-subtitle,
+.page-header p {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 300 !important;
+    letter-spacing: 0 !important;
+    line-height: 1.55 !important;
+    margin: 0 !important;
+    opacity: 1 !important;
+}
+
+body.dark-mode .pr-header p,
+body.dark-mode .page-header p {
+    color: #64748b !important;
+}
+
+body:not(.dark-mode) .pr-header p,
+body:not(.dark-mode) .page-header p {
+    color: #6b7280 !important;
+}
+
+/* Responsive: §12 phone landscape */
+@media (max-width: 767px) and (orientation: landscape) {
+    .pr-header p { font-size: 13px !important; }
+}
+
+
+/* ----------------------------------------------------------------
+   §5  HEADER WORDMARK / MOBILE LOGO
+   Spec table §12 row 2: 18px · 700 · -0.02em · normal lh
+   ---------------------------------------------------------------- */
+.mobile-logo,
+.amc-wordmark,
+.header-wordmark {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+    line-height: normal !important;
+}
+
+
+/* ----------------------------------------------------------------
+   §9.2  CARD / SECTION TITLES  (h3, h4)
+   Spec table §12 row 3: 15–17px · 600 · 0 tracking · 1.4lh
+   Tablet: 17px; mobile: 15px
+   ---------------------------------------------------------------- */
+.asset-box h4,
+.supplementary-text h3,
+.cart-modal-title,
+.tools-dropdown-title,
+#release-text-full h3,
+#release-text-full h4 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    line-height: 1.4 !important;
+}
+
+/* Asset sidebar box headers are smaller — match spec's 14–15px UI register */
+.asset-box h4 {
+    font-size: 14px !important;
+    font-variation-settings: 'opsz' 14 !important;
+}
+
+/* h2 in release body — larger section heading */
+#release-text-full h2 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 22px !important;
+    font-weight: 600 !important;
+    font-variation-settings: 'opsz' 22 !important;
+    letter-spacing: -0.01em !important;
+    line-height: 1.3 !important;
+}
+
+@media (max-width: 640px) {
+    .asset-box h4,
+    .supplementary-text h3,
+    #release-text-full h3 { font-size: 15px !important; }
+}
+
+
+/* ----------------------------------------------------------------
+   MODAL / PANEL HEADERS
+   Spec §12 row 2 register: 700 · -0.02em
+   Cart modal, tools dropdown use 18px per existing design
+   ---------------------------------------------------------------- */
+.cart-modal-title,
+.tools-dropdown-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+    line-height: 1.2 !important;
+}
+
+
+/* ----------------------------------------------------------------
+   §9.1  BRAND BAND
+   Spec table §9.1 + §12 row 4: 11px · 600 · +0.05em · uppercase
+   Background #2a2a2a · text #ffffff — fixed, not theme-dependent
+   ---------------------------------------------------------------- */
+.brand-band,
+.release-brand-band,
+.card-brand-band {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    line-height: 1 !important;
+}
+
+
+/* ----------------------------------------------------------------
+   LEAD PARAGRAPH
+   Editorial intro — heavier than body to bridge title and text
+   Not in spec weight table explicitly; using 500 / 18px / 1.6lh
+   ---------------------------------------------------------------- */
+.lead-paragraph {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 18px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0 !important;
+    line-height: 1.6 !important;
+    font-variation-settings: 'opsz' 18 !important;
+}
+
+
+/* ----------------------------------------------------------------
+   BODY / RELEASE TEXT
+   Standard reading text — weight 400 / 15px / 1.75lh
+   Generous line height for long-form press release reading.
+   ---------------------------------------------------------------- */
+.pr-main-text-content,
+#release-text-full,
+#release-text-full p,
+.supplementary-text p {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0 !important;
+    line-height: 1.75 !important;
+    font-variation-settings: 'opsz' 15 !important;
+}
+
+
+/* ----------------------------------------------------------------
+   §12  SECONDARY / META TEXT
+   Spec row "Card date / asset icons": 12–13px · 400 · 0 · normal
+   Colours: §11.1 dark #64748b · §11.2 light #6b7280
+   ---------------------------------------------------------------- */
+.pr-meta-info,
+.pr-meta-actions-bar,
+.document-item-meta,
+.cart-item-brand,
+.avatar-role,
+.footer-tagline,
+.footer-description,
+.footer-copyright {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0 !important;
+    line-height: 1.5 !important;
+}
+
+body.dark-mode .pr-meta-info,
+body.dark-mode .pr-meta-actions-bar {
+    color: #64748b !important;
+}
+
+body:not(.dark-mode) .pr-meta-info,
+body:not(.dark-mode) .pr-meta-actions-bar {
+    color: #6b7280 !important;
+}
+
+
+/* ----------------------------------------------------------------
+   §9.3  ASSET COUNT BADGE
+   Spec table §12 row 5: 12px · 600 · 0 tracking
+   ---------------------------------------------------------------- */
+.asset-count-badge,
+.asset-box h4 .asset-count {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+}
+
+
+/* ----------------------------------------------------------------
+   §7 / §8  SEARCH TERM PILL & FILTER CHIP TEXT
+   Spec §12 row 6: 13px · 500 · 0 tracking · colour #3b82f6
+   ---------------------------------------------------------------- */
+.search-term-pill,
+.filter-chip,
+.filter-chip-text {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0 !important;
+    color: #3b82f6 !important;
+}
+
+
+/* ----------------------------------------------------------------
+   §12  INTERACTIVE LABELS — "Clear All" / nav / modal buttons
+   13–14px · 500 · 0 tracking
+   ---------------------------------------------------------------- */
+.modal-btn,
+.tool-item span,
+.footer-links a,
+.document-item-name,
+.cart-item-title,
+.avatar-email,
+.quick-access-btn span,
+.pdf-page-info,
+.pdf-zoom-display {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 500 !important;
+    letter-spacing: 0 !important;
+}
+
+.footer-links a   { font-size: 13px !important; }
+.document-item-name { font-size: 13px !important; }
+
+
+/* ----------------------------------------------------------------
+   FOOTER COLUMN HEADINGS
+   Small uppercase label — 600 / +0.02em
+   ---------------------------------------------------------------- */
+.footer-heading {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    text-transform: uppercase !important;
+}
+
+
+/* ----------------------------------------------------------------
+   §12  BUTTON TEXT
+   Spec: 500 · 0 tracking (primary CTA buttons use 600)
+   ---------------------------------------------------------------- */
+button,
+.btn,
+.amc-btn,
+.pdf-nav-btn,
+.pdf-zoom-btn,
+.pdf-action-btn,
+.pdf-search-nav-btn {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 500 !important;
+    letter-spacing: 0 !important;
+}
+
+/* Primary / emphasis buttons */
+.cart-checkout-btn,
+.see-full-release-btn button,
+.btn-primary {
+    font-weight: 600 !important;
+}
+
+
+/* ----------------------------------------------------------------
+   §9.1  AVATAR ROLE BADGE / STATUS LABELS
+   Spec §12 brand band register: 600 · uppercase · +0.04em
+   ---------------------------------------------------------------- */
+.avatar-role {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+}
+
+.badge,
+.quick-access-badge {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+}
+
+
+/* ----------------------------------------------------------------
+   PDF VIEWER CONTROLS
+   Inter 600 / 13px — data readability
+   ---------------------------------------------------------------- */
+.pdf-page-info,
+.pdf-zoom-display {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}
+
+
+/* ----------------------------------------------------------------
+   TOOLTIP TEXT
+   Inter 500 / 12px
+   ---------------------------------------------------------------- */
+.custom-tooltip {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0 !important;
+    line-height: 1.4 !important;
+}
+
+</style>
 
 <!-- Release Detail Functionality -->
 <script src="./amc-release-detail-functionality.js"></script>
