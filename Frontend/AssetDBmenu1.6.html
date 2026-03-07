@@ -4959,7 +4959,20 @@ let markedForDeletion = {
         }
  
         let currentEditingAlertUUID = null; 
-        let currentCardTeaserUrl = null; 
+        let currentCardTeaserUrl = null;
+
+        // UUID generator — crypto.randomUUID() requires HTTPS; this fallback works on HTTP too
+        function generateUUID() {
+            if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+                return crypto.randomUUID();
+            }
+            // RFC 4122 v4 fallback
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
         let currentRadarTeaserUrl = null; 
 
 
@@ -8209,7 +8222,7 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                  try {
                      const uuidInput = document.getElementById('amcUUID'); 
                      if (uuidInput && !uuidInput.value && !currentEditingReleaseUUID) { 
-                        uuidInput.value = crypto.randomUUID();
+                        uuidInput.value = generateUUID();
                      }
                      
                      setupFileList('centerCardTeaserImage', 'uploadedCardTeaserImageList', 'fas fa-image', true, 'currentCardTeaserImageInfo');
@@ -8427,7 +8440,7 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                 console.log("DEBUG: Radar bento form initializing...");
                 try {
                     const uuidInput = document.getElementById('radarUUID');
-                    if (uuidInput && !uuidInput.value && !currentEditingAlertUUID) uuidInput.value = crypto.randomUUID();
+                    if (uuidInput && !uuidInput.value && !currentEditingAlertUUID) uuidInput.value = generateUUID();
                     setupFileList('radarTeaserImage', 'uploadedRadarTeaserImageList', 'fas fa-image', true);
                     setupFileList('radarAlertDoc', 'uploadedRadarAlertDocList', 'fas fa-file-alt', false);
                     setupFileList('radarImages', 'uploadedRadarImagesList', 'fas fa-image', false);
