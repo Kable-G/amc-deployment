@@ -1705,7 +1705,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         releasesTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">Loading... <i class="fas fa-spinner fa-spin"></i></td></tr>`;
         let queryParams = `?page=${page}&limit=${limitPerPage}&title=${encodeURIComponent(search)}&brand=${encodeURIComponent(brand)}&status=${encodeURIComponent(status)}`;
-        const apiUrl = `http://localhost:5000/api/v1/center/my-releases${queryParams}`;
+        const apiUrl = `/api/v1/center/my-releases${queryParams}`;
         
         console.log('🔍 DEBUG: Making request to:', apiUrl);
         console.log('🔍 DEBUG: Request headers:', { 'Authorization': `Bearer ${token ? token.substring(0, 20) + '...' : 'MISSING'}` });
@@ -1814,7 +1814,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`🔍 DEBUG: Processing release ${index + 1}:`, release);
             const sanitizedTitle = (release.title || 'this release').replace(/"/g, '"');
             const teaserHtml = release.cardTeaserImagePath ?
-                `<span class="thumb"><img src="http://localhost:5000${release.cardTeaserImagePath}" alt=""></span>` :
+                `<span class="thumb"><img src="${release.cardTeaserImagePath}" alt=""></span>` :
                 `<span class="thumb"><i class="far fa-image"></i></span>`;
             const releaseDate = new Date(release.releaseDate);
             const formattedDate = releaseDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric'});
@@ -1900,7 +1900,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Actions ---
     async function deleteRelease(uuid) {
         try {
-            const response = await fetch(`http://localhost:5000/api/v1/center/releases/${uuid}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            const response = await fetch(`/api/v1/center/releases/${uuid}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
             const result = await response.json();
             if (!response.ok) throw new Error(result.error);
             alert(result.message);
@@ -1916,7 +1916,7 @@ document.addEventListener('DOMContentLoaded', () => {
         amcQuickViewAssetListArea.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading assets...</p>';
         assetDetailModalBackdrop.classList.add('open');
         try {
-            const response = await fetch(`http://localhost:5000/api/v1/center/releases/foredit/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const response = await fetch(`/api/v1/center/releases/foredit/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
             const result = await response.json();
             if (!result.success) throw new Error(result.error);
             
@@ -1961,19 +1961,19 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // First try card teaser image (same as quick view modal)
             if (release.cardTeaserImagePath) {
-                assetDetailModalMediaPreview.innerHTML = `<img src="http://localhost:5000${release.cardTeaserImagePath}" alt="Preview" style="width: 100%; height: 100%; object-fit: contain;">`;
+                assetDetailModalMediaPreview.innerHTML = `<img src="${release.cardTeaserImagePath}" alt="Preview" style="width: 100%; height: 100%; object-fit: contain;">`;
                 previewSet = true;
             }
             // Then try first video if available
             else if (release.videos && release.videos.length > 0) {
                 const firstVideo = release.videos[0];
-                assetDetailModalMediaPreview.innerHTML = `<video controls style="width: 100%; height: 100%; object-fit: contain;"><source src="http://localhost:5000${firstVideo.path}" type="${firstVideo.mimetype}"></video>`;
+                assetDetailModalMediaPreview.innerHTML = `<video controls style="width: 100%; height: 100%; object-fit: contain;"><source src="${firstVideo.path}" type="${firstVideo.mimetype}"></video>`;
                 previewSet = true;
             }
             // Finally try first image as fallback
             else if (release.images && release.images.length > 0) {
                 const firstImage = release.images[0];
-                assetDetailModalMediaPreview.innerHTML = `<img src="http://localhost:5000${firstImage.path}" alt="Preview" style="width: 100%; height: 100%; object-fit: contain;">`;
+                assetDetailModalMediaPreview.innerHTML = `<img src="${firstImage.path}" alt="Preview" style="width: 100%; height: 100%; object-fit: contain;">`;
                 previewSet = true;
             }
             
@@ -2033,9 +2033,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Show actual preview for image and video assets, enhanced icon for others
                     let iconOrImage;
                     if (asset.mimetype && asset.mimetype.startsWith('image/')) {
-                        iconOrImage = `<img class="thumb" src="http://localhost:5000${asset.path}" alt="thumbnail">`;
+                        iconOrImage = `<img class="thumb" src="${asset.path}" alt="thumbnail">`;
                     } else if (asset.mimetype && asset.mimetype.startsWith('video/')) {
-                        iconOrImage = `<video class="thumb" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; background-color: var(--bg-tertiary);" muted><source src="http://localhost:5000${asset.path}" type="${asset.mimetype}"></video>`;
+                        iconOrImage = `<video class="thumb" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; background-color: var(--bg-tertiary);" muted><source src="${asset.path}" type="${asset.mimetype}"></video>`;
                     } else {
                         iconOrImage = `<i class="fas ${fileIconData.icon} fa-fw" style="color: ${fileIconData.color}; font-size: 1.2em; flex-shrink: 0;"></i>`;
                     }
