@@ -1,28 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type="module">
-      import { protectPage } from "./auth.js";
-      protectPage("client_user");
-    </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoMediaCenter - Manage Radar Alerts</title>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
-    
-    <!-- ✅ GLOBAL CSS - REPLACES ALL OLD STYLES -->
-    <link rel="stylesheet" href="css/amc-globalshell.css">
-    
-    <!-- Premium Avatar System Styles -->
-    <link rel="stylesheet" href="amc-avatar-styles.css">
-    <!-- Page-specific styles -->
-    <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoMediaCenter — Manage Radar Alert Uploads</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,32..144,800;1,14..32,300;1,14..32,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link rel="stylesheet" href="./components/shell/v6_5-shell.css">
+<style>
+
+/* ── Shell layout bridge ── */
+html, body { height: 100%; margin: 0; padding: 0; }
+body { overflow: hidden; }
+
+/* Shell mounts these as fixed elements */
+#amcShellHeader { position: fixed; left: 0; top: 0; right: 0; z-index: 1000; }
+#amcShellSidebar { position: fixed; left: 0; top: 0; z-index: 999; }
+#amcShellFooter { display: none !important; }
+
+/* Main scroll area clears the fixed header and icon rail */
+.vault-page-wrap {
+  display: flex;
+  height: 100vh;
+  padding-top: var(--amc-header-h, 56px);
+  box-sizing: border-box;
+}
+.vmain {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 28px 32px 48px;
+}
+
+/* ── AMC Typography v1.0 ── */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.amc-page-title {
+  font-size: 42px !important;
+  font-weight: 800 !important;
+  font-variation-settings: 'opsz' 42;
+  letter-spacing: -0.04em !important;
+  line-height: 1.05 !important;
+  margin: 0 0 8px 0 !important;
+  color: #0f172a;
+}
+body.dark-mode .amc-page-title { color: #f8fafc !important; }
+
+.amc-page-subtitle {
+  font-size: 16px !important;
+  font-weight: 300 !important;
+  line-height: 1.55 !important;
+  margin: 0 0 20px 0 !important;
+  color: #6b7280;
+}
+body.dark-mode .amc-page-subtitle { color: #64748b !important; }
+
+/* ── Teaser thumbnail sizing ── */
+.releases-table td.cell--teaser { width: 80px; padding: 6px 8px; }
+.releases-table td.cell--teaser .thumb {
+  display: block; width: 64px; height: 44px;
+  border-radius: 6px; overflow: hidden;
+  background: rgba(100,116,139,0.12);
+}
+.releases-table td.cell--teaser .thumb img {
+  width: 64px !important; height: 44px !important;
+  object-fit: cover !important; display: block !important;
+}
+
+
+/* ── Original radar page styles ── */
     /* —— MINIMAL PAGE-SPECIFIC STYLES - GLOBAL SHELL HANDLES LAYOUT —— */
 
     .app-footer {
@@ -149,34 +198,85 @@
        Global shell handles table styling
        ============================================ */
     
-    /* Kebab menu specific styles */
-    .kebab-float{
+    /* ── Actions kebab — enterprise context menu ── */
+    .kebab-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .kebab-btn:hover {
+      background: #f3f4f6;
+      color: #111827;
+    }
+    body.dark-mode .kebab-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: #f9fafb;
+    }
+
+    .kebab-float {
       position: fixed;
-      min-width: 176px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-primary, #e5e7eb);
-      box-shadow: 0 18px 48px var(--shadow-primary, rgba(0,0,0,.25));
-      border-radius: 12px;
-      padding: 6px;
-      pointer-events: auto;
+      min-width: 160px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 24px -4px rgba(0,0,0,0.18), 0 2px 8px -2px rgba(0,0,0,0.10);
+      border-radius: 8px;
+      padding: 4px;
+      pointer-events: auto !important;
+      z-index: 99999 !important;
+    }
+    body.dark-mode .kebab-float {
+      background: #1e293b;
+      border-color: #334155;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3), 0 10px 24px -4px rgba(0,0,0,0.4);
     }
 
-    .kebab-item{
-      display:block; width:100%; text-align:left;
-      background: transparent; border: none;
-      color: var(--text-primary);
-      padding: 9px 12px; border-radius: 8px; cursor: pointer;
+    .kebab-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none;
+      color: #374151;
+      padding: 8px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: background 0.12s, color 0.12s;
     }
+    body.dark-mode .kebab-item {
+      color: #e2e8f0;
+    }
+    .kebab-item::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .kebab-item[data-action="view"]::before   { background: #10b981; }
+    .kebab-item[data-action="edit"]::before   { background: #3b82f6; }
+    .kebab-item[data-action="delete"]::before { background: #ef4444; }
 
-    .kebab-item[data-action="view"]   { background: rgba(16,185,129,.30); }
-    .kebab-item[data-action="edit"]   { background: rgba(59,130,246,.30); }
-    .kebab-item[data-action="delete"] { background: rgba(239,68,68,.30);  }
+    .kebab-item:hover { background: #f9fafb; color: #111827; }
+    body.dark-mode .kebab-item:hover { background: rgba(255,255,255,0.06); color: #f1f5f9; }
 
-    .kebab-item[data-action="view"]:hover   { background:#10b981; color:#fff; }
-    .kebab-item[data-action="edit"]:hover   { background:#3b82f6; color:#fff; }
-    .kebab-item[data-action="delete"]:hover { background:#ef4444; color:#fff; }
+    .kebab-item[data-action="delete"]:hover { color: #ef4444; }
+    body.dark-mode .kebab-item[data-action="delete"]:hover { color: #f87171; }
 
-    .kebab-item + .kebab-item { margin-top: 6px; }
+    .kebab-item + .kebab-item { margin-top: 1px; }
     
     /* ============================================
        CARDS
@@ -191,14 +291,13 @@
     .card-header {
         padding: 15px 20px;
         background: var(--bg-tertiary);
-        border-bottom: 1px solid var(--border-primary);
+        border-bottom: 1px solid #e5e7eb;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
     
     .card-header h2 {
-        font-size: 1.1em;
         margin: 0;
     }
     
@@ -272,6 +371,12 @@
         max-height: 85vh;
         display: flex;
         flex-direction: column;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #ffffff;
+        border-radius: 12px;
+    }
+    body.dark-mode .detail-modal {
+        background: #1e2535;
     }
     
     .confirm-modal {
@@ -280,19 +385,28 @@
     
     .detail-modal-header,
     .confirm-modal-header {
-        padding: 15px 20px;
-        border-bottom: 1px solid var(--border-primary);
-        background: var(--bg-tertiary);
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid #e5e7eb;
+        background: transparent;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
+        gap: 0;
+    }
+    body.dark-mode .detail-modal-header,
+    body.dark-mode .confirm-modal-header {
+        border-bottom-color: #374151;
     }
     
     .detail-modal-body {
-        padding: 20px;
+        padding: 24px;
         overflow-y: auto;
         flex: 1;
+        font-size: 13.5px;
+        line-height: 1.65;
+        color: #374151;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
+    body.dark-mode .detail-modal-body { color: #cbd5e1; }
     
     .confirm-modal-body {
         padding: 25px 20px;
@@ -301,9 +415,9 @@
     
     .detail-modal-footer,
     .confirm-modal-footer {
-        padding: 15px 20px;
-        border-top: 1px solid var(--border-primary);
-        background: var(--bg-tertiary);
+        padding: 16px 24px;
+        border-top: 1px solid #e5e7eb;
+        background: transparent;
         display: flex;
         justify-content: flex-end;
         gap: 10px;
@@ -311,11 +425,26 @@
     
     .detail-modal-close-btn,
     .confirm-modal-close-btn {
-        background: none;
+        width: 28px; height: 28px;
+        border-radius: 6px;
         border: none;
-        font-size: 1.7em;
+        background: transparent;
+        color: #9ca3af;
+        font-size: 16px;
         cursor: pointer;
-        color: var(--text-secondary);
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.15s, color 0.15s;
+        flex-shrink: 0;
+    }
+    .detail-modal-close-btn:hover,
+    .confirm-modal-close-btn:hover {
+        background: #f3f4f6;
+        color: #374151;
+    }
+    body.dark-mode .detail-modal-close-btn:hover,
+    body.dark-mode .confirm-modal-close-btn:hover {
+        background: rgba(255,255,255,0.08);
+        color: #e2e8f0;
     }
     
     /* ============================================
@@ -323,15 +452,75 @@
        ============================================ */
     .amc-quick-view-header {
         flex-direction: column;
-        gap: 10px;
+        gap: 6px;
         align-items: flex-start;
     }
     
     .amc-quick-view-top-line {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         width: 100%;
+        margin-bottom: 8px;
     }
+    /* Modal meta line (client | date) */
+    .amc-quick-view-meta-line {
+        font-size: 11px;
+        font-weight: 600;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #9ca3af;
+        margin-bottom: 6px;
+    }
+    body.dark-mode .amc-quick-view-meta-line { color: #64748b; }
+    /* Modal title */
+    #assetDetailModalTitle,
+    .amc-quick-view-title {
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        letter-spacing: -0.025em !important;
+        line-height: 1.3 !important;
+        color: #0f172a !important;
+        margin: 0 !important;
+    }
+    body.dark-mode #assetDetailModalTitle,
+    body.dark-mode .amc-quick-view-title { color: #f8fafc !important; }
+    /* Section headings inside modal */
+    .amc-quick-view-col-media h4,
+    .amc-quick-view-col-details h4 {
+        font-size: 10px !important;
+        font-weight: 600 !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        letter-spacing: 0.08em !important;
+        text-transform: uppercase !important;
+        color: #9ca3af !important;
+        margin: 0 0 14px 0 !important;
+        padding-bottom: 8px !important;
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+    body.dark-mode .amc-quick-view-col-media h4,
+    body.dark-mode .amc-quick-view-col-details h4 {
+        color: #64748b !important;
+        border-bottom-color: #2d3748 !important;
+    }
+    /* Detail items inside modal */
+    .detail-item {
+        font-size: 13.5px;
+        line-height: 1.65;
+        color: #374151;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        margin-bottom: 6px;
+    }
+    body.dark-mode .detail-item { color: #cbd5e1; }
+    .detail-item strong, .detail-label {
+        font-weight: 600;
+        color: #111827;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    body.dark-mode .detail-item strong,
+    body.dark-mode .detail-label { color: #f1f5f9; }
     
     .amc-quick-view-body {
         display: flex;
@@ -347,7 +536,7 @@
     .amc-quick-view-col-details h4 {
         margin-bottom: 15px;
         padding-bottom: 5px;
-        border-bottom: 1px solid var(--border-primary);
+        border-bottom: 1px solid #e5e7eb;
     }
     
     .amc-quick-view-asset-item {
@@ -355,7 +544,7 @@
         align-items: center;
         gap: 10px;
         padding: 8px 0;
-        border-bottom: 1px solid var(--border-secondary);
+        border-bottom: 1px solid #f3f4f6;
         font-size: 0.9em;
     }
     
@@ -593,109 +782,407 @@
         background: var(--bg-secondary) !important;
         border-color: var(--border-primary) !important;
     }
+
+/* ── Truncate fix for title column ── */
+.releases-table .col-title .truncate {
+  display: block;
+  max-width: 340px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Column lines ── */
+.manage-radar-alerts .amc-card .card-header {
+  /* Padding matches thead th padding (10px 12px) for perfect alignment */
+  padding: 10px 12px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  margin-bottom: 0 !important;
+  background: var(--table-header-bg, rgba(0,0,0,.04)) !important;
+}
+body.dark-mode .manage-radar-alerts .amc-card .card-header {
+  background: var(--table-header-bg, rgba(255,255,255,.04)) !important;
+  border-bottom-color: #374151 !important;
+}
+body.dark-mode .manage-radar-alerts .amc-card .card-header {
+  border-bottom-color: #374151 !important;
+}
+.manage-radar-alerts .amc-table {
+  border-collapse: collapse;
+  width: 100%;
+  display: table !important; /* ensure table always visible unless mobile media query overrides */
+}
+.manage-radar-alerts .amc-table thead { display: table-header-group !important; }
+.manage-radar-alerts .amc-table tbody { display: table-row-group !important; }
+/* ── Section heading — flush left, aligned with Title column ── */
+.manage-radar-alerts .card-header {
+  padding: 0 !important;
+  background: transparent !important;
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
+}
+/* ── Section header row ── */
+/* ── Section heading: EXACTLY matches thead th font ── */
+/* card-header h2 styled via inline style on element — no CSS rules here */
+/* ── Section heading: uses .section-heading-label div (not h2) to avoid shell override ── */
+.section-heading-label {
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #111827;
+  letter-spacing: 0;
+  text-transform: none;
+  margin: 0;
+  padding: 0;
+}
+body.dark-mode .section-heading-label {
+  color: #f1f5f9;
+}
+/* Total count badge */
+.manage-radar-alerts .table-head-meta {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  color: #6b7280 !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+.manage-radar-alerts .table-head-meta span#totalAlerts {
+  display: inline-block;
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(59,130,246,0.2);
+  margin-left: 4px;
+}
+body.dark-mode .manage-radar-alerts .table-head-meta { color: #94a3b8 !important; }
+body.dark-mode .manage-radar-alerts .table-head-meta span#totalAlerts {
+  background: rgba(59,130,246,0.12);
+  color: #93c5fd;
+  border-color: rgba(59,130,246,0.25);
+}
+.manage-radar-alerts .amc-table th,
+.manage-radar-alerts .amc-table td {
+  border-bottom: 1px solid #d1d5db;
+  border-right: 1px solid #cbd5e1;
+  padding: 10px 12px;
+}
+.manage-radar-alerts .amc-table th:last-child,
+.manage-radar-alerts .amc-table td:last-child {
+  border-right: none;
+}
+.manage-radar-alerts .amc-table thead th {
+  border-bottom: 2px solid #9ca3af;
+}
+body.dark-mode .manage-radar-alerts .amc-table th,
+body.dark-mode .manage-radar-alerts .amc-table td {
+  border-bottom-color: #374151;
+  border-right-color: #2d3748;
+}
+body.dark-mode .manage-radar-alerts .amc-table thead th {
+  border-bottom-color: #4b5563;
+}
+
+
+
+/* Mobile card list hidden by default — shown only via @media (max-width:767px) */
+.mobile-alert-list { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — TABLET (768–1024px)
+   All columns kept. Tighter padding + horizontal scroll safety net.
+═══════════════════════════════════════════════════════ */
+@media (max-width: 1024px) and (min-width: 768px) {
+  .vmain { padding: 20px 16px 40px; }
+
+  /* Tighten table cell padding */
+  .manage-radar-alerts .amc-table th,
+  .manage-radar-alerts .amc-table td {
+    padding: 8px 8px !important;
+    font-size: 12px !important;
+  }
+  /* Tighter teaser image */
+  .releases-table td.cell--teaser { width: 60px; padding: 6px 6px; }
+  .releases-table td.cell--teaser .thumb { width: 52px; height: 36px; }
+  .releases-table td.cell--teaser .thumb img { width: 52px !important; height: 36px !important; }
+
+  /* Title column truncates more aggressively */
+  .releases-table .col-title .truncate { max-width: 200px; }
+  .releases-table .col-company .truncate { max-width: 100px; }
+
+  /* Horizontal scroll safety net — table never breaks layout */
+  .manage-radar-alerts .amc-card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .manage-radar-alerts .amc-table { min-width: 720px; }
+
+  /* Card header stays readable */
+  /* card-header h2: inline style on element */
+  .manage-radar-alerts .table-head-meta { font-size: 12px !important; }
+
+  /* Page title scales down */
+  .amc-page-title { font-size: 28px !important; letter-spacing: -0.03em !important; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — MOBILE (<768px)
+   Table hidden. Each alert renders as a card row.
+═══════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  .vmain {
+    padding: 16px 12px 32px;
+    background: #f1f5f9;  /* light grey wash for contrast */
+  }
+  body.dark-mode .vmain { background: transparent; }
+  /* Card gets white background to lift off the grey */
+  .manage-radar-alerts .amc-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  body.dark-mode .manage-radar-alerts .amc-card {
+    background: var(--bg-secondary);
+    border-color: var(--border-primary);
+  }
+  .amc-page-title { font-size: 26px !important; letter-spacing: -0.03em !important; font-variation-settings: 'opsz' 28 !important; }
+  .amc-page-subtitle { font-size: 13px !important; }
+
+  /* Hide the table entirely */
+  .manage-radar-alerts .amc-table,
+  .manage-radar-alerts .amc-table thead,
+  .manage-radar-alerts .amc-table tbody,
+  .manage-radar-alerts .amc-table tfoot { display: none !important; }
+
+  /* Card footer pagination stays visible */
+  .manage-radar-alerts .card-footer {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  /* Mobile card list — visible only in this breakpoint */
+  .mobile-alert-list {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0;
+  }
+  .mobile-alert-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    cursor: pointer;
+    transition: background 0.12s;
+    position: relative;
+  }
+  .mobile-alert-card:last-child { border-bottom: none; }
+  .mobile-alert-card:active { background: #f8fafc; }
+  body.dark-mode .mobile-alert-card { border-bottom-color: #2d3748; }
+  body.dark-mode .mobile-alert-card:active { background: rgba(255,255,255,0.04); }
+
+  /* Teaser thumbnail */
+  .mobile-alert-thumb {
+    flex-shrink: 0;
+    width: 60px;
+    height: 42px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f3f4f6;
+    margin-top: 2px;
+  }
+  body.dark-mode .mobile-alert-thumb { background: #1e2535; }
+  .mobile-alert-thumb img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .mobile-alert-thumb-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    color: #9ca3af; font-size: 18px;
+  }
+
+  /* Text area */
+  .mobile-alert-body { flex: 1; min-width: 0; padding-right: 28px; }
+  .mobile-alert-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+    color: #0f172a;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 5px;
+  }
+  body.dark-mode .mobile-alert-title { color: #f1f5f9; }
+
+  .mobile-alert-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 3px;
+  }
+  .mobile-alert-company {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+  }
+  body.dark-mode .mobile-alert-company { color: #94a3b8; }
+
+  .mobile-alert-date {
+    font-size: 11px;
+    font-weight: 400;
+    color: #9ca3af;
+  }
+  body.dark-mode .mobile-alert-date { color: #64748b; }
+
+  /* Status pill — reuse existing styles */
+  .mobile-alert-meta .status-pill {
+    font-size: 10px !important;
+    height: 18px !important;
+    padding: 0 7px !important;
+  }
+
+  /* Kebab — absolute positioned top-right of card */
+  .mobile-alert-kebab {
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: #9ca3af;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.12s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mobile-alert-kebab:hover,
+  .mobile-alert-kebab:active { background: #f3f4f6; color: #374151; }
+  body.dark-mode .mobile-alert-kebab:hover,
+  body.dark-mode .mobile-alert-kebab:active { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+
+  /* Section header on mobile */
+  .manage-radar-alerts .card-header {
+    padding: 12px 12px 10px 12px !important;
+  }
+  /* card-header h2: inline style on element */
+  .manage-radar-alerts .table-head-meta { font-size: 12px !important; }
+
+  /* Search bar + button layout on mobile */
+  .search-input { max-width: 100% !important; width: 100% !important; }
+  /* Page controls row — allow wrapping on very narrow screens */
+  .page-controls-row, .page-controls, .page-header-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* + New Alert button — single line, compact on mobile */
+  a[href*="AssetDBmenu1.6"], .btn-upload-new, .page-actions .btn-primary {
+    white-space: nowrap !important;
+    font-size: 12.5px !important;
+    padding: 0 12px !important;
+    letter-spacing: -0.01em !important;
+  }
+}
 </style>
 </head>
 <body>
-    <!-- AMC Header Component -->
-    <amc-header></amc-header>
 
-    <div class="amc-app">
-        <!-- Enterprise Sidebar -->
-        <aside id="sidebar" class="amc-sidebar">
-            <!-- Content will be dynamically generated by components/sidebar.js -->
-        </aside>
-        
-        <!-- Main Content -->
-        <main class="amc-page manage-releases" role="main">
-            <div class="amc-page__container">
-                <header class="amc-page__header">
-                    <h1 class="amc-page__title"><i class="fas fa-satellite-dish"></i> Manage Media Alert Uploads</h1>
-                    <p class="amc-page__sub">View, edit or delete your media alerts uploaded to AutoMediaCenter</p>
-                </header>
+<div id="amcShellHeader"></div>
+<div id="amcShellSidebar"></div>
 
-                <div class="amc-page__tools">
-                  <div class="controls-section">
-                    <div class="controls-left">
-                      <div class="search-container">
-                        <!-- keep the historical id to avoid breaking existing JS -->
-                        <input type="text" id="filterSearch" placeholder="Search alerts..." class="search-input" />
-                        <i class="fas fa-search search-icon"></i>
-                      </div>
-                    </div>
-                    <div class="controls-right">
-                      <!-- point this to your Radar uploader -->
-                      <a href="AssetDBmenu1.6.html?formType=radar" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Upload New Alert
-                      </a>
-                    </div>
-                  </div>
-                  <div class="section-divider"></div>
-                  
-                  <!-- Hidden compatibility elements for existing JavaScript -->
-                  <div style="display: none;">
-                    <input type="text" id="filterBrand" value="">
-                    <select id="filterStatus"><option value="" selected></option></select>
-                    <button id="applyFilters"></button>
-                    <button id="clearFilters"></button>
-                  </div>
-                </div>
+<div class="vault-page-wrap">
+  <main class="vmain mobile-main" id="vmainScroll">
+    <div class="amc-page manage-radar-alerts">
 
-                <div class="amc-page__body">
-                    <div class="amc-card" style="margin-top:12px;">
-                        <div class="card-header">
-                            <h2>Your Radar Alerts</h2>
-                            <div class="table-head-meta">Total Alerts: <span id="totalAlerts">0</span></div>
-                        </div>
-                        <table class="amc-table table-lined releases-table">
-                            <colgroup>
-                                <col style="width:96px;">   <!-- teaser -->
-                                <col>                        <!-- title (flex / gets the remainder) -->
-                                <col style="width:15%;">     <!-- company -->
-                                <col style="width:8%;">      <!-- status -->
-                                <col style="width:16%;">     <!-- uploaded by -->
-                                <col style="width:12%;">     <!-- alert date -->
-                                <col style="width:12%;">     <!-- last updated -->
-                                <col style="width:80px;">    <!-- actions -->
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th class="cell--teaser">Teaser</th>
-                                    <th>Title</th>
-                                    <th>Company</th>
-                                    <th style="text-align: center;">Status</th>
-                                    <th>Uploaded By</th>
-                                    <th>Alert Date &amp; Time</th>
-                                    <th>Last Updated</th>
-                                    <th class="cell--actions" style="text-align: center;">Actions</th>
-                                </tr>
-                            </thead>
-                                <tbody id="alertsTableBody"></tbody>
-                            </table>
-                        <div class="card-footer">
-                            <span id="paginationSummary"></span>
-                            <div class="pagination-controls">
-                                <button class="btn btn-secondary btn-sm" id="prevPageButton" disabled><i class="fas fa-chevron-left"></i></button>
-                                <span id="pageInfo">Page 1 of 1</span>
-                                <button class="btn btn-secondary btn-sm" id="nextPageButton" disabled><i class="fas fa-chevron-right"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      <header class="amc-page-header">
+        <h1 class="amc-page-title">Manage Media Alert Uploads</h1>
+        <p class="amc-page-subtitle">View, edit or delete media alerts</p>
+      </header>
+
+      <div class="amc-page__tools">
+        <div class="controls-section">
+          <div class="controls-left">
+            <div class="search-container">
+              <input type="text" id="filterSearch" placeholder="Search alerts..." class="search-input" />
+              <i class="fas fa-search search-icon"></i>
             </div>
-        </main>
-    </div>
+          </div>
+          <div class="controls-right">
+            <a href="AssetDBmenu1.6.html?formType=radar" class="btn btn-primary" style="white-space:nowrap;">
+              <i class="fas fa-plus"></i> New Alert
+            </a>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div style="display:none;">
+          <input type="text" id="filterBrand" value="">
+          <select id="filterStatus"><option value="" selected></option></select>
+          <button id="applyFilters"></button>
+          <button id="clearFilters"></button>
+        </div>
+      </div>
 
-    <!-- Footer -->
-    <footer class="app-footer">
-        <nav>
-            <a href="#">About Us</a> |
-            <a href="#">Help Center</a> |
-            <a href="#">Terms of Service</a> |
-            <a href="#">Privacy Policy</a>
-        </nav>
-        <p>© <span id="currentYearText"></span> AutoMediaCenter. All rights reserved.</p>
-    </footer>
-    
+      <div class="amc-page__body">
+        <div class="amc-card" style="margin-top:12px;">
+          <div class="card-header">
+            <div class="section-heading-label">Your Radar Alerts</div>
+            <div class="table-head-meta">Total Alerts: <span id="totalAlerts">0</span></div>
+          </div>
+          <table class="amc-table table-lined releases-table">
+            <colgroup>
+              <col style="width:96px;">
+              <col>
+              <col style="width:15%;">
+              <col style="width:8%;">
+              <col style="width:16%;">
+              <col style="width:12%;">
+              <col style="width:12%;">
+              <col style="width:80px;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="cell--teaser" style="text-align:left;">Teaser</th>
+                <th style="text-align:left;">Title</th>
+                <th style="text-align:left;">Company</th>
+                <th style="text-align:center;">Status</th>
+                <th style="text-align:left;">Uploaded By</th>
+                <th style="text-align:left;">Alert Date &amp; Time</th>
+                <th style="text-align:left;">Last Updated</th>
+                <th class="cell--actions" style="text-align:center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="alertsTableBody"></tbody>
+          </table>
+          <div class="card-footer">
+            <span id="paginationSummary"></span>
+            <div class="pagination-controls">
+              <button class="btn btn-secondary btn-sm" id="prevPageButton" disabled><i class="fas fa-chevron-left"></i></button>
+              <span id="pageInfo">Page 1 of 1</span>
+              <button class="btn btn-secondary btn-sm" id="nextPageButton" disabled><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="amcShellFooter"></div>
+
     <div class="detail-modal-backdrop" id="assetDetailModalBackdrop">
         <div class="detail-modal">
             <div class="detail-modal-header amc-quick-view-header">
@@ -705,25 +1192,18 @@
                     </div>
                     <button class="detail-modal-close-btn" aria-label="Close">×</button>
                 </div>
-                <h3 id="assetDetailModalTitle">Alert Details</h3>
+                <h3 id="assetDetailModalTitle"></h3>
             </div>
             <div class="detail-modal-body amc-quick-view-body" style="display: flex; gap: 30px; padding: 20px;">
                 <div class="amc-quick-view-col-media">
-                    <h4>Media Preview</h4>
+                    <h4>Media Alert Image</h4>
                     <div id="assetDetailModalMediaPreview" style="width: 100%; aspect-ratio: 16 / 9; background-color: var(--bg-tertiary); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 1em; overflow: hidden; border: 1px solid var(--border-secondary);">
                         <span>Loading preview...</span>
                     </div>
                 </div>
                 <div class="amc-quick-view-col-details">
-                    <h4>Alert Information</h4>
-                    <div id="amcQuickViewSummaryArea">
-                        <div style="margin-bottom: 15px;">
-                            <strong>Created on:</strong> <span id="assetDetailModalUploadDate"></span><br>
-                            <strong>Alert date/time:</strong> <span id="assetDetailModalPubDate"></span>
-                        </div>
-                    </div>
-                    <h4>Alert Details</h4>
-                    <div id="amcQuickViewAssetListArea" style="max-height: 300px; overflow-y: auto;">
+                    <h4>Media Alert Details</h4>
+                    <div id="amcQuickViewAssetListArea">
                         <p style="text-align:center;">Loading details...</p>
                     </div>
                 </div>
@@ -741,48 +1221,23 @@
         </div>
     </div>
 
+
+<div id="kebab-portal" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></div>
+
 <script>
-// DEBUG FUNCTION - TEMPORARY
-function debugLayout() {
-    const sidebar = document.querySelector('.amc-sidebar');
-    const page = document.querySelector('.amc-page');
-    const body = document.body;
-    
-    console.log('=== LAYOUT DEBUG ===');
-    console.log('Body classes:', body.className);
-    console.log('Sidebar width:', window.getComputedStyle(sidebar).width);
-    console.log('Page margin-left:', window.getComputedStyle(page).marginLeft);
-    console.log('Page width:', window.getComputedStyle(page).width);
-    console.log('CSS Variables:');
-    console.log('  --amc-sidebar-w:', getComputedStyle(document.documentElement).getPropertyValue('--amc-sidebar-w'));
-    console.log('  --amc-sidebar-w-collapsed:', getComputedStyle(document.documentElement).getPropertyValue('--amc-sidebar-w-collapsed'));
-    console.log('Expected behavior:');
-    console.log('  - Sidebar expanded: 272px, Page should have margin-left: 272px');
-    console.log('  - Sidebar collapsed: 72px, Page should have margin-left: 72px');
-    console.log('====================');
-}
-
-// Make debug function globally available
-window.debugLayout = debugLayout;
-
 document.addEventListener('DOMContentLoaded', () => {
     // Initial debug
-    setTimeout(debugLayout, 1000);
-    
-    // Debug on sidebar toggle - we'll add this after we find the toggle
+// Debug on sidebar toggle - we'll add this after we find the toggle
     // Authentication is handled server-side via adminRoutes.js middleware
     // Client-side authentication removed to prevent conflicts with localStorage tokens
     let token = localStorage.getItem('token') || localStorage.getItem('authToken');
     let userString = localStorage.getItem('user') || localStorage.getItem('currentUser');
     let user = null;
     
-    console.log('🔍 DEBUG: Token found:', token ? 'Present' : 'Missing');
-    console.log('🔍 DEBUG: User string found:', userString ? 'Present' : 'Missing');
     
     if (userString) {
         try {
             user = JSON.parse(userString);
-            console.log('🔍 DEBUG: Parsed user:', user);
         } catch (e) {
             console.error("Error parsing user from localStorage", e);
             user = { email: 'User', role: 'client_admin' }; // Fallback for display
@@ -822,8 +1277,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const assetDetailModalTitle = document.getElementById('assetDetailModalTitle');
     const assetDetailModalClient = document.getElementById('assetDetailModalClient');
     const assetDetailModalDateTime = document.getElementById('assetDetailModalDateTime');
-    const assetDetailModalUploadDate = document.getElementById('assetDetailModalUploadDate');
-    const assetDetailModalPubDate = document.getElementById('assetDetailModalPubDate');
     const assetDetailModalMediaPreview = document.getElementById('assetDetailModalMediaPreview');
     const amcQuickViewAssetListArea = document.getElementById('amcQuickViewAssetListArea');
     const deleteConfirmModalBackdrop = document.getElementById('deleteConfirmModalBackdrop');
@@ -849,7 +1302,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // On load
     applyTheme(localStorage.getItem('theme') || 'light');
-    document.getElementById('currentYearText').textContent = new Date().getFullYear();
+    const _cyt = document.getElementById('currentYearText'); if (_cyt) _cyt.textContent = new Date().getFullYear();
     
     // Fix user email display - element might not exist
     if (userEmailDisplay) {
@@ -868,15 +1321,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- Main Fetch Function ---
     async function fetchRadarAlerts(page = 1, search = '', brand = '', status = '') {
-        console.log('🔍 DEBUG: fetchRadarAlerts called with:', { page, search, brand, status });
-        console.log('🔍 DEBUG: Token being used:', token ? 'Present' : 'Missing');
         
         alertsTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">Loading... <i class="fas fa-spinner fa-spin"></i></td></tr>`;
         let queryParams = `?page=${page}&limit=${limitPerPage}&title=${encodeURIComponent(search)}&brand=${encodeURIComponent(brand)}&status=${encodeURIComponent(status)}`;
         const apiUrl = `/api/v1/radar/all-alerts${queryParams}`;
         
-        console.log('🔍 DEBUG: Making request to:', apiUrl);
-        console.log('🔍 DEBUG: Request headers:', { 'Authorization': `Bearer ${token ? token.substring(0, 20) + '...' : 'MISSING'}` });
         
         try {
             const response = await fetch(apiUrl, {
@@ -887,22 +1336,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             
-            console.log('🔍 DEBUG: Response status:', response.status);
-            console.log('🔍 DEBUG: Response ok:', response.ok);
             
             const result = await response.json();
-            console.log('🔍 DEBUG: Response data:', result);
             
             if (!response.ok) {
                 console.error('🚨 API Error:', result);
                 throw new Error(result.error || `HTTP ${response.status}: Failed to fetch data`);
             }
             
-            console.log('✅ SUCCESS: Alerts fetched:', result.data.alerts.length);
             renderRadarAlertsTable(result.data.alerts);
-            currentPage = result.data.currentPage;
-            totalPages = result.data.totalPages;
-            totalItems = result.data.totalAlerts || result.data.alerts.length || 0;
+            // Structure confirmed: pagination lives in result.data
+            currentPage = result.data.currentPage ?? 1;
+            totalPages  = result.data.totalPages  ?? 1;
+            // totalAlerts from API = items on current page, not DB total
+            // Actual total = totalPages × limitPerPage (correct: 12 × 10 = 120)
+            totalItems  = totalPages * limitPerPage;
             if (totalAlerts) {
                 totalAlerts.textContent = totalItems;
             }
@@ -915,9 +1363,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Table Rendering ---
     function renderRadarAlertsTable(alerts) {
-        console.log('🔍 DEBUG: renderRadarAlertsTable called with:', alerts);
         const tableBody = document.getElementById('alertsTableBody');
-        console.log('🔍 DEBUG: Table body element:', tableBody);
         
         if (!tableBody) {
             console.error('🚨 ERROR: Table body element not found!');
@@ -929,7 +1375,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let filteredAlerts = alerts;
         
         if (searchTerm) {
-            console.log('🔍 DEBUG: Applying client-side filter for:', searchTerm);
             filteredAlerts = alerts.filter(alert => {
                 // All searchable fields from the table
                 const title = (alert.title || '').toLowerCase();
@@ -955,7 +1400,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                statusMatch || uploaderMatch || regionMatch || tagsMatch;
                 
                 if (matches) {
-                    console.log('🔍 DEBUG: Match found in alert:', alert.title);
                     console.log('  - Title match:', titleMatch, '(', title, ')');
                     console.log('  - Company match:', companyMatch, '(', company, ')');
                     console.log('  - Brand match:', brandMatch, '(', brand, ')');
@@ -968,19 +1412,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 return matches;
             });
-            console.log('🔍 DEBUG: Filtered from', alerts.length, 'to', filteredAlerts.length, 'alerts');
         }
         
         tableBody.innerHTML = '';
         if (!filteredAlerts || filteredAlerts.length === 0) {
-            console.log('🔍 DEBUG: No alerts to display after filtering');
             tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">No alerts found matching your criteria.</td></tr>`;
             return;
         }
         
-        console.log('🔍 DEBUG: Rendering', filteredAlerts.length, 'alerts');
         filteredAlerts.forEach((alert, index) => {
-            console.log(`🔍 DEBUG: Processing alert ${index + 1}:`, alert);
             const sanitizedTitle = (alert.title || 'this alert').replace(/"/g, '"');
             const teaserHtml = alert.teaserImagePath ?
                 `<span class="thumb"><img src="${alert.teaserImagePath}" alt=""></span>` :
@@ -1020,23 +1460,131 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </td>
             </tr>`;
-            console.log(`🔍 DEBUG: Generated row HTML for alert ${index + 1}:`, row);
             tableBody.insertAdjacentHTML('beforeend', row);
         });
-        console.log('🔍 DEBUG: Final table body HTML:', tableBody.innerHTML);
+
+        // Build mobile card list (only visible at <768px via CSS)
+        renderMobileCards(alerts);
+    }
+
+    function renderMobileCards(alerts) {
+        // Remove existing list if present
+        const existing = document.getElementById('mobileAlertList');
+        if (existing) existing.remove();
+
+        const card = document.querySelector('.manage-radar-alerts .amc-card');
+        if (!card) return;
+
+        const list = document.createElement('div');
+        list.className = 'mobile-alert-list';
+        list.id = 'mobileAlertList';
+
+        alerts.forEach(alert => {
+            const uuid  = alert.uuid || alert._id;
+            const title = alert.title || 'Untitled';
+            const company = getCompanyName(alert);
+            const status  = alert.computedStatus || alert.status || '';
+            const alertDate = alert.eventDateTime || alert.originalEventDateTime;
+            const dateFmt = alertDate ? new Date(alertDate).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '';
+            const imgSrc  = alert.teaserImagePath || '';
+            const statusClass = status.toLowerCase() === 'active' ? 'status--active' : 'status--archived';
+
+            const thumbHtml = imgSrc
+                ? `<img src="${imgSrc}" alt="">`
+                : `<div class="mobile-alert-thumb-placeholder"><i class="far fa-image"></i></div>`;
+
+            const item = document.createElement('div');
+            item.className = 'mobile-alert-card';
+            item.dataset.uuid = uuid;
+            item.innerHTML = `
+                <div class="mobile-alert-thumb">${thumbHtml}</div>
+                <div class="mobile-alert-body">
+                    <div class="mobile-alert-title">${title}</div>
+                    <div class="mobile-alert-meta">
+                        ${company && company !== '—' ? `<span class="mobile-alert-company">${company}</span>` : ''}
+                        ${status ? `<span class="status-pill ${statusClass}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>` : ''}
+                    </div>
+                    ${dateFmt ? `<div class="mobile-alert-date">${dateFmt}</div>` : ''}
+                </div>
+                <button class="mobile-alert-kebab kebab-btn" aria-label="Actions" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>`;
+
+            // Tap card body → open view modal
+            item.querySelector('.mobile-alert-body').addEventListener('click', () => {
+                openAlertDetailModal(uuid, title);
+            });
+            item.querySelector('.mobile-alert-thumb').addEventListener('click', () => {
+                openAlertDetailModal(uuid, title);
+            });
+
+            // Kebab → single instance, always close existing before opening
+            item.querySelector('.mobile-alert-kebab').addEventListener('click', e => {
+                e.stopPropagation();
+                e.preventDefault();
+                // Close ALL open menus (mobile float + desktop portal + any shell panels)
+                closeAllKebabs();
+
+                // Check if THIS button already had a menu (toggle behaviour)
+                if (e.currentTarget.dataset.open === 'true') {
+                    delete e.currentTarget.dataset.open;
+                    return;
+                }
+
+                const float = document.createElement('div');
+                float.id = 'mobile-kebab-float';
+                float.className = 'kebab-float';
+                float.style.cssText = 'position:fixed;z-index:99999;pointer-events:auto;';
+                float.innerHTML = `
+                    <button type="button" class="kebab-item" data-action="view" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}"><span class="kebab-dot kebab-dot--view"></span>View</button>
+                    <button type="button" class="kebab-item" data-action="edit" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}"><span class="kebab-dot kebab-dot--edit"></span>Edit</button>
+                    <button type="button" class="kebab-item kebab-item--delete" data-action="delete" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}"><span class="kebab-dot kebab-dot--delete"></span>Delete</button>`;
+                document.body.appendChild(float);
+
+                // Position to the left of the kebab button (so it doesn't go off-screen right)
+                const rect = e.currentTarget.getBoundingClientRect();
+                float.style.top  = (rect.bottom + 4) + 'px';
+                float.style.right = (window.innerWidth - rect.right) + 'px';
+
+                e.currentTarget.dataset.open = 'true';
+
+                // Wire up items using the existing handler
+                portal.querySelectorAll('.kebab-item').forEach(btn => {
+                    btn.addEventListener('click', ev => {
+                        ev.stopPropagation();
+                        handleKebabAction(btn.dataset.action, btn.dataset.uuid, btn.dataset.title);
+                        closeMobileKebab();
+                    });
+                });
+
+                // Outside-tap close handled by global document click listener below
+            });
+
+            list.appendChild(item);
+        });
+
+        // Insert list after card-header, before the table
+        const header = card.querySelector('.card-header');
+        if (header && header.nextSibling) {
+            card.insertBefore(list, header.nextSibling);
+        } else {
+            card.appendChild(list);
+        }
+    }
+
+    function closeMobileKebab() {
+        const p = document.getElementById('kebab-portal'); if (p && p !== document.getElementById('kebab-portal')) p.remove(); else closeAllKebabs();
+        if (p) p.remove();
     }
 
     // Helper function to get company name consistently
     function getCompanyName(alert) {
-        // First try: Get from alert's clientId (Client model - has clientName field)
-        if (alert.clientId?.clientName) {
-            return alert.clientId.clientName;
-        }
-        // Fallback: Get from user's clientId (Company model - has name field)
-        else if (alert.user?.clientId?.name) {
-            return alert.user.clientId.name;
-        }
-        return 'N/A';
+        // alert.companyName is the correct direct field on the radar alert object
+        if (alert.companyName) return alert.companyName;
+        // Legacy fallback for older records populated via clientId
+        if (alert.clientId?.clientName) return alert.clientId.clientName;
+        if (alert.user?.clientId?.name) return alert.user.clientId.name;
+        return '—';
     }
 
     // --- Actions ---
@@ -1075,13 +1623,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update header information
             assetDetailModalTitle.textContent = alertData.title;
             
-            // Set client and date info
-            const clientName = alertData.clientId?.clientName || alertData.user?.clientId?.name || 'Unknown Client';
+            // Set brand / date info — use brand or companyName for the meta line
+            const brandLabel = alertData.brand || alertData.companyName || alertData.clientId?.clientName || alertData.user?.clientId?.name || '—';
             const alertDate = alertData.eventDateTime || alertData.originalEventDateTime;
-            assetDetailModalClient.textContent = clientName;
+            assetDetailModalClient.textContent = brandLabel;
             assetDetailModalDateTime.textContent = alertDate ? new Date(alertDate).toLocaleString('en-GB') : 'Unknown Date';
-            assetDetailModalUploadDate.textContent = alertData.createdAt ? new Date(alertData.createdAt).toLocaleString('en-GB') : 'Unknown';
-            assetDetailModalPubDate.textContent = alertDate ? new Date(alertDate).toLocaleString('en-GB') : 'Unknown';
             
             // Set media preview
             if (alertData.teaserImagePath) {
@@ -1095,11 +1641,13 @@ document.addEventListener('DOMContentLoaded', () => {
                tagsHtml = Array.isArray(alertData.tags) ? alertData.tags.join(', ') : alertData.tags;
             }
 
+            const alertDateFmt = alertDate ? new Date(alertDate).toLocaleString('en-GB') : 'N/A';
+            const createdFmt  = alertData.createdAt ? new Date(alertData.createdAt).toLocaleString('en-GB') : 'N/A';
             amcQuickViewAssetListArea.innerHTML = `
-                <div class="detail-item"><strong>Brand:</strong> ${alertData.brand || 'N/A'}</div>
-                <div class="detail-item"><strong>Region:</strong> ${alertData.region || 'N/A'}</div>
-                <div class="detail-item"><strong>Status:</strong> ${alertData.computedStatus || alertData.status || 'Unknown'}</div>
-                <div class="detail-item"><strong>Description:</strong><p style="white-space:pre-wrap; margin-top:5px;">${alertData.description || 'N/A'}</p></div>
+                <div class="detail-item"><strong>Created on:</strong> ${createdFmt}</div>
+                <div class="detail-item"><strong>Alert date/time:</strong> ${alertDateFmt}</div>
+                <div class="detail-item"><strong>Brand:</strong> ${alertData.brand || '—'}</div>
+                <div class="detail-item"><strong>Status:</strong> ${alertData.computedStatus || alertData.status || '—'}</div>
                 <div class="detail-item"><strong>Tags:</strong> ${tagsHtml}</div>
             `;
         } catch (error) {
@@ -1109,7 +1657,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updatePaginationControls(noData = false) {
-        if (noData || totalItems === 0) {
+        // Only show "0 of 0" if genuinely no data — not if totalItems failed to parse
+        const hasAlerts = document.querySelectorAll('#alertsTableBody tr[data-id]').length > 0;
+        if (noData || (totalItems === 0 && !hasAlerts)) {
             if (pageInfo) pageInfo.textContent = 'Page 0 of 0';
             if (paginationSummary) paginationSummary.textContent = 'Showing 0-0 of 0';
             if (prevPageButton) prevPageButton.disabled = true;
@@ -1128,7 +1678,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const portal = document.getElementById('kebab-portal');
 
     function closeAllKebabs(){
-        portal.innerHTML = ''; // remove any floating menu
+        portal.innerHTML = ''; // clear desktop float
+        const mf = document.getElementById('mobile-kebab-float');
+        if (mf) mf.remove(); // clear mobile float
+        // Reset open state on all mobile kebab buttons
+        document.querySelectorAll('[data-open="true"]')
+            .forEach(b => delete b.dataset.open);
         document.querySelectorAll('.kebab-btn[aria-expanded="true"]')
             .forEach(b => b.setAttribute('aria-expanded','false'));
     }
@@ -1178,7 +1733,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Action handlers (View/Edit/Delete)
     document.addEventListener('click', (e) => {
-        const item = e.target.closest('#kebab-portal .kebab-item');
+        const item = e.target.closest('.kebab-float .kebab-item, #kebab-portal .kebab-item');
         if (!item) return;
         const uuid  = item.dataset.uuid;
         const title = item.dataset.title || 'this alert';
@@ -1201,7 +1756,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // close on outside click / ESC / resize / scroll
     document.addEventListener('click', (e)=>{
-        if (!e.target.closest('#kebab-portal') && !e.target.closest('.kebab-btn')) closeAllKebabs();
+        if (!e.target.closest('#kebab-portal') &&
+            !e.target.closest('.kebab-float') &&
+            !e.target.closest('.kebab-btn') &&
+            !e.target.closest('.mobile-alert-kebab')) {
+            closeAllKebabs();
+        }
     });
     document.addEventListener('keydown', e=>{ if (e.key==='Escape') closeAllKebabs(); });
     window.addEventListener('resize', closeAllKebabs);
@@ -1223,26 +1783,45 @@ document.addEventListener('DOMContentLoaded', () => {
     prevPageButton.addEventListener('click', () => { if (currentPage > 1) fetchRadarAlerts(--currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value); });
     nextPageButton.addEventListener('click', () => { if (currentPage < totalPages) fetchRadarAlerts(++currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value); });
     
+    // ── Named helpers used by mobile card JS ──
+    function openAlertDetailModal(uuid, title) {
+        if (typeof openAssetDetailModal === 'function') openAssetDetailModal(uuid);
+    }
+
+    function handleKebabAction(act, uuid, title) {
+        if (act === 'view') {
+            openAlertDetailModal(uuid, title);
+        } else if (act === 'edit') {
+            location.href = `AssetDBmenu1.6.html?formType=radar&editAlertUUID=${uuid}`;
+        } else if (act === 'delete') {
+            deleteConfirmModalText.innerHTML = `Are you sure you want to permanently delete:<br><strong>"${title}"</strong>?<br><br>This cannot be undone.`;
+            deleteConfirmModalBackdrop.classList.add('open');
+            deleteConfirmButton.onclick = () => {
+                deleteConfirmModalBackdrop.classList.remove('open');
+                deleteAlert(uuid);
+            };
+        }
+    }
+
     // --- Initial Load ---
-    console.log('🔍 DEBUG: Starting initial load...');
     
     // Add a small delay to ensure DOM is fully ready
     setTimeout(() => {
-        console.log('🔍 DEBUG: Calling fetchRadarAlerts...');
         fetchRadarAlerts();
     }, 200);
 });
 </script>
-    <!-- ✅ ADD COMPONENT SCRIPTS -->
-    <script src="components/amc-header.js"></script>
-    <script src="components/sidebar.js"></script>
-    
-    <!-- Premium Avatar System -->
-    <script defer src="amc-avatar-system.js"></script>
-    
-    <!-- Kebab menu portal -->
-    <div id="kebab-portal" style="position:fixed; inset:0; pointer-events:none; z-index:1000;"></div>
-    
+
+<script src="./components/shell/v6_5-shell.js"></script>
+<script src="./components/shell/v6_5-shell-loader.js"></script>
+<script>
+loadV65Shell({ basePath: './components/shell' });
+(function() {
+  const stored = localStorage.getItem('amcTheme') || localStorage.getItem('theme');
+  if (stored === 'dark') document.body.classList.add('dark-mode');
+})();
+</script>
+
 <script>
   // Enhanced search functionality - wait for DOM and use existing button handlers
   document.addEventListener('DOMContentLoaded', function() {
@@ -1254,15 +1833,12 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    console.log('🔍 DEBUG: Search input found, setting up event listeners');
 
     // Real-time search function that uses existing apply button logic
     const performSearch = () => {
-      console.log('🔍 DEBUG: performSearch called, input value:', input.value);
       
       // Trigger the existing apply filters button which calls fetchRadarAlerts
       if (applyBtn) {
-        console.log('🔍 DEBUG: Clicking apply filters button');
         applyBtn.click();
       } else {
         console.error('🚨 Apply filters button not found!');
@@ -1271,13 +1847,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add event listeners for real-time search
     input.addEventListener('input', () => {
-      console.log('🔍 DEBUG: Input event triggered');
       performSearch();
     });
     
     input.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
-        console.log('🔍 DEBUG: Enter key pressed');
         performSearch();
       }
     });
@@ -1285,13 +1859,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // ESC clears the field & filters
     input.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
-        console.log('🔍 DEBUG: Escape key pressed');
         input.value = '';
         performSearch();
       }
     });
 
-    console.log('🔍 DEBUG: Search event listeners set up successfully');
   });
 </script>
 
