@@ -217,7 +217,8 @@ app.get('/', (req, res) => {
   const filePath = path.join(__dirname, 'Frontend', 'landing-page-twitter-style.html');
   console.log('File path:', filePath);
   res.sendFile(filePath, (err) => {
-    if (err) {
+    // Only send error if headers haven't been sent yet (prevents crash on aborted requests)
+    if (err && !res.headersSent) {
       console.error('Error serving file:', err);
       res.status(500).send('Error serving file: ' + err.message);
     }

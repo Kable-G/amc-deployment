@@ -13,9 +13,6 @@ const path = require('path');
 const fs = require('fs');
 const mongoose = require('mongoose');
 
-// ─────────────────────────────────────────────
-// Zod validation schema — updated for bento form
-// ─────────────────────────────────────────────
 const createRadarAlertSchema = z.object({
   radarAlertUUID:      z.string().uuid().optional().or(z.literal('')),
   title:               z.string().min(1).max(250),
@@ -27,7 +24,6 @@ const createRadarAlertSchema = z.object({
   description:         z.string().optional().nullable(),
   quickViewContent:    z.string().optional().nullable(),
   action:              z.enum(['draft', 'publish']),
-  // New bento form fields
   eventDateTime:       z.string().optional().nullable(),
   eventTimezone:       z.string().optional().nullable(),
   contentCategory:     z.string().optional().nullable(),
@@ -37,9 +33,6 @@ const createRadarAlertSchema = z.object({
   legalTermsAck:       z.string().optional().nullable(),
 });
 
-// ─────────────────────────────────────────────
-// Multer — storage for teasers AND alert docs
-// ─────────────────────────────────────────────
 const radarUploadDir  = path.join(__dirname, '..', 'public', 'uploads', 'radar_teasers');
 const radarDocDir     = path.join(__dirname, '..', 'public', 'uploads', 'radar_docs');
 
@@ -49,7 +42,6 @@ const radarDocDir     = path.join(__dirname, '..', 'public', 'uploads', 'radar_d
 
 const radarStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Route each field to its own directory
     cb(null, file.fieldname === 'radarAlertDoc' ? radarDocDir : radarUploadDir);
   },
   filename: (req, file, cb) => {
@@ -78,17 +70,15 @@ const radarFileFilter = (req, file, cb) => {
   }
 };
 
-// Accept both fields — teaser image (1) + alert doc (1)
 const radarUpload = multer({
   storage:    radarStorage,
   fileFilter: radarFileFilter,
-  limits:     { fileSize: 10 * 1024 * 1024 }  // 10 MB per file
+  limits:     { fileSize: 10 * 1024 * 1024 }
 }).fields([
   { name: 'radarTeaserImage', maxCount: 1 },
   { name: 'radarAlertDoc',    maxCount: 1 }
 ]);
 
-// Helper — clean up uploaded files on error
 const cleanupFiles = (req) => {
   if (!req.files) return;
   Object.values(req.files).flat().forEach(f => {
@@ -96,9 +86,6 @@ const cleanupFiles = (req) => {
   });
 };
 
-// ─────────────────────────────────────────────
-// Helper — build alertData from validated body + files
-// ─────────────────────────────────────────────
 const buildAlertData = (validatedData, req) => {
   const { dropDate, tags, action, radarAlertUUID, ...rest } = validatedData;
 
@@ -110,20 +97,17 @@ const buildAlertData = (validatedData, req) => {
     user:          req.user.id,
   };
 
-  // Client ID
   let finalClientId = req.user.clientId;
   if (req.user.role === 'platform_admin' && req.body.targetClientIdForAdmin) {
     finalClientId = req.body.targetClientIdForAdmin;
   }
   data.clientId = finalClientId;
 
-  // Teaser image
   const teaserFile = req.files?.radarTeaserImage?.[0];
   if (teaserFile) {
     data.teaserImagePath = `/uploads/radar_teasers/${teaserFile.filename}`;
   }
 
-  // Alert document
   const docFile = req.files?.radarAlertDoc?.[0];
   if (docFile) {
     data.alertDocPath = `/uploads/radar_docs/${docFile.filename}`;
@@ -156,7 +140,7 @@ router.get('/alerts', authenticate, async (req, res) => {
 // GET /api/v1/radar/all-alerts — all alerts for management page
 router.get('/all-alerts', authenticate, async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 10, title = '', brand = '', status = '' } = req.query;
     const now = new Date();
 
     let baseQuery = {};
@@ -183,8 +167,31 @@ router.get('/all-alerts', authenticate, async (req, res) => {
       ...archivedAlerts.map(a => ({ ...a, computedStatus: 'Archived', eventDateTime: a.eventDateTime || a.originalEventDateTime, createdAt: a.originalCreatedAt || a.createdAt }))
     ];
 
-    const unique = Array.from(new Map(allAlerts.map(a => [a.uuid, a])).values());
+    let unique = Array.from(new Map(allAlerts.map(a => [a.uuid, a])).values());
     unique.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    // ── Search: title param searches across title, brand, tags, description ──
+    if (title) {
+      const term = title.toLowerCase();
+      unique = unique.filter(a =>
+        (a.title || '').toLowerCase().includes(term) ||
+        (a.brand || '').toLowerCase().includes(term) ||
+        (a.description || '').toLowerCase().includes(term) ||
+        (Array.isArray(a.tags) ? a.tags.join(' ') : (a.tags || '')).toLowerCase().includes(term)
+      );
+    }
+
+    // ── Brand filter (separate, partial match) ──
+    if (brand) {
+      const b = brand.toLowerCase();
+      unique = unique.filter(a => (a.brand || '').toLowerCase().includes(b));
+    }
+
+    // ── Status filter ──
+    if (status) {
+      const s = status.toLowerCase();
+      unique = unique.filter(a => (a.computedStatus || '').toLowerCase() === s);
+    }
 
     const totalItems = unique.length;
     res.json({
@@ -193,7 +200,8 @@ router.get('/all-alerts', authenticate, async (req, res) => {
         alerts:      unique.slice((page - 1) * limit, page * limit),
         totalPages:  Math.ceil(totalItems / limit),
         currentPage: parseInt(page),
-        totalItems
+        totalItems,
+        totalAlerts: totalItems   // explicit alias for frontend counter
       }
     });
   } catch (error) {
@@ -241,7 +249,6 @@ router.put('/alerts/:uuid', authenticate, radarUpload, async (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid update data.', details: validationResult.error.flatten() });
     }
 
-    // Permission: platform_admin can edit any, others only own
     const ownerQuery = req.user.role === 'platform_admin'
       ? { uuid: req.params.uuid }
       : { uuid: req.params.uuid, user: req.user.id };
@@ -254,13 +261,11 @@ router.put('/alerts/:uuid', authenticate, radarUpload, async (req, res) => {
 
     const updates = buildAlertData(validationResult.data, req);
 
-    // If new teaser uploaded, delete old one
     if (req.files?.radarTeaserImage?.[0] && alertToUpdate.teaserImagePath) {
       const oldPath = path.join(__dirname, '..', 'public', alertToUpdate.teaserImagePath);
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
 
-    // If new doc uploaded, delete old one
     if (req.files?.radarAlertDoc?.[0] && alertToUpdate.alertDocPath) {
       const oldPath = path.join(__dirname, '..', 'public', alertToUpdate.alertDocPath);
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
@@ -314,7 +319,6 @@ router.delete('/alerts/:uuid', authenticate, async (req, res) => {
     if (!alert) alert = await RadarAlertArchive.findOneAndDelete({ uuid: req.params.uuid, user: req.user.id });
     if (!alert) return res.status(404).json({ success: false, error: 'Alert not found.' });
 
-    // Clean up files
     [alert.teaserImagePath, alert.alertDocPath].forEach(filePath => {
       if (!filePath) return;
       const full = path.join(__dirname, '..', 'public', filePath);

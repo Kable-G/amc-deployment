@@ -427,24 +427,31 @@ body.dark-mode .amc-page-subtitle { color: #64748b !important; }
     .confirm-modal-close-btn {
         width: 28px; height: 28px;
         border-radius: 6px;
-        border: none;
+        border: 1.5px solid rgba(59,130,246,0.45);
         background: transparent;
-        color: #9ca3af;
+        color: #6b7280;
         font-size: 16px;
         cursor: pointer;
         display: flex; align-items: center; justify-content: center;
-        transition: background 0.15s, color 0.15s;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
         flex-shrink: 0;
     }
     .detail-modal-close-btn:hover,
     .confirm-modal-close-btn:hover {
-        background: #f3f4f6;
-        color: #374151;
+        background: rgba(59,130,246,0.08);
+        border-color: #3b82f6;
+        color: #2563eb;
+    }
+    body.dark-mode .detail-modal-close-btn,
+    body.dark-mode .confirm-modal-close-btn {
+        border-color: rgba(99,160,255,0.4);
+        color: #94a3b8;
     }
     body.dark-mode .detail-modal-close-btn:hover,
     body.dark-mode .confirm-modal-close-btn:hover {
-        background: rgba(255,255,255,0.08);
-        color: #e2e8f0;
+        background: rgba(59,130,246,0.12);
+        border-color: #60a5fa;
+        color: #93c5fd;
     }
     
     /* ============================================
@@ -849,6 +856,17 @@ body.dark-mode .radar-table-title-bar {
 body.dark-mode .radar-table-title {
   color: #f1f5f9 !important;
 }
+body.dark-mode #searchResultsText {
+  color: #94a3b8;
+}
+body.dark-mode #searchResultsPill {
+  background: rgba(59,130,246,0.12) !important;
+  color: #93c5fd !important;
+  border-color: rgba(59,130,246,0.25) !important;
+}
+body.dark-mode #searchResultsClear {
+  color: #93c5fd !important;
+}
 .radar-table-count {
   font-family: Inter, system-ui, -apple-system, sans-serif;
   font-size: 13px;
@@ -1193,6 +1211,57 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
     letter-spacing: -0.01em !important;
   }
 }
+
+/* ── Back to top button ── */
+#backToTop {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(59,130,246,0.35), 0 2px 4px rgba(0,0,0,0.12);
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.25s ease, transform 0.25s ease, background 0.15s ease;
+  pointer-events: auto;
+  z-index: 99998;
+}
+#backToTop.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+#backToTop:hover {
+  background: #2563eb;
+  box-shadow: 0 6px 16px rgba(59,130,246,0.45), 0 2px 6px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+#backToTop:active {
+  transform: translateY(0);
+  background: #1d4ed8;
+}
+body.dark-mode #backToTop {
+  background: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59,130,246,0.4), 0 2px 4px rgba(0,0,0,0.3);
+}
+@media (max-width: 767px) {
+  #backToTop {
+    bottom: 20px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+}
 </style>
 </head>
 <body>
@@ -1206,14 +1275,14 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
 
       <header class="amc-page-header">
         <h1 class="amc-page-title">Manage Media Alerts</h1>
-        <p class="amc-page-subtitle">View, edit or delete media alerts</p>
+        <p class="amc-page-subtitle">View, edit or delete Media Alerts</p>
       </header>
 
       <div class="amc-page__tools">
         <div class="controls-section">
           <div class="controls-left">
             <div class="search-container">
-              <input type="text" id="filterSearch" placeholder="Search alerts..." class="search-input" />
+              <input type="text" id="filterSearch" placeholder="Search Media Alerts..." class="search-input" />
               <i class="fas fa-search search-icon"></i>
             </div>
           </div>
@@ -1232,10 +1301,18 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
         </div>
       </div>
 
+      <div id="searchResultsRow" style="display:none;margin:0 0 10px 0;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span id="searchResultsText" style="font-size:13px;font-weight:500;color:#6b7280;"></span>
+        <span id="searchResultsPill" style="display:inline-flex;align-items:center;gap:5px;background:#eff6ff;color:#2563eb;border:1px solid rgba(59,130,246,0.25);border-radius:20px;padding:2px 10px 2px 10px;font-size:12.5px;font-weight:600;">
+          <span id="searchResultsTerm"></span>
+          <button id="searchResultsClear" style="background:none;border:none;color:#2563eb;cursor:pointer;font-size:13px;line-height:1;padding:0 0 0 2px;display:flex;align-items:center;" aria-label="Clear search">×</button>
+        </span>
+      </div>
+
       <div class="amc-page__body">
         <div class="amc-card" style="margin-top:12px;">
           <div class="radar-table-title-bar">
-            <span class="radar-table-title">Your Radar Alerts</span>
+            <span class="radar-table-title">Your Media Alerts</span>
             <span class="radar-table-count">Total Alerts: <span id="totalAlerts">0</span></span>
           </div>
           <table class="amc-table table-lined releases-table">
@@ -1253,7 +1330,7 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
               <tr>
                 <th class="cell--teaser" style="text-align:left;">Teaser</th>
                 <th style="text-align:left;">Title</th>
-                <th style="text-align:left;">Company</th>
+                <th style="text-align:left;">Brand</th>
                 <th style="text-align:center;">Status</th>
                 <th style="text-align:left;">Uploaded By</th>
                 <th style="text-align:left;">Alert Date &amp; Time</th>
@@ -1382,6 +1459,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- State ---
     let currentPage = 1; let totalPages = 1; let totalItems = 0; const limitPerPage = 10;
+
+    // Shared date formatter — DD/MM/YYYY, HH:MM TZ (no seconds)
+    function formatAlertDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        const d = new Date(dateStr);
+        if (isNaN(d)) return 'N/A';
+        const parts = d.toLocaleString('en-GB', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit',
+            timeZoneName: 'short'
+        });
+        return parts; // e.g. "10/03/2026, 19:30 CET"
+    }
+    // Expose on window so back-to-top and logo can access across script scopes
+    window._amcCurrentPage = () => currentPage;
+    window._amcGoToPage1 = () => { if (typeof fetchRadarAlerts === 'function') fetchRadarAlerts(1); };
     
     // --- UI Functions ---
     if (sidebarToggle) {
@@ -1442,12 +1535,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             renderRadarAlertsTable(result.data.alerts);
-            // Structure confirmed: pagination lives in result.data
+            // Update search results row — use API totalAlerts if present, else alerts length
+            const searchVal = filterSearchInput ? filterSearchInput.value.trim() : '';
+            const resultsRow  = document.getElementById('searchResultsRow');
+            const resultsText = document.getElementById('searchResultsText');
+            const resultsTerm = document.getElementById('searchResultsTerm');
+            if (resultsRow && resultsText && resultsTerm) {
+                if (searchVal) {
+                    const apiTotal = result.data.totalAlerts ?? result.data.totalItems ?? result.data.alerts.length;
+                    resultsText.textContent = `${apiTotal} result${apiTotal !== 1 ? 's' : ''} for`;
+                    resultsTerm.textContent = searchVal;
+                    resultsRow.style.display = 'flex';
+                } else {
+                    resultsRow.style.display = 'none';
+                }
+            }
+            // Use totalItems/totalAlerts directly from API (patched backend returns these correctly)
             currentPage = result.data.currentPage ?? 1;
             totalPages  = result.data.totalPages  ?? 1;
-            // totalAlerts from API = items on current page, not DB total
-            // Actual total = totalPages × limitPerPage (correct: 12 × 10 = 120)
-            totalItems  = totalPages * limitPerPage;
+            totalItems  = result.data.totalItems ?? result.data.totalAlerts ?? result.data.alerts.length;
             if (totalAlerts) {
                 totalAlerts.textContent = totalItems;
             }
@@ -1467,67 +1573,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // Apply client-side filtering if search term exists
-        const searchTerm = filterSearchInput.value.trim().toLowerCase();
-        let filteredAlerts = alerts;
-        
-        if (searchTerm) {
-            filteredAlerts = alerts.filter(alert => {
-                // All searchable fields from the table
-                const title = (alert.title || '').toLowerCase();
-                const company = getCompanyName(alert).toLowerCase();
-                const brand = (alert.brand || '').toLowerCase();
-                const description = (alert.description || '').toLowerCase();
-                const status = (alert.computedStatus || alert.status || '').toLowerCase();
-                const uploaderEmail = (alert.user?.email || '').toLowerCase();
-                const region = (alert.region || '').toLowerCase();
-                const tags = Array.isArray(alert.tags) ? alert.tags.join(' ').toLowerCase() : (alert.tags || '').toLowerCase();
-                
-                // Modern 2025 search - check each field individually for partial matches
-                const titleMatch = title.includes(searchTerm);
-                const companyMatch = company.includes(searchTerm);
-                const brandMatch = brand.includes(searchTerm);
-                const descriptionMatch = description.includes(searchTerm);
-                const statusMatch = status.includes(searchTerm);
-                const uploaderMatch = uploaderEmail.includes(searchTerm);
-                const regionMatch = region.includes(searchTerm);
-                const tagsMatch = tags.includes(searchTerm);
-                
-                const matches = titleMatch || companyMatch || brandMatch || descriptionMatch ||
-                               statusMatch || uploaderMatch || regionMatch || tagsMatch;
-                
-                if (matches) {
-                    console.log('  - Title match:', titleMatch, '(', title, ')');
-                    console.log('  - Company match:', companyMatch, '(', company, ')');
-                    console.log('  - Brand match:', brandMatch, '(', brand, ')');
-                    console.log('  - Description match:', descriptionMatch);
-                    console.log('  - Status match:', statusMatch, '(', status, ')');
-                    console.log('  - Uploader match:', uploaderMatch, '(', uploaderEmail, ')');
-                    console.log('  - Region match:', regionMatch, '(', region, ')');
-                    console.log('  - Tags match:', tagsMatch, '(', tags, ')');
-                }
-                
-                return matches;
-            });
-        }
-        
+        // Clear loading spinner / previous rows
         tableBody.innerHTML = '';
-        if (!filteredAlerts || filteredAlerts.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">No alerts found matching your criteria.</td></tr>`;
-            return;
-        }
-        
+
+        // Search is server-side; alerts array is already filtered by API
+        const filteredAlerts = alerts;
+
         filteredAlerts.forEach((alert, index) => {
             const sanitizedTitle = (alert.title || 'this alert').replace(/"/g, '"');
             const teaserHtml = alert.teaserImagePath ?
                 `<span class="thumb"><img src="${alert.teaserImagePath}" alt=""></span>` :
                 `<span class="thumb"><i class="far fa-image"></i></span>`;
             
-            const alertDate = alert.eventDateTime ? new Date(alert.eventDateTime).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '') : '--/--/---- --:--';
-            const createdDate = alert.createdAt ? new Date(alert.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '') : '--/--/---- --:--';
+            const alertDate = alert.eventDateTime ? formatAlertDate(alert.eventDateTime) : '--/--/---- --:--';
+            const createdDate = alert.createdAt ? formatAlertDate(alert.createdAt) : '--/--/---- --:--';
 
             // Determine actual status
             let displayStatus = alert.computedStatus || alert.status || 'Unknown';
+            // Normalize: published → Active
+            if (displayStatus.toLowerCase() === 'published') displayStatus = 'Active';
             let statusClass = displayStatus.toLowerCase();
             
             // Get uploader email with fallback
@@ -1561,7 +1625,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Build mobile card list (only visible at <768px via CSS)
-        renderMobileCards(alerts);
+        renderMobileCards(filteredAlerts);
     }
 
     function renderMobileCards(alerts) {
@@ -1588,7 +1652,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 timeZoneName:'short'
             }) : '';
             const imgSrc  = alert.teaserImagePath || '';
-            const statusClass = status.toLowerCase() === 'active' ? 'status--active' : 'status--archived';
+            const normStatus = status.toLowerCase() === 'published' ? 'active' : status.toLowerCase();
+            const mobileDisplayStatus = normStatus.charAt(0).toUpperCase() + normStatus.slice(1);
+            const statusClass = normStatus === 'active' ? 'status--active' : 'status--archived';
 
             const thumbHtml = imgSrc
                 ? `<img src="${imgSrc}" alt="">`
@@ -1603,7 +1669,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="mobile-alert-title">${title}</div>
                     <div class="mobile-alert-meta">
                         ${company && company !== '—' ? `<span class="mobile-alert-company">${company}</span>` : ''}
-                        ${status ? `<span class="status-pill ${statusClass}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>` : ''}
+                        ${normStatus ? `<span class="status-pill ${statusClass}">${mobileDisplayStatus}</span>` : ''}
                     </div>
                     ${dateFmt ? `<div class="mobile-alert-date">${dateFmt}</div>` : ''}
                 </div>
@@ -1680,9 +1746,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper function to get company name consistently
     function getCompanyName(alert) {
-        // alert.companyName is the correct direct field on the radar alert object
+        // Brand field first — whatever the uploader entered on upload
+        if (alert.brand) return alert.brand;
+        // Fallbacks for older records
         if (alert.companyName) return alert.companyName;
-        // Legacy fallback for older records populated via clientId
         if (alert.clientId?.clientName) return alert.clientId.clientName;
         if (alert.user?.clientId?.name) return alert.user.clientId.name;
         return '—';
@@ -1728,7 +1795,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const brandLabel = alertData.brand || alertData.companyName || alertData.clientId?.clientName || alertData.user?.clientId?.name || '—';
             const alertDate = alertData.eventDateTime || alertData.originalEventDateTime;
             assetDetailModalClient.textContent = brandLabel;
-            assetDetailModalDateTime.textContent = alertDate ? new Date(alertDate).toLocaleString('en-GB') : 'Unknown Date';
+            assetDetailModalDateTime.textContent = alertDate ? formatAlertDate(alertDate) : 'Unknown Date';
             
             // Set media preview
             if (alertData.teaserImagePath) {
@@ -1742,13 +1809,17 @@ document.addEventListener('DOMContentLoaded', () => {
                tagsHtml = Array.isArray(alertData.tags) ? alertData.tags.join(', ') : alertData.tags;
             }
 
-            const alertDateFmt = alertDate ? new Date(alertDate).toLocaleString('en-GB') : 'N/A';
-            const createdFmt  = alertData.createdAt ? new Date(alertData.createdAt).toLocaleString('en-GB') : 'N/A';
+            const alertDateFmt = formatAlertDate(alertDate);
+            const createdFmt  = alertData.createdAt ? formatAlertDate(alertData.createdAt) : 'N/A';
+            // Normalize status
+            let modalStatus = alertData.computedStatus || alertData.status || '—';
+            if (modalStatus.toLowerCase() === 'published') modalStatus = 'Active';
+            const modalStatusClass = modalStatus.toLowerCase() === 'active' ? 'status--active' : modalStatus.toLowerCase() === 'archived' ? 'status--archived' : 'status--unknown';
             amcQuickViewAssetListArea.innerHTML = `
                 <div class="detail-item"><strong>Created on:</strong> ${createdFmt}</div>
                 <div class="detail-item"><strong>Alert date/time:</strong> ${alertDateFmt}</div>
                 <div class="detail-item"><strong>Brand:</strong> ${alertData.brand || '—'}</div>
-                <div class="detail-item"><strong>Status:</strong> ${alertData.computedStatus || alertData.status || '—'}</div>
+                <div class="detail-item"><strong>Status:</strong> <span class="status-pill ${modalStatusClass}">${modalStatus}</span></div>
                 <div class="detail-item"><strong>Tags:</strong> ${tagsHtml}</div>
             `;
         } catch (error) {
@@ -1934,21 +2005,34 @@ loadV65Shell({ basePath: './components/shell' });
       return;
     }
 
+    // Wire the × clear button on the results pill
+    const clearPillBtn = document.getElementById('searchResultsClear');
+    if (clearPillBtn) {
+      clearPillBtn.addEventListener('click', () => {
+        input.value = '';
+        if (applyBtn) applyBtn.click();
+        input.focus();
+      });
+    }
 
-    // Real-time search function that uses existing apply button logic
+
+    // Debounced search — waits 400ms after user stops typing before firing
+    let searchDebounceTimer = null;
     const performSearch = () => {
-      
-      // Trigger the existing apply filters button which calls fetchRadarAlerts
       if (applyBtn) {
         applyBtn.click();
       } else {
         console.error('🚨 Apply filters button not found!');
       }
     };
+    const debouncedSearch = () => {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(performSearch, 400);
+    };
 
     // Add event listeners for real-time search
     input.addEventListener('input', () => {
-      performSearch();
+      debouncedSearch();
     });
     
     input.addEventListener('keydown', e => {
@@ -1966,6 +2050,47 @@ loadV65Shell({ basePath: './components/shell' });
     });
 
   });
+
+  // ── Back to top + logo reset ──
+  document.addEventListener('DOMContentLoaded', function() {
+    const vmain = document.getElementById('vmainScroll');
+
+    // Create button, append directly to body
+    const btn = document.createElement('button');
+    btn.id = 'backToTop';
+    btn.title = 'Back to top';
+    btn.setAttribute('aria-label', 'Back to top');
+    btn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+    document.body.appendChild(btn);
+
+    function doScrollAndReset() {
+      if (vmain) vmain.scrollTo({ top: 0, behavior: 'smooth' });
+      document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+      const page = typeof window._amcCurrentPage === 'function' ? window._amcCurrentPage() : 1;
+      if (page !== 1 && typeof window._amcGoToPage1 === 'function') window._amcGoToPage1();
+    }
+
+    // Attach click handler immediately after creating button
+    btn.onclick = doScrollAndReset;
+
+    // Wire header logo — shell injects it async so poll for it
+    function wireLogoBtn() {
+      const logo = document.getElementById('mobileLogo');
+      if (logo && !logo.dataset.wired) {
+        logo.dataset.wired = '1';
+        logo.style.cursor = 'pointer';
+        logo.onclick = function(e) {
+          e.stopPropagation();
+          doScrollAndReset();
+        };
+      } else if (!logo) {
+        setTimeout(wireLogoBtn, 300);
+      }
+    }
+    setTimeout(wireLogoBtn, 500);
+    setTimeout(wireLogoBtn, 1500);
+  });
+
 </script>
 
 </body>
