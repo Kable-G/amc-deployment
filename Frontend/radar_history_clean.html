@@ -824,6 +824,59 @@ body.dark-mode .manage-radar-alerts .amc-card .card-header {
 /* ── Section header row ── */
 /* ── Section heading: EXACTLY matches thead th font ── */
 /* card-header h2 styled via inline style on element — no CSS rules here */
+/* ── Radar table title bar — completely independent of shell card-header rules ── */
+.radar-table-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.04);
+  border-bottom: 1px solid #e5e7eb;
+}
+body.dark-mode .radar-table-title-bar {
+  background: rgba(255,255,255,0.04);
+  border-bottom-color: #374151;
+}
+.radar-table-title {
+  font-family: Inter, system-ui, -apple-system, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  color: #374151 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+body.dark-mode .radar-table-title {
+  color: #f1f5f9 !important;
+}
+.radar-table-count {
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+}
+body.dark-mode .radar-table-count {
+  color: #94a3b8;
+}
+.radar-table-count span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+body.dark-mode .radar-table-count span {
+  background: rgba(59,130,246,0.12);
+  color: #93c5fd;
+  border-color: rgba(59,130,246,0.25);
+}
+
 /* ── Section heading: uses .section-heading-label div (not h2) to avoid shell override ── */
 .section-heading-label {
   font-family: Inter, system-ui, -apple-system, sans-serif;
@@ -876,6 +929,15 @@ body.dark-mode .manage-radar-alerts .table-head-meta span#totalAlerts {
 }
 .manage-radar-alerts .amc-table thead th {
   border-bottom: 2px solid #9ca3af;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  font-family: Inter, system-ui, -apple-system, sans-serif !important;
+  color: #374151 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+body.dark-mode .manage-radar-alerts .amc-table thead th {
+  color: #e2e8f0 !important;
 }
 body.dark-mode .manage-radar-alerts .amc-table th,
 body.dark-mode .manage-radar-alerts .amc-table td {
@@ -887,6 +949,24 @@ body.dark-mode .manage-radar-alerts .amc-table thead th {
 }
 
 
+
+/* ── Row zebra + hover ── */
+.manage-radar-alerts .amc-table tbody tr:nth-child(even) td {
+  background: rgba(0,0,0,0.045);
+}
+body.dark-mode .manage-radar-alerts .amc-table tbody tr:nth-child(even) td {
+  background: rgba(255,255,255,0.022);
+}
+.manage-radar-alerts .amc-table tbody tr {
+  transition: background 0.12s ease;
+}
+.manage-radar-alerts .amc-table tbody tr:hover td {
+  background: rgba(59,130,246,0.10) !important;
+  cursor: pointer;
+}
+body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
+  background: rgba(59,130,246,0.09) !important;
+}
 
 /* Mobile card list hidden by default — shown only via @media (max-width:767px) */
 .mobile-alert-list { display: none !important; }
@@ -979,11 +1059,28 @@ body.dark-mode .manage-radar-alerts .amc-table thead th {
     cursor: pointer;
     transition: background 0.12s;
     position: relative;
+    background: transparent;
+  }
+  .mobile-alert-card:nth-child(even) {
+    background: rgba(0,0,0,0.045);
+  }
+  .mobile-alert-card:hover {
+    background: rgba(59,130,246,0.10) !important;
+  }
+  .mobile-alert-card:active {
+    background: rgba(59,130,246,0.14) !important;
   }
   .mobile-alert-card:last-child { border-bottom: none; }
-  .mobile-alert-card:active { background: #f8fafc; }
   body.dark-mode .mobile-alert-card { border-bottom-color: #2d3748; }
-  body.dark-mode .mobile-alert-card:active { background: rgba(255,255,255,0.04); }
+  body.dark-mode .mobile-alert-card:nth-child(even) {
+    background: rgba(255,255,255,0.022);
+  }
+  body.dark-mode .mobile-alert-card:hover {
+    background: rgba(59,130,246,0.09) !important;
+  }
+  body.dark-mode .mobile-alert-card:active {
+    background: rgba(59,130,246,0.13) !important;
+  }
 
   /* Teaser thumbnail */
   .mobile-alert-thumb {
@@ -1137,9 +1234,9 @@ body.dark-mode .manage-radar-alerts .amc-table thead th {
 
       <div class="amc-page__body">
         <div class="amc-card" style="margin-top:12px;">
-          <div class="card-header">
-            <div class="section-heading-label">Your Radar Alerts</div>
-            <div class="table-head-meta">Total Alerts: <span id="totalAlerts">0</span></div>
+          <div class="radar-table-title-bar">
+            <span class="radar-table-title">Your Radar Alerts</span>
+            <span class="radar-table-count">Total Alerts: <span id="totalAlerts">0</span></span>
           </div>
           <table class="amc-table table-lined releases-table">
             <colgroup>
@@ -1564,7 +1661,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Insert list after card-header, before the table
-        const header = card.querySelector('.card-header');
+        const header = card.querySelector('.radar-table-title-bar') || card.querySelector('.card-header');
         if (header && header.nextSibling) {
             card.insertBefore(list, header.nextSibling);
         } else {
