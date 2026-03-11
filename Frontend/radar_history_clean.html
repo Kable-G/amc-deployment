@@ -51,12 +51,12 @@ body.dark-mode .amc-page-title { color: #f8fafc !important; }
 
 .amc-page-subtitle {
   font-size: 16px !important;
-  font-weight: 300 !important;
+  font-weight: 400 !important;
   line-height: 1.55 !important;
   margin: 0 0 20px 0 !important;
-  color: #6b7280;
+  color: #4b5563;
 }
-body.dark-mode .amc-page-subtitle { color: #64748b !important; }
+body.dark-mode .amc-page-subtitle { color: #94a3b8 !important; }
 
 /* ── Teaser thumbnail sizing ── */
 .releases-table td.cell--teaser { width: 80px; padding: 6px 8px; }
@@ -208,18 +208,21 @@ body.dark-mode .amc-page-subtitle { color: #64748b !important; }
       border-radius: 6px;
       border: none;
       background: transparent;
-      color: #6b7280;
+      color: #2563eb;
       cursor: pointer;
       font-size: 16px;
       transition: background 0.15s, color 0.15s;
     }
     .kebab-btn:hover {
-      background: #f3f4f6;
-      color: #111827;
+      background: rgba(37,99,235,0.08);
+      color: #1d4ed8;
+    }
+    body.dark-mode .kebab-btn {
+      color: #60a5fa;
     }
     body.dark-mode .kebab-btn:hover {
-      background: rgba(255,255,255,0.08);
-      color: #f9fafb;
+      background: rgba(96,165,250,0.12);
+      color: #93c5fd;
     }
 
     .kebab-float {
@@ -528,15 +531,98 @@ body.dark-mode .amc-page-subtitle { color: #64748b !important; }
     }
     body.dark-mode .detail-item strong,
     body.dark-mode .detail-label { color: #f1f5f9; }
+
+    /* Modal detail rows — label above value */
+    .modal-detail-row {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 0;
+        border-bottom: 1px solid #f1f5f9;
+        gap: 3px;
+    }
+    body.dark-mode .modal-detail-row { border-bottom-color: #2d3748; }
+    .modal-detail-row:last-child { border-bottom: none; }
+    .modal-detail-label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6b7280;
+    }
+    body.dark-mode .modal-detail-label { color: #94a3b8; }
+    .modal-detail-value {
+        font-size: 13.5px;
+        font-weight: 500;
+        color: #111827;
+        line-height: 1.5;
+    }
+    body.dark-mode .modal-detail-value { color: #e2e8f0; }
+
+    /* ── Mobile modal: single column ── */
+    @media (max-width: 640px) {
+        .detail-modal {
+            width: 96vw !important;
+            max-width: 96vw !important;
+            max-height: 90vh !important;
+            min-height: unset !important;
+            border-radius: 10px !important;
+        }
+        .detail-modal-header {
+            padding: 14px 16px 12px !important;
+        }
+        #assetDetailModalTitle {
+            font-size: 15px !important;
+            -webkit-line-clamp: 3 !important;
+        }
+        .amc-quick-view-body {
+            flex-direction: column !important;
+            gap: 14px !important;
+            padding: 14px 16px !important;
+        }
+        .amc-quick-view-col-media {
+            flex: none !important;
+            width: 100% !important;
+        }
+        #assetDetailModalMediaPreview {
+            aspect-ratio: 16 / 8 !important;
+            width: 100% !important;
+        }
+        .amc-quick-view-col-details {
+            width: 100% !important;
+        }
+        .amc-quick-view-col-media h4,
+        .amc-quick-view-col-details h4 {
+            font-size: 9px !important;
+            margin-bottom: 10px !important;
+        }
+        .modal-detail-row {
+            padding: 7px 0 !important;
+        }
+        .modal-detail-label {
+            font-size: 9px !important;
+        }
+        .modal-detail-value {
+            font-size: 12.5px !important;
+        }
+    }
     
     .amc-quick-view-body {
         display: flex;
-        gap: 30px;
+        flex-direction: row;
+        gap: 28px;
+        padding: 20px 24px;
+        overflow-y: auto;
+        flex: 1;
     }
     
-    .amc-quick-view-col-media,
+    .amc-quick-view-col-media {
+        flex: 0 0 240px;
+        width: 240px;
+    }
+    
     .amc-quick-view-col-details {
         flex: 1;
+        min-width: 0;
     }
     
     .amc-quick-view-col-media h4,
@@ -592,16 +678,30 @@ body.dark-mode .amc-page-subtitle { color: #64748b !important; }
     /* Search */
     .search-container{ position:relative; display:flex; align-items:center; }
     .search-input{
-      padding:10px 16px 10px 40px;
+      padding:0 16px 0 40px;
       border:1px solid var(--border-primary);
       border-radius:8px; font-size:.95rem;
       background:var(--bg-primary); color:var(--text-primary);
       width:300px; transition:border-color .2s ease, box-shadow .2s ease;
-      height:38px; box-sizing:border-box; line-height:1.5;
+      height:40px; box-sizing:border-box; line-height:40px;
     }
     .search-input:focus{
       outline:none; border-color:var(--accent-primary);
       box-shadow:0 0 0 3px rgba(13,110,253,.1);
+    }
+    .search-input.has-value {
+      border-color: #16a34a;
+    }
+    .search-input.has-value:focus {
+      border-color: #16a34a;
+      box-shadow: 0 0 0 3px rgba(22,163,74,.1);
+    }
+    body.dark-mode .search-input.has-value {
+      border-color: #22c55e;
+    }
+    body.dark-mode .search-input.has-value:focus {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34,197,94,.12);
     }
     .search-input::placeholder{
       color:var(--text-secondary);
@@ -1078,6 +1178,7 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
     transition: background 0.12s;
     position: relative;
     background: transparent;
+    min-height: 90px;
   }
   .mobile-alert-card:nth-child(even) {
     background: rgba(0,0,0,0.045);
@@ -1121,7 +1222,14 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
   }
 
   /* Text area */
-  .mobile-alert-body { flex: 1; min-width: 0; padding-right: 28px; }
+  .mobile-alert-body {
+    flex: 1;
+    min-width: 0;
+    padding-right: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
   .mobile-alert-title {
     font-size: 13.5px;
     font-weight: 600;
@@ -1132,7 +1240,9 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    height: calc(13.5px * 1.4 * 2);
     margin-bottom: 5px;
+    flex-shrink: 0;
   }
   body.dark-mode .mobile-alert-title { color: #f1f5f9; }
 
@@ -1157,11 +1267,14 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
   }
   body.dark-mode .mobile-alert-date { color: #64748b; }
 
-  /* Status pill — reuse existing styles */
-  .mobile-alert-meta .status-pill {
+  /* Status pill — absolute bottom-right, clear of kebab */
+  .mobile-alert-card .status-pill[style*="position:absolute"] {
+    position: absolute !important;
+    bottom: 8px !important;
+    right: 6px !important;
+    top: auto !important;
     font-size: 10px !important;
-    height: 18px !important;
-    padding: 0 7px !important;
+    padding: 2px 8px !important;
   }
 
   /* Kebab — absolute positioned top-right of card */
@@ -1176,7 +1289,7 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
     justify-content: center;
     border: none;
     background: transparent;
-    color: #9ca3af;
+    color: #2563eb;
     font-size: 15px;
     cursor: pointer;
     border-radius: 6px;
@@ -1184,9 +1297,10 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
     -webkit-tap-highlight-color: transparent;
   }
   .mobile-alert-kebab:hover,
-  .mobile-alert-kebab:active { background: #f3f4f6; color: #374151; }
+  .mobile-alert-kebab:active { background: rgba(37,99,235,0.08); color: #1d4ed8; }
+  body.dark-mode .mobile-alert-kebab { color: #60a5fa; }
   body.dark-mode .mobile-alert-kebab:hover,
-  body.dark-mode .mobile-alert-kebab:active { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+  body.dark-mode .mobile-alert-kebab:active { background: rgba(96,165,250,0.12); color: #93c5fd; }
 
   /* Section header on mobile */
   .manage-radar-alerts .card-header {
@@ -1212,6 +1326,183 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
   }
 }
 
+/* ── Landscape mobile: single-column wide cards ── */
+  @media (max-width: 900px) and (orientation: landscape) {
+    /* Hide table, show card list */
+    .manage-radar-alerts .amc-table,
+    .manage-radar-alerts .amc-table-wrap { display: none !important; }
+
+    /* Single column list */
+    .mobile-alert-list {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* Zebra stripes */
+    .mobile-alert-card:nth-child(even) {
+      background: rgba(0,0,0,0.025) !important;
+    }
+    body.dark-mode .mobile-alert-card:nth-child(even) {
+      background: rgba(255,255,255,0.04) !important;
+    }
+
+    /* Wide horizontal card — image left, content right */
+    .mobile-alert-card {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: stretch !important;
+      gap: 0 !important;
+      padding: 0 !important;
+      border-bottom: 1px solid #e5e7eb !important;
+      border-radius: 0 !important;
+      min-height: 100px !important;
+      position: relative;
+    }
+    body.dark-mode .mobile-alert-card {
+      border-bottom-color: var(--border-primary) !important;
+    }
+
+    /* Thumb */
+    .mobile-alert-thumb {
+      width: 90px !important;
+      height: 66px !important;
+      flex-shrink: 0 !important;
+      align-self: center !important;
+      margin: 10px 0 10px 10px !important;
+      border-radius: 6px !important;
+      overflow: hidden !important;
+    }
+    .mobile-alert-thumb img {
+      width: 90px !important;
+      height: 66px !important;
+      object-fit: cover !important;
+      display: block !important;
+      border-radius: 6px !important;
+    }
+    .mobile-alert-thumb > div {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 6px !important;
+    }
+    .mobile-alert-thumb-placeholder {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 6px !important;
+    }
+
+    /* Body */
+    .mobile-alert-body {
+      flex: 1 !important;
+      min-width: 0 !important;
+      padding: 10px 90px 10px 14px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      gap: 3px !important;
+    }
+
+    /* Title — max 2 lines */
+    .mobile-alert-title {
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      line-height: 1.35 !important;
+      display: -webkit-box !important;
+      -webkit-line-clamp: 2 !important;
+      -webkit-box-orient: vertical !important;
+      overflow: hidden !important;
+      height: calc(13px * 1.35 * 2) !important;
+      margin-bottom: 3px !important;
+      flex-shrink: 0 !important;
+    }
+
+    /* Brand */
+    .mobile-alert-meta { display: block !important; }
+    .mobile-alert-company {
+      font-size: 11.5px !important;
+      font-weight: 500 !important;
+      color: #6b7280 !important;
+      display: block !important;
+      line-height: 1.4 !important;
+    }
+    body.dark-mode .mobile-alert-company { color: #94a3b8 !important; }
+
+    /* Date */
+    .mobile-alert-date {
+      font-size: 11px !important;
+      color: #9ca3af !important;
+      line-height: 1.4 !important;
+    }
+    body.dark-mode .mobile-alert-date { color: #64748b !important; }
+
+    /* Pill — absolute bottom-right */
+    .status-pill[style*="position:absolute"] {
+      position: absolute !important;
+      bottom: 8px !important;
+      right: 6px !important;
+      top: auto !important;
+      font-size: 10px !important;
+      padding: 2px 8px !important;
+    }
+
+    /* Kebab — top right */
+    .mobile-alert-kebab {
+      position: absolute !important;
+      top: 8px !important;
+      right: 4px !important;
+      width: 28px !important;
+      height: 28px !important;
+    }
+
+    /* Page chrome */
+    .vmain { padding: 0 0 60px !important; }
+    .amc-page-header { padding: 6px 14px 4px !important; }
+    .amc-page-title { font-size: 26px !important; font-weight: 800 !important; letter-spacing: -0.03em !important; line-height: 1.1 !important; font-variation-settings: 'opsz' 28 !important; }
+    .amc-page-subtitle { font-size: 13px !important; display: block !important; margin-top: 2px !important; margin-bottom: 4px !important; }
+    .amc-page__tools { padding: 0 14px 6px !important; }
+    #searchResultsRow { padding-left: 14px !important; padding-right: 14px !important; }
+    .manage-radar-alerts .amc-card { border-radius: 0 !important; box-shadow: none !important; }
+
+    /* Pagination bar */
+    .pagination-bar, .pagination-wrap, .card-footer {
+      font-size: 12px !important;
+      padding: 10px 14px !important;
+    }
+    .pagination-summary { font-size: 12px !important; }
+  }
+
+  /* meta-company-inline — hidden in portrait, shown in landscape */
+  .meta-company-inline, .meta-sep { display: none; }
+  @media (max-width: 900px) and (orientation: landscape) {
+    .meta-company-inline, .meta-sep { display: inline; }
+    .meta-company-inline { font-weight: 500; color: #6b7280; }
+    body.dark-mode .meta-company-inline { color: #94a3b8; }
+    .meta-sep { color: #d1d5db; }
+  }
+
+  /* ── Landscape mobile: modal scrollability ── */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .detail-modal-backdrop,
+    .confirm-modal-backdrop {
+      align-items: flex-start;
+      overflow-y: auto;
+      padding: 12px 16px 24px;
+    }
+    .detail-modal,
+    .confirm-modal {
+      max-height: none;
+      width: 100%;
+      max-width: 680px;
+      margin: auto;
+    }
+    .detail-modal-body {
+      overflow-y: visible;
+    }
+  }
+
+</style>
+<style>
 /* ── Back to top button ── */
 #backToTop {
   position: fixed;
@@ -1255,7 +1546,7 @@ body.dark-mode #backToTop {
 }
 @media (max-width: 767px) {
   #backToTop {
-    bottom: 20px;
+    bottom: 72px;
     right: 16px;
     width: 36px;
     height: 36px;
@@ -1292,7 +1583,6 @@ body.dark-mode #backToTop {
             </a>
           </div>
         </div>
-        <div class="section-divider"></div>
         <div style="display:none;">
           <input type="text" id="filterBrand" value="">
           <select id="filterStatus"><option value="" selected></option></select>
@@ -1313,7 +1603,7 @@ body.dark-mode #backToTop {
         <div class="amc-card" style="margin-top:12px;">
           <div class="radar-table-title-bar">
             <span class="radar-table-title">Your Media Alerts</span>
-            <span class="radar-table-count">Total Alerts: <span id="totalAlerts">0</span></span>
+            <span class="radar-table-count">Total: <span id="totalAlerts">0</span></span>
           </div>
           <table class="amc-table table-lined releases-table">
             <colgroup>
@@ -1368,7 +1658,7 @@ body.dark-mode #backToTop {
                 </div>
                 <h3 id="assetDetailModalTitle"></h3>
             </div>
-            <div class="detail-modal-body amc-quick-view-body" style="display: flex; gap: 30px; padding: 20px;">
+            <div class="detail-modal-body amc-quick-view-body">
                 <div class="amc-quick-view-col-media">
                     <h4>Media Alert Image</h4>
                     <div id="assetDetailModalMediaPreview" style="width: 100%; aspect-ratio: 16 / 9; background-color: var(--bg-tertiary); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 1em; overflow: hidden; border: 1px solid var(--border-secondary);">
@@ -1557,6 +1847,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (totalAlerts) {
                 totalAlerts.textContent = totalItems;
             }
+            // Switch label: "Search Total:" when filtering, "Total:" at rest
+            const totalLabel = document.querySelector('.radar-table-count');
+            if (totalLabel) {
+                const labelPrefix = searchVal ? 'Search Total:' : 'Total:';
+                totalLabel.childNodes[0].textContent = labelPrefix + ' ';
+            }
             updatePaginationControls();
         } catch (error) {
             console.error('🚨 FETCH ERROR:', error);
@@ -1614,7 +1910,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
                         <div id="menu-${alert.uuid}" class="kebab-menu" role="menu" hidden>
-                            <button type="button" class="kebab-item" data-action="view" data-uuid="${alert.uuid}" data-title="${sanitizedTitle}">View</button>
+                            <button type="button" class="kebab-item" data-action="view" data-uuid="${alert.uuid}" data-title="${sanitizedTitle}" data-status="${displayStatus}">View</button>
                             <button type="button" class="kebab-item" data-action="edit" data-uuid="${alert.uuid}" data-title="${sanitizedTitle}">Edit</button>
                             <button type="button" class="kebab-item" data-action="delete" data-uuid="${alert.uuid}" data-title="${sanitizedTitle}">Delete</button>
                         </div>
@@ -1663,26 +1959,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const item = document.createElement('div');
             item.className = 'mobile-alert-card';
             item.dataset.uuid = uuid;
+            item.dataset.status = mobileDisplayStatus;
             item.innerHTML = `
                 <div class="mobile-alert-thumb">${thumbHtml}</div>
                 <div class="mobile-alert-body">
                     <div class="mobile-alert-title">${title}</div>
                     <div class="mobile-alert-meta">
                         ${company && company !== '—' ? `<span class="mobile-alert-company">${company}</span>` : ''}
-                        ${normStatus ? `<span class="status-pill ${statusClass}">${mobileDisplayStatus}</span>` : ''}
                     </div>
                     ${dateFmt ? `<div class="mobile-alert-date">${dateFmt}</div>` : ''}
                 </div>
-                <button class="mobile-alert-kebab kebab-btn" aria-label="Actions" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}">
+                ${normStatus ? `<span class="status-pill ${statusClass}" style="position:absolute;bottom:8px;right:6px;font-size:10px;padding:2px 8px;">${mobileDisplayStatus}</span>` : ''}
+                <button class="mobile-alert-kebab kebab-btn" aria-label="Actions" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}" data-status="${mobileDisplayStatus}">
                     <i class="fas fa-ellipsis-v"></i>
                 </button>`;
 
             // Tap card body → open view modal
             item.querySelector('.mobile-alert-body').addEventListener('click', () => {
-                openAlertDetailModal(uuid, title);
+                openAlertDetailModal(uuid, title, mobileDisplayStatus);
             });
             item.querySelector('.mobile-alert-thumb').addEventListener('click', () => {
-                openAlertDetailModal(uuid, title);
+                openAlertDetailModal(uuid, title, mobileDisplayStatus);
             });
 
             // Kebab → single instance, always close existing before opening
@@ -1702,8 +1999,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 float.id = 'mobile-kebab-float';
                 float.className = 'kebab-float';
                 float.style.cssText = 'position:fixed;z-index:99999;pointer-events:auto;';
+                const cardStatus = e.currentTarget.dataset.status || '';
                 float.innerHTML = `
-                    <button type="button" class="kebab-item" data-action="view" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}"><span class="kebab-dot kebab-dot--view"></span>View</button>
+                    <button type="button" class="kebab-item" data-action="view" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}" data-status="${cardStatus}"><span class="kebab-dot kebab-dot--view"></span>View</button>
                     <button type="button" class="kebab-item" data-action="edit" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}"><span class="kebab-dot kebab-dot--edit"></span>Edit</button>
                     <button type="button" class="kebab-item kebab-item--delete" data-action="delete" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}"><span class="kebab-dot kebab-dot--delete"></span>Delete</button>`;
                 document.body.appendChild(float);
@@ -1719,7 +2017,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 portal.querySelectorAll('.kebab-item').forEach(btn => {
                     btn.addEventListener('click', ev => {
                         ev.stopPropagation();
-                        handleKebabAction(btn.dataset.action, btn.dataset.uuid, btn.dataset.title);
+                        handleKebabAction(btn.dataset.action, btn.dataset.uuid, btn.dataset.title, btn.dataset.status);
                         closeMobileKebab();
                     });
                 });
@@ -1768,7 +2066,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function openAssetDetailModal(uuid) {
+    async function openAssetDetailModal(uuid, cardStatus) {
         // Update loading states for new structure
         assetDetailModalMediaPreview.innerHTML = '<span><i class="fas fa-spinner fa-spin"></i> Loading Preview...</span>';
         amcQuickViewAssetListArea.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading details...</p>';
@@ -1777,9 +2075,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let res = await fetch(`/api/v1/radar/alerts/foredit/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
             
             let alertData;
+            let isArchived = false;
             if (res.status === 404) {
                 res = await fetch(`/api/v1/radar/history/by-uuid/${uuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
                 if (!res.ok) throw new Error('Alert not found in active or archived records.');
+                isArchived = true;
             }
             
             if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
@@ -1798,8 +2098,8 @@ document.addEventListener('DOMContentLoaded', () => {
             assetDetailModalDateTime.textContent = alertDate ? formatAlertDate(alertDate) : 'Unknown Date';
             
             // Set media preview
-            if (alertData.teaserImagePath) {
-                assetDetailModalMediaPreview.innerHTML = `<img src="${alertData.teaserImagePath}" alt="Alert Preview" style="width: 100%; height: 100%; object-fit: cover;">`;
+            if (alertData.cardTeaserImagePath || alertData.teaserImagePath) {
+                assetDetailModalMediaPreview.innerHTML = `<img src="${alertData.cardTeaserImagePath || alertData.teaserImagePath}" alt="Alert Preview" style="width: 100%; height: 100%; object-fit: cover;">`;
             } else {
                 assetDetailModalMediaPreview.innerHTML = '<i class="far fa-image" style="font-size: 3em; color: var(--text-secondary);"></i>';
             }
@@ -1811,16 +2111,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const alertDateFmt = formatAlertDate(alertDate);
             const createdFmt  = alertData.createdAt ? formatAlertDate(alertData.createdAt) : 'N/A';
-            // Normalize status
-            let modalStatus = alertData.computedStatus || alertData.status || '—';
-            if (modalStatus.toLowerCase() === 'published') modalStatus = 'Active';
-            const modalStatusClass = modalStatus.toLowerCase() === 'active' ? 'status--active' : modalStatus.toLowerCase() === 'archived' ? 'status--archived' : 'status--unknown';
+            // Status: trust what the card showed — it read computedStatus correctly at render time
+            // Only fall back to API field if cardStatus wasn't passed (e.g. direct call)
+            let modalStatus;
+            if (cardStatus) {
+                modalStatus = cardStatus;
+            } else {
+                modalStatus = alertData.computedStatus || alertData.status || '—';
+                if (modalStatus.toLowerCase() === 'published') modalStatus = 'Active';
+                else if (modalStatus.toLowerCase() === 'archived') modalStatus = 'Archived';
+                else modalStatus = modalStatus.charAt(0).toUpperCase() + modalStatus.slice(1).toLowerCase();
+            }
+            const modalStatusClass = modalStatus === 'Active' ? 'status--active' : modalStatus === 'Archived' ? 'status--archived' : 'status--unknown';
+            // Single date: show updatedAt if it exists, else createdAt
+            const uploadedUpdatedFmt = alertData.updatedAt ? formatAlertDate(alertData.updatedAt) : createdFmt;
             amcQuickViewAssetListArea.innerHTML = `
-                <div class="detail-item"><strong>Created on:</strong> ${createdFmt}</div>
-                <div class="detail-item"><strong>Alert date/time:</strong> ${alertDateFmt}</div>
-                <div class="detail-item"><strong>Brand:</strong> ${alertData.brand || '—'}</div>
-                <div class="detail-item"><strong>Status:</strong> <span class="status-pill ${modalStatusClass}">${modalStatus}</span></div>
-                <div class="detail-item"><strong>Tags:</strong> ${tagsHtml}</div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Uploaded / Updated on:</span>
+                    <span class="modal-detail-value">${uploadedUpdatedFmt}</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Alert date / time:</span>
+                    <span class="modal-detail-value">${alertDateFmt !== 'N/A' ? alertDateFmt : '—'}</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Brand:</span>
+                    <span class="modal-detail-value">${alertData.brand || '—'}</span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Status:</span>
+                    <span class="modal-detail-value"><span class="status-pill ${modalStatusClass}">${modalStatus}</span></span>
+                </div>
+                <div class="modal-detail-row">
+                    <span class="modal-detail-label">Tags:</span>
+                    <span class="modal-detail-value">${tagsHtml}</span>
+                </div>
             `;
         } catch (error) {
             assetDetailModalTitle.textContent = 'Error';
@@ -1910,9 +2235,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const uuid  = item.dataset.uuid;
         const title = item.dataset.title || 'this alert';
         const act   = item.dataset.action;
+        const status = item.dataset.status || '';
 
         if (act === 'view') {
-            if (typeof openAssetDetailModal === 'function') openAssetDetailModal(uuid);
+            if (typeof openAssetDetailModal === 'function') openAssetDetailModal(uuid, status);
         } else if (act === 'edit') {
             location.href = `AssetDBmenu1.6.html?formType=radar&editAlertUUID=${uuid}`;
         } else if (act === 'delete') {
@@ -1956,13 +2282,13 @@ document.addEventListener('DOMContentLoaded', () => {
     nextPageButton.addEventListener('click', () => { if (currentPage < totalPages) fetchRadarAlerts(++currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value); });
     
     // ── Named helpers used by mobile card JS ──
-    function openAlertDetailModal(uuid, title) {
-        if (typeof openAssetDetailModal === 'function') openAssetDetailModal(uuid);
+    function openAlertDetailModal(uuid, title, status) {
+        if (typeof openAssetDetailModal === 'function') openAssetDetailModal(uuid, status);
     }
 
-    function handleKebabAction(act, uuid, title) {
+    function handleKebabAction(act, uuid, title, status) {
         if (act === 'view') {
-            openAlertDetailModal(uuid, title);
+            openAlertDetailModal(uuid, title, status);
         } else if (act === 'edit') {
             location.href = `AssetDBmenu1.6.html?formType=radar&editAlertUUID=${uuid}`;
         } else if (act === 'delete') {
@@ -2010,10 +2336,18 @@ loadV65Shell({ basePath: './components/shell' });
     if (clearPillBtn) {
       clearPillBtn.addEventListener('click', () => {
         input.value = '';
+        input.classList.remove('has-value');
         if (applyBtn) applyBtn.click();
         input.focus();
       });
     }
+
+    // Green border when input has a value
+    const updateSearchBorder = () => {
+      input.classList.toggle('has-value', input.value.trim().length > 0);
+    };
+    input.addEventListener('input', updateSearchBorder);
+    input.addEventListener('change', updateSearchBorder);
 
 
     // Debounced search — waits 400ms after user stops typing before firing
