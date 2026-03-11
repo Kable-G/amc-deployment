@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>AutoMediaCenter — Manage Radar Alert Uploads</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1854,6 +1854,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalLabel.childNodes[0].textContent = labelPrefix + ' ';
             }
             updatePaginationControls();
+            // Dismiss mobile keyboard once results are rendered
+            if (document.activeElement && document.activeElement.blur) {
+                document.activeElement.blur();
+            }
         } catch (error) {
             console.error('🚨 FETCH ERROR:', error);
             alertsTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--color-danger); padding:20px;">Error: ${error.message}<br><small>Check browser console for details</small></td></tr>`;
@@ -2310,6 +2314,26 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+<script>
+/* ── Mobile browser chrome collapse ──────────────────────────────────────
+   Nudges the browser to collapse the URL bar / navigation chrome on mobile.
+   Works on Safari iOS and Chrome Android by scrolling 1px after load,
+   which signals "the page has content" and lets the browser retract its UI.
+   The focusout listener re-nudges after keyboard dismissal.
+─────────────────────────────────────────────────────────────────────────── */
+(function() {
+    function nudgeChrome() {
+        if (!('ontouchstart' in window)) return;
+        if (document.documentElement.scrollTop === 0) {
+            window.scrollTo(0, 1);
+            setTimeout(() => window.scrollTo(0, 0), 50);
+        }
+    }
+    window.addEventListener('load', () => setTimeout(nudgeChrome, 300));
+    document.addEventListener('focusout', () => setTimeout(nudgeChrome, 400), { passive: true });
+})();
+</script>
+
 <script src="./components/shell/v6_5-shell.js"></script>
 <script src="./components/shell/v6_5-shell-loader.js"></script>
 <script>
@@ -2397,15 +2421,21 @@ loadV65Shell({ basePath: './components/shell' });
     btn.innerHTML = '<i class="fas fa-arrow-up"></i>';
     document.body.appendChild(btn);
 
-    function doScrollAndReset() {
+    // FAB: scroll to top of current page only — do NOT reset to page 1
+    function doScrollTop() {
       if (vmain) vmain.scrollTo({ top: 0, behavior: 'smooth' });
       document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
-      const page = typeof window._amcCurrentPage === 'function' ? window._amcCurrentPage() : 1;
-      if (page !== 1 && typeof window._amcGoToPage1 === 'function') window._amcGoToPage1();
+    }
+
+    // Logo: go back to page 1 (and scroll to top)
+    function doGoToPage1() {
+      if (vmain) vmain.scrollTo({ top: 0, behavior: 'smooth' });
+      document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+      if (typeof window._amcGoToPage1 === 'function') window._amcGoToPage1();
     }
 
     // Attach click handler immediately after creating button
-    btn.onclick = doScrollAndReset;
+    btn.onclick = doScrollTop;
 
     // Wire header logo — shell injects it async so poll for it
     function wireLogoBtn() {
@@ -2415,7 +2445,7 @@ loadV65Shell({ basePath: './components/shell' });
         logo.style.cursor = 'pointer';
         logo.onclick = function(e) {
           e.stopPropagation();
-          doScrollAndReset();
+          doGoToPage1();
         };
       } else if (!logo) {
         setTimeout(wireLogoBtn, 300);

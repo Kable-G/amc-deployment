@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>AutoMediaCenter — Manage Radar Alert Uploads</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -209,18 +209,21 @@ body.dark-mode .amc-page-subtitle { color: #94a3b8 !important; }
       border-radius: 6px;
       border: none;
       background: transparent;
-      color: #3b82f6;
+      color: #2563eb;
       cursor: pointer;
       font-size: 16px;
       transition: background 0.15s, color 0.15s;
     }
     .kebab-btn:hover {
-      background: #f3f4f6;
-      color: #111827;
+      background: rgba(37,99,235,0.08);
+      color: #1d4ed8;
+    }
+    body.dark-mode .kebab-btn {
+      color: #60a5fa;
     }
     body.dark-mode .kebab-btn:hover {
-      background: rgba(255,255,255,0.08);
-      color: #f9fafb;
+      background: rgba(96,165,250,0.12);
+      color: #93c5fd;
     }
 
     .kebab-float {
@@ -1186,7 +1189,7 @@ body.dark-mode .manage-releases .amc-table tbody tr:hover td {
   }
   .mobile-alert-card {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
     padding: 12px 12px;
     border-bottom: 1px solid #e5e7eb;
@@ -1194,6 +1197,7 @@ body.dark-mode .manage-releases .amc-table tbody tr:hover td {
     transition: background 0.12s;
     position: relative;
     background: transparent;
+    min-height: 90px;
   }
   .mobile-alert-card:nth-child(even) {
     background: rgba(0,0,0,0.045);
@@ -1237,7 +1241,14 @@ body.dark-mode .manage-releases .amc-table tbody tr:hover td {
   }
 
   /* Text area */
-  .mobile-alert-body { flex: 1; min-width: 0; padding-right: 28px; }
+  .mobile-alert-body {
+    flex: 1;
+    min-width: 0;
+    padding-right: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
   .mobile-alert-title {
     font-size: 13.5px;
     font-weight: 600;
@@ -1248,7 +1259,9 @@ body.dark-mode .manage-releases .amc-table tbody tr:hover td {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    height: calc(13.5px * 1.4 * 2);
     margin-bottom: 5px;
+    flex-shrink: 0;
   }
   body.dark-mode .mobile-alert-title { color: #f1f5f9; }
 
@@ -1292,7 +1305,7 @@ body.dark-mode .manage-releases .amc-table tbody tr:hover td {
     justify-content: center;
     border: none;
     background: transparent;
-    color: #3b82f6;
+    color: #2563eb;
     font-size: 15px;
     cursor: pointer;
     border-radius: 6px;
@@ -1300,9 +1313,10 @@ body.dark-mode .manage-releases .amc-table tbody tr:hover td {
     -webkit-tap-highlight-color: transparent;
   }
   .mobile-alert-kebab:hover,
-  .mobile-alert-kebab:active { background: #f3f4f6; color: #374151; }
+  .mobile-alert-kebab:active { background: rgba(37,99,235,0.08); color: #1d4ed8; }
+  body.dark-mode .mobile-alert-kebab { color: #60a5fa; }
   body.dark-mode .mobile-alert-kebab:hover,
-  body.dark-mode .mobile-alert-kebab:active { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+  body.dark-mode .mobile-alert-kebab:active { background: rgba(96,165,250,0.12); color: #93c5fd; }
 
   /* Section header on mobile */
   .manage-releases .card-header {
@@ -1427,6 +1441,13 @@ body.dark-mode #backToTop {
       border-radius: 6px !important;
       overflow: hidden !important;
     }
+    .mobile-alert-thumb img {
+      width: 90px !important;
+      height: 66px !important;
+      object-fit: cover !important;
+      display: block !important;
+      border-radius: 6px !important;
+    }
     .mobile-alert-thumb > div {
       width: 100% !important;
       height: 100% !important;
@@ -1458,7 +1479,9 @@ body.dark-mode #backToTop {
       -webkit-line-clamp: 2 !important;
       -webkit-box-orient: vertical !important;
       overflow: hidden !important;
+      height: calc(13px * 1.35 * 2) !important;
       margin-bottom: 3px !important;
+      flex-shrink: 0 !important;
     }
 
     /* Brand */
@@ -2331,6 +2354,30 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+<script>
+/* ── Mobile browser chrome collapse ──────────────────────────────────────
+   Nudges the browser to collapse the URL bar / navigation chrome on mobile.
+   Works on Safari iOS and Chrome Android by scrolling 1px after load,
+   which signals "the page has content" and lets the browser retract its UI.
+   The visualViewport listener keeps the layout correct when chrome reappears.
+─────────────────────────────────────────────────────────────────────────── */
+(function() {
+    function nudgeChrome() {
+        // Only on touch/mobile
+        if (!('ontouchstart' in window)) return;
+        // Scroll 1px down then immediately back — enough to trigger chrome collapse
+        if (document.documentElement.scrollTop === 0) {
+            window.scrollTo(0, 1);
+            setTimeout(() => window.scrollTo(0, 0), 50);
+        }
+    }
+    // On load
+    window.addEventListener('load', () => setTimeout(nudgeChrome, 300));
+    // After any fetch/render completes (keyboard blur triggers chrome to re-evaluate)
+    document.addEventListener('focusout', () => setTimeout(nudgeChrome, 400), { passive: true });
+})();
+</script>
+
 <script src="./components/shell/v6_5-shell.js"></script>
 <script src="./components/shell/v6_5-shell-loader.js"></script>
 <script>
@@ -2418,14 +2465,21 @@ loadV65Shell({ basePath: './components/shell' });
     btn.innerHTML = '<i class="fas fa-arrow-up"></i>';
     document.body.appendChild(btn);
 
-    function doScrollAndReset() {
-      // Scroll to top of current page only — do NOT reset to page 1
+    // FAB: scroll to top of current page only — do NOT reset to page 1
+    function doScrollTop() {
       if (vmain) vmain.scrollTo({ top: 0, behavior: 'smooth' });
       document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // Logo: go back to page 1 (and scroll to top)
+    function doGoToPage1() {
+      if (vmain) vmain.scrollTo({ top: 0, behavior: 'smooth' });
+      document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+      if (typeof window._amcGoToPage1 === 'function') window._amcGoToPage1();
+    }
+
     // Attach click handler immediately after creating button
-    btn.onclick = doScrollAndReset;
+    btn.onclick = doScrollTop;
 
     // Wire header logo — shell injects it async so poll for it
     function wireLogoBtn() {
@@ -2435,7 +2489,7 @@ loadV65Shell({ basePath: './components/shell' });
         logo.style.cursor = 'pointer';
         logo.onclick = function(e) {
           e.stopPropagation();
-          doScrollAndReset();
+          doGoToPage1();
         };
       } else if (!logo) {
         setTimeout(wireLogoBtn, 300);
