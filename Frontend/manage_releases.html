@@ -1155,13 +1155,12 @@ body.dark-mode .manage-releases .amc-table tbody tr:hover td {
   }
   .mobile-alert-card {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
     padding: 12px 12px;
     border-bottom: 1px solid #e5e7eb;
     cursor: pointer;
     transition: background 0.12s;
-    position: relative;
     position: relative;
     background: transparent;
   }
@@ -1341,13 +1340,161 @@ body.dark-mode #backToTop {
 }
 @media (max-width: 767px) {
   #backToTop {
-    bottom: 20px;
+    bottom: 72px;
     right: 16px;
     width: 36px;
     height: 36px;
     font-size: 14px;
   }
 }
+
+  /* ── Landscape mobile: single-column wide cards ── */
+  @media (max-width: 900px) and (orientation: landscape) {
+    /* Hide table, show card list */
+    .manage-releases .amc-table,
+    .manage-releases .amc-table-wrap { display: none !important; }
+
+    /* Single column list */
+    .mobile-alert-list {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* Zebra stripes — every other card */
+    .mobile-alert-card:nth-child(even) {
+      background: rgba(0,0,0,0.025) !important;
+    }
+    body.dark-mode .mobile-alert-card:nth-child(even) {
+      background: rgba(255,255,255,0.04) !important;
+    }
+
+    /* Wide horizontal card — image left, content right */
+    .mobile-alert-card {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: stretch !important;
+      gap: 0 !important;
+      padding: 0 !important;
+      border-bottom: 1px solid #e5e7eb !important;
+      border-radius: 0 !important;
+      min-height: 100px !important;
+      position: relative;
+    }
+    body.dark-mode .mobile-alert-card {
+      border-bottom-color: var(--border-primary) !important;
+    }
+
+    /* Thumb — contained thumbnail */
+    .mobile-alert-thumb {
+      width: 90px !important;
+      height: 66px !important;
+      flex-shrink: 0 !important;
+      align-self: center !important;
+      margin: 10px 0 10px 10px !important;
+      border-radius: 6px !important;
+      overflow: hidden !important;
+    }
+    .mobile-alert-thumb > div {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 6px !important;
+    }
+    .mobile-alert-thumb-placeholder {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 6px !important;
+    }
+
+    /* Body — title / brand / date, pill absolute bottom-right */
+    .mobile-alert-body {
+      flex: 1 !important;
+      min-width: 0 !important;
+      padding: 10px 90px 10px 14px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      gap: 3px !important;
+    }
+
+    /* Title — max 2 lines, truncated */
+    .mobile-alert-title {
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      line-height: 1.35 !important;
+      display: -webkit-box !important;
+      -webkit-line-clamp: 2 !important;
+      -webkit-box-orient: vertical !important;
+      overflow: hidden !important;
+      margin-bottom: 3px !important;
+    }
+
+    /* Brand */
+    .mobile-alert-meta { display: block !important; }
+    .mobile-alert-company {
+      font-size: 11.5px !important;
+      font-weight: 500 !important;
+      color: #6b7280 !important;
+      display: block !important;
+      line-height: 1.4 !important;
+    }
+    body.dark-mode .mobile-alert-company { color: #94a3b8 !important; }
+
+    /* Date */
+    .mobile-alert-date {
+      font-size: 11px !important;
+      color: #9ca3af !important;
+      line-height: 1.4 !important;
+    }
+    body.dark-mode .mobile-alert-date { color: #64748b !important; }
+
+    /* Pill — absolute bottom-right, clear of kebab */
+    .status-pill[style*="position:absolute"] {
+      position: absolute !important;
+      bottom: 8px !important;
+      right: 6px !important;
+      top: auto !important;
+      font-size: 10px !important;
+      padding: 2px 8px !important;
+    }
+
+    /* Kebab — top right */
+    .mobile-alert-kebab {
+      position: absolute !important;
+      top: 8px !important;
+      right: 4px !important;
+      width: 28px !important;
+      height: 28px !important;
+    }
+
+    /* Page chrome */
+    .vmain { padding: 0 0 60px !important; }
+    .amc-page-header { padding: 10px 14px 8px !important; }
+    .amc-page-title { font-size: 20px !important; letter-spacing: -0.02em !important; }
+    .amc-page-subtitle { font-size: 12px !important; display: block !important; opacity: 0.6; margin-top: 1px !important; }
+    .amc-page__tools { padding: 0 14px 10px !important; }
+    #searchResultsRow { padding-left: 14px !important; padding-right: 14px !important; }
+    .manage-releases .amc-card { border-radius: 0 !important; box-shadow: none !important; }
+
+    /* Pagination bar */
+    .pagination-bar, .pagination-wrap, .card-footer {
+      font-size: 12px !important;
+      padding: 10px 14px !important;
+    }
+    .pagination-summary { font-size: 12px !important; }
+  }
+
+
+  /* meta-company-inline — hidden in portrait (meta div handles it), shown in landscape */
+  .meta-company-inline, .meta-sep { display: none; }
+  @media (max-width: 900px) and (orientation: landscape) {
+    .meta-company-inline, .meta-sep { display: inline; }
+    .meta-company-inline { font-weight: 500; color: #6b7280; }
+    body.dark-mode .meta-company-inline { color: #94a3b8; }
+    .meta-sep { color: #d1d5db; }
+  }
+
 </style>
 </head>
 <body>
@@ -1793,7 +1940,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="mobile-alert-meta">
                         ${company && company !== '—' ? `<span class="mobile-alert-company">${company}</span>` : ''}
                     </div>
-                    ${normStatus ? `<span class="status-pill ${mobileStatusClass}" style="position:absolute;bottom:10px;right:44px;font-size:10px;padding:2px 8px;">${mobileDisplayStatus}</span>` : ''}
+                    ${normStatus ? `<span class="status-pill ${mobileStatusClass}" style="position:absolute;bottom:8px;right:8px;font-size:10px;padding:2px 8px;">${mobileDisplayStatus}</span>` : ''}
                     ${dateFmt ? `<div class="mobile-alert-date">${dateFmt}</div>` : ''}
                 </div>
                 <button class="mobile-alert-kebab kebab-btn" aria-label="Actions" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}">
@@ -2223,10 +2370,9 @@ loadV65Shell({ basePath: './components/shell' });
     document.body.appendChild(btn);
 
     function doScrollAndReset() {
+      // Scroll to top of current page only — do NOT reset to page 1
       if (vmain) vmain.scrollTo({ top: 0, behavior: 'smooth' });
       document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
-      const page = typeof window._amcCurrentPage === 'function' ? window._amcCurrentPage() : 1;
-      if (page !== 1 && typeof window._amcGoToPage1 === 'function') window._amcGoToPage1();
     }
 
     // Attach click handler immediately after creating button
