@@ -27,6 +27,7 @@ const RadarAlert = require('./models/RadarAlert');
 const RadarAlertArchive = require('./models/RadarAlertArchive');
 const User = require('./models/User'); // Required for populate operations in routes
 const Client = require('./models/Client'); // Required for populate operations in routes
+const VaultAsset = require('./models/VaultAsset'); // Required for vault expiry cron
 // <<< MODIFICATION: Import the new DownloadEvent model for tracking >>>
 const DownloadEvent = require('./models/DownloadEvent');
 // <<< END MODIFICATION >>>
@@ -38,6 +39,8 @@ const adminRoutes = require('./routes/admin'); // ADMIN MANAGEMENT - Platform ad
 const adminPageRoutes = require('./routes/adminRoutes'); // PAGE PROTECTION - Admin page serving
 const centerRoutes = require('./routes/centerRoutes.js');
 const vaultRoutes = require('./routes/vaultRoutes.js');
+const vaultAccessRoutes = require('./routes/vaultAccessRoutes.js'); // Journalist access flow: my-vaults, nda-sign, unlock
+const notificationRoutes = require('./routes/notificationRoutes.js'); // In-app notification bell
 const radarRoutes = require('./routes/radarRoutes.js');
 // const analyticsRoutes = require('./routes/analytics.routes.js'); // DISABLED - Using amcAnalytics.routes.js instead
 const amcAnalyticsRoutes = require('./routes/amcAnalytics.routes.js');
@@ -121,17 +124,22 @@ const connectDB = async () => {
             if (expiredAlerts.length > 0) {
                 console.log(`ARCHIVE TASK: Found ${expiredAlerts.length} expired Radar Alerts to archive.`);
                 for (const alert of expiredAlerts) {
+                    // Skip legacy alerts missing clientId — they cannot be archived
+                    // due to schema validation. Delete them directly instead.
+                    if (!alert.clientId) {
+                        console.warn(`ARCHIVE TASK: Deleting legacy alert ${alert._id} ("${alert.title}") — missing clientId, cannot archive.`);
+                        try { await RadarAlert.findByIdAndDelete(alert._id); } catch(e) {}
+                        continue;
+                    }
+
                     const archiveData = {
                         uuid: alert.uuid, title: alert.title, eventDateTime: alert.eventDateTime,
                         brand: alert.brand, clientId: alert.clientId, region: alert.region,
                         tags: alert.tags, description: alert.description, teaserImagePath: alert.teaserImagePath,
-                        status: 'archived', // BUG FIX: Explicitly set the status to 'archived'
+                        status: 'archived',
                         user: alert.user, originalCreatedAt: alert.createdAt,
                         archivedAt: new Date()
                     };
-                    if (!archiveData.clientId && alert.user) {
-                        console.warn(`ARCHIVE TASK: Alert ${alert._id} ("${alert.title}") is missing clientId. User: ${alert.user}. This may cause issues if RadarAlertArchiveSchema requires clientId.`);
-                    }
                     try {
                         await RadarAlertArchive.create(archiveData);
                         await RadarAlert.findByIdAndDelete(alert._id);
@@ -153,6 +161,90 @@ const connectDB = async () => {
     require('./retryCron');
     console.log('✅ Email retry cron job initialized');
 
+    // ── Vault expiry cron — runs daily at 02:00 ───────────────
+    // Stage 1: Soft-expire vaults past their vaultExpirationDays
+    // Stage 2: Hard-delete vaults that have been expired for 30+ days
+    cron.schedule('0 2 * * *', async () => {
+        console.log('🔒 VAULT EXPIRY: Running vault lifecycle task...');
+        const now = new Date();
+
+        try {
+            // ── Stage 1: Soft-expire active vaults past expiry date ──
+            // expiry date = createdAt + vaultExpirationDays
+            // We query active vaults and check in JS since expiry is computed
+            const activeVaults = await VaultAsset.find({ status: 'active' })
+                .select('_id title createdAt vaultExpirationDays')
+                .lean();
+
+            let softExpiredCount = 0;
+            for (const vault of activeVaults) {
+                const expiryDate = new Date(vault.createdAt);
+                expiryDate.setDate(expiryDate.getDate() + (vault.vaultExpirationDays || 7));
+                if (now > expiryDate) {
+                    await VaultAsset.findByIdAndUpdate(vault._id, {
+                        $set: { status: 'expired', expiredAt: now }
+                    });
+                    console.log(`🔒 VAULT EXPIRY: Soft-expired vault "${vault.title}" (${vault._id})`);
+                    softExpiredCount++;
+                }
+            }
+            if (softExpiredCount === 0) {
+                console.log('🔒 VAULT EXPIRY: No vaults to soft-expire.');
+            } else {
+                console.log(`🔒 VAULT EXPIRY: ${softExpiredCount} vault(s) soft-expired.`);
+            }
+
+            // ── Stage 2: Hard-delete vaults expired for 30+ days ────
+            const thirtyDaysAgo = new Date(now);
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+            const hardDeleteCandidates = await VaultAsset.find({
+                status: 'expired',
+                expiredAt: { $lt: thirtyDaysAgo }
+            }).lean();
+
+            let hardDeletedCount = 0;
+            for (const vault of hardDeleteCandidates) {
+                // Collect all file paths to delete from disk
+                const filePaths = [
+                    vault.teaserImage,
+                    vault.ndaDocument,
+                    ...(vault.vaultReleaseDocs  || []),
+                    ...(vault.images            || []),
+                    ...(vault.videos            || []),
+                    ...(vault.supplementaryDocs || []),
+                ].filter(Boolean).map(f => f.path).filter(Boolean);
+
+                // Delete physical files
+                for (const filePath of filePaths) {
+                    try {
+                        const fullPath = require('path').join(__dirname, filePath);
+                        await require('fs').promises.unlink(fullPath);
+                    } catch (e) {
+                        if (e.code !== 'ENOENT') {
+                            console.warn(`🔒 VAULT EXPIRY: Could not delete file ${filePath}:`, e.message);
+                        }
+                    }
+                }
+
+                // Delete vault document from MongoDB
+                await VaultAsset.findByIdAndDelete(vault._id);
+                console.log(`🔒 VAULT EXPIRY: Hard-deleted vault "${vault.title}" (${vault._id}) — expired ${Math.round((now - vault.expiredAt) / 86400000)} days ago`);
+                hardDeletedCount++;
+            }
+
+            if (hardDeletedCount === 0) {
+                console.log('🔒 VAULT EXPIRY: No vaults ready for hard deletion.');
+            } else {
+                console.log(`🔒 VAULT EXPIRY: ${hardDeletedCount} vault(s) permanently deleted.`);
+            }
+
+        } catch (err) {
+            console.error('🔒 VAULT EXPIRY: Error during vault lifecycle task:', err.message);
+        }
+    });
+    console.log('✅ Vault expiry cron job scheduled (daily at 02:00)');
+
   } catch (err) {
     console.error('MongoDB Connection Error:', err.message);
     process.exit(1);
@@ -167,6 +259,8 @@ app.use('/api/v1/admin', adminRoutes); // ADMIN MANAGEMENT - Platform admin only
 app.use('/api/v1/events', eventsRoutes);
 app.use('/api/v1/center', centerRoutes);
 app.use('/api/v1/vault', vaultRoutes);
+app.use('/api/v1/vault', vaultAccessRoutes); // Journalist access flow: my-vaults, nda-sign, unlock
+app.use('/api/v1/notifications', notificationRoutes); // In-app notification bell
 app.use('/api/v1/radar', radarRoutes);
 // app.use('/api/v1/analytics', analyticsRoutes); // DISABLED - Using amcAnalytics.routes.js instead
 app.use('/api/v1/amc-analytics', amcAnalyticsRoutes);

@@ -77,18 +77,11 @@
    ============================================================ */
 
 /* The shell's desktop breakpoint sets html,body { overflow: hidden }
-   and scrolls via .mobile-main. The vault uses .vmain instead.
-   We override here so the vault page layout works correctly. */
+   and scrolls via .mobile-main. The vault uses .mobile-main too,
+   so we let the shell handle fixed positioning naturally. */
 @media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
-  html, body {
-    overflow: auto !important;
-    height: auto !important;
-  }
-  /* Shell's .mobile-main scroll lock — not used in vault, no-op */
-  .mobile-main {
-    position: static !important;
-    overflow: visible !important;
-  }
+  /* Shell handles html/body overflow:hidden and .mobile-main position:fixed.
+     No overrides needed — vault plays by the same rules as other pages. */
 }
 
 /* Icon rail background needs to respect vault's dark palette */
@@ -292,20 +285,16 @@ body.dark-mode .vsb-nav li.active a { background: rgba(37,99,235,0.15); }
 .vmain {
   flex: 1;
   overflow-x: hidden;
-  /* Padding handled by shell's mobile-main rules */
   background: var(--v-bg-app);
+  padding: 0;
+  /* Scrollbar styling — shell handles the actual scroll container via .mobile-main */
   scrollbar-width: thin;
-  scrollbar-color: rgba(100,116,139,0.3) transparent;
+  scrollbar-color: rgba(100,116,139,0.25) transparent;
 }
-@media (max-width: 1099px) {
-  .vmain {
-    overflow-y: auto;
-    max-height: calc(100vh - var(--amc-header-h, 56px));
-  }
-}
-
-@media (max-width: 960px) { .vmain { padding: 24px 22px 36px; } }
-@media (max-width: 700px) { .vmain { padding: 20px 16px 32px; } }
+.vmain::-webkit-scrollbar { width: 5px; }
+.vmain::-webkit-scrollbar-track { background: transparent; }
+.vmain::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.3); border-radius: 10px; }
+.vmain::-webkit-scrollbar-thumb:hover { background: rgba(100,116,139,0.5); }
 
 /* ── Standard page title/subtitle — matches shell template ── */
 .amc-page-title,
@@ -332,7 +321,17 @@ body.dark-mode .amc-page-title { color: #f8fafc !important; }
 body:not(.dark-mode) .amc-page-subtitle { color: #6b7280 !important; }
 body.dark-mode .amc-page-subtitle { color: #64748b !important; }
 
-.amc-page-header { padding: 28px 0 8px 0; }
+.amc-page-header { padding: 24px 0 16px 0; }
+
+/* ── Vault main page wrapper — matches alert-detail content padding ── */
+.vmain > .amc-page {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 2rem 2rem 2rem 0.5rem;
+}
+@media (max-width: 1199px) { .vmain > .amc-page { padding: 1.75rem 1.5rem 1.75rem 0.5rem; } }
+@media (max-width: 960px)  { .vmain > .amc-page { padding: 1.5rem 1.25rem 1.5rem 0.75rem; } }
+@media (max-width: 700px)  { .vmain > .amc-page { padding: 1.25rem 1rem; } }
 
 /* ============================================================
    SECURITY STATUS BAR
@@ -434,17 +433,18 @@ body.dark-mode .sec-amb  { background: rgba(217,119,6,0.15); }
 }
 .btn-ghost:hover { background: var(--v-bg-hover); color: var(--v-text-1); }
 
-.btn-blue  { background: var(--v-blue);  color: #fff; box-shadow: 0 1px 3px rgba(37,99,235,0.3); }
-.btn-blue:hover  { background: var(--v-blue-h); color: #fff; box-shadow: 0 3px 10px rgba(37,99,235,0.35); }
+/* CTA buttons — tinted ghost, colours match vivid teaser backgrounds */
+.btn-amber { background: rgba(217,119,6,0.1);  color: #92600a; border: 1px solid rgba(217,119,6,0.3); }
+.btn-amber:hover  { background: rgba(217,119,6,0.18); }
 
-.btn-green { background: var(--v-green); color: #fff; box-shadow: 0 1px 3px rgba(5,150,105,0.3); }
-.btn-green:hover { background: var(--v-green-h); color: #fff; }
+.btn-blue  { background: rgba(37,99,235,0.1);  color: #1d4ed8; border: 1px solid rgba(37,99,235,0.3); }
+.btn-blue:hover  { background: rgba(37,99,235,0.18); }
 
-.btn-amber { background: var(--v-amber); color: #fff; box-shadow: 0 1px 3px rgba(217,119,6,0.3); }
-.btn-amber:hover { background: var(--v-amber-h); color: #fff; }
+.btn-green { background: rgba(5,150,105,0.1);  color: #047857; border: 1px solid rgba(5,150,105,0.3); }
+.btn-green:hover { background: rgba(5,150,105,0.18); }
 
-.btn-muted { background: var(--v-slate-l); color: var(--v-text-3); cursor: not-allowed; }
-body.dark-mode .btn-muted { background: var(--v-bg-hover); }
+.btn-muted { background: rgba(124,58,237,0.08); color: #6d28d9; border: 1px solid rgba(124,58,237,0.25); cursor: not-allowed; }
+body.dark-mode .btn-muted { background: rgba(124,58,237,0.14); }
 
 .btn-full { width: 100%; }
 .btn-sm { height: 32px; padding: 0 12px; font-size: 12px; }
@@ -467,12 +467,12 @@ body.dark-mode .btn-muted { background: var(--v-bg-hover); }
   transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
   cursor: pointer; position: relative;
 }
-.vault-card:hover { box-shadow: var(--vs4); transform: translateY(-2px); }
-.vault-card[data-state="nda"]:hover   { border-color: rgba(217,119,6,0.3); }
-.vault-card[data-state="ready"]:hover { border-color: rgba(37,99,235,0.3); }
-.vault-card[data-state="open"]:hover  { border-color: rgba(5,150,105,0.3); }
+.vault-card:hover { box-shadow: var(--vs4); transform: translateY(-3px); }
+.vault-card[data-state="nda"]:hover   { border-color: rgba(255,208,0,0.7);    box-shadow: 0 12px 28px rgba(255,208,0,0.18); }
+.vault-card[data-state="ready"]:hover { border-color: rgba(37,99,235,0.6);    box-shadow: 0 12px 28px rgba(37,99,235,0.18); }
+.vault-card[data-state="open"]:hover  { border-color: rgba(5,150,105,0.6);    box-shadow: 0 12px 28px rgba(5,150,105,0.18); }
 .vault-card[data-state="pending"]     { cursor: default; }
-.vault-card[data-state="pending"]:hover { transform: none; box-shadow: var(--vs2); }
+.vault-card[data-state="pending"]:hover { transform: none; box-shadow: 0 12px 28px rgba(124,58,237,0.22); border-color: rgba(124,58,237,0.6); }
 
 @keyframes unlockGlow {
   0%   { box-shadow: 0 0 0 0 rgba(5,150,105,0); border-color: var(--v-border); }
@@ -482,92 +482,129 @@ body.dark-mode .btn-muted { background: var(--v-bg-hover); }
 }
 .vault-card.unlocking { animation: unlockGlow 1.2s cubic-bezier(0.4,0,0.2,1) forwards; }
 
+/* ── Lock / teaser area ─────────────────────────────────────── */
 .cv {
-  position: relative; width: 100%; padding-top: 52%;
-  background: var(--v-bg-raised); overflow: hidden; flex-shrink: 0;
+  position: relative; width: 100%; padding-top: 56%;
+  overflow: hidden; flex-shrink: 0;
 }
+/* Vivid state backgrounds — all pumped to match yellow vividness */
+.vault-card[data-state="nda"]     .cv { background: #ffd000; }
+.vault-card[data-state="ready"]   .cv { background: #2563eb; }
+.vault-card[data-state="open"]    .cv { background: #059669; }
+.vault-card[data-state="pending"] .cv { background: #7c3aed; }
+
 .cv-placeholder {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
 }
 .lock-ico {
-  font-size: 50px;
+  font-size: 64px;
   transition: color 0.3s, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
-.lock-nda   { color: var(--v-amber); }
-.lock-ready { color: var(--v-blue); }
-.lock-open  { color: var(--v-green); }
-.lock-wait  { color: var(--v-text-3); opacity: 0.35; }
+/* Uniform white-tinted treatment across all states —
+   yellow uses rgba(255,255,255,0.55) so it reads warm white not brown.
+   Others use slightly higher opacity for same visual weight. */
+.lock-nda   { color: rgba(255,255,255,0.55); filter: drop-shadow(0 2px 12px rgba(255,255,255,0.25)); }
+.lock-ready { color: rgba(255,255,255,0.72); filter: drop-shadow(0 2px 14px rgba(255,255,255,0.25)); }
+.lock-open  { color: rgba(255,255,255,0.72); filter: drop-shadow(0 2px 14px rgba(255,255,255,0.25)); }
+.lock-wait  { color: rgba(255,255,255,0.45); filter: none; }
 
-.cv-brand {
-  position: absolute; top: 11px; left: 11px; z-index: 2;
-  background: rgba(9,18,34,0.75);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
-  padding: 3px 9px; border-radius: 20px;
-}
+/* cv-brand pill — hidden, brand-band handles this now */
+.cv-brand { display: none; }
+
+/* ── Status chip (top-right of image area) ──────────────────── */
 .cv-chip {
-  position: absolute; top: 11px; right: 11px; z-index: 2;
-  font-size: 9px; font-weight: 800; letter-spacing: 0.06em;
-  text-transform: uppercase; padding: 3px 8px; border-radius: 20px;
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 3px 9px; border-radius: 20px;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
 }
-.chip-nda   { background: var(--v-amber-l); color: var(--v-amber); border: 1px solid rgba(217,119,6,0.2); }
-.chip-ready { background: var(--v-blue-l);  color: var(--v-blue);  border: 1px solid rgba(37,99,235,0.2); }
-.chip-open  { background: var(--v-green-l); color: var(--v-green); border: 1px solid rgba(5,150,105,0.2); }
-.chip-wait  { background: var(--v-slate-l); color: var(--v-slate); border: 1px solid var(--v-border); }
-body.dark-mode .chip-nda   { background: rgba(217,119,6,0.12); }
-body.dark-mode .chip-ready { background: rgba(37,99,235,0.12); }
-body.dark-mode .chip-open  { background: rgba(5,150,105,0.12); }
-body.dark-mode .chip-wait  { background: rgba(100,116,139,0.1); }
+/* Uniform white chips across all states — same treatment as purple tinge */
+.chip-nda   { background: rgba(255,255,255,0.22); color: rgba(255,255,255,0.9); border: 0.5px solid rgba(255,255,255,0.3); }
+.chip-ready { background: rgba(255,255,255,0.22); color: rgba(255,255,255,0.9); border: 0.5px solid rgba(255,255,255,0.3); }
+.chip-open  { background: rgba(255,255,255,0.22); color: rgba(255,255,255,0.9); border: 0.5px solid rgba(255,255,255,0.3); }
+.chip-wait  { background: rgba(255,255,255,0.22); color: rgba(255,255,255,0.9); border: 0.5px solid rgba(255,255,255,0.3); }
 
-.cb { padding: 15px 16px 12px; flex: 1; display: flex; flex-direction: column; }
+/* ── Brand band — plain, no accent stripe ───────────────────── */
+.vault-brand-band {
+  padding: 7px 14px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+  color: var(--v-text-2);
+  background: var(--v-bg-raised);
+  border-bottom: 1px solid var(--v-border);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+body.dark-mode .vault-brand-band { background: rgba(255,255,255,0.03); }
 
+/* ── Card body ──────────────────────────────────────────────── */
+.cb {
+  padding: 14px 15px 13px;
+  flex: 1; display: flex; flex-direction: column;
+  gap: 8px;
+}
+
+/* Title — 3-line clamp now asset row is removed */
 .cb-title {
-  font-size: 14px; font-weight: 600;
+  font-size: 13.5px; font-weight: 500;
   font-variation-settings: 'opsz' 14;
   letter-spacing: -0.01em; color: var(--v-text-1);
-  line-height: 1.4; margin-bottom: 11px;
+  line-height: 1.45;
   display: -webkit-box;
-  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-  overflow: hidden; min-height: 2.8em;
+  -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden; min-height: 4.35em;
 }
 
-/* EMBARGO — always red, always urgent */
+/* Embargo — sits directly under title */
 .cb-embargo {
-  display: flex; align-items: center; gap: 7px;
-  font-size: 11.5px; font-weight: 700; color: var(--v-red);
-  padding: 7px 10px;
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; color: var(--v-red);
+  padding: 5px 9px;
   background: var(--v-red-l);
   border-radius: var(--r-sm);
-  border-left: 3px solid var(--v-red);
-  margin-bottom: 10px;
 }
-body.dark-mode .cb-embargo { background: rgba(220,38,38,0.1); }
+body.dark-mode .cb-embargo { background: rgba(220,38,38,0.09); }
 .cb-embargo i { font-size: 10px; flex-shrink: 0; }
 
-.cb-meta {
-  display: flex; align-items: center; gap: 12px;
-  font-size: 11px; color: var(--v-text-3); margin-bottom: 11px;
-}
-.cb-meta-i { display: flex; align-items: center; gap: 5px; }
-.cb-meta-i i { font-size: 10px; }
+/* Asset meta row — removed from card layout */
+.cb-meta { display: none; }
 
+/* Divider — removed (no asset row above it) */
+.cb-divider { display: none; }
+
+/* Status block — wrapper pushes CTA to bottom */
+.cb-status-block {
+  display: flex; flex-direction: column; gap: 3px;
+  margin-top: auto; padding-top: 2px;
+}
+
+/* Status row — dot + text, colour matches card state */
 .cb-status {
   display: flex; align-items: center; gap: 7px;
-  font-size: 12px; font-weight: 500; margin-bottom: 4px;
+  font-size: 11.5px; font-weight: 500;
 }
-.cb-status i { font-size: 11px; }
-.s-nda   { color: var(--v-amber); }
-.s-ok    { color: var(--v-green); }
-.s-blue  { color: var(--v-blue); }
-.s-muted { color: var(--v-slate); }
+.cb-status-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.s-nda   { color: #92600a; }
+.s-ok    { color: #059669; }
+.s-blue  { color: #2563eb; }
+.s-muted { color: #7c3aed; }
+.dot-nda     { background: #d97706; }
+.dot-ready   { background: #2563eb; }
+.dot-open    { background: #059669; }
+.dot-pending { background: #7c3aed; opacity: 0.9; }
 
+/* Sub-line — tertiary, positive margin, no negative pull */
 .cb-status-sub {
-  font-size: 11px; color: var(--v-text-3);
-  margin-bottom: 13px; padding-left: 18px;
-  display: flex; align-items: center; gap: 5px;
+  font-size: 10.5px; color: var(--v-text-3);
+  margin-top: 2px; padding-left: 13px;
 }
-.cb-status-sub i { font-size: 10px; }
+
+/* CTA — always at bottom, spacer above */
+.cb-cta-wrap {
+  margin-top: 12px;
+}
 
 /* ============================================================
    MODALS
@@ -855,57 +892,284 @@ body.dark-mode .pwd-error { background: rgba(220,38,38,0.1); }
    ASSET VIEWER
    ============================================================ */
 .page-vault.hidden  { display: none; }
-.page-asset         { display: none; }
+/* ═══════════════════════════════════════════════════════════
+   ASSET DETAIL PAGE — matches amc-alert-detail layout exactly
+   ═══════════════════════════════════════════════════════════ */
+.page-asset {
+  display: none;
+  /* No margin tricks — layout handled by .asset-inner */
+}
 .page-asset.visible { display: block; }
 
-.asset-hdr {
-  display: flex; align-items: flex-start; gap: 16px;
-  margin-bottom: 26px; padding-bottom: 24px;
-  border-bottom: 1px solid var(--v-border);
+/* Inner content wrapper — matches pr-content-container / .amc-page in alert-detail */
+.asset-inner {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 2rem 2rem 2rem 0.5rem;
+  min-height: calc(100vh - 120px);
 }
-.back-btn {
-  display: flex; align-items: center; gap: 7px;
-  font-size: 12px; font-weight: 500; color: var(--v-text-2);
-  border: 1px solid var(--v-border); border-radius: var(--r-sm);
-  padding: 0 13px; height: 34px; margin-top: 5px; flex-shrink: 0;
-  transition: background 0.12s, color 0.12s;
+@media (max-width: 1199px) {
+  .asset-inner { padding: 1.75rem 1.5rem 1.75rem 0.5rem; }
 }
-.back-btn:hover { background: var(--v-bg-hover); color: var(--v-text-1); }
-.back-btn i { font-size: 11px; }
+@media (max-width: 960px) {
+  .asset-inner { padding: 1.5rem 1.25rem 1.5rem 0.75rem; }
+}
+@media (max-width: 700px) {
+  .asset-inner { padding: 1.25rem 1rem; }
+}
 
-.asset-hdr-info { flex: 1; }
-.asset-hdr-brand {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
-  text-transform: uppercase; color: var(--v-blue); margin-bottom: 5px;
+/* ── Navigation row ─────────────────────────────────────── */
+.asset-nav-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px; flex-wrap: wrap;
 }
-.asset-hdr-title {
-  font-size: 26px; font-weight: 800;
-  font-variation-settings: 'opsz' 26;
-  letter-spacing: -0.03em; line-height: 1.1; color: var(--v-text-1); margin-bottom: 10px;
-}
-body.dark-mode .asset-hdr-title { color: #f0f6ff; }
 
-.asset-hdr-embargo {
-  display: inline-flex; align-items: center; gap: 7px;
+/* Back link */
+.asset-back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 500; color: var(--v-text-3);
+  text-decoration: none; cursor: pointer;
+  transition: color 0.15s; flex-shrink: 0;
+}
+.asset-back-link:hover { color: var(--v-blue); }
+.asset-back-link i { font-size: 10px; }
+
+/* Brand pill — own line between back link and title */
+.asset-brand-pill {
+  display: none; /* hidden by default; JS sets display:inline-flex */
+  align-items: center;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--v-blue);
+  background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2);
+  padding: 4px 12px; border-radius: 20px;
+  white-space: nowrap;
+  margin-bottom: 12px;
+  margin-top: 0;
+}
+
+/* ── Page title ─────────────────────────────────────────── */
+.asset-page-title {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 38px; font-weight: 800;
+  font-variation-settings: 'opsz' 38;
+  letter-spacing: -0.035em; line-height: 1.1;
+  margin: 0 0 16px 0; padding: 0;
+}
+body:not(.dark-mode) .asset-page-title { color: #0f172a; }
+body.dark-mode .asset-page-title { color: #f8fafc; }
+@media (max-width: 767px) { .asset-page-title { font-size: 26px; } }
+
+/* ── Embargo row — pill left, download all right ────────── */
+.asset-embargo-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap; margin-bottom: 24px;
+}
+.asset-embargo-pill {
+  display: none; /* shown by JS */ align-items: center; gap: 7px;
   font-size: 12px; font-weight: 700; color: var(--v-red);
-  padding: 5px 12px;
-  background: var(--v-red-l); border-radius: 20px;
-  border: 1px solid rgba(220,38,38,0.2);
+  padding: 6px 14px; background: var(--v-red-l);
+  border-radius: 6px; border: 1px solid rgba(220,38,38,0.2);
 }
-body.dark-mode .asset-hdr-embargo { background: rgba(220,38,38,0.1); }
+body.dark-mode .asset-embargo-pill { background: rgba(220,38,38,0.1); }
 
-.asset-hdr-meta { margin-top: 11px; display: flex; gap: 18px; flex-wrap: wrap; }
-.asset-meta-it { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--v-text-3); }
-.asset-meta-it i { font-size: 11px; }
+/* Download All button */
+.btn-dl-all {
+  display: none; /* shown by JS */ align-items: center; gap: 6px;
+  padding: 5px 14px;
+  background: var(--v-blue); color: #fff;
+  border: none; border-radius: 6px;
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  letter-spacing: 0;
+  transition: opacity 0.15s; white-space: nowrap; flex-shrink: 0;
+}
+.btn-dl-all:hover { opacity: 0.85; }
+.btn-dl-all i { font-size: 11px; }
+
+/* Counter strip removed — counts shown in section headers */
+
+/* Audit bar removed — logged silently */
+
+/* Empty section state */
+.sec-empty-msg {
+  font-size: 12px; color: var(--v-text-3);
+  padding: 12px 0 16px; margin: 0; font-style: italic;
+}
+.asset-sec-hdr.sec-empty { opacity: 0.55; }
+
+/* Section header label — count inline */
+.asset-sec-label .asset-sec-badge {
+  margin-left: 6px;
+}
+
+/* Section headers with collapse */
+.asset-sec-hdr {
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; user-select: none;
+  padding: 16px 0 14px; margin-bottom: 0;
+  border-top: 1px solid var(--v-border);
+}
+.asset-sec-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--v-blue); flex: 1;
+  display: flex; align-items: center; gap: 0;
+}
+/* Count — tight parens format, same weight/size as label */
+.asset-sec-count {
+  font-size: 11px; font-weight: 700; color: var(--v-blue);
+  letter-spacing: 0; text-transform: none; margin-left: 1px;
+}
+/* Hide old badge style */
+.asset-sec-badge { display: none; }
+.asset-sec-chevron {
+  color: var(--v-text-3); font-size: 11px; transition: transform 0.2s;
+  margin-left: auto;
+}
+.asset-sec-chevron.collapsed { transform: rotate(-90deg); }
+.asset-sec-body {
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.25s;
+  max-height: 9999px; opacity: 1;
+}
+.asset-sec-body.collapsed { max-height: 0; opacity: 0; }
+
+/* Image toolbar */
+.img-toolbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0 14px; flex-wrap: wrap;
+}
+.img-toolbar-left { display: flex; align-items: center; gap: 8px; flex: 1; }
+.img-sel-all-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; color: var(--v-text-2); cursor: pointer;
+}
+.img-sel-all-label input[type=checkbox] { width: 14px; height: 14px; cursor: pointer; accent-color: var(--v-blue); }
+.img-sel-count { font-size: 11px; color: var(--v-text-3); }
+.img-dl-selected {
+  display: none; padding: 6px 14px;
+  background: var(--v-blue); color: #fff;
+  border: none; border-radius: var(--r-sm);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  gap: 6px; align-items: center; transition: opacity 0.15s;
+}
+.img-dl-selected.visible { display: flex; }
+.img-dl-selected:hover { opacity: 0.85; }
+
+/* Image grid - larger, more cinematic */
+.asset-img-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px; margin-bottom: 8px;
+}
+@media (max-width: 700px) { .asset-img-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+
+.aic {
+  background: var(--v-bg-surface); border: 1px solid var(--v-border);
+  border-radius: var(--r-md); overflow: hidden; position: relative;
+  transition: box-shadow 0.18s, border-color 0.18s, transform 0.18s; cursor: pointer;
+}
+.aic:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  border-color: rgba(37,99,235,0.25);
+  transform: translateY(-2px);
+}
+.aic.selected { border-color: var(--v-blue); box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
+.aic-check {
+  position: absolute; top: 8px; left: 8px; z-index: 2;
+  width: 20px; height: 20px; border-radius: 5px;
+  background: rgba(255,255,255,0.95); border: 1.5px solid rgba(0,0,0,0.12);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.12s, border-color 0.12s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.aic.selected .aic-check { background: var(--v-blue); border-color: var(--v-blue); }
+.aic-check i { font-size: 10px; color: #fff; display: none; }
+.aic.selected .aic-check i { display: block; }
+/* 16:9 cinematic ratio for automotive imagery */
+.aic-thumb { width: 100%; padding-top: 56.25%; position: relative; overflow: hidden; background: var(--v-bg-hover); }
+.aic-thumb img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.aic:hover .aic-thumb img { transform: scale(1.04); }
+.aic-info { padding: 9px 11px 10px; }
+.aic-name { font-size: 11px; font-weight: 500; color: var(--v-text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+.aic-detail { display: flex; align-items: center; justify-content: space-between; }
+.aic-size { font-size: 10px; color: var(--v-text-3); }
+.aic-dl { font-size: 14px; color: var(--v-blue); text-decoration: none; line-height: 1; transition: opacity 0.15s; }
+.aic-dl:hover { opacity: 0.7; }
+
+/* Video grid */
+.asset-vid-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px; margin-bottom: 6px;
+}
+.avc { /* asset video card */
+  background: var(--v-bg-surface); border: 1px solid var(--v-border);
+  border-radius: var(--r-md); overflow: hidden;
+  transition: box-shadow 0.15s, border-color 0.15s; cursor: pointer;
+}
+.avc:hover { box-shadow: var(--vs3); border-color: rgba(37,99,235,0.3); }
+.avc-thumb {
+  width: 100%; padding-top: 56.25%; position: relative;
+  overflow: hidden; background: #0f172a;
+}
+.avc-thumb video {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.7;
+}
+.avc-play {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+}
+.avc-play i {
+  font-size: 28px; color: #fff;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+  transition: transform 0.15s;
+}
+.avc:hover .avc-play i { transform: scale(1.12); }
+.avc-info { padding: 8px 10px 10px; }
+.avc-name { font-size: 11px; font-weight: 500; color: var(--v-text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+.avc-detail { display: flex; align-items: center; justify-content: space-between; }
+.avc-size { font-size: 10px; color: var(--v-text-3); }
+.avc-dl { font-size: 13px; color: var(--v-blue); text-decoration: none; }
+.avc-dl:hover { opacity: 0.7; }
+
+/* Video lightbox */
+.vid-lb {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.94);
+  display: none; flex-direction: column;
+}
+.vid-lb.open { display: flex; }
+.vid-lb-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); flex-shrink: 0;
+}
+.vid-lb-title { font-size: 13px; font-weight: 600; color: #fff; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vid-lb-body {
+  flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.vid-lb-body video {
+  max-width: 100%; max-height: 80vh;
+  border-radius: 6px; background: #000;
+}
 
 .dl-bar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 18px;
   background: var(--v-bg-surface); border: 1px solid var(--v-border);
-  border-radius: var(--r-md); box-shadow: var(--vs1); margin-bottom: 10px;
+  border-radius: var(--r-md); box-shadow: var(--vs1); margin-bottom: 8px;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-.dl-bar-text { font-size: 13px; font-weight: 500; color: var(--v-text-2); }
-.dl-bar-text strong { color: var(--v-text-1); }
+.dl-bar:hover {
+  border-color: rgba(37,99,235,0.25);
+  box-shadow: var(--vs2);
+}
+.dl-bar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.dl-bar-icon { font-size: 16px; color: var(--v-red); flex-shrink: 0; }
+.dl-bar-text { font-size: 13px; font-weight: 500; color: var(--v-text-2); min-width: 0; }
+.dl-bar-text strong { color: var(--v-text-1); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dl-bar-size { font-size: 11px; color: var(--v-text-3); margin-top: 1px; }
+.dl-bar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
 .wm-notice {
   display: flex; align-items: center; gap: 9px;
@@ -983,27 +1247,41 @@ body.dark-mode .audit-bar { background: rgba(217,119,6,0.08); color: #f59e0b; }
 .ac-dl i { font-size: 10px; }
 
 .doc-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 26px; }
+.doc-list {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-top: 6px;
+}
+.doc-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .doc-row {
-  display: flex; align-items: center; gap: 11px;
-  padding: 11px 15px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 16px;
   background: var(--v-bg-surface); border: 1px solid var(--v-border);
   border-radius: var(--r-md); cursor: pointer;
-  transition: background 0.12s, border-color 0.12s;
+  transition: background 0.12s, border-color 0.15s, box-shadow 0.15s;
 }
-.doc-row:hover { background: var(--v-bg-hover); border-color: rgba(37,99,235,0.2); }
+.doc-row:hover {
+  background: var(--v-bg-hover);
+  border-color: rgba(37,99,235,0.25);
+  box-shadow: 0 2px 12px rgba(37,99,235,0.07);
+}
 .doc-ico {
-  width: 34px; height: 34px; flex-shrink: 0;
+  width: 38px; height: 38px; flex-shrink: 0;
   border-radius: var(--r-sm);
-  display: flex; align-items: center; justify-content: center; font-size: 15px;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
 }
 .di-pdf  { background: var(--v-red-l);   color: var(--v-red); }
 .di-word { background: var(--v-blue-l);  color: var(--v-blue); }
 .di-vid  { background: var(--v-amber-l); color: var(--v-amber); }
+.di-doc  { background: var(--v-slate-l); color: var(--v-text-2); }
 body.dark-mode .di-pdf  { background: rgba(220,38,38,0.12); }
 body.dark-mode .di-word { background: rgba(37,99,235,0.12); }
 body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
-.doc-info { flex: 1; }
-.doc-name { font-size: 13px; font-weight: 600; color: var(--v-text-1); margin-bottom: 2px; }
+body.dark-mode .di-doc  { background: rgba(100,116,139,0.12); }
+.doc-info { flex: 1; min-width: 0; }
+.doc-name {
+  font-size: 13px; font-weight: 600; color: var(--v-text-1);
+  margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .doc-meta { font-size: 11px; color: var(--v-text-3); }
 
 /* ============================================================
@@ -1027,6 +1305,252 @@ body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
   from { transform: translateX(14px); opacity: 0; }
   to   { transform: translateX(0);    opacity: 1; }
 }
+
+/* Shell footer hidden on vault page */
+#amcShellFooter { display: none !important; }
+
+/* ===== ENTERPRISE FOOTER ===== */
+.amc-footer {
+    background: var(--v-bg-surface, var(--bg-secondary));
+    border-top: 1px solid var(--v-border, var(--border-primary));
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    margin-top: 60px;
+    padding: 48px 0 0 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+/* Override any shell global footer rules */
+.vmain .amc-footer,
+.mobile-main .amc-footer {
+    border: none !important;
+    border-top: 1px solid var(--v-border, var(--border-primary)) !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+.footer-content {
+    padding: 40px 0 40px 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+}
+@media (max-width: 960px) { .footer-content { grid-template-columns: repeat(2,1fr); gap: 24px; padding-left: 2rem; } }
+@media (max-width: 700px) { .footer-content { grid-template-columns: 1fr; gap: 20px; padding-left: 1.25rem; } }
+.footer-column { min-width: 0; }
+.footer-heading {
+    font-size: 13px; font-weight: 700;
+    color: var(--v-text-1, var(--text-primary));
+    margin: 0 0 14px 0; letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+/* AutoMediaCenter brand in footer — larger, Inter style */
+.footer-brand-name {
+    font-size: 18px; font-weight: 700;
+    color: var(--v-text-1, var(--text-primary));
+    letter-spacing: -0.02em;
+    font-family: 'Inter', -apple-system, sans-serif;
+    margin: 0 0 6px 0; display: block;
+}
+.footer-tagline {
+    font-size: 13px; color: var(--v-blue, #2563eb);
+    font-style: italic; margin: 6px 0 0 0; opacity: 0.9;
+}
+.footer-links { list-style: none; margin: 0; padding: 0; }
+.footer-links li { margin-bottom: 10px; }
+.footer-links a {
+    color: var(--v-text-2, var(--text-secondary));
+    text-decoration: none; font-size: 13px; font-weight: 500;
+    font-family: 'Inter', -apple-system, sans-serif;
+    transition: color 0.2s ease; display: inline-block;
+    letter-spacing: 0;
+}
+.footer-links a:hover { color: var(--v-blue, var(--accent-primary)); }
+.footer-bottom {
+    border-top: 1px solid var(--v-border, var(--border-primary));
+    background: var(--v-bg-app, var(--bg-primary));
+}
+.footer-bottom-content {
+    padding: 20px 0 20px 2.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+}
+@media (max-width: 960px) { .footer-bottom-content { padding-left: 2rem; } }
+@media (max-width: 700px) { .footer-bottom-content { padding-left: 1.25rem; flex-direction: column; gap: 12px; text-align: center; } }
+.footer-copyright {
+    font-size: 12px; font-weight: 400;
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--v-text-3, var(--text-secondary)); margin: 0;
+    letter-spacing: 0;
+}
+.footer-social { display: flex; gap: 16px; }
+.footer-social a {
+    color: var(--v-text-3, var(--text-secondary));
+    font-size: 18px; transition: color 0.2s ease; text-decoration: none;
+}
+.footer-social a:hover { color: var(--v-blue, var(--accent-primary)); }
+@media (max-width: 1024px) { .footer-content { grid-template-columns: repeat(2, 1fr); gap: 32px; } }
+@media (max-width: 640px) {
+    .amc-footer { margin-top: 40px; padding: 32px 0 0 0; }
+    .footer-content { grid-template-columns: 1fr; gap: 32px; padding: 0 20px 32px 20px; }
+    .footer-bottom-content { flex-direction: column; gap: 16px; text-align: center; padding: 16px 20px; }
+}
+
+/* ── Vault Security Explainer ────────────────────────────── */
+.vault-explainer-wrap,
+.vault-footer-wrap { width: 100%; }
+/* vault-explainer-wrap keeps its own centering */
+.vault-explainer-wrap {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 2rem 0 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (max-width: 1199px) { .vault-explainer-wrap { padding: 0 1.5rem 0 0.5rem; } }
+@media (max-width: 960px)  { .vault-explainer-wrap { padding: 0 1.25rem 0 0.75rem; } }
+@media (max-width: 700px)  { .vault-explainer-wrap { padding: 0 1rem; } }
+
+.vault-explainer {
+  margin-top: 48px;
+  background: var(--v-bg-surface);
+  border: 1px solid var(--v-border);
+  border-radius: var(--r-lg, 12px);
+  padding: 48px 2.5rem 52px;
+}
+@media (max-width: 960px)  { .vault-explainer { padding: 40px 2rem 44px; } }
+@media (max-width: 700px)  { .vault-explainer { padding: 32px 1.25rem 36px; } }
+body.dark-mode .vault-explainer {
+  background: rgba(15,23,42,0.6);
+}
+.vault-explainer-inner {
+  /* Intentionally no max-width or margin:auto here —
+     explainer sits inside the already-constrained .vault-explainer
+     which has its own margin matching .asset-inner */
+}
+.vault-explainer-hdr {
+  margin-bottom: 0;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--v-border);
+}
+.vault-explainer-title {
+  font-size: 22px; font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.2;
+  margin: 0 0 8px 0;
+  color: var(--v-text-1);
+}
+.vault-explainer-sub {
+  font-size: 14px; color: var(--v-text-2);
+  line-height: 1.6; margin: 0;
+}
+.vault-explainer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  margin-top: 36px;
+}
+@media (max-width: 960px) {
+  .vault-explainer-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+}
+@media (max-width: 600px) {
+  .vault-explainer-grid { grid-template-columns: 1fr; gap: 20px; }
+  .vault-explainer-inner { padding: 0 1.25rem; }
+}
+.vault-exp-item {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.vault-exp-icon {
+  width: 40px; height: 40px;
+  background: rgba(37,99,235,0.08);
+  border: 1px solid rgba(37,99,235,0.15);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: var(--v-blue);
+  flex-shrink: 0;
+}
+body.dark-mode .vault-exp-icon {
+  background: rgba(37,99,235,0.12);
+  border-color: rgba(37,99,235,0.2);
+}
+.vault-exp-label {
+  font-size: 13px; font-weight: 700;
+  color: var(--v-text-1); margin-bottom: 4px;
+  letter-spacing: -0.01em;
+}
+.vault-exp-text {
+  font-size: 12px; color: var(--v-text-2);
+  line-height: 1.65;
+}
+
+/* ── How AutoMediaVault Works ────────────────────────────── */
+/* vault-hiw-wrap — no independent centering, flows inside .amc-page */
+.vault-hiw-wrap { width: 100%; }
+
+.vault-hiw {
+  margin-top: 48px;
+  background: var(--v-bg-surface);
+  border: 1px solid var(--v-border);
+  border-radius: var(--r-lg, 12px);
+  padding: 48px 2.5rem 52px;
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (max-width: 960px) { .vault-hiw { padding: 40px 2rem 44px; } }
+@media (max-width: 700px) { .vault-hiw { padding: 32px 1.25rem 36px; } }
+
+.vault-hiw-hdr {
+  margin-bottom: 0;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--v-border);
+}
+.vault-hiw-title {
+  font-size: 22px; font-weight: 800;
+  letter-spacing: -0.025em; line-height: 1.2;
+  margin: 0 0 8px 0; color: var(--v-text-1);
+}
+.vault-hiw-sub {
+  font-size: 14px; color: var(--v-text-2); line-height: 1.6; margin: 0;
+}
+
+/* Steps row */
+.vault-hiw-steps {
+  display: flex; align-items: flex-start; gap: 24px;
+  margin-top: 36px;
+}
+.vault-hiw-step {
+  flex: 1; display: flex; flex-direction: column; gap: 14px;
+}
+.vault-hiw-num {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--v-blue); color: #fff;
+  font-size: 16px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-family: 'Inter', -apple-system, sans-serif;
+}
+.vault-hiw-body {}
+.vault-hiw-label {
+  font-size: 13px; font-weight: 700;
+  color: var(--v-text-1); margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.vault-hiw-text {
+  font-size: 12px; color: var(--v-text-2); line-height: 1.65;
+}
+
+/* Arrows removed */
+
+/* Mobile — stack vertically */
+@media (max-width: 700px) {
+  .vault-hiw-steps { flex-direction: column; gap: 24px; }
+  .vault-hiw-step { flex-direction: row; gap: 14px; align-items: flex-start; }
+
+}
+
+/* vault-footer-wrap on vault card page needs same padding as hiw-wrap */
+/* vault-footer-wrap--page — no independent centering, flows inside .amc-page */
+.vault-footer-wrap--page { width: 100%; }
 </style>
 </head>
 
@@ -1058,24 +1582,17 @@ body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
     <div class="page-vault" id="pageVault">
 
       <header class="amc-page-header">
-        <h1 class="amc-page-title">Media Vault</h1>
-        <p class="amc-page-subtitle">Embargoed media. Access is identity-verified.</p>
+        <h1 class="amc-page-title">Media Vaults</h1>
+        <p class="amc-page-subtitle">Secured media content. Cryptographically verified access. Password-protected downloads.</p>
       </header>
 
       <!-- Security status bar -->
       <div class="sec-bar">
         <div class="sec-item">
-          <div class="sec-item-icon sec-grn"><i class="fas fa-shield-check"></i></div>
-          <div class="sec-item-text">
-            <div class="sec-item-label">MFA Verified</div>
-            <div class="sec-item-sub">Session authenticated</div>
-          </div>
-        </div>
-        <div class="sec-item">
           <div class="sec-item-icon sec-blu"><i class="fas fa-fingerprint"></i></div>
           <div class="sec-item-text">
-            <div class="sec-item-label">Identity Confirmed</div>
-            <div class="sec-item-sub">Max Mustermann · Auto Weekly DE</div>
+            <div class="sec-item-label">User ID</div>
+            <div class="sec-item-sub" id="secBarIdentity">Loading…</div>
           </div>
         </div>
         <div class="sec-item">
@@ -1086,36 +1603,18 @@ body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
           </div>
         </div>
         <div class="sec-item">
-          <div class="sec-item-icon sec-amb"><i class="fas fa-stamp"></i></div>
+          <div class="sec-item-icon sec-grn"><i class="fas fa-shield-alt"></i></div>
           <div class="sec-item-text">
-            <div class="sec-item-label">Downloads Watermarked</div>
-            <div class="sec-item-sub">Visible · Stego in development</div>
+            <div class="sec-item-label">Two-Factor Auth</div>
+            <div class="sec-item-sub">Session authenticated</div>
           </div>
         </div>
-      </div>
-
-      <!-- Controls -->
-      <div class="controls">
-        <div class="search-box">
-          <i class="fas fa-search"></i>
-          <input type="search" placeholder="Search vaults, brands, releases…" id="vaultSearch" oninput="filterVaults(this.value)">
-        </div>
-
-        <div class="filter-tabs" id="filterTabs">
-          <button class="ftab on" data-f="all"     onclick="setFilter(this)">All</button>
-          <button class="ftab"    data-f="nda"     onclick="setFilter(this)">NDA Required</button>
-          <button class="ftab"    data-f="ready"   onclick="setFilter(this)">Ready to Enter</button>
-          <button class="ftab"    data-f="open"    onclick="setFilter(this)">Access Granted</button>
-          <button class="ftab"    data-f="pending" onclick="setFilter(this)">Pending</button>
-        </div>
-
-        <div class="ctrl-right">
-          <button class="btn btn-ghost btn-sm">
-            <i class="fas fa-sort-amount-down"></i> Sort
-          </button>
-          <button class="btn btn-ghost btn-sm">
-            <i class="fas fa-filter"></i> Filter
-          </button>
+        <div class="sec-item">
+          <div class="sec-item-icon sec-blu"><i class="fas fa-vault"></i></div>
+          <div class="sec-item-text">
+            <div class="sec-item-label">Vaults Available</div>
+            <div class="sec-item-sub" id="secBarVaults">Loading…</div>
+          </div>
         </div>
       </div>
 
@@ -1131,24 +1630,27 @@ body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
               <i class="fas fa-lock lock-ico lock-nda" id="lock-1"></i>
             </div>
           </div>
+          <div class="vault-brand-band">BMW Group</div>
           <div class="cb">
             <div class="cb-title">Concept ZM Global Reveal — Complete Press Kit</div>
-            <div class="cb-embargo">
-              <i class="fas fa-exclamation-triangle"></i>
-              Embargo: 14:00 CEST &nbsp;·&nbsp; 10 April 2025
-            </div>
+            <div class="cb-embargo"><i class="fas fa-exclamation-triangle"></i> Embargo: 14:00 CEST · 10 April 2025</div>
             <div class="cb-meta">
-              <div class="cb-meta-i"><i class="fas fa-images"></i> 47 images</div>
-              <div class="cb-meta-i"><i class="fas fa-film"></i> 3 videos</div>
-              <div class="cb-meta-i"><i class="fas fa-file-pdf"></i> 2 docs</div>
+              <div class="cb-meta-i has"><i class="fas fa-images"></i> 47</div>
+              <div class="cb-meta-i has"><i class="fas fa-film"></i> 3</div>
+              <div class="cb-meta-i has"><i class="fas fa-file-pdf"></i> 2</div>
             </div>
-            <div class="cb-status s-nda">
-              <i class="fas fa-file-signature"></i> NDA signature required
+            <div class="cb-divider"></div>
+            <div class="cb-status-block">
+              <div class="cb-status s-nda">
+                <span class="cb-status-dot dot-nda"></span> NDA signature required
+              </div>
+              <div class="cb-status-sub">Sign to receive vault password by email or SMS</div>
             </div>
-            <div class="cb-status-sub"><i class="fas fa-key"></i> Sign to receive vault password by email or SMS</div>
-            <button class="btn btn-amber btn-full" onclick="event.stopPropagation(); openNdaModal(this.closest('.vault-card'))">
-              <i class="fas fa-pen-alt"></i> Sign NDA to Access
-            </button>
+            <div class="cb-cta-wrap">
+              <button class="btn btn-amber btn-full" onclick="event.stopPropagation(); openNdaModal(this.closest('.vault-card'))">
+                <i class="fas fa-pen-alt"></i> Sign NDA to Access
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1161,54 +1663,60 @@ body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
               <i class="fas fa-lock lock-ico lock-ready" id="lock-2"></i>
             </div>
           </div>
+          <div class="vault-brand-band">Mercedes-Benz</div>
           <div class="cb">
             <div class="cb-title">EQS SUV 2026 Facelift — Pre-Release Photography &amp; Specs</div>
-            <div class="cb-embargo">
-              <i class="fas fa-exclamation-triangle"></i>
-              Embargo: 08:00 CET &nbsp;·&nbsp; 11 April 2025
-            </div>
+            <div class="cb-embargo"><i class="fas fa-exclamation-triangle"></i> Embargo: 08:00 CET · 11 April 2025</div>
             <div class="cb-meta">
-              <div class="cb-meta-i"><i class="fas fa-images"></i> 62 images</div>
-              <div class="cb-meta-i"><i class="fas fa-film"></i> 1 video</div>
-              <div class="cb-meta-i"><i class="fas fa-file-pdf"></i> 4 docs</div>
+              <div class="cb-meta-i has"><i class="fas fa-images"></i> 62</div>
+              <div class="cb-meta-i has"><i class="fas fa-film"></i> 1</div>
+              <div class="cb-meta-i has"><i class="fas fa-file-pdf"></i> 4</div>
             </div>
-            <div class="cb-status s-ok">
-              <i class="fas fa-check-circle"></i> NDA signed · 3 April 2025
+            <div class="cb-divider"></div>
+            <div class="cb-status-block">
+              <div class="cb-status s-blue">
+                <span class="cb-status-dot dot-ready"></span> NDA signed · 3 April 2025
+              </div>
+              <div class="cb-status-sub">Password issued — check your email</div>
             </div>
-            <div class="cb-status-sub"><i class="fas fa-envelope"></i> Password issued — check your email</div>
-            <button class="btn btn-blue btn-full" onclick="event.stopPropagation(); openPwdModal(this.closest('.vault-card'))">
-              <i class="fas fa-key"></i> Enter Password to Access
-            </button>
+            <div class="cb-cta-wrap">
+              <button class="btn btn-blue btn-full" onclick="event.stopPropagation(); openPwdModal(this.closest('.vault-card'))">
+                <i class="fas fa-key"></i> Enter Password to Access
+              </button>
+            </div>
           </div>
         </div>
 
         <!-- STATE C: Full Access -->
-        <div class="vault-card" data-state="open" data-vid="3" onclick="openAssetPage()">
-          <div class="cv" style="background: linear-gradient(135deg,#052b1e,#065f46);">
+        <div class="vault-card" data-state="open" data-vid="3" onclick="openAssetPageWithHistory()">
+          <div class="cv">
             <span class="cv-brand">Audi</span>
             <span class="cv-chip chip-open"><i class="fas fa-check-circle" style="margin-right:4px;"></i>Access Granted</span>
             <div class="cv-placeholder" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-              <i class="fas fa-lock-open lock-ico" style="color:rgba(255,255,255,0.85);font-size:50px;" id="lock-3"></i>
+              <i class="fas fa-lock-open lock-ico lock-open" id="lock-3"></i>
             </div>
           </div>
+          <div class="vault-brand-band">Audi</div>
           <div class="cb">
             <div class="cb-title">E-tron GT Facelift — First Official Photos &amp; Spec Sheet</div>
-            <div class="cb-embargo">
-              <i class="fas fa-exclamation-triangle"></i>
-              Embargo: 10:00 CET &nbsp;·&nbsp; 15 April 2025
-            </div>
+            <div class="cb-embargo"><i class="fas fa-exclamation-triangle"></i> Embargo: 10:00 CET · 15 April 2025</div>
             <div class="cb-meta">
-              <div class="cb-meta-i"><i class="fas fa-images"></i> 31 images</div>
-              <div class="cb-meta-i"><i class="fas fa-film"></i> 2 videos</div>
-              <div class="cb-meta-i"><i class="fas fa-file-pdf"></i> 3 docs</div>
+              <div class="cb-meta-i has"><i class="fas fa-images"></i> 31</div>
+              <div class="cb-meta-i has"><i class="fas fa-film"></i> 2</div>
+              <div class="cb-meta-i has"><i class="fas fa-file-pdf"></i> 3</div>
             </div>
-            <div class="cb-status s-ok">
-              <i class="fas fa-check-circle"></i> NDA signed · Access granted
+            <div class="cb-divider"></div>
+            <div class="cb-status-block">
+              <div class="cb-status s-ok">
+                <span class="cb-status-dot dot-open"></span> NDA signed · Access granted
+              </div>
+              <div class="cb-status-sub">Last accessed 6 April 2025</div>
             </div>
-            <div class="cb-status-sub"><i class="fas fa-eye"></i> Last accessed 6 April 2025</div>
-            <button class="btn btn-green btn-full" onclick="event.stopPropagation(); openAssetPage()">
-              <i class="fas fa-folder-open"></i> View Assets
-            </button>
+            <div class="cb-cta-wrap">
+              <button class="btn btn-green btn-full" onclick="event.stopPropagation(); openAssetPageWithHistory()">
+                <i class="fas fa-folder-open"></i> View Assets
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1221,179 +1729,216 @@ body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
               <i class="fas fa-lock lock-ico lock-wait" id="lock-4"></i>
             </div>
           </div>
+          <div class="vault-brand-band">Volkswagen</div>
           <div class="cb">
             <div class="cb-title">ID. Software 4.0 — Technical Briefing &amp; Imagery</div>
-            <div class="cb-embargo">
-              <i class="fas fa-exclamation-triangle"></i>
-              Embargo: 12:00 CET &nbsp;·&nbsp; 20 April 2025
-            </div>
+            <div class="cb-embargo"><i class="fas fa-exclamation-triangle"></i> Embargo: 12:00 CET · 20 April 2025</div>
             <div class="cb-meta">
-              <div class="cb-meta-i"><i class="fas fa-images"></i> 18 images</div>
-              <div class="cb-meta-i"><i class="fas fa-film"></i> 1 video</div>
-              <div class="cb-meta-i"><i class="fas fa-file-pdf"></i> 6 docs</div>
+              <div class="cb-meta-i has"><i class="fas fa-images"></i> 18</div>
+              <div class="cb-meta-i has"><i class="fas fa-film"></i> 1</div>
+              <div class="cb-meta-i has"><i class="fas fa-file-pdf"></i> 6</div>
             </div>
-            <div class="cb-status s-ok">
-              <i class="fas fa-check-circle"></i> NDA signed · 5 April 2025
+            <div class="cb-divider"></div>
+            <div class="cb-status-block">
+              <div class="cb-status s-muted">
+                <span class="cb-status-dot dot-pending"></span> NDA signed · 5 April 2025
+              </div>
+              <div class="cb-status-sub">Vault opens 20 April 2025 · 14:00 CEST</div>
             </div>
-            <div class="cb-status-sub" style="color:var(--v-slate);">
-              <i class="fas fa-hourglass-half"></i> Vault opens 20 April 2025 · 14:00 CEST
+            <div class="cb-cta-wrap">
+              <button class="btn btn-muted btn-full" disabled>
+                <i class="fas fa-clock"></i> Access Pending
+              </button>
             </div>
-            <button class="btn btn-muted btn-full" disabled>
-              <i class="fas fa-clock"></i> Access Pending
-            </button>
           </div>
         </div>
 
       </div><!-- /vault-grid -->
+
+      <!-- ── How AutoMediaVault Works ── -->
+      <div class="vault-hiw-wrap">
+        <div class="vault-hiw">
+          <div class="vault-hiw-hdr">
+            <h3 class="vault-hiw-title">How AutoMediaVault Works</h3>
+            <p class="vault-hiw-sub">Everything you need to access your media content, in four steps.</p>
+          </div>
+          <div class="vault-hiw-steps">
+
+            <div class="vault-hiw-step">
+              <div class="vault-hiw-num">1</div>
+              <div class="vault-hiw-body">
+                <div class="vault-hiw-label">Sign the NDA</div>
+                <div class="vault-hiw-text">Open the media vault card and sign the Non-Disclosure Agreement. This confirms your acceptance of the embargo terms and initiates password delivery.</div>
+              </div>
+            </div>
+
+            <div class="vault-hiw-step">
+              <div class="vault-hiw-num">2</div>
+              <div class="vault-hiw-body">
+                <div class="vault-hiw-label">Receive Your Password</div>
+                <div class="vault-hiw-text">Your vault password is delivered via your chosen method. Check your email or preferred channel.</div>
+              </div>
+            </div>
+
+            <div class="vault-hiw-step">
+              <div class="vault-hiw-num">3</div>
+              <div class="vault-hiw-body">
+                <div class="vault-hiw-label">Unlock &amp; Access</div>
+                <div class="vault-hiw-text">Return to the vault card, enter your password and gain immediate access to all embargoed assets.</div>
+              </div>
+            </div>
+
+            <div class="vault-hiw-step">
+              <div class="vault-hiw-num">4</div>
+              <div class="vault-hiw-body">
+                <div class="vault-hiw-label">Download Before Expiry</div>
+                <div class="vault-hiw-text">Vaults expire. Download everything you need before the expiry date shown on each vault card.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
 
     </div><!-- /page-vault -->
 
 
     <!-- ── ASSET VIEWER PAGE ── -->
     <div class="page-asset" id="pageAsset">
+    <div class="asset-inner">
 
-      <div class="asset-hdr">
-        <button class="back-btn" onclick="closeAssetPage()">
-          <i class="fas fa-arrow-left"></i> Back to Vaults
-        </button>
-        <div class="asset-hdr-info">
-          <div class="asset-hdr-brand">Audi AG · AutoMediaVault · Vault #0031</div>
-          <div class="asset-hdr-title">E-tron GT Facelift — First Official Photos &amp; Spec Sheet</div>
-          <div class="asset-hdr-embargo">
-            <i class="fas fa-exclamation-triangle"></i>
-            Do Not Publish Before: 10:00 CET · 15 April 2025
-          </div>
-          <div class="asset-hdr-meta">
-            <div class="asset-meta-it"><i class="fas fa-images"></i> 31 images</div>
-            <div class="asset-meta-it"><i class="fas fa-film"></i> 2 videos</div>
-            <div class="asset-meta-it"><i class="fas fa-file-pdf"></i> 3 documents</div>
-            <div class="asset-meta-it"><i class="fas fa-hourglass-end"></i> Vault expires 22 April 2025</div>
-          </div>
-        </div>
+      <!-- Nav row: back link -->
+      <div class="asset-nav-row">
+        <a class="asset-back-link" onclick="closeAssetPage()">
+          <i class="fas fa-chevron-left"></i> Back to Media Vaults
+        </a>
       </div>
 
-      <div class="audit-bar">
-        <i class="fas fa-eye"></i>
-        <div>
-          <strong>All downloads are logged and watermarked.</strong>
-          <span> Each file carries your journalist ID, name, outlet, date, time and IP embedded as a visible watermark. This is an immutable audit record. Invisible steganographic watermarking is in active development.</span>
-        </div>
-      </div>
+      <!-- Brand pill — own line, above title -->
+      <div id="assetBrandPill" class="asset-brand-pill" style="display:none;"></div>
 
-      <div class="dl-bar">
-        <div class="dl-bar-text"><strong>36 assets</strong> available &nbsp;·&nbsp; Total approx. 2.4 GB</div>
-        <button class="btn btn-blue btn-sm" onclick="toast('Preparing download package…')">
-          <i class="fas fa-download"></i> Download All Assets
+      <!-- Title -->
+      <h1 class="asset-page-title" id="assetPageTitle"></h1>
+
+      <!-- Embargo row: pill left, Download All right -->
+      <div class="asset-embargo-row">
+        <div id="assetEmbargoPill" class="asset-embargo-pill" style="display:none;">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span id="assetEmbargoText"></span>
+        </div>
+        <button class="btn-dl-all" id="assetDlAllBtn" onclick="downloadAllAssets()" style="display:none;">
+          <i class="fas fa-download"></i> Download All
         </button>
       </div>
 
-      <div class="wm-notice">
-        <i class="fas fa-stamp"></i>
-        Watermark applied to all downloads: Max Mustermann · Auto Weekly DE · <span id="wmDate"></span> · IP logged
-      </div>
+      <!-- Dynamic asset sections -->
+      <div id="assetContent"></div>
 
-      <div class="sec-title">Photography <span class="sec-cnt">31 files</span></div>
-      <div class="asset-grid">
-        <div class="ac" onclick="toast('Downloading: Audi_eTronGT_ext_01.jpg')">
-          <div class="ac-thumb"><div class="ac-thumb-bg t1"></div><span class="ac-thumb-lbl">JPG · 4K</span></div>
-          <div class="ac-info">
-            <div class="ac-name">eTronGT_ext_01.jpg</div>
-            <div class="ac-detail"><span>24.8 MB</span><button class="ac-dl" onclick="event.stopPropagation();toast('Downloading…')"><i class="fas fa-download"></i> DL</button></div>
-          </div>
+    </div><!-- /asset-inner -->
+
+    <!-- ── Vault Security Explainer ── -->
+    <div class="vault-explainer-wrap">
+    <div class="vault-explainer">
+      <div class="vault-explainer-inner">
+        <div class="vault-explainer-hdr">
+          <h3 class="vault-explainer-title">Your access is secure and verified</h3>
+          <p class="vault-explainer-sub">AutoMediaVault is a purpose-built, identity-confirmed and password-protected platform for the distribution of media content.</p>
         </div>
-        <div class="ac" onclick="toast('Downloading: Audi_eTronGT_ext_02.jpg')">
-          <div class="ac-thumb"><div class="ac-thumb-bg t2"></div><span class="ac-thumb-lbl">JPG · 4K</span></div>
-          <div class="ac-info">
-            <div class="ac-name">eTronGT_ext_02.jpg</div>
-            <div class="ac-detail"><span>22.1 MB</span><button class="ac-dl" onclick="event.stopPropagation();toast('Downloading…')"><i class="fas fa-download"></i> DL</button></div>
+        <div class="vault-explainer-grid">
+          <div class="vault-exp-item">
+            <div class="vault-exp-icon"><i class="fas fa-user-check"></i></div>
+            <div class="vault-exp-body">
+              <div class="vault-exp-label">Identity Verified</div>
+              <div class="vault-exp-text">Access required authenticated login. Your identity is confirmed and associated with all activity in this session.</div>
+            </div>
           </div>
-        </div>
-        <div class="ac" onclick="toast('Downloading: Audi_eTronGT_int_01.jpg')">
-          <div class="ac-thumb"><div class="ac-thumb-bg t4"></div><span class="ac-thumb-lbl">JPG · 4K</span></div>
-          <div class="ac-info">
-            <div class="ac-name">eTronGT_int_01.jpg</div>
-            <div class="ac-detail"><span>19.4 MB</span><button class="ac-dl" onclick="event.stopPropagation();toast('Downloading…')"><i class="fas fa-download"></i> DL</button></div>
+          <div class="vault-exp-item">
+            <div class="vault-exp-icon"><i class="fas fa-file-signature"></i></div>
+            <div class="vault-exp-body">
+              <div class="vault-exp-label">NDA Signed &amp; Recorded</div>
+              <div class="vault-exp-text">Your Non-Disclosure Agreement signature is timestamped and stored as a permanent record. By signing, you accepted the embargo terms set by the content provider.</div>
+            </div>
           </div>
-        </div>
-        <div class="ac" onclick="toast('Downloading: Audi_eTronGT_int_02.jpg')">
-          <div class="ac-thumb"><div class="ac-thumb-bg t5"></div><span class="ac-thumb-lbl">JPG · 4K</span></div>
-          <div class="ac-info">
-            <div class="ac-name">eTronGT_int_02.jpg</div>
-            <div class="ac-detail"><span>21.0 MB</span><button class="ac-dl" onclick="event.stopPropagation();toast('Downloading…')"><i class="fas fa-download"></i> DL</button></div>
+          <div class="vault-exp-item">
+            <div class="vault-exp-icon"><i class="fas fa-key"></i></div>
+            <div class="vault-exp-body">
+              <div class="vault-exp-label">Password-Protected Access</div>
+              <div class="vault-exp-text">Your vault password was generated as a cryptographic one-time credential and delivered via a separate channel. It is not stored in recoverable form.</div>
+            </div>
           </div>
-        </div>
-        <div class="ac" onclick="toast('Downloading: Audi_eTronGT_studio_01.jpg')">
-          <div class="ac-thumb"><div class="ac-thumb-bg t3"></div><span class="ac-thumb-lbl">JPG · 4K</span></div>
-          <div class="ac-info">
-            <div class="ac-name">eTronGT_studio_01.jpg</div>
-            <div class="ac-detail"><span>18.7 MB</span><button class="ac-dl" onclick="event.stopPropagation();toast('Downloading…')"><i class="fas fa-download"></i> DL</button></div>
-          </div>
-        </div>
-        <div class="ac" onclick="toast('Downloading: Audi_eTronGT_action_01.jpg')">
-          <div class="ac-thumb"><div class="ac-thumb-bg t6"></div><span class="ac-thumb-lbl">JPG · 4K</span></div>
-          <div class="ac-info">
-            <div class="ac-name">eTronGT_action_01.jpg</div>
-            <div class="ac-detail"><span>26.3 MB</span><button class="ac-dl" onclick="event.stopPropagation();toast('Downloading…')"><i class="fas fa-download"></i> DL</button></div>
+          <div class="vault-exp-item">
+            <div class="vault-exp-icon"><i class="fas fa-list-alt"></i></div>
+            <div class="vault-exp-body">
+              <div class="vault-exp-label">Download Accountability</div>
+              <div class="vault-exp-text">Each download generates a timestamp and session reference stored in an immutable access record.</div>
+            </div>
           </div>
         </div>
       </div>
-
-      <div class="sec-title">Video <span class="sec-cnt">2 files</span></div>
-      <div class="doc-list" style="margin-bottom:26px;">
-        <div class="doc-row" onclick="toast('Preparing: eTronGT_reveal_60s.mp4')">
-          <div class="doc-ico di-vid"><i class="fas fa-film"></i></div>
-          <div class="doc-info">
-            <div class="doc-name">eTronGT_FL_reveal_60s.mp4</div>
-            <div class="doc-meta">MP4 · H.264 · 1920×1080 · 60s · 480 MB</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('Preparing video…')"><i class="fas fa-download"></i> Download</button>
-        </div>
-        <div class="doc-row" onclick="toast('Preparing: eTronGT_b_roll_4K.mp4')">
-          <div class="doc-ico di-vid"><i class="fas fa-film"></i></div>
-          <div class="doc-info">
-            <div class="doc-name">eTronGT_FL_b_roll_4K.mp4</div>
-            <div class="doc-meta">MP4 · H.265 · 3840×2160 · 4m 20s · 1.2 GB</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('Preparing video…')"><i class="fas fa-download"></i> Download</button>
-        </div>
-      </div>
-
-      <div class="sec-title">Documents <span class="sec-cnt">3 files</span></div>
-      <div class="doc-list">
-        <div class="doc-row" onclick="toast('Downloading: Audi_eTronGT_FL_PressRelease_EN.pdf')">
-          <div class="doc-ico di-pdf"><i class="fas fa-file-pdf"></i></div>
-          <div class="doc-info">
-            <div class="doc-name">Audi_eTronGT_FL_PressRelease_EN.pdf</div>
-            <div class="doc-meta">PDF · English · 14 pages · 2.4 MB</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('Downloading press release…')"><i class="fas fa-download"></i> Download</button>
-        </div>
-        <div class="doc-row" onclick="toast('Downloading: Audi_eTronGT_FL_TechSpec_EN.pdf')">
-          <div class="doc-ico di-pdf"><i class="fas fa-file-pdf"></i></div>
-          <div class="doc-info">
-            <div class="doc-name">Audi_eTronGT_FL_TechSpec_EN.pdf</div>
-            <div class="doc-meta">PDF · English · 6 pages · 1.1 MB</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('Downloading tech spec…')"><i class="fas fa-download"></i> Download</button>
-        </div>
-        <div class="doc-row" onclick="toast('Downloading: Audi_eTronGT_FL_QuoteSheet_EN.docx')">
-          <div class="doc-ico di-word"><i class="fas fa-file-word"></i></div>
-          <div class="doc-info">
-            <div class="doc-name">Audi_eTronGT_FL_QuoteSheet_EN.docx</div>
-            <div class="doc-meta">Word · English · 3 pages · 0.4 MB</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();toast('Downloading quote sheet…')"><i class="fas fa-download"></i> Download</button>
-        </div>
-      </div>
-
+    </div><!-- /vault-explainer -->
+    </div><!-- /vault-explainer-wrap -->
     </div><!-- /page-asset -->
 
+    <div class="vault-footer-wrap" id="vaultPageFooter">
+    <footer class="amc-footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <span class="footer-brand-name">AutoMediaCenter</span>
+                <p class="footer-tagline">Where Automotive Stories Begin</p>
+            </div>
+            <div class="footer-column">
+                <h4 class="footer-heading">Product</h4>
+                <ul class="footer-links">
+                    <li><a href="/features">Features</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/api-docs">API Documentation</a></li>
+                    <li><a href="https://status.automediacenter.com" target="_blank">System Status</a></li>
+                    <li><a href="/changelog">Changelog</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4 class="footer-heading">Company</h4>
+                <ul class="footer-links">
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/help">Help Center</a></li>
+                    <li><a href="/security">Security</a></li>
+                    <li><a href="/careers">Careers</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4 class="footer-heading">Legal &amp; Resources</h4>
+                <ul class="footer-links">
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/cookies">Cookie Policy</a></li>
+                    <li><a href="/dpa">Data Processing Agreement</a></li>
+                    <li><a href="/accessibility">Accessibility</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p class="footer-copyright">© 2026 AutoMediaCenter. All rights reserved.</p>
+                <div class="footer-social">
+                    <a href="https://twitter.com/automediacenter" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="https://linkedin.com/company/automediacenter" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://github.com/automediacenter" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    </div><!-- /vault-footer-wrap -->
+
     </div><!-- /amc-page -->
+
+    <!-- Enterprise Footer — outside amc-page for full width on both pages -->
+
   </main>
 </div><!-- /vault-page-wrap -->
 
-<!-- Footer injected here by shell loader -->
-<div id="amcShellFooter"></div>
+<!-- Footer removed from vault page — shell footer not used here -->
+<div id="amcShellFooter" style="display:none;"></div>
 
 
 <!-- ============================================================
@@ -1403,26 +1948,18 @@ body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
   <div class="modal">
     <div class="mhdr">
       <div>
-        <div class="mhdr-icon ico-amb"><i class="fas fa-file-contract"></i></div>
         <div class="mhdr-title">Non-Disclosure Agreement</div>
-        <div class="mhdr-sub" id="ndaModalSub">BMW Group · Concept ZM Global Reveal</div>
+        <div class="mhdr-sub" id="ndaModalSub" style="font-size:13px;font-weight:600;color:var(--v-text-1);margin-top:2px;"></div>
+        <div id="ndaModalTitle" style="font-size:12px;color:var(--v-text-2);margin-top:2px;"></div>
       </div>
       <button class="modal-x" onclick="closeModal('ndaOverlay')"><i class="fas fa-times"></i></button>
     </div>
     <div class="mbody">
-      <div class="nda-client-row">
-        <div class="nda-c-logo" id="ndaClientLogo">BM</div>
-        <div>
-          <div class="nda-c-name" id="ndaClientName">BMW Group AG</div>
-          <div class="nda-c-sub">Global Press &amp; Communications · Munich, Germany</div>
-        </div>
-      </div>
       <div class="nda-embargo-bar">
         <i class="fas fa-exclamation-triangle"></i>
-        <span id="ndaEmbargoText">Embargo: 14:00 CEST · 10 April 2025 — Do not publish before this date &amp; time</span>
+        <span id="ndaEmbargoText">Embargo: see vault details — Do not publish before this date &amp; time</span>
       </div>
       <div class="nda-doc">
-        <h4>Non-Disclosure Agreement</h4>
         <p>This Non-Disclosure Agreement ("Agreement") is entered into between the client ("Disclosing Party") and the undersigned media professional ("Receiving Party").</p>
         <p><strong>1. Confidential Information.</strong> All assets, documents, specifications, images and materials provided via this AutoMediaVault constitute Confidential Information and must not be disclosed, published, broadcast or shared in any form prior to the Publishing Embargo date and time specified above.</p>
         <p><strong>2. Permitted Use.</strong> Assets may be used solely for preparing editorial content for publication after the embargo lifts. No asset may be shared with third parties without express written consent of the Disclosing Party.</p>
@@ -1433,7 +1970,7 @@ body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
       </div>
       <div class="nda-note">
         <i class="fas fa-info-circle"></i>
-        <div>AutoMediaCenter facilitates this process only. A signed copy will be emailed to both you and the client upon completion. Your vault password will be delivered via your chosen method below.</div>
+        <div>AutoMediaCenter facilitates this process only. Your vault password will be delivered via your chosen method below. The legal obligations under this NDA are strictly between you and the Disclosing Party.</div>
       </div>
       <div style="font-size:12px;font-weight:600;color:var(--v-text-1);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
         <i class="fas fa-paper-plane" style="color:var(--v-blue);"></i> Password delivery method
@@ -1466,7 +2003,7 @@ body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
     </div>
     <div class="mfoot">
       <button class="btn btn-ghost" onclick="closeModal('ndaOverlay')">Cancel</button>
-      <button class="btn btn-amber" id="ndaSignBtn" disabled onclick="signNda()">
+      <button class="btn btn-blue" id="ndaSignBtn" disabled onclick="signNda()">
         <i class="fas fa-signature"></i> Sign NDA &amp; Send Password
       </button>
     </div>
@@ -1564,8 +2101,7 @@ body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
         <i class="fas fa-exclamation-circle"></i> Incorrect password. Please check and try again.
       </div>
       <div class="pwd-hint">
-        Password was sent to your registered email and/or phone when you signed the NDA.<br>
-        Demo: type <strong>vault2025</strong> to unlock.
+        Password was sent to your registered email and/or phone when you signed the NDA.
       </div>
     </div>
     <div class="mfoot">
@@ -1592,6 +2128,286 @@ body.dark-mode .di-vid  { background: rgba(217,119,6,0.12); }
 <!-- TOAST -->
 <div class="toast-wrap" id="toastWrap"></div>
 
+
+<!-- ============================================================
+     VAULT API — dynamic card loading + modal wiring
+     ============================================================ -->
+<script>
+'use strict';
+
+// ── API base URL ─────────────────────────────────────────────
+const API_BASE = window.location.hostname === 'localhost'
+  ? 'http://localhost:5000'
+  : '';
+
+// ── Auth headers (uses existing JWT from your auth system) ───
+function vaultAuthHeaders() {
+  const _t = localStorage.getItem('authToken') || localStorage.getItem('token');
+  const token = (_t && _t !== 'undefined' && _t !== 'null') ? _t : null;
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+  };
+}
+
+// ── Date formatters ──────────────────────────────────────────
+function sanitizeTz(tz) {
+  if (!tz) return 'Europe/Berlin';
+  const tzMap = {
+    'Berlin': 'Europe/Berlin', 'London': 'Europe/London',
+    'Paris': 'Europe/Paris',   'Rome': 'Europe/Rome',
+    'Madrid': 'Europe/Madrid', 'Amsterdam': 'Europe/Amsterdam',
+    'Brussels': 'Europe/Brussels', 'Vienna': 'Europe/Vienna',
+    'Warsaw': 'Europe/Warsaw', 'Zurich': 'Europe/Zurich',
+    'New_York': 'America/New_York', 'Los_Angeles': 'America/Los_Angeles',
+    'Chicago': 'America/Chicago', 'Tokyo': 'Asia/Tokyo',
+    'Dubai': 'Asia/Dubai', 'Shanghai': 'Asia/Shanghai'
+  };
+  if (tzMap[tz]) return tzMap[tz];
+  if (tz.includes('/')) return tz;
+  return 'Europe/Berlin';
+}
+
+function fmtEmbargo(d, tz) {
+  if (!d) return 'See vault details';
+  const dt = new Date(d);
+  if (dt.getFullYear() < 2000) return 'See vault details';
+  const safeTz = sanitizeTz(tz);
+  const tzLabel = new Date(d).toLocaleTimeString('en-GB', { timeZone: safeTz, timeZoneName: 'short' }).split(' ').pop();
+  return dt.toLocaleString('en-GB', {
+    hour: '2-digit', minute: '2-digit',
+    day: '2-digit', month: 'long', year: 'numeric',
+    timeZone: safeTz,
+    hour12: false
+  }).replace(',', ' at') + ' ' + tzLabel;
+}
+function fmtDate(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('en-GB', {
+    day: '2-digit', month: 'long', year: 'numeric'
+  });
+}
+
+function fmtDateTime(d) {
+  if (!d) return '';
+  return new Date(d).toLocaleString('en-GB', {
+    day: '2-digit', month: 'long', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    hour12: false
+  }).replace(',', ' at') + ' ' + new Date().toLocaleTimeString('en-GB', { timeZoneName: 'short' }).split(' ').pop();
+}
+function fmtOpens(d) {
+  if (!d) return 'date TBC';
+  return new Date(d).toLocaleString('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+// ── Build single card HTML from API data ─────────────────────
+function buildVaultCard(v) {
+  const { _id, title, embargoUntil, vaultOpens, state,
+          requireNDA, ndaSignedAt, lastAccessedAt,
+          accessGrantedAt, isLocked } = v;
+
+  // brand comes from API (saved in VaultAsset.brand / companyName fields)
+  // For old vaults without brand saved, show empty rather than wrong title
+  const brand = v.brand || v.companyName || '';
+
+  // State-specific chip + lock
+  const S = {
+    nda:     { chipCls: 'chip-nda',   chipIco: 'fas fa-file-contract', chipLbl: 'NDA Required',      lockCls: 'lock-nda',   lockIco: 'fas fa-lock'      },
+    ready:   { chipCls: 'chip-ready', chipIco: 'fas fa-key',           chipLbl: 'Password Required', lockCls: 'lock-ready', lockIco: 'fas fa-lock'      },
+    open:    { chipCls: 'chip-open',  chipIco: 'fas fa-check-circle',  chipLbl: 'Access Granted',    lockCls: 'lock-open',  lockIco: 'fas fa-lock-open' },
+    pending: { chipCls: 'chip-wait',  chipIco: 'fas fa-clock',         chipLbl: 'Not Yet Open',      lockCls: 'lock-wait',  lockIco: 'fas fa-lock'      },
+  }[state] || { chipCls: 'chip-nda', chipIco: 'fas fa-file-contract', chipLbl: 'NDA Required', lockCls: 'lock-nda', lockIco: 'fas fa-lock' };
+
+  // Status row
+  let statusCls, dotCls, statusTxt, subTxt, ctaHtml, cardClick;
+
+  if (isLocked) {
+    statusCls = 'cb-status s-muted'; dotCls = 'dot-pending';
+    statusTxt = 'Vault locked — too many failed attempts';
+    subTxt    = 'Contact support to unlock';
+    ctaHtml   = `<button class="btn btn-muted btn-full" disabled><i class="fas fa-ban"></i> Vault Locked</button>`;
+    cardClick = '';
+
+  } else if (state === 'nda') {
+    statusCls = 'cb-status s-nda'; dotCls = 'dot-nda';
+    statusTxt = requireNDA ? 'NDA signature required' : 'Ready to access';
+    subTxt    = 'Sign to receive vault password by email';
+    ctaHtml   = `<button class="btn btn-amber btn-full" onclick="event.stopPropagation();openNdaModal(this.closest('.vault-card'))"><i class="fas fa-pen-alt"></i> Sign NDA to Access</button>`;
+    cardClick = `onclick="openNdaModal(this)"`;
+
+  } else if (state === 'ready') {
+    statusCls = 'cb-status s-blue'; dotCls = 'dot-ready';
+    statusTxt = ndaSignedAt ? `NDA signed · ${fmtDate(ndaSignedAt)}` : 'NDA signed';
+    subTxt    = 'Password issued — check your email';
+    ctaHtml   = `<button class="btn btn-blue btn-full" onclick="event.stopPropagation();openPwdModal(this.closest('.vault-card'))"><i class="fas fa-key"></i> Enter Password to Access</button>`;
+    cardClick = `onclick="openPwdModal(this)"`;
+
+  } else if (state === 'open') {
+    statusCls = 'cb-status s-ok'; dotCls = 'dot-open';
+    statusTxt = 'NDA signed · Access granted';
+    subTxt    = lastAccessedAt ? `Last accessed ${fmtDateTime(lastAccessedAt)}` : `Unlocked ${fmtDateTime(accessGrantedAt)}`;
+    ctaHtml   = `<button class="btn btn-green btn-full" onclick="event.stopPropagation();openAssetPageWithHistory('${_id}')"><i class="fas fa-folder-open"></i> View Assets</button>`;
+    cardClick = `onclick="openAssetPageWithHistory('${_id}')"`;
+
+  } else { // pending
+    statusCls = 'cb-status s-muted'; dotCls = 'dot-pending';
+    statusTxt = ndaSignedAt ? `NDA signed · ${fmtDate(ndaSignedAt)}` : 'Vault not yet open';
+    subTxt    = `Vault opens ${fmtOpens(vaultOpens)}`;
+    ctaHtml   = `<button class="btn btn-muted btn-full" disabled><i class="fas fa-clock"></i> Access Pending</button>`;
+    cardClick = '';
+  }
+
+  return `
+    <div class="vault-card" data-state="${state}" data-vid="${_id}" ${cardClick}>
+      <div class="cv">
+        <span class="cv-brand">${brand}</span>
+        <span class="cv-chip ${S.chipCls}"><i class="${S.chipIco}" style="margin-right:4px;"></i>${S.chipLbl}</span>
+        <div class="cv-placeholder">
+          <i class="${S.lockIco} lock-ico ${S.lockCls}" id="lock-${_id}"></i>
+        </div>
+      </div>
+      <div class="vault-brand-band">${brand}</div>
+      <div class="cb">
+        <div class="cb-title">${title}</div>
+        <div class="cb-embargo"><i class="fas fa-exclamation-triangle"></i> Embargo: ${fmtEmbargo(embargoUntil, v.timezone || v.availabilityTimezone)}</div>
+        <div class="cb-status-block">
+          <div class="${statusCls}"><span class="cb-status-dot ${dotCls}"></span> ${statusTxt}</div>
+          <div class="cb-status-sub">${subTxt}</div>
+        </div>
+        <div class="cb-cta-wrap">${ctaHtml}</div>
+      </div>
+    </div>`;
+}
+
+// ── Load vaults from API and render grid ─────────────────────
+async function loadVaults() {
+  // Self-heal: clear poisoned "undefined" token so user gets proper 401 message
+  const _storedToken = localStorage.getItem('token');
+  if (_storedToken === 'undefined' || _storedToken === 'null') {
+    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
+  }
+  const grid = document.getElementById('vaultGrid');
+  if (!grid) return;
+
+  grid.innerHTML = `
+    <div style="grid-column:1/-1;padding:48px 0;text-align:center;color:var(--v-text-3);font-size:13px;">
+      <i class="fas fa-circle-notch fa-spin" style="margin-right:8px;"></i>Loading vaults…
+    </div>`;
+
+  try {
+    const res  = await fetch(`${API_BASE}/api/v1/vault/my-vaults`, { headers: vaultAuthHeaders() });
+    const json = await res.json();
+
+    if (!res.ok || !json.success) throw new Error(json.error || 'Failed to load vaults');
+
+    if (!json.data.length) {
+      grid.innerHTML = `
+        <div style="grid-column:1/-1;padding:64px 0;text-align:center;color:var(--v-text-3);font-size:13px;">
+          <i class="fas fa-lock" style="font-size:36px;margin-bottom:14px;display:block;opacity:0.2;"></i>
+          No vaults available yet.
+        </div>`;
+      updateSecBarVaultCount();
+      return;
+    }
+
+    grid.innerHTML = json.data.map(buildVaultCard).join('');
+    updateSecBarVaultCount();
+
+    // Store vault data for modal population
+    window._vaultDataMap = {};
+    json.data.forEach(v => {
+      window._vaultDataMap[v._id] = v;
+      console.log(`[VAULT] id:${v._id} brand:"${v.brand}" companyName:"${v.companyName}" title:"${v.title}"`);
+    });
+
+  } catch (err) {
+    console.error('[VAULT] loadVaults:', err);
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;padding:48px 0;text-align:center;color:var(--v-red);font-size:13px;">
+        <i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>
+        Could not load vaults — ${err.message}
+      </div>`;
+  }
+}
+
+// Boot on DOM ready
+document.addEventListener('DOMContentLoaded', loadVaults);
+
+// ── Populate security bar from stored user data ────────────
+function populateSecBar() {
+  const identityEl = $('secBarIdentity');
+  const vaultsEl   = $('secBarVaults');
+
+  // Read user from localStorage — try all keys the shell uses
+  let user = null;
+  try {
+    const raw = localStorage.getItem('user')
+             || localStorage.getItem('currentUser')
+             || localStorage.getItem('amcUser');
+    if (raw) user = JSON.parse(raw);
+  } catch(e) {}
+
+  // Also try decoding JWT payload for user info
+  if (!user || (!user.name && !user.firstName && !user.email)) {
+    try {
+      const _t = localStorage.getItem('authToken') || localStorage.getItem('token');
+  const token = (_t && _t !== 'undefined' && _t !== 'null') ? _t : null;
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (!user) user = {};
+        user = Object.assign({}, payload, user); // merge, localStorage wins
+      }
+    } catch(e) {}
+  }
+
+  // Identity: name · email
+  if (identityEl && user) {
+    const name = user.firstName && user.lastName
+      ? `${user.firstName} ${user.lastName}`
+      : user.name || user.username || '';
+    identityEl.textContent = name || user.email || 'Authenticated';
+  } else if (identityEl) {
+    identityEl.textContent = 'Authenticated';
+  }
+
+  if (vaultsEl) vaultsEl.textContent = 'Counting…';
+}
+
+// Call once on load, then again after vaults load to update count
+document.addEventListener('DOMContentLoaded', populateSecBar);
+
+// Update vault count after grid is populated
+function updateSecBarVaultCount() {
+  const vaultsEl = $('secBarVaults');
+  if (!vaultsEl) return;
+  const cards = document.querySelectorAll('#vaultGrid .vault-card');
+  const n = cards.length;
+  vaultsEl.textContent = n === 0 ? 'None assigned'
+    : n === 1 ? '1 active vault'
+    : `${n} active vaults`;
+}
+
+// ── Browser back button — intercept when asset page is open ──
+function openAssetPageWithHistory(vaultId) {
+  history.pushState({ assetPage: true, vaultId }, '', '#vault-assets');
+  openAssetPage(vaultId);
+}
+
+window.addEventListener('popstate', function(e) {
+  const assetPage = $('pageAsset');
+  if (assetPage && assetPage.classList.contains('visible')) {
+    closeAssetPage();
+    // Prevent actual navigation
+    history.pushState({}, '', window.location.pathname);
+  }
+});
+</script>
 
 <!-- ============================================================
      SCRIPTS
@@ -1683,6 +2499,32 @@ function openNdaModal(card) {
   $('ndaAgree').checked = false;
   $('ndaSig').value = '';
   $('ndaSignBtn').disabled = true;
+
+  // Populate modal with real vault data
+  const vaultId = card?.dataset?.vid;
+  const vault   = vaultId && window._vaultDataMap ? window._vaultDataMap[vaultId] : null;
+  if (vault) {
+    const ndaModalSubEl   = $('ndaModalSub');
+    const ndaModalTitleEl = $('ndaModalTitle');
+    const ndaEmbargoEl    = $('ndaEmbargoText');
+    const brandName = vault.brand || vault.companyName || '';
+    if (ndaModalSubEl)   ndaModalSubEl.textContent   = brandName;
+    if (ndaModalTitleEl) ndaModalTitleEl.textContent = vault.title;
+    if (ndaEmbargoEl && vault.embargoUntil) {
+      const dt = new Date(vault.embargoUntil);
+      if (dt.getFullYear() >= 2000) {
+        const tz = sanitizeTz(vault.timezone || vault.availabilityTimezone);
+        const tzLabel = new Date(vault.embargoUntil).toLocaleTimeString('en-GB', { timeZone: tz, timeZoneName: 'short' }).split(' ').pop();
+        const embargoStr = dt.toLocaleString('en-GB', {
+          hour: '2-digit', minute: '2-digit',
+          day: 'numeric', month: 'long', year: 'numeric',
+          timeZone: tz, hour12: false
+        }).replace(',', ' at') + ' ' + tzLabel;
+        ndaEmbargoEl.textContent = `Embargo: ${embargoStr} — Do not publish before this date & time`;
+      }
+    }
+  }
+
   openModal('ndaOverlay');
   setTimeout(() => $('ndaSig').focus(), 350);
 }
@@ -1700,24 +2542,65 @@ function checkNdaReady() {
   $('ndaSignBtn').disabled = !(sig && agreed && (emailOk || smsOk));
 }
 
-function signNda() {
-  const name    = $('ndaSig').value.trim();
-  const methods = [];
-  if ($('chkEmail').checked) methods.push('Email');
-  if ($('chkSms').checked)   methods.push('SMS');
+async function signNda() {
+  const name     = $('ndaSig').value.trim();
+  const agreed   = $('ndaAgree').checked;
+  const emailChk = $('chkEmail').checked;
+  const smsChk   = $('chkSms').checked;
+  const btn      = $('ndaSignBtn');
 
-  $('sigName').textContent     = name;
-  $('sigTime').textContent     = new Date().toLocaleString('en-GB', {
-    day: '2-digit', month: 'short', year: 'numeric',
-    hour: '2-digit', minute: '2-digit'
-  }) + ' · IP & device fingerprint recorded';
-  $('sigDelivery').textContent = methods.join(' & ');
+  if (!name || name.length < 2 || !agreed || (!emailChk && !smsChk)) return;
 
-  closeModal('ndaOverlay');
-  setTimeout(() => {
-    openModal('ndaSuccessOverlay');
-    if (currentVaultCard) updateCardToReady(currentVaultCard);
-  }, 200);
+  const vaultId = currentVaultCard?.dataset?.vid;
+  if (!vaultId) { console.error('[VAULT] signNda: no vaultId on card'); return; }
+
+  const deliveryMethods = [];
+  if (emailChk) deliveryMethods.push('email');
+  if (smsChk)   deliveryMethods.push('sms');
+
+  // Show loading state on button
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Sending…'; }
+
+  try {
+    const _t = localStorage.getItem('authToken') || localStorage.getItem('token');
+  const token = (_t && _t !== 'undefined' && _t !== 'null') ? _t : null;
+    const res   = await fetch(`${API_BASE}/api/v1/vault/nda-sign`, {
+      method:  'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify({ vaultId, signatureName: name, deliveryMethods })
+    });
+    const json = await res.json();
+
+    if (!res.ok || !json.success) throw new Error(json.error || 'Failed to sign NDA');
+
+    // Populate success overlay
+    $('sigName').textContent     = name;
+    $('sigTime').textContent     = new Date().toLocaleString('en-GB', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    }) + ' · IP & device fingerprint recorded';
+    $('sigDelivery').textContent = deliveryMethods.map(m => m.charAt(0).toUpperCase() + m.slice(1)).join(' & ');
+
+    closeModal('ndaOverlay');
+    setTimeout(() => {
+      openModal('ndaSuccessOverlay');
+      if (currentVaultCard) updateCardToReady(currentVaultCard);
+    }, 200);
+
+    // Reload cards after a moment so state is fresh from DB
+    setTimeout(loadVaults, 2500);
+
+  } catch (err) {
+    console.error('[VAULT] signNda error:', err);
+    toast(err.message || 'Failed to sign NDA. Please try again.', 'fa-exclamation-circle');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-pen-alt"></i> Sign NDA';
+    }
+  }
 }
 
 function updateCardToReady(card) {
@@ -1726,12 +2609,12 @@ function updateCardToReady(card) {
   chip.className = 'cv-chip chip-ready';
   chip.innerHTML = '<i class="fas fa-key" style="margin-right:4px;"></i>Password Required';
   const lock = card.querySelector('.lock-ico');
-  if (lock) lock.className = 'fas fa-lock lock-ico lock-ready';
+  if (lock) { lock.className = 'fas fa-lock lock-ico lock-ready'; lock.removeAttribute('style'); }
   const statusLine = card.querySelector('.cb-status');
-  statusLine.className = 'cb-status s-ok';
-  statusLine.innerHTML = '<i class="fas fa-check-circle"></i> NDA signed · just now';
+  statusLine.className = 'cb-status s-blue';
+  statusLine.innerHTML = '<span class="cb-status-dot dot-ready"></span> NDA signed · just now';
   const sub = card.querySelector('.cb-status-sub');
-  sub.innerHTML = '<i class="fas fa-envelope"></i> Password dispatched — check email/SMS';
+  sub.innerHTML = 'Password dispatched — check email/SMS';
   const btn = card.querySelector('button.btn-full');
   btn.className = 'btn btn-blue btn-full';
   btn.innerHTML = '<i class="fas fa-key"></i> Enter Password to Access';
@@ -1742,12 +2625,39 @@ function updateCardToReady(card) {
 
 // ── Password modal ───────────────────────────────────────────
 let currentPwdCard = null;
-const DEMO_PWD = 'vault2025';
 
 function openPwdModal(card) {
   currentPwdCard = card;
   $('pwdInput').value = '';
   $('pwdErr').style.display = 'none';
+
+  // Populate modal with real vault data
+  const vaultId = card?.dataset?.vid;
+  const vault   = vaultId && window._vaultDataMap ? window._vaultDataMap[vaultId] : null;
+  if (vault) {
+    const rawBrand     = vault.brand || vault.companyName || null;
+    const pwdSubEl     = $('pwdModalSub');
+    const pwdEmbargoEl = $('pwdEmbargoText');
+    if (pwdSubEl) {
+      pwdSubEl.textContent = rawBrand && rawBrand !== vault.title
+        ? `${rawBrand} · ${vault.title}`
+        : vault.title;
+    }
+    if (pwdEmbargoEl && vault.embargoUntil) {
+      const dt = new Date(vault.embargoUntil);
+      if (dt.getFullYear() >= 2000) {
+        const tz = sanitizeTz(vault.timezone || vault.availabilityTimezone);
+        const tzLabel = new Date(vault.embargoUntil).toLocaleTimeString('en-GB', { timeZone: tz, timeZoneName: 'short' }).split(' ').pop();
+        const embargoStr = dt.toLocaleString('en-GB', {
+          hour: '2-digit', minute: '2-digit',
+          day: 'numeric', month: 'long', year: 'numeric',
+          timeZone: tz, hour12: false
+        }).replace(',', ' at') + ' ' + tzLabel;
+        pwdEmbargoEl.textContent = `Embargo: ${embargoStr}`;
+      }
+    }
+  }
+
   openModal('pwdOverlay');
   setTimeout(() => $('pwdInput').focus(), 350);
 }
@@ -1767,18 +2677,56 @@ function togglePwdVis() {
   }
 }
 
-function checkPwd() {
+async function checkPwd() {
   const val = $('pwdInput').value.trim();
   if (!val) return;
-  if (val === DEMO_PWD) {
+
+  const vaultId = currentPwdCard?.dataset?.vid;
+  if (!vaultId) { console.error('[VAULT] checkPwd: no vaultId on card'); return; }
+
+  try {
+    const _t = localStorage.getItem('authToken') || localStorage.getItem('token');
+  const token = (_t && _t !== 'undefined' && _t !== 'null') ? _t : null;
+    const res   = await fetch(`${API_BASE}/api/v1/vault/unlock`, {
+      method:  'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify({ vaultId, password: val })
+    });
+    const json = await res.json();
+
+    if (!res.ok || !json.success) {
+      // Store vault token if returned even on partial auth
+      const errEl = $('pwdErr');
+      if (errEl) {
+        errEl.style.display = 'block';
+        errEl.textContent = json.locked
+          ? 'Vault locked — too many failed attempts. Contact support.'
+          : json.attemptsRemaining
+            ? `Incorrect password. ${json.attemptsRemaining} attempt${json.attemptsRemaining === 1 ? '' : 's'} remaining.`
+            : (json.error || 'Incorrect password.');
+      }
+      $('pwdInput').classList.remove('shake');
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        $('pwdInput').classList.add('shake');
+      }));
+      return;
+    }
+
+    // Store vault JWT in memory only — never localStorage
+    if (json.vaultToken) {
+      window._vaultTokens = window._vaultTokens || {};
+      window._vaultTokens[vaultId] = json.vaultToken;
+    }
+
     closeModal('pwdOverlay');
     setTimeout(() => showUnlockAnimation(), 150);
-  } else {
-    $('pwdErr').style.display = 'block';
-    $('pwdInput').classList.remove('shake');
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      $('pwdInput').classList.add('shake');
-    }));
+
+  } catch (err) {
+    console.error('[VAULT] checkPwd error:', err);
+    toast('Network error. Please try again.', 'fa-exclamation-circle');
   }
 }
 
@@ -1799,45 +2747,429 @@ function showUnlockAnimation() {
 function updateCardToOpen(card) {
   card.dataset.state = 'open';
   card.classList.add('unlocking');
-  const cv = card.querySelector('.cv');
-  cv.style.background = 'linear-gradient(135deg, #052b1e, #065f46)';
   const chip = card.querySelector('.cv-chip');
   chip.className = 'cv-chip chip-open';
   chip.innerHTML = '<i class="fas fa-check-circle" style="margin-right:4px;"></i>Access Granted';
   const lock = card.querySelector('.lock-ico');
-  if (lock) { lock.className = 'fas fa-lock-open lock-ico'; lock.style.color = 'rgba(255,255,255,0.85)'; }
+  if (lock) { lock.className = 'fas fa-lock-open lock-ico lock-open'; }
   const statusLine = card.querySelector('.cb-status');
   statusLine.className = 'cb-status s-ok';
-  statusLine.innerHTML = '<i class="fas fa-check-circle"></i> NDA signed · Access granted';
+  statusLine.innerHTML = '<span class="cb-status-dot dot-open"></span> NDA signed · Access granted';
   const sub = card.querySelector('.cb-status-sub');
-  sub.innerHTML = '<i class="fas fa-eye"></i> Just unlocked';
+  sub.innerHTML = 'Just unlocked';
   const btn = card.querySelector('button.btn-full');
   btn.className = 'btn btn-green btn-full';
   btn.innerHTML = '<i class="fas fa-folder-open"></i> View Assets';
   btn.disabled = false;
-  btn.onclick = (e) => { e.stopPropagation(); openAssetPage(); };
-  card.onclick = () => openAssetPage();
+  btn.onclick = (e) => { e.stopPropagation(); openAssetPageWithHistory(card.dataset.vid); };
+  card.onclick = () => openAssetPageWithHistory(card.dataset.vid);
   toast('Vault unlocked — access granted');
 }
 
-// ── Asset page navigation ─────────────────────────────────────
+// ── Asset page — fetch and render real vault assets ──────────
 function scrollToTop() {
-  // Desktop: body scrolls. Mobile: vmain container scrolls.
   window.scrollTo(0, 0);
   const m = $('vmainScroll');
   if (m) m.scrollTop = 0;
-}
-
-function openAssetPage() {
-  $('pageVault').classList.add('hidden');
-  $('pageAsset').classList.add('visible');
-  scrollToTop();
 }
 
 function closeAssetPage() {
   $('pageAsset').classList.remove('visible');
   $('pageVault').classList.remove('hidden');
   scrollToTop();
+}
+
+let _currentAssetVaultId = null;
+let _assetLightboxImages = [];
+let _assetLightboxIndex  = 0;
+
+async function openAssetPage(vaultId) {
+  _currentAssetVaultId = vaultId;
+  $('pageVault').classList.add('hidden');
+  $('pageAsset').classList.add('visible');
+  scrollToTop();
+
+  // Show loading state
+  const assetContent = $('assetContent');
+  if (assetContent) {
+    assetContent.innerHTML = `<div style="text-align:center;padding:60px 0;color:var(--v-text-3);font-size:13px;">
+      <i class="fas fa-circle-notch fa-spin" style="font-size:24px;margin-bottom:12px;display:block;"></i>
+      Loading vault assets…
+    </div>`;
+  }
+
+  try {
+    const _t = localStorage.getItem('authToken') || localStorage.getItem('token');
+  const token = (_t && _t !== 'undefined' && _t !== 'null') ? _t : null;
+    const res   = await fetch(`${API_BASE}/api/v1/vault/${vaultId}/assets`, {
+      headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
+    });
+    const json = await res.json();
+    if (!res.ok || !json.success) throw new Error(json.error || 'Failed to load assets');
+
+    renderAssetPage(json.data);
+
+  } catch (err) {
+    console.error('[VAULT] openAssetPage error:', err);
+    if (assetContent) {
+      assetContent.innerHTML = `<div style="text-align:center;padding:48px 0;color:var(--v-red);font-size:13px;">
+        <i class="fas fa-exclamation-circle" style="margin-right:6px;"></i>${err.message}
+      </div>`;
+    }
+  }
+}
+
+function renderAssetPage(data) {
+  // ── Header fields ─────────────────────────────────────────────
+  const titleEl   = $('assetPageTitle');
+  const brandEl   = $('assetBrandPill');
+  const pillEl    = $('assetEmbargoPill');
+  const embargoEl = $('assetEmbargoText');
+
+  // Brand pill
+  const brandName = data.brand || data.companyName || '';
+  if (brandEl) {
+    if (brandName) { brandEl.textContent = brandName; brandEl.style.display = 'inline-flex'; }
+    else brandEl.style.display = 'none';
+  }
+
+  if (titleEl) titleEl.textContent = data.title || '';
+
+  if (pillEl && embargoEl && data.embargoUntil) {
+    const dt = new Date(data.embargoUntil);
+    if (dt.getFullYear() >= 2000) {
+      const tz = sanitizeTz(data.timezone);
+      const tzLabel = new Date(data.embargoUntil).toLocaleTimeString('en-GB', { timeZone: tz, timeZoneName: 'short' }).split(' ').pop();
+      const s = dt.toLocaleString('en-GB', {
+        hour: '2-digit', minute: '2-digit',
+        day: 'numeric', month: 'long', year: 'numeric',
+        timeZone: tz, hour12: false
+      }).replace(',', ' at') + ' ' + tzLabel;
+      embargoEl.textContent = `Do not publish before: ${s}`;
+      pillEl.style.display = 'inline-flex';
+    }
+  }
+
+  // Show Download All button
+  const dlAllBtn = $('assetDlAllBtn');
+  if (dlAllBtn) dlAllBtn.style.display = 'inline-flex';
+
+  const docs = data.documents?.length || 0;
+  const imgs = data.images?.length    || 0;
+  const vids = data.videos?.length    || 0;
+
+  const assetContent = $('assetContent');
+  if (!assetContent) return;
+
+  // Helper — section header with count and collapse chevron
+  function secHdr(label, count) {
+    const empty = count === 0;
+    return `
+    <div class="asset-sec-hdr${empty ? ' sec-empty' : ''}" onclick="toggleAssetSec(this)">
+      <span class="asset-sec-label">${label}<span class="asset-sec-count">&thinsp;(${count})</span></span>
+      <i class="fas fa-chevron-down asset-sec-chevron${empty ? ' collapsed' : ''}" title="Collapse section"></i>
+    </div>`;
+  }
+
+  let html = '';
+
+  // ── Documents ────────────────────────────────────────────────
+  html += secHdr('Documents', docs);
+  html += `<div class="asset-sec-body${docs === 0 ? ' collapsed' : ''}" style="padding-bottom:8px;">`;
+  if (docs > 0) {
+    html += `<div class="doc-list">`;
+    data.documents.forEach(doc => {
+      const isPdf  = doc.mime?.includes('pdf') || doc.name?.endsWith('.pdf');
+      const isWord = doc.name?.match(/\.(doc|docx)$/i);
+      const icoFa  = isPdf ? 'fa-file-pdf' : isWord ? 'fa-file-word' : 'fa-file-alt';
+      const icoCls = isPdf ? 'di-pdf' : isWord ? 'di-word' : 'di-doc';
+      html += `
+        <div class="doc-row">
+          <div class="doc-ico ${icoCls}"><i class="fas ${icoFa}"></i></div>
+          <div class="doc-info">
+            <div class="doc-name" title="${doc.name}">${doc.name}</div>
+            <div class="doc-meta">${doc.size}</div>
+          </div>
+          <div class="doc-actions">
+            ${isPdf ? `<a href="${doc.url}" target="_blank" class="btn btn-green btn-sm"><i class="fas fa-eye"></i> View</a>` : ''}
+            <a href="${doc.url}" download="${doc.name}" class="btn btn-blue btn-sm"><i class="fas fa-download"></i> Download</a>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<p class="sec-empty-msg">No documents in this vault.</p>`;
+  }
+  html += `</div>`;
+
+  // ── Images ───────────────────────────────────────────────────
+  _assetLightboxImages = data.images || [];
+  html += secHdr('Images', imgs);
+  html += `<div class="asset-sec-body${imgs === 0 ? ' collapsed' : ''}" id="imgSecBody">`;
+  if (imgs > 0) {
+    html += `
+      <div class="img-toolbar">
+        <div class="img-toolbar-left">
+          <label class="img-sel-all-label">
+            <input type="checkbox" id="imgSelectAll" onchange="toggleSelectAllImages(this)">
+            Select / Deselect All
+          </label>
+          <span class="img-sel-count" id="imgSelCount"></span>
+        </div>
+        <button class="img-dl-selected" id="imgDlSelectedBtn" onclick="downloadSelectedImages()">
+          <i class="fas fa-download"></i> Download Selected
+        </button>
+      </div>
+      <div class="asset-img-grid" id="assetImgGrid">`;
+    data.images.forEach((img, i) => {
+      html += `
+        <div class="aic" id="aic-${i}" onclick="toggleImgSelect(event,${i})">
+          <div class="aic-check"><i class="fas fa-check"></i></div>
+          <div class="aic-thumb">
+            <img src="${img.url}" alt="${img.name}" loading="lazy">
+          </div>
+          <div class="aic-info">
+            <div class="aic-name" title="${img.name}">${img.name}</div>
+            <div class="aic-detail">
+              <span class="aic-size">${img.size}</span>
+              <a href="${img.url}" download="${img.name}" class="aic-dl" onclick="event.stopPropagation()" title="Download"><i class="fas fa-download"></i></a>
+            </div>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<p class="sec-empty-msg">No images in this vault.</p>`;
+  }
+  html += `</div>`;
+
+  // ── Videos ───────────────────────────────────────────────────
+  html += secHdr('Videos', vids);
+  html += `<div class="asset-sec-body${vids === 0 ? ' collapsed' : ''}" style="padding-bottom:4px;">`;
+  if (vids > 0) {
+    html += `<div class="asset-vid-grid" style="margin-top:4px;">`;
+    data.videos.forEach((vid, i) => {
+      html += `
+        <div class="avc" onclick="openVideoLightbox(${i})">
+          <div class="avc-thumb">
+            <video src="${vid.url}" preload="metadata" muted playsinline></video>
+            <div class="avc-play"><i class="fas fa-play-circle"></i></div>
+          </div>
+          <div class="avc-info">
+            <div class="avc-name" title="${vid.name}">${vid.name}</div>
+            <div class="avc-detail">
+              <span class="avc-size">${vid.size}</span>
+              <a href="${vid.url}" download="${vid.name}" class="avc-dl" onclick="event.stopPropagation()" title="Download"><i class="fas fa-download"></i></a>
+            </div>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<p class="sec-empty-msg">No videos in this vault.</p>`;
+  }
+  html += `</div>`;
+
+  assetContent.innerHTML = html;
+  window._currentVaultData = data;
+  window._assetVideos = data.videos || [];
+  window._selectedImages = new Set();
+  updateImgSelUI();
+
+  // Inject video lightbox if not present
+  if (!$('vidLightbox')) {
+    const lb = document.createElement('div');
+    lb.id = 'vidLightbox'; lb.className = 'vid-lb';
+    lb.innerHTML = `
+      <div class="vid-lb-hdr">
+        <div class="vid-lb-title" id="vidLbTitle"></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <a id="vidLbDl" href="#" download class="btn btn-ghost btn-sm" style="color:#fff;border-color:rgba(255,255,255,0.2);"><i class="fas fa-download"></i> Download</a>
+          <button onclick="closeVideoLightbox()" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:14px;"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+      <div class="vid-lb-body">
+        <video id="vidLbPlayer" controls autoplay style="max-width:100%;max-height:80vh;border-radius:6px;background:#000;"></video>
+      </div>`;
+    lb.addEventListener('click', e => { if (e.target === lb) closeVideoLightbox(); });
+    document.body.appendChild(lb);
+  }
+}
+
+// ── Download All ──────────────────────────────────────────────
+function downloadAllAssets() {
+  const data = window._currentVaultData;
+  if (!data) return;
+  const all = [
+    ...(data.documents || []),
+    ...(data.images    || []),
+    ...(data.videos    || []),
+  ];
+  if (!all.length) { toast('No assets to download.'); return; }
+  all.forEach((asset, i) => {
+    setTimeout(() => {
+      const a = document.createElement('a');
+      a.href = asset.url; a.download = asset.name;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+    }, i * 400);
+  });
+  toast(`Downloading all ${all.length} asset${all.length !== 1 ? 's' : ''}…`);
+}
+
+// ── Section collapse ──────────────────────────────────────────
+function toggleAssetSec(hdr) {
+  const body     = hdr.nextElementSibling;
+  const chevron  = hdr.querySelector('.asset-sec-chevron');
+  const collapsed = body.classList.toggle('collapsed');
+  chevron.classList.toggle('collapsed', collapsed);
+}
+
+// ── Image selection ───────────────────────────────────────────
+window._selectedImages = new Set();
+
+function toggleImgSelect(e, idx) {
+  // If click was on the DL link, don't toggle selection
+  if (e.target.closest('.aic-dl')) return;
+  // If click was on image area, open lightbox; if on checkbox area, toggle selection
+  const card = $(`aic-${idx}`);
+  if (!card) return;
+  if (e.target.closest('.aic-check') || e.target.tagName === 'INPUT') {
+    // Checkbox area — toggle selection
+    if (window._selectedImages.has(idx)) {
+      window._selectedImages.delete(idx);
+      card.classList.remove('selected');
+    } else {
+      window._selectedImages.add(idx);
+      card.classList.add('selected');
+    }
+    updateImgSelUI();
+  } else {
+    // Thumbnail/name area — open lightbox
+    openAssetLightbox(idx);
+  }
+}
+
+function toggleSelectAllImages(chk) {
+  const total = _assetLightboxImages.length;
+  window._selectedImages = chk.checked ? new Set([...Array(total).keys()]) : new Set();
+  for (let i = 0; i < total; i++) {
+    const card = $(`aic-${i}`);
+    if (card) card.classList.toggle('selected', chk.checked);
+  }
+  updateImgSelUI();
+}
+
+function updateImgSelUI() {
+  const count   = window._selectedImages?.size || 0;
+  const total   = _assetLightboxImages.length;
+  const countEl = $('imgSelCount');
+  const dlBtn   = $('imgDlSelectedBtn');
+  const selAll  = $('imgSelectAll');
+  if (countEl) countEl.textContent = count > 0 ? `${count} of ${total} selected` : '';
+  if (dlBtn)   dlBtn.classList.toggle('visible', count > 0);
+  if (selAll)  selAll.indeterminate = count > 0 && count < total;
+  if (selAll)  selAll.checked = count === total && total > 0;
+}
+
+function downloadSelectedImages() {
+  if (!window._selectedImages?.size) return;
+  // Sequential download with small delay to avoid browser blocking
+  const indices = [...window._selectedImages];
+  indices.forEach((idx, i) => {
+    setTimeout(() => {
+      const img = _assetLightboxImages[idx];
+      if (!img) return;
+      const a = document.createElement('a');
+      a.href = img.url; a.download = img.name;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+    }, i * 300);
+  });
+  toast(`Downloading ${indices.length} image${indices.length !== 1 ? 's' : ''}…`);
+}
+
+// ── Lightbox ─────────────────────────────────────────────────
+function openAssetLightbox(index) {
+  _assetLightboxIndex = index;
+  const img = _assetLightboxImages[index];
+  if (!img) return;
+
+  let lb = $('assetLightbox');
+  if (!lb) {
+    lb = document.createElement('div');
+    lb.id = 'assetLightbox';
+    lb.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);display:flex;flex-direction:column;';
+    lb.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.1);">
+        <div id="lbTitle" style="font-size:13px;font-weight:600;color:#fff;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+        <div style="display:flex;gap:8px;flex-shrink:0;margin-left:16px;">
+          <span id="lbCount" style="font-size:12px;color:rgba(255,255,255,0.5);align-self:center;margin-right:8px;"></span>
+          <a id="lbDl" href="#" download style="padding:6px 14px;background:var(--v-blue);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px;"><i class="fas fa-download"></i> Download</a>
+          <button onclick="closeAssetLightbox()" style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:14px;"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+        <button onclick="lbPrev()" style="position:absolute;left:16px;background:rgba(255,255,255,0.1);border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:16px;z-index:1;"><i class="fas fa-chevron-left"></i></button>
+        <img id="lbImg" src="" style="max-width:85%;max-height:85vh;object-fit:contain;border-radius:4px;" alt="">
+        <button onclick="lbNext()" style="position:absolute;right:16px;background:rgba(255,255,255,0.1);border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:16px;z-index:1;"><i class="fas fa-chevron-right"></i></button>
+      </div>`;
+    document.body.appendChild(lb);
+    lb.addEventListener('click', e => { if (e.target === lb) closeAssetLightbox(); });
+  }
+
+  updateLightbox();
+  lb.style.display = 'flex';
+}
+
+function updateLightbox() {
+  const img  = _assetLightboxImages[_assetLightboxIndex];
+  const total = _assetLightboxImages.length;
+  $('lbImg').src          = img.url;
+  $('lbImg').alt          = img.name;
+  $('lbTitle').textContent = img.name;
+  $('lbCount').textContent = `${_assetLightboxIndex + 1} of ${total}`;
+  $('lbDl').href           = img.url;
+  $('lbDl').download       = img.name;
+}
+
+function lbPrev() {
+  _assetLightboxIndex = (_assetLightboxIndex - 1 + _assetLightboxImages.length) % _assetLightboxImages.length;
+  updateLightbox();
+}
+
+function lbNext() {
+  _assetLightboxIndex = (_assetLightboxIndex + 1) % _assetLightboxImages.length;
+  updateLightbox();
+}
+
+function closeAssetLightbox() {
+  const lb = $('assetLightbox');
+  if (lb) lb.style.display = 'none';
+}
+
+// ── Video lightbox ────────────────────────────────────────────
+function openVideoLightbox(idx) {
+  const vid = window._assetVideos?.[idx];
+  if (!vid) return;
+  const lb = $('vidLightbox');
+  if (!lb) return;
+  $('vidLbTitle').textContent = vid.name;
+  $('vidLbDl').href     = vid.url;
+  $('vidLbDl').download = vid.name;
+  const player = $('vidLbPlayer');
+  player.src = vid.url;
+  player.load();
+  player.play().catch(() => {});
+  lb.classList.add('open');
+}
+
+function closeVideoLightbox() {
+  const lb = $('vidLightbox');
+  if (!lb) return;
+  lb.classList.remove('open');
+  const player = $('vidLbPlayer');
+  if (player) { player.pause(); player.src = ''; }
 }
 
 // ── Toast ─────────────────────────────────────────────────────
@@ -1856,7 +3188,6 @@ function toast(msg, icon = 'fa-check-circle') {
 window.toast = toast;
 </script>
 
+<script src="/amc-notifications.js"></script>
 </body>
 </html>
-
-

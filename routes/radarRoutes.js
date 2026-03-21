@@ -17,6 +17,7 @@ const createRadarAlertSchema = z.object({
   radarAlertUUID:      z.string().uuid().optional().or(z.literal('')),
   title:               z.string().min(1).max(250),
   dropDate:            z.string().refine((val) => !isNaN(new Date(val).getTime()), { message: 'Invalid date format' }),
+  eventEndDate:        z.string().optional().nullable(),
   brand:               z.string().optional().nullable(),
   companyName:         z.string().optional().nullable(),
   region:              z.string().optional().nullable(),
@@ -35,14 +36,23 @@ const createRadarAlertSchema = z.object({
 
 const radarUploadDir  = path.join(__dirname, '..', 'public', 'uploads', 'radar_teasers');
 const radarDocDir     = path.join(__dirname, '..', 'public', 'uploads', 'radar_docs');
+const radarImagesDir  = path.join(__dirname, '..', 'public', 'uploads', 'radar_images');
+const radarVideosDir  = path.join(__dirname, '..', 'public', 'uploads', 'radar_videos');
+const radarSupDocDir  = path.join(__dirname, '..', 'public', 'uploads', 'radar_sup_docs');
 
-[radarUploadDir, radarDocDir].forEach(dir => {
+[radarUploadDir, radarDocDir, radarImagesDir, radarVideosDir, radarSupDocDir].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
 const radarStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, file.fieldname === 'radarAlertDoc' ? radarDocDir : radarUploadDir);
+    const destMap = {
+      radarAlertDoc:          radarDocDir,
+      radarImages:            radarImagesDir,
+      radarVideos:            radarVideosDir,
+      radarSupplementaryDocs: radarSupDocDir,
+    };
+    cb(null, destMap[file.fieldname] || radarUploadDir);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -54,17 +64,21 @@ const radarStorage = multer.diskStorage({
 });
 
 const radarFileFilter = (req, file, cb) => {
-  if (file.fieldname === 'radarTeaserImage') {
+  if (file.fieldname === 'radarTeaserImage' || file.fieldname === 'radarImages') {
     file.mimetype.startsWith('image/')
       ? cb(null, true)
-      : cb(new Error('Teaser must be an image'), false);
-  } else if (file.fieldname === 'radarAlertDoc') {
+      : cb(new Error('Image files must be a valid image format'), false);
+  } else if (file.fieldname === 'radarAlertDoc' || file.fieldname === 'radarSupplementaryDocs') {
     ['application/pdf',
      'application/msword',
      'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
       .includes(file.mimetype)
       ? cb(null, true)
-      : cb(new Error('Alert document must be PDF or DOCX'), false);
+      : cb(new Error('Documents must be PDF or DOCX'), false);
+  } else if (file.fieldname === 'radarVideos') {
+    file.mimetype.startsWith('video/')
+      ? cb(null, true)
+      : cb(new Error('Video files must be a valid video format'), false);
   } else {
     cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE', file.fieldname));
   }
@@ -75,8 +89,11 @@ const radarUpload = multer({
   fileFilter: radarFileFilter,
   limits:     { fileSize: 10 * 1024 * 1024 }
 }).fields([
-  { name: 'radarTeaserImage', maxCount: 1 },
-  { name: 'radarAlertDoc',    maxCount: 1 }
+  { name: 'radarTeaserImage',      maxCount: 1  },
+  { name: 'radarAlertDoc',         maxCount: 1  },
+  { name: 'radarImages',           maxCount: 20 },
+  { name: 'radarVideos',           maxCount: 10 },
+  { name: 'radarSupplementaryDocs',maxCount: 10 },
 ]);
 
 const cleanupFiles = (req) => {
@@ -87,7 +104,7 @@ const cleanupFiles = (req) => {
 };
 
 const buildAlertData = (validatedData, req) => {
-  const { dropDate, tags, action, radarAlertUUID, ...rest } = validatedData;
+  const { dropDate, eventEndDate, tags, action, radarAlertUUID, ...rest } = validatedData;
 
   const data = {
     ...rest,
@@ -97,11 +114,17 @@ const buildAlertData = (validatedData, req) => {
     user:          req.user.id,
   };
 
+  // Multi-day event end date
+  if (eventEndDate && !isNaN(new Date(eventEndDate).getTime())) {
+    data.eventEndDateTime = new Date(eventEndDate);
+  }
+
   let finalClientId = req.user.clientId;
   if (req.user.role === 'platform_admin' && req.body.targetClientIdForAdmin) {
     finalClientId = req.body.targetClientIdForAdmin;
   }
-  data.clientId = finalClientId;
+  // platform_admin has no clientId — only set it if we actually have a value
+  if (finalClientId) data.clientId = finalClientId;
 
   const teaserFile = req.files?.radarTeaserImage?.[0];
   if (teaserFile) {
@@ -112,6 +135,24 @@ const buildAlertData = (validatedData, req) => {
   if (docFile) {
     data.alertDocPath = `/uploads/radar_docs/${docFile.filename}`;
     data.alertDocOriginalName = docFile.originalname || docFile.filename;
+  }
+
+  const imageFiles = req.files?.radarImages;
+  if (imageFiles?.length) {
+    data.imagePaths = imageFiles.map(f => `/uploads/radar_images/${f.filename}`);
+  }
+
+  const videoFiles = req.files?.radarVideos;
+  if (videoFiles?.length) {
+    data.videoPaths = videoFiles.map(f => `/uploads/radar_videos/${f.filename}`);
+  }
+
+  const supDocFiles = req.files?.radarSupplementaryDocs;
+  if (supDocFiles?.length) {
+    data.supplementaryDocs = supDocFiles.map(f => ({
+      path:         `/uploads/radar_sup_docs/${f.filename}`,
+      originalName: f.originalname || f.filename,
+    }));
   }
 
   return data;
@@ -125,8 +166,9 @@ const buildAlertData = (validatedData, req) => {
 // GET /api/v1/radar/alerts — public upcoming published alerts (newradarfe.html)
 router.get('/alerts', authenticate, async (req, res) => {
   try {
-    const now = new Date();
-    const alerts = await RadarAlert.find({ status: 'published', eventDateTime: { $gte: now } })
+    const now          = new Date();
+    const sixHoursAgo = new Date(now.getTime() - (6 * 60 * 60 * 1000));
+    const alerts = await RadarAlert.find({ status: 'published', eventDateTime: { $gte: sixHoursAgo } })
       .sort({ eventDateTime: 1 })
       .populate('user', 'email name')
       .populate('clientId', 'clientName');
@@ -218,13 +260,17 @@ router.post('/alerts', authenticate, radarUpload, async (req, res) => {
     const validationResult = createRadarAlertSchema.safeParse(req.body);
     if (!validationResult.success) {
       cleanupFiles(req);
+      console.error('❌ Zod validation failed:', JSON.stringify(validationResult.error.flatten()));
       return res.status(400).json({ success: false, error: 'Invalid input data.', details: validationResult.error.flatten() });
     }
 
     const alertData = {
       ...buildAlertData(validationResult.data, req),
-      uuid: uuidv4(),
+      uuid:     uuidv4(),
+      alertRef: `AMR-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
     };
+
+    console.log('📦 Alert data keys:', Object.keys(alertData));
 
     const newAlert = await RadarAlert.create(alertData);
     console.log('✅ RADAR ALERT CREATED:', newAlert.uuid, newAlert.title);
@@ -232,11 +278,12 @@ router.post('/alerts', authenticate, radarUpload, async (req, res) => {
     res.status(201).json({ success: true, message: `Radar Alert '${newAlert.title}' created.`, data: newAlert });
   } catch (error) {
     cleanupFiles(req);
-    console.error('Error in POST /api/v1/radar/alerts:', error);
+    console.error('❌ POST /api/v1/radar/alerts FAILED — name:', error.name, '— message:', error.message);
+    if (error.errors) console.error('❌ Mongoose errors:', JSON.stringify(error.errors));
     if (error instanceof multer.MulterError) {
       return res.status(400).json({ success: false, error: 'MulterError', message: error.message });
     }
-    res.status(500).json({ success: false, error: 'Server error processing the Radar Alert.' });
+    res.status(500).json({ success: false, error: 'Server error processing the Radar Alert.', detail: error.message });
   }
 });
 
@@ -298,14 +345,19 @@ router.get('/alerts/foredit/:uuid', authenticate, async (req, res) => {
   }
 });
 
-// GET /api/v1/radar/alerts/:uuid — single published alert (amc-alert-detail.html)
+// GET /api/v1/radar/alerts/:uuid — single alert detail (amc-alert-detail.html)
 router.get('/alerts/:uuid', authenticate, async (req, res) => {
   try {
-    const now = new Date();
-    const alert = await RadarAlert.findOne({ uuid: req.params.uuid, status: 'published', eventDateTime: { $gte: now } })
+    // Find in active collection first, then archive
+    let alert = await RadarAlert.findOne({ uuid: req.params.uuid, status: 'published' })
       .populate('user', 'email name')
       .populate('clientId', 'clientName');
-    if (!alert) return res.status(404).json({ success: false, error: 'Active Radar Alert not found or has passed.' });
+    if (!alert) {
+      alert = await RadarAlertArchive.findOne({ uuid: req.params.uuid })
+        .populate('user', 'email name')
+        .populate('clientId', 'clientName');
+    }
+    if (!alert) return res.status(404).json({ success: false, error: 'Alert not found.' });
     res.status(200).json({ success: true, data: alert });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Server error.' });

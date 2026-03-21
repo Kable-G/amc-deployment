@@ -1922,7 +1922,7 @@
                         const data = await response.json();
                         
                         // Store authentication token and user data
-                        localStorage.setItem('token', data.token);
+                        if (data.token) localStorage.setItem('token', data.token);
                         localStorage.setItem('user', JSON.stringify(data.user));
                         sessionStorage.setItem('justLoggedIn', 'true');
                         
@@ -2083,7 +2083,7 @@
                     } else {
                         // Direct login (for admin-created users)
                         if (data.token) {
-                            localStorage.setItem('token', data.token);
+                            if (data.token) localStorage.setItem('token', data.token);
                         }
                         localStorage.setItem('user', JSON.stringify(data.user));
                         sessionStorage.setItem('justLoggedIn', 'true');
@@ -2161,7 +2161,7 @@
                     const data = await response.json();
                     
                     // Store authentication token and user data using consistent keys
-                    localStorage.setItem('token', data.token);
+                    if (data.token) localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
                     // Set flag to show welcome modal on automediacenter-mobile-v6.5.html
@@ -2253,7 +2253,7 @@
                     const data = await response.json();
                     
                     // Store authentication token and user data using consistent keys
-                    localStorage.setItem('token', data.token);
+                    if (data.token) localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     sessionStorage.setItem('justLoggedIn', 'true');
                     sessionStorage.removeItem('verificationEmail');

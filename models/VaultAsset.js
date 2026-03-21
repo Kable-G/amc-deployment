@@ -98,6 +98,24 @@ const vaultAssetSchema = new mongoose.Schema({
         type: String,
         enum: ['draft', 'active', 'expired', 'archived'],
         default: 'draft'
+    },
+    expiredAt: {
+        type: Date,
+        default: null
+    },
+    brand: {
+        type: String,
+        trim: true,
+        required: false
+    },
+    companyName: {
+        type: String,
+        trim: true,
+        required: false
+    },
+    invitedUsers: {
+        type: [String],
+        default: []
     }
 }, {
     timestamps: true // Automatically adds createdAt and updatedAt

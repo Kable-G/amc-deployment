@@ -74,11 +74,26 @@
             font-variation-settings: 'opsz' 42;
             letter-spacing: -0.04em;
             line-height: 1.05;
-            margin: 0 0 8px 0;
+            margin: 0 0 10px 0;
             padding: 0;
         }
         body:not(.dark-mode) .alert-page-title { color: #0f172a; }
         body.dark-mode      .alert-page-title { color: #f8fafc; }
+
+        /* Byline — brand/company name, sits between title and utility bar */
+        .alert-byline {
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+            min-height: 0;
+        }
+        body:not(.dark-mode) .alert-byline { color: #1d4ed8; }
+        body.dark-mode       .alert-byline { color: #60a5fa; }
+
+        .page-header { margin-bottom: 14px; }
 
         @media (max-width: 767px) {
             .alert-page-title { font-size: 28px; letter-spacing: -0.03em; }
@@ -148,23 +163,45 @@
         }
         .alert-sidebar-col::-webkit-scrollbar { display: none; }
 
+        /* Sidebar groups — desktop passthrough */
+        .sidebar-top-group    { display: block; }
+        .sidebar-bottom-group { display: block; }
+
         @media (max-width: 960px) {
-            .alert-body-layout { flex-direction: column; }
-            .alert-sidebar-col { width: 100%; position: static; max-height: none; }
-            .pdf-control-bar { display: none !important; }
-            /* Normalise amc-page to symmetric 12px padding on mobile
-               so PDF breakout is simply -12px each side (matching mobile-main) */
-            .amc-page { padding: 16px 12px; }
-            .pdf-viewer-wrap {
-                width: 100vw;
-                margin-left: -24px;  /* 12px amc-page + 12px mobile-main */
-                margin-right: -24px;
-                border-radius: 0;
-                border-left: none;
-                border-right: none;
-                overflow: hidden;
+            .alert-body-layout {
+                flex-direction: column;
             }
-            .pdf-viewer-wrapper { width: 100%; }
+            .alert-sidebar-col {
+                width: 100%;
+                position: static;
+                max-height: none;
+            }
+            .alert-main-col { width: 100%; min-width: 0; }
+            .pdf-control-bar { display: none !important; }
+            /* Page has 12px padding each side on mobile.
+               PDF breaks out to full bleed by negating that padding. */
+            .amc-page { padding-left: 12px !important; padding-right: 12px !important; }
+            .pdf-viewer-wrap {
+                width: calc(100% + 24px) !important;
+                margin-left:  -12px !important;
+                margin-right: -12px !important;
+                border-radius: 0 !important;
+                border-left:   none !important;
+                border-right:  none !important;
+                overflow: hidden !important;
+                box-sizing: border-box;
+            }
+            .pdf-viewer-wrapper {
+                width: 100% !important;
+                overflow: hidden !important;
+                box-sizing: border-box;
+            }
+            /* Compress title block on mobile */
+            .alert-page-title  { font-size: 22px !important; letter-spacing: -0.02em !important; margin-bottom: 6px !important; }
+            .alert-byline      { font-size: 14px !important; }
+            .page-header       { margin-bottom: 10px !important; }
+            .alert-utility-bar { gap: 8px; margin-bottom: 12px !important; padding-bottom: 12px !important; flex-wrap: wrap; }
+            .utility-actions   { margin-left: auto; }
         }
 
         /* ============================================================
@@ -175,11 +212,25 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 14px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .alert-utility-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 20px;
             padding-bottom: 16px;
             border-bottom: 1px solid var(--border-primary);
-            font-size: 13px;
-            color: var(--text-secondary);
+            flex-wrap: wrap;
+        }
+
+        .utility-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
         }
 
         .meta-item {
@@ -193,12 +244,6 @@
             color: var(--accent-primary, #3b82f6);
             font-size: 11px;
             opacity: 0.8;
-        }
-
-        .meta-actions {
-            margin-left: auto;
-            display: flex;
-            gap: 8px;
         }
 
         .meta-action-btn {
@@ -234,9 +279,22 @@
             letter-spacing: 0.06em;
         }
         .status-published { background: rgba(16,185,129,0.1); color: #059669; border: 1px solid rgba(16,185,129,0.2); }
+        .status-active    { background: rgba(16,185,129,0.1); color: #059669; border: 1px solid rgba(16,185,129,0.2); }
         .status-draft     { background: rgba(245,158,11,0.1); color: #d97706; border: 1px solid rgba(245,158,11,0.2); }
         .status-archived  { background: rgba(107,114,128,0.1); color: #6b7280; border: 1px solid rgba(107,114,128,0.2); }
         .status-cancelled { background: rgba(239,68,68,0.1); color: #dc2626; border: 1px solid rgba(239,68,68,0.2); }
+
+        .alert-ref {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            color: var(--text-secondary, #64748b);
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            display: inline-flex;
+            align-items: center;
+            opacity: 0.7;
+            white-space: nowrap;
+        }
 
         /* ============================================================
            TAG CHIPS — spec: 13px / 500 / rgba(59,130,246,0.08) / border-radius 6px
@@ -498,6 +556,13 @@
         .countdown-val.soon     { color: #f59e0b; }
         .countdown-val.upcoming { color: #3b82f6; }
         .countdown-val.past     { color: var(--text-secondary, #64748b); }
+        .countdown-val.live     { color: #22c55e; }
+
+        @keyframes amcPulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.45; }
+        }
+        .countdown-val.pulsing { animation: amcPulse 1.4s ease-in-out infinite; }
 
         .countdown-sub {
             font-size: 12px;
@@ -596,10 +661,12 @@
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0; font-size: 14px; color: #fff;
         }
-        .att-icon.pdf   { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .att-icon.word  { background: linear-gradient(135deg, #2980b9, #3498db); }
-        .att-icon.image { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
-        .att-icon.other { background: linear-gradient(135deg, #7f8c8d, #95a5a6); }
+        .att-icon.pdf   { background: linear-gradient(135deg, #e74c3c, #c0392b); color: #fff; }
+        .att-icon.word  { background: linear-gradient(135deg, #2980b9, #3498db); color: #fff; }
+        .att-icon.image { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: #fff; }
+        .att-icon.video { background: linear-gradient(135deg, #db2777, #be185d); color: #fff; }
+        .att-icon.other { background: linear-gradient(135deg, #7f8c8d, #95a5a6); color: #fff; }
+        .att-icon.doc   { background: linear-gradient(135deg, #7f8c8d, #95a5a6); color: #fff; }
 
         .att-info { flex: 1; min-width: 0; }
 
@@ -831,18 +898,16 @@
         <!-- PAGE TITLE BLOCK -->
         <div class="page-header">
             <h1 class="alert-page-title" id="alert-title">Loading…</h1>
-            <p class="alert-page-subtitle" id="alert-subtitle"></p>
+            <p class="alert-byline" id="alert-brand-meta-wrap">
+                <span id="alert-brand-meta"></span>
+            </p>
         </div>
 
-        <!-- Tags -->
-        <div id="alert-tags" class="alert-tags"></div>
-
-        <!-- Meta bar -->
-        <div class="alert-meta-bar">
-            <span class="meta-item"><i class="fas fa-calendar-alt"></i><span id="alert-date-display">—</span></span>
-            <span class="meta-item"><i class="fas fa-building"></i><span id="alert-brand-meta">—</span></span>
-            <span class="meta-item meta-item--status"><span id="alert-status-badge" class="status-badge status-published">PUBLISHED</span></span>
-            <div class="meta-actions">
+        <!-- Utility bar: status + ref + print + share -->
+        <div class="alert-utility-bar">
+            <span id="alert-status-badge" class="status-badge status-published">ACTIVE</span>
+            <span class="alert-ref" id="alert-ref"></span>
+            <div class="utility-actions">
                 <button class="meta-action-btn" id="btn-print"><i class="fas fa-print"></i> Print</button>
                 <button class="meta-action-btn" id="btn-share-header"><i class="fas fa-share-alt"></i> Share</button>
             </div>
@@ -902,35 +967,56 @@
             <!-- SIDEBAR -->
             <aside class="alert-sidebar-col">
 
-                <!-- Countdown -->
-                <div class="sidebar-block" id="countdown-block">
-                    <div class="sidebar-label"><i class="fas fa-stopwatch"></i>Time until event</div>
-                    <div class="countdown-val" id="countdown-val">—</div>
-                    <div class="countdown-sub" id="countdown-sub"></div>
-                </div>
+                <!-- TOP GROUP: countdown, date, calendar, share — floats above PDF on mobile -->
+                <div class="sidebar-top-group">
 
-                <!-- Event date -->
-                <div class="sidebar-block hidden" id="event-date-block">
-                    <div class="sidebar-label"><i class="fas fa-calendar-check"></i>Event date &amp; time</div>
-                    <div class="event-date-val" id="event-date-val"></div>
-                    <div class="event-date-time" id="event-date-time"></div>
-                </div>
+                    <!-- Countdown -->
+                    <div class="sidebar-block" id="countdown-block">
+                        <div class="sidebar-label"><i class="fas fa-stopwatch"></i>Time until event</div>
+                        <div class="countdown-val" id="countdown-val">—</div>
+                        <div class="countdown-sub" id="countdown-sub"></div>
+                    </div>
 
-                <!-- Calendar CTA -->
-                <button class="btn-calendar" id="btn-calendar">
-                    <i class="fas fa-calendar-plus"></i> Add to Calendar
-                </button>
+                    <!-- Event date -->
+                    <div class="sidebar-block hidden" id="event-date-block">
+                        <div class="sidebar-label"><i class="fas fa-calendar-check"></i>Event date &amp; time</div>
+                        <div class="event-date-val" id="event-date-val"></div>
+                        <div class="event-date-time" id="event-date-time"></div>
+                    </div>
 
-                <!-- Share CTA -->
-                <button class="btn-share" id="btn-share-sidebar">
-                    <i class="fas fa-share-alt"></i> Share Alert
-                </button>
+                    <!-- Calendar CTA -->
+                    <button class="btn-calendar" id="btn-calendar">
+                        <i class="fas fa-calendar-plus"></i> Add to Calendar
+                    </button>
 
-                <!-- Attachments (future — rendered by JS when available) -->
+                </div><!-- /sidebar-top-group -->
+
+                <!-- BOTTOM GROUP: asset downloads — stays below PDF on mobile -->
+                <div class="sidebar-bottom-group">
                 <div class="sidebar-block hidden" id="attachments-block" style="margin-top:2px;">
                     <div class="sidebar-label"><i class="fas fa-paperclip"></i>Attachments</div>
                     <ul class="attachments-list" id="attachments-list"></ul>
                 </div>
+
+                <!-- Preview Images -->
+                <div class="sidebar-block hidden" id="images-block">
+                    <div class="sidebar-label"><i class="fas fa-images"></i>Preview Images</div>
+                    <ul class="attachments-list" id="images-list"></ul>
+                </div>
+
+                <!-- Preview Videos -->
+                <div class="sidebar-block hidden" id="videos-block">
+                    <div class="sidebar-label"><i class="fas fa-video"></i>Preview Videos</div>
+                    <ul class="attachments-list" id="videos-list"></ul>
+                </div>
+
+                <!-- Supporting Documents -->
+                <div class="sidebar-block hidden" id="sup-docs-block">
+                    <div class="sidebar-label"><i class="fas fa-paperclip"></i>Supporting Documents</div>
+                    <ul class="attachments-list" id="sup-docs-list"></ul>
+                </div>
+
+                </div><!-- /sidebar-bottom-group -->
 
             </aside>
 
@@ -1013,7 +1099,10 @@ function generateICS(data) {
     const title     = (data.title || 'AutoMediaCenter Media Alert').replace(/[\r\n]/g, ' ');
     const eventDate = new Date(data.eventDateTime);
     if (isNaN(eventDate)) return null;
-    const endDate   = new Date(eventDate.getTime() + 3600000);
+    // Multi-day: use eventEndDateTime; single: eventDate + 1 hour
+    const endDate   = data.eventEndDateTime
+        ? new Date(data.eventEndDateTime)
+        : new Date(eventDate.getTime() + 3600000);
     const uid       = (data.uuid || ('amc-' + Date.now())) + '@automediacenter.com';
 
     function toICS(d) { return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''); }
@@ -1060,7 +1149,9 @@ function downloadICS(data) {
 function buildGoogleURL(data) {
     const eventDate = new Date(data.eventDateTime);
     if (isNaN(eventDate)) return null;
-    const endDate   = new Date(eventDate.getTime() + 3600000);
+    const endDate   = data.eventEndDateTime
+        ? new Date(data.eventEndDateTime)
+        : new Date(eventDate.getTime() + 3600000);
     function toGC(d) { return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z/,'Z'); }
     const details   = encodeURIComponent(
         ['AutoMediaCenter: Media Alert', data.brand ? 'Brand: ' + data.brand : ''].filter(Boolean).join('\n')
@@ -1199,11 +1290,10 @@ async function _alertRenderAllPages() {
     const isMobile = window.innerWidth <= 960;
     let wrapperWidth = wrapper.getBoundingClientRect().width;
     if (!wrapperWidth) {
-        // Not laid out yet — estimate from main column
         const mainCol = document.querySelector('.alert-main-col');
         wrapperWidth = mainCol ? mainCol.getBoundingClientRect().width : window.innerWidth;
     }
-    // On mobile, PDF bleeds edge-to-edge so use full viewport width
+    // On mobile use full viewport width — matches the edge-to-edge CSS breakout
     if (isMobile) wrapperWidth = window.innerWidth;
 
     const pagesToRender = _alertShowFull ? _alertTotalPages : Math.min(3, _alertTotalPages);
@@ -1738,41 +1828,98 @@ async function showEmailLinkPopover(mailtoUrl, anchorElement) {
 // RENDER ALERT
 // ================================================================
 function renderAlert(alert) {
-    // Title & subtitle
-    document.getElementById('alert-title').textContent    = alert.title || 'Untitled Alert';
-    document.getElementById('alert-subtitle').textContent = alert.brand || '';
-
-    // Tags
-    const tagsEl = document.getElementById('alert-tags');
-    if (tagsEl) {
-        tagsEl.innerHTML = '';
-        const tags = alert.tags || [];
-        tags.forEach(tag => {
-            const span = document.createElement('span');
-            span.className = 'tag-chip';
-            span.innerHTML = `<i class="fas fa-tag"></i>${tag}`;
-            tagsEl.appendChild(span);
-        });
+    // Reference number
+    const refEl = document.getElementById('alert-ref');
+    if (refEl) {
+        if (alert.alertRef) {
+            refEl.textContent = alert.alertRef;
+        } else {
+            const year    = new Date(alert.createdAt).getFullYear();
+            const shortId = (alert._id || alert.uuid || '').toString().slice(-4).toUpperCase();
+            refEl.textContent = `AMR-${year}-${shortId}`;
+        }
     }
 
-    // Meta bar
+    // Title only — no subtitle
+    document.getElementById('alert-title').textContent = alert.title || 'Untitled Alert';
+
+    // Tags — hidden on detail page (used for search/filtering only)
+    const tagsEl = document.getElementById('alert-tags');
+    if (tagsEl) tagsEl.style.display = 'none';
+
+    // Meta bar — date removed, brand only
     const eventDate = alert.eventDateTime;
     const validDate = eventDate && !isNaN(new Date(eventDate).getTime());
-    if (validDate) {
-        const d = new Date(eventDate);
-        document.getElementById('alert-date-display').textContent =
-            d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'long', year:'numeric' }) +
-            ' · ' + d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
-    }
-    const brandMetaEl = document.getElementById('alert-brand-meta');
-    if (brandMetaEl) brandMetaEl.textContent = alert.brand || '';
+    const tz        = alert.eventTimezone || 'UTC';
 
-    // Status badge
+    // Helper: get DST-aware timezone abbreviation (e.g. CET, CEST, GMT, BST, EDT)
+    function tzAbbr(date, timezone) {
+        try {
+            const parts = new Intl.DateTimeFormat('en-GB', {
+                timeZone:     timezone,
+                timeZoneName: 'short'
+            }).formatToParts(date);
+            const tzPart = parts.find(p => p.type === 'timeZoneName');
+            return tzPart ? tzPart.value : timezone;
+        } catch (e) {
+            return timezone;
+        }
+    }
+
+    // Helper: format time in the event's own timezone
+    function fmtTime(date, timezone) {
+        try {
+            return date.toLocaleTimeString('en-GB', {
+                hour:     '2-digit',
+                minute:   '2-digit',
+                timeZone: timezone
+            });
+        } catch (e) {
+            return date.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+        }
+    }
+
+    // Helper: format date in the event's own timezone
+    function fmtDate(date, timezone, opts) {
+        try {
+            return date.toLocaleDateString('en-GB', { ...opts, timeZone: timezone });
+        } catch (e) {
+            return date.toLocaleDateString('en-GB', opts);
+        }
+    }
+
+    // Brand byline — hide if identical to title or empty, use companyName as fallback
+    const brandMetaWrap = document.getElementById('alert-brand-meta-wrap');
+    const brandMetaEl   = document.getElementById('alert-brand-meta');
+    const brandVal      = (alert.brand || alert.companyName || '').trim();
+    const titleVal      = (alert.title || '').trim();
+    if (brandMetaWrap && brandMetaEl) {
+        if (!brandVal || brandVal.toLowerCase() === titleVal.toLowerCase()) {
+            brandMetaWrap.style.display = 'none';
+        } else {
+            brandMetaEl.textContent = brandVal;
+        }
+    }
+
+    // Status badge — published → Active, archived → Archived
     const statusEl = document.getElementById('alert-status-badge');
     if (statusEl) {
-        const status = (alert.status || 'PUBLISHED').toUpperCase();
-        statusEl.textContent = status;
-        statusEl.className = 'status-badge status-' + status.toLowerCase();
+        const now        = new Date();
+        const evDate     = new Date(alert.eventDateTime);
+        const evEndDate  = alert.eventEndDateTime ? new Date(alert.eventEndDateTime) : null;
+        let displayStatus, cssClass;
+        if (alert.status === 'draft') {
+            displayStatus = 'Draft'; cssClass = 'status-draft';
+        } else if (alert.status === 'archived' || alert.status === 'cancelled') {
+            displayStatus = alert.status.charAt(0).toUpperCase() + alert.status.slice(1);
+            cssClass = 'status-' + alert.status;
+        } else if (evEndDate ? evEndDate < now : evDate < now) {
+            displayStatus = 'Archived'; cssClass = 'status-archived';
+        } else {
+            displayStatus = 'Active'; cssClass = 'status-active';
+        }
+        statusEl.textContent = displayStatus;
+        statusEl.className   = 'status-badge ' + cssClass;
     }
 
     // Description
@@ -1792,62 +1939,107 @@ function renderAlert(alert) {
 
     // Countdown + event date sidebar
     if (validDate) {
-        const valEl = document.getElementById('countdown-val');
-        const subEl = document.getElementById('countdown-sub');
-        const now   = new Date();
-        const ev    = new Date(eventDate);
-        const diff  = ev - now;
+        const valEl  = document.getElementById('countdown-val');
+        const subEl  = document.getElementById('countdown-sub');
+        const ev     = new Date(eventDate);
+        const evEnd  = alert.eventEndDateTime ? new Date(alert.eventEndDateTime) : null;
 
-        if (diff > 0) {
-            const days  = Math.floor(diff / 86400000);
-            const hrs   = Math.floor((diff % 86400000) / 3600000);
-            const mins  = Math.floor((diff % 3600000)  /   60000);
-            if (days > 0)       { valEl.textContent = `${days}d ${hrs}h`; }
-            else if (hrs > 0)   { valEl.textContent = `${hrs}h ${mins}m`; }
-            else                { valEl.textContent = `${mins}m`; }
-            subEl.textContent = 'until ' + ev.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
-            // Colour urgency classes
-            valEl.classList.remove('urgent','soon','upcoming');
-            if (diff < 3600000)        valEl.classList.add('urgent');   // <1h  red
-            else if (diff < 86400000)  valEl.classList.add('soon');     // <24h amber
-            else                       valEl.classList.add('upcoming'); // >24h blue
-        } else {
-            valEl.textContent = 'Event passed';
-            valEl.classList.add('past');
-            subEl.textContent = '';
+        function applyCountdown() {
+            const now  = new Date();
+            const diff = ev - now;
+
+            valEl.classList.remove('urgent','soon','upcoming','past','live','pulsing');
+
+            if (diff <= 0) {
+                // Past or live
+                if (evEnd && evEnd > now) {
+                    valEl.textContent = 'Live now';
+                    valEl.classList.add('live','pulsing');
+                    subEl.textContent = 'Ends ' + evEnd.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' })
+                                      + ' · ' + fmtTime(evEnd, tz) + ' ' + tzAbbr(evEnd, tz);
+                } else {
+                    valEl.textContent = 'Event passed';
+                    valEl.classList.add('past');
+                    subEl.textContent = '';
+                }
+                return;
+            }
+
+            const totalMins  = Math.floor(diff / 60000);
+            const totalHours = Math.floor(diff / 3600000);
+            const days       = Math.floor(diff / 86400000);
+            const hrs        = Math.floor((diff % 86400000) / 3600000);
+            const mins       = Math.floor((diff % 3600000) / 60000);
+
+            if (days >= 7) {
+                // > 7 days — blue, just days
+                valEl.textContent = days + 'd';
+                valEl.classList.add('upcoming');
+            } else if (days >= 2) {
+                // 2–7 days — amber
+                valEl.textContent = days + 'd';
+                valEl.classList.add('soon');
+            } else if (totalHours >= 1) {
+                // 1 hour – 2 days — red
+                valEl.textContent = days > 0 ? days + 'd ' + hrs + 'h' : hrs + 'h ' + mins + 'm';
+                valEl.classList.add('urgent');
+            } else if (totalMins >= 1) {
+                // < 1 hour — red pulsing
+                valEl.textContent = totalMins + 'm';
+                valEl.classList.add('urgent','pulsing');
+            } else {
+                valEl.textContent = 'Any moment';
+                valEl.classList.add('urgent','pulsing');
+            }
+
+            subEl.textContent = 'until ' + ev.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' })
+                              + ' · ' + fmtTime(ev, tz) + ' ' + tzAbbr(ev, tz);
         }
 
-        // Event date block
-        const edBlock   = document.getElementById('event-date-block');
-        const edVal     = document.getElementById('event-date-val');
-        const edTime    = document.getElementById('event-date-time');
+        applyCountdown();
+
+        // Tick every minute, switch to every second when < 1 hour out
+        let _tickInterval = setInterval(() => {
+            applyCountdown();
+            const remaining = ev - new Date();
+            if (remaining > 0 && remaining < 3600000 && _tickInterval) {
+                clearInterval(_tickInterval);
+                _tickInterval = null;
+                setInterval(applyCountdown, 1000);
+            }
+        }, 60000);
+
+        // Event date block — multi-day aware, full format, DST-aware tz abbreviation
+        const edBlock = document.getElementById('event-date-block');
+        const edVal   = document.getElementById('event-date-val');
+        const edTime  = document.getElementById('event-date-time');
         if (edBlock && edVal && edTime) {
             edBlock.classList.remove('hidden');
-            edVal.textContent  = ev.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-            edTime.textContent = ev.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }) + ' local time';
+            if (evEnd) {
+                // Multi-day: date range + timezone abbreviation (no specific time)
+                const startStr = fmtDate(ev,    tz, { day:'numeric', month:'long', year:'numeric' });
+                const endStr   = fmtDate(evEnd, tz, { day:'numeric', month:'long', year:'numeric' });
+                edVal.textContent  = startStr + ' – ' + endStr;
+                edTime.textContent = tzAbbr(ev, tz);
+            } else {
+                // Single day: full weekday, day, full month, year + time + tz abbreviation
+                edVal.textContent  = fmtDate(ev, tz, { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+                edTime.textContent = fmtTime(ev, tz) + ' ' + tzAbbr(ev, tz);
+            }
         }
 
-        // Countdown live update
-        const tick = () => {
-            const now2 = new Date(), ev2 = new Date(eventDate), d2 = ev2 - now2;
-            if (d2 > 0) {
-                const dy = Math.floor(d2/86400000), hr = Math.floor((d2%86400000)/3600000), mn = Math.floor((d2%3600000)/60000);
-                valEl.textContent = dy > 0 ? `${dy}d ${hr}h` : hr > 0 ? `${hr}h ${mn}m` : `${mn}m`;
-            } else { valEl.textContent = 'Event passed'; }
-        };
-        setInterval(tick, 60000);
-
-        // Calendar button — show picker modal (ICS download + Google Calendar)
+        // Calendar button — pass eventEndDateTime if multi-day
         const calBtn = document.getElementById('btn-calendar');
         if (calBtn) {
             calBtn.addEventListener('click', (e) => {
                 showCalPicker(calBtn, {
-                    title:         alert.title || 'Media Alert',
-                    eventDateTime: alert.eventDateTime,
-                    brand:         alert.brand  || '',
-                    region:        alert.region || '',
-                    tags:          alert.tags   || [],
-                    uuid:          alert.uuid   || ''
+                    title:            alert.title || 'Media Alert',
+                    eventDateTime:    alert.eventDateTime,
+                    eventEndDateTime: alert.eventEndDateTime || null,
+                    brand:            alert.brand  || '',
+                    region:           alert.region || '',
+                    tags:             alert.tags   || [],
+                    uuid:             alert.uuid   || ''
                 });
                 e.stopPropagation();
             });
@@ -1895,8 +2087,50 @@ function renderAlert(alert) {
         });
         if (firstPdf) {
             const pdfUrl = firstPdf.url || firstPdf.path;
-            setTimeout(() => loadPDF(pdfUrl), 500); // increased delay for mobile layout settle
+            setTimeout(() => loadPDF(pdfUrl), 500);
         }
+    }
+
+    // Preview images block
+    if (alert.imagePaths && alert.imagePaths.length) {
+        renderMediaBlock({
+            blockId:   'images-block',
+            labelIcon: 'fas fa-images',
+            labelText: 'Preview Images',
+            items:     alert.imagePaths.map(p => ({
+                url:  p.startsWith('http') ? p : `${API_BASE_URL}${p}`,
+                name: p.split('/').pop(),
+                type: 'image'
+            }))
+        });
+    }
+
+    // Preview videos block
+    if (alert.videoPaths && alert.videoPaths.length) {
+        renderMediaBlock({
+            blockId:   'videos-block',
+            labelIcon: 'fas fa-video',
+            labelText: 'Preview Videos',
+            items:     alert.videoPaths.map(p => ({
+                url:  p.startsWith('http') ? p : `${API_BASE_URL}${p}`,
+                name: p.split('/').pop(),
+                type: 'video'
+            }))
+        });
+    }
+
+    // Supporting documents block
+    if (alert.supplementaryDocs && alert.supplementaryDocs.length) {
+        renderMediaBlock({
+            blockId:   'sup-docs-block',
+            labelIcon: 'fas fa-paperclip',
+            labelText: 'Supporting Documents',
+            items:     alert.supplementaryDocs.map(d => ({
+                url:  d.path.startsWith('http') ? d.path : `${API_BASE_URL}${d.path}`,
+                name: d.originalName || d.path.split('/').pop(),
+                type: 'doc'
+            }))
+        });
     }
 
     hideLoading();
@@ -1933,6 +2167,44 @@ function renderAttachments(attachments) {
 }
 
 // ================================================================
+// MEDIA BLOCKS (images / videos / supporting docs)
+// ================================================================
+function renderMediaBlock({ blockId, labelIcon, labelText, items }) {
+    const block = document.getElementById(blockId);
+    const list  = document.getElementById(blockId.replace('-block', '-list'));
+    if (!block || !list || !items.length) return;
+    block.classList.remove('hidden');
+    list.innerHTML = '';
+    items.forEach(item => {
+        const ext      = item.name.split('.').pop().toLowerCase();
+        const iconMap  = {
+            image: 'fas fa-file-image',
+            video: 'fas fa-file-video',
+            doc:   ['pdf'].includes(ext) ? 'fas fa-file-pdf' : ['doc','docx'].includes(ext) ? 'fas fa-file-word' : 'fas fa-file'
+        };
+        const iconFA   = iconMap[item.type] || 'fas fa-file';
+        const iconCls  = item.type;
+        const li       = document.createElement('li');
+        li.className   = 'attachment-item';
+        li.innerHTML   = `
+            <div class="att-icon ${iconCls}"><i class="${iconFA}"></i></div>
+            <div class="att-info">
+                <div class="att-name">${item.name}</div>
+                <div class="att-meta">${ext.toUpperCase()}</div>
+            </div>
+            <a href="${item.url}" target="_blank" rel="noopener" download class="att-dl" title="Download" onclick="event.stopPropagation()">
+                <i class="fas fa-download"></i>
+            </a>`;
+        li.addEventListener('click', () => {
+            if (item.type === 'image') window.open(item.url, '_blank', 'noopener');
+            else if (item.type === 'video') window.open(item.url, '_blank', 'noopener');
+            else ext === 'pdf' ? loadPDF(item.url) : window.open(item.url, '_blank', 'noopener');
+        });
+        list.appendChild(li);
+    });
+}
+
+// ================================================================
 // INIT
 // ================================================================
 async function initAlertDetail() {
@@ -1944,7 +2216,7 @@ async function initAlertDetail() {
     if (!uuid) {
         hideLoading();
         document.getElementById('alert-title').textContent = 'Alert not found';
-        document.getElementById('alert-subtitle').textContent = 'No alert ID was provided in the URL.';
+        document.getElementById('alert-title').textContent = 'Alert not found';
         document.getElementById('alert-description').textContent = 'Please go back and select an alert from the Media Alerts page.';
         document.getElementById('alert-description').classList.add('empty');
         return;
@@ -1962,7 +2234,7 @@ async function initAlertDetail() {
         console.error('Alert detail load error:', err);
         hideLoading();
         document.getElementById('alert-title').textContent = 'Could not load alert';
-        document.getElementById('alert-subtitle').textContent = 'Please go back and try again.';
+        // subtitle removed;
         document.getElementById('alert-description').textContent = 'Error: ' + (err.message || 'Unknown error');
         document.getElementById('alert-description').classList.add('empty');
     }
@@ -1971,9 +2243,9 @@ async function initAlertDetail() {
 document.addEventListener('DOMContentLoaded', initAlertDetail);
 </script>
 
+<script src="/amc-notifications.js"></script>
 </body>
 </html>
-
 
 
 

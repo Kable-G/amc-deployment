@@ -2824,7 +2824,8 @@ body.dark-mode .btn-secondary:hover {
         
         .existing-file-row.marked-delete a {
             text-decoration: line-through;
-            color: var(--text-secondary);\n        }
+            color: var(--text-secondary);
+        }
         
         .mini-remove {
             font-size: 0.875em;
@@ -5313,8 +5314,8 @@ let markedForDeletion = {
                     </div>
                     <div class="bento-body">
                       <div style="display:flex;flex-direction:column;gap:8px;">
-                        <button type="submit" name="action" value="publish" class="btn btn-success" style="width:100%;"><i class="fas fa-lock-open"></i> Publish Vault &amp; Notify</button>
-                        <button type="submit" name="action" value="draft" class="btn btn-primary" style="width:100%;"><i class="fas fa-save"></i> Save Vault as Draft</button>
+                        <button type="submit" name="action" value="publish" class="btn btn-success" style="width:100%;" onclick="document.getElementById('vaultSubmitAction').value='publish'"><i class="fas fa-lock-open"></i> Publish Vault &amp; Notify</button>
+                        <button type="submit" name="action" value="draft" class="btn btn-primary" style="width:100%;" onclick="document.getElementById('vaultSubmitAction').value='draft'"><i class="fas fa-save"></i> Save Vault as Draft</button>
                         <button type="button" class="btn btn-secondary" style="width:100%;" onclick="window.open('automediavault.html','_blank')"><i class="fas fa-eye"></i> Preview Access View</button>
                       </div>
                     </div>
@@ -5893,6 +5894,18 @@ const radarFormHtml = `
                                     <div class="form-col"><div class="form-group"><label for="radarEventDate">Event Date *</label><input type="date" class="form-control" id="radarEventDate" name="eventDate" required><small>Date the event or announcement is scheduled for.</small></div></div>
                                     <div class="form-col"><div class="form-group"><label for="radarEventTime">Event Time (Optional)</label><input type="time" class="form-control" id="radarEventTime" name="eventTime"></div></div>
                                 </div>
+                                <div class="form-group" style="margin-top:-4px;margin-bottom:12px;">
+                                    <label style="display:flex;align-items:center;gap:8px;font-weight:500;cursor:pointer;">
+                                        <input type="checkbox" id="radarMultiDayToggle" style="width:16px;height:16px;cursor:pointer;" onchange="toggleRadarMultiDay(this)">
+                                        This is a multi-day event
+                                    </label>
+                                </div>
+                                <div id="radarEndDateRow" style="display:none;">
+                                    <div class="form-row">
+                                        <div class="form-col"><div class="form-group"><label for="radarEventEndDate">End Date *</label><input type="date" class="form-control" id="radarEventEndDate" name="eventEndDate"><small>Last day of the event.</small></div></div>
+                                        <div class="form-col"><div class="form-group"><label for="radarEventEndTime">End Time (Optional)</label><input type="time" class="form-control" id="radarEventEndTime" name="eventEndTime"></div></div>
+                                    </div>
+                                </div>
                                 <div class="form-group">
                                     <label for="radarEventTimezone">Time Zone *</label>
                                     <select class="form-control" id="radarEventTimezone" name="eventTimezone" required>
@@ -5980,22 +5993,23 @@ const radarFormHtml = `
                                 <input type="hidden" id="radarDocOptIn" name="radarDocOptIn" value="false">
                             </div>
                         </div>
+                        <div class="bento-box collapsed" data-section="radar-images" data-required="false">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-images"></i><h3>Preview Images</h3></div><div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body"><p class="form-text" style="margin-bottom:12px;">Attach preview images to accompany this alert. JPG, PNG, WebP, GIF. Multiple files allowed.</p><div class="file-upload-area"><input type="file" id="radarImages" name="radarImages" multiple accept="image/jpeg,image/png,image/webp,image/gif"><i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br><label for="radarImages">Choose image files</label> or drag and drop here.</div><div class="file-list" id="uploadedRadarImagesList"><p style="color:var(--text-secondary);font-style:italic;text-align:center;margin-top:10px;">No images selected yet.</p></div></div>
+                        </div>
+                        <div class="bento-box collapsed" data-section="radar-videos" data-required="false">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-video"></i><h3>Preview Videos</h3></div><div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body"><p class="form-text" style="margin-bottom:12px;">Attach preview video clips to accompany this alert. MP4, MOV, WebM. Multiple files allowed.</p><div class="file-upload-area"><input type="file" id="radarVideos" name="radarVideos" multiple accept="video/mp4,video/quicktime,video/webm"><i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br><label for="radarVideos">Choose video files</label> or drag and drop here.</div><div class="file-list" id="uploadedRadarVideosList"><p style="color:var(--text-secondary);font-style:italic;text-align:center;margin-top:10px;">No videos selected yet.</p></div></div>
+                        </div>
+                        <div class="bento-box collapsed" data-section="radar-supplementary" data-required="false">
+                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-paperclip"></i><h3>Supporting Documents</h3></div><div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
+                            <div class="bento-body"><p class="form-text" style="margin-bottom:12px;">Attach supporting documents such as spec sheets or press kits. PDF, DOCX, PPTX, XLSX, ZIP. Multiple files allowed.</p><div class="file-upload-area"><input type="file" id="radarSupDocs" name="radarSupplementaryDocs" multiple accept="application/pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.zip,.txt"><i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br><label for="radarSupDocs">Choose supplementary files</label> or drag and drop here.</div><div class="file-list" id="uploadedRadarSupDocsList"><p style="color:var(--text-secondary);font-style:italic;text-align:center;margin-top:10px;">No documents selected yet.</p></div></div>
+                        </div>
                         <div class="bento-box" data-section="radar-language-variants" data-required="false">
                             <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-language"></i><h3>Language Variants</h3></div><div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
                             <div class="bento-body"><p class="form-text">Add translated versions of your media alert.</p><div style="margin-bottom:15px;"><select id="radarVariantLangPicker" class="form-control" style="width:200px;display:inline-block;margin-right:10px;"><option value="">-- Select Language --</option><option value="de">German</option><option value="fr">French</option><option value="es">Spanish</option><option value="it">Italian</option><option value="ja">Japanese</option><option value="zh">Chinese</option><option value="en">English</option></select><button type="button" class="btn btn-secondary"><i class="fas fa-plus"></i> Add Language</button></div><div id="radarLangVariantsContainer"></div><input type="hidden" id="radarLangVariantsJson" name="languageVariantsJson" value="[]"></div>
                         </div>
-                        <div class="bento-box" data-section="radar-images" data-required="false">
-                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-images"></i><h3>Upload Images</h3></div><div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
-                            <div class="bento-body"><div class="file-upload-area"><input type="file" id="radarImages" name="radarImages" multiple accept="image/jpeg,image/png,image/webp,image/gif"><i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br><label for="radarImages">Choose image files</label> or drag and drop here.<p class="form-text">JPG, PNG, WebP, GIF. Multiple files.</p></div><div class="file-list" id="uploadedRadarImagesList"><p style="color:var(--text-secondary);font-style:italic;text-align:center;margin-top:10px;">No images selected yet.</p></div></div>
-                        </div>
-                        <div class="bento-box" data-section="radar-videos" data-required="false">
-                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-video"></i><h3>Upload Videos</h3></div><div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
-                            <div class="bento-body"><div class="file-upload-area"><input type="file" id="radarVideos" name="radarVideos" multiple accept="video/mp4,video/quicktime,video/webm"><i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br><label for="radarVideos">Choose video files</label> or drag and drop here.<p class="form-text">MP4, MOV, WebM. Multiple files.</p></div><div class="file-list" id="uploadedRadarVideosList"><p style="color:var(--text-secondary);font-style:italic;text-align:center;margin-top:10px;">No videos selected yet.</p></div></div>
-                        </div>
-                        <div class="bento-box" data-section="radar-supplementary" data-required="false">
-                            <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-paperclip"></i><h3>Supplementary Documents</h3></div><div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
-                            <div class="bento-body"><div class="file-upload-area"><input type="file" id="radarSupDocs" name="radarSupplementaryDocs" multiple accept="application/pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.zip,.txt"><i class="fas fa-cloud-upload-alt" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br><label for="radarSupDocs">Choose supplementary files</label> or drag and drop here.<p class="form-text">PDF, DOCX, PPTX, XLSX, ZIP, TXT.</p></div><div class="file-list" id="uploadedRadarSupDocsList"><p style="color:var(--text-secondary);font-style:italic;text-align:center;margin-top:10px;">No supplementary documents selected yet.</p></div></div>
-                        </div>
+
                         <div class="bento-box legal-authorisation" data-section="radar-legal-auth" data-required="true">
                             <div class="bento-header" onclick="toggleBentoBox(this)"><div class="bento-title"><i class="fas fa-gavel"></i><h3>Authorisation &amp; Rights</h3></div><div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div></div>
                             <div class="bento-body"><div class="form-group"><label class="legal-confirm-label"><input type="checkbox" id="radarLegalAck" name="legalTermsAck" value="true" required> I confirm that I have the authorization and legal right to publish and distribute this media alert and respective assets *</label></div></div>
@@ -6162,7 +6176,7 @@ const radarFormHtml = `
                     manageReleasesContainer.querySelectorAll('.btn-edit-release').forEach(button => {
                         button.addEventListener('click', (e) => {
                             const uuid = e.currentTarget.dataset.uuid;
-                            loadFormContent('center', 'Edit Public Release', uuid);
+                            loadFormContent('center', 'Edit Media Release', uuid);
                         });
                     });
 
@@ -7153,11 +7167,11 @@ function initCenterLanguageVariants() {
 
                                 if (formTypeFromUrl === 'center' && editReleaseUUIDFromUrl) {
                                     console.log(`DEBUG: URL params indicate editing release UUID: ${editReleaseUUIDFromUrl}`);
-                                    loadFormContent('center', 'Edit Public Release', editReleaseUUIDFromUrl);
+                                    loadFormContent('center', 'Edit Media Release', editReleaseUUIDFromUrl);
                                     setActiveSidebarLink('manage-releases-link-li');
                                 } else if (formTypeFromUrl === 'radar' && editAlertUUIDFromUrl) {
                                     console.log(`DEBUG: URL params indicate editing Radar Alert UUID: ${editAlertUUIDFromUrl}`);
-                                    loadFormContent('radar', 'Edit Radar Alert', editAlertUUIDFromUrl);
+                                    loadFormContent('radar', 'Edit Media Alert', editAlertUUIDFromUrl);
                                     setActiveSidebarLink('upload-hub-link-li');
                                 } else if (dynamicFormContainer && dynamicFormContainer.style.display !== 'none' && dynamicFormContainer.innerHTML.trim() !== '' && !currentEditingReleaseUUID && !currentEditingAlertUUID) {
                                     showHubGrid();
@@ -7491,6 +7505,19 @@ function initCenterLanguageVariants() {
                 if (form.querySelector('#radarTags')) form.querySelector('#radarTags').value = Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags || '');
                 const dt = data.eventDateTime || data.dropDate;
                 if (dt) { const d = new Date(dt); const pad = n => String(n).padStart(2,'0'); const dateEl = form.querySelector('#radarEventDate'); const timeEl = form.querySelector('#radarEventTime'); if (dateEl) dateEl.value = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); if (timeEl) timeEl.value = pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+                // Multi-day end date prepopulation
+                if (data.eventEndDateTime) {
+                    const ded = new Date(data.eventEndDateTime);
+                    const pad = n => String(n).padStart(2,'0');
+                    const toggle = form.querySelector('#radarMultiDayToggle');
+                    const endRow = document.getElementById('radarEndDateRow');
+                    const endDateEl = form.querySelector('#radarEventEndDate');
+                    const endTimeEl = form.querySelector('#radarEventEndTime');
+                    if (toggle) toggle.checked = true;
+                    if (endRow) endRow.style.display = '';
+                    if (endDateEl) { endDateEl.value = ded.getFullYear() + '-' + pad(ded.getMonth()+1) + '-' + pad(ded.getDate()); endDateEl.required = true; }
+                    if (endTimeEl) endTimeEl.value = pad(ded.getHours()) + ':' + pad(ded.getMinutes());
+                }
                 if (data.eventTimezone) { const el = form.querySelector('#radarEventTimezone'); if (el) el.value = data.eventTimezone; }
                 if (data.contentCategory) { const h = form.querySelector('#radarContentCategory'); if (h) h.value = data.contentCategory; const cats = data.contentCategory.split(',').map(c => c.trim()); form.querySelectorAll('input[name="radarCatCb"]').forEach(cb => { cb.checked = cats.includes(cb.value); }); }
                 if (data.primaryLanguage) { const h = form.querySelector('#radarPrimaryLang'); if (h) h.value = data.primaryLanguage; form.querySelectorAll('input[name="radarLangRadio"]').forEach(r => { r.checked = r.value === data.primaryLanguage; }); }
@@ -7651,7 +7678,9 @@ function initCenterLanguageVariants() {
                     let action = 'submit';
                     
                     // 1. Check hidden input (set by setSubmitAction)
-                    const actionInput = document.getElementById('centerSubmitAction');
+                    const actionInput = document.getElementById('centerSubmitAction')
+                                     || document.getElementById('vaultSubmitAction')
+                                     || document.getElementById('radarSubmitAction');
                     if (actionInput && actionInput.value) {
                         action = actionInput.value;
                         console.log('DEBUG: Action from hidden input:', action);
@@ -7690,6 +7719,14 @@ function initCenterLanguageVariants() {
                         const eTimeEl = formElement.querySelector('#radarEventTime');
                         const eTzEl   = formElement.querySelector('#radarEventTimezone');
                         if (eDateEl?.value) { const iso = new Date(eDateEl.value + 'T' + (eTimeEl?.value || '00:00') + ':00').toISOString(); formData.append('dropDate', iso); formData.append('eventDateTime', iso); }
+                        // Multi-day end date
+                        const eEndDateEl = formElement.querySelector('#radarEventEndDate');
+                        const eEndTimeEl = formElement.querySelector('#radarEventEndTime');
+                        const multiDay   = formElement.querySelector('#radarMultiDayToggle');
+                        if (multiDay?.checked && eEndDateEl?.value) {
+                            const endIso = new Date(eEndDateEl.value + 'T' + (eEndTimeEl?.value || '00:00') + ':00').toISOString();
+                            formData.append('eventEndDate', endIso);
+                        }
                         if (eTzEl?.value) formData.append('eventTimezone', eTzEl.value);
                         const catVals = [...formElement.querySelectorAll('input[name="radarCatCb"]:checked')].map(c=>c.value); formData.append('contentCategory', catVals.join(','));
                         const mktVals = [...formElement.querySelectorAll('input[name="radarMktCb"]:checked')].map(c=>c.value); formData.append('targetMarkets', mktVals.join(','));
@@ -7698,10 +7735,121 @@ function initCenterLanguageVariants() {
                         const tImg = formElement.querySelector('#radarTeaserImage'); if (tImg?.files?.[0]) formData.append('radarTeaserImage', tImg.files[0]);
                         const d = formElement.querySelector('#radarAlertDoc'); if (d?.files?.[0]) formData.append('radarAlertDoc', d.files[0]);
                         [['radarImages','radarImages'],['radarVideos','radarVideos'],['radarSupDocs','radarSupplementaryDocs']].forEach(([id,name]) => { const inp = formElement.querySelector('#'+id); if (inp?.files?.length) [...inp.files].forEach(f => formData.append(name, f)); });
+
                         const lv = formElement.querySelector('#radarLangVariantsJson'); if (lv) formData.append('languageVariantsJson', lv.value);
 
+                    } else if (formType === 'vault') {
+                        // ── Vault: manually build FormData from field IDs ──
+                        // The vault form inputs have id= but not name= attributes,
+                        // so new FormData(form) would send an empty body.
+                        // We also need to generate a UUID and append invitedUsers here.
+                        formData = new FormData();
+
+                        // Generate UUID for this vault asset
+                        const vaultUUID = crypto.randomUUID
+                          ? crypto.randomUUID()
+                          : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                              const r = Math.random() * 16 | 0;
+                              return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+                            });
+                        formData.append('vaultAssetUUID', vaultUUID);
+
+                        // Action (publish / draft)
+                        const vAction = document.getElementById('vaultSubmitAction');
+                        formData.append('action', vAction ? vAction.value : action);
+
+                        // Identity
+                        const vTitle   = formElement.querySelector('#vTitle');
+                        const vCompany = formElement.querySelector('#vCompany');
+                        const vBrand   = formElement.querySelector('#vBrand');
+                        const vDesc    = formElement.querySelector('#vDescription');
+                        const vTags    = formElement.querySelector('#vTags');
+                        if (vTitle?.value)   formData.append('title', vTitle.value.trim());
+                        if (vCompany?.value) formData.append('companyName', vCompany.value.trim());
+                        if (vBrand?.value)   formData.append('brand', vBrand.value.trim());
+                        if (vDesc?.value)    formData.append('internalDescription', vDesc.value.trim());
+                        if (vTags?.value)    formData.append('tags', vTags.value.trim());
+
+                        // Embargo date + time + timezone → ISO string
+                        const vEmbargoDate = formElement.querySelector('#vEmbargoDate');
+                        const vEmbargoTime = formElement.querySelector('#vEmbargoTime');
+                        const vTimezone    = formElement.querySelector('#vTimezone');
+                        if (vEmbargoDate?.value && vEmbargoTime?.value) {
+                            const embargoIso = new Date(vEmbargoDate.value + 'T' + vEmbargoTime.value + ':00').toISOString();
+                            formData.append('embargoUntil', embargoIso);
+                            // availabilityDate/Time: pre-access window subtracted from embargo
+                            const vPreAccess = formElement.querySelector('#vPreAccess');
+                            const preHours   = parseInt(vPreAccess?.value || '0');
+                            const availMs    = new Date(embargoIso).getTime() - (preHours * 60 * 60 * 1000);
+                            const availDate  = new Date(availMs);
+                            formData.append('availabilityDate', availDate.toISOString().split('T')[0]);
+                            formData.append('availabilityTime', availDate.toISOString().split('T')[1].substring(0, 5));
+                        }
+                        if (vTimezone?.value) formData.append('availabilityTimezone', vTimezone.value);
+
+                        // Expiry
+                        const vExpiryChecked = formElement.querySelector('input[name="vExpiry"]:checked');
+                        formData.append('vaultExpirationDays', vExpiryChecked ? vExpiryChecked.value : '7');
+
+                        // NDA + security
+                        const vReqNda  = formElement.querySelector('#vRequireNda');
+                        const vReqMfa  = formElement.querySelector('#vRequireMfa');
+                        const vWmark   = formElement.querySelector('#vWatermark');
+                        const vGeoLock = formElement.querySelector('#vGeoLock');
+                        const vNdaEmail = formElement.querySelector('#vNdaEmailDelivery');
+                        const vNdaSms   = formElement.querySelector('#vNdaSmsDelivery');
+                        const vNotifyAccess    = formElement.querySelector('#vNotifyAccess');
+                        const vNotifyDownload  = formElement.querySelector('#vNotifyDownload');
+                        formData.append('requireNDA',             vReqNda?.checked  ? 'true' : 'false');
+                        formData.append('requireMfaOnAccess',     vReqMfa?.checked  ? 'true' : 'false');
+                        formData.append('watermark',              vWmark?.checked   ? 'true' : 'false');
+                        formData.append('geoLock',                vGeoLock?.checked ? 'true' : 'false');
+                        formData.append('notifyClientOnAccess',   vNotifyAccess?.checked   ? 'true' : 'false');
+                        formData.append('notifyClientOnDownload', vNotifyDownload?.checked  ? 'true' : 'false');
+                        // Delivery method preference (for NDA password dispatch)
+                        const deliveryMethods = [];
+                        if (vNdaEmail?.checked) deliveryMethods.push('email');
+                        if (vNdaSms?.checked)   deliveryMethods.push('sms');
+                        formData.append('ndaDeliveryMethods', JSON.stringify(deliveryMethods.length ? deliveryMethods : ['email']));
+
+                        // Map radio value to backend enum: 'email' → 'notify', 'manual' → 'manual'
+                        const vDistMethod = formElement.querySelector('input[name="vDistMethod"]:checked');
+                        const distVal = vDistMethod ? vDistMethod.value : 'notify';
+                        formData.append('distributionMethod', distVal === 'email' ? 'notify' : distVal);
+
+                        // Clearance level (default restricted)
+                        formData.append('clearanceLevel', 'restricted');
+
+                        // Legal acknowledgements
+                        const vAuthOwn  = formElement.querySelector('#vAuthOwnership');
+                        const vAuthEmb  = formElement.querySelector('#vAuthEmbargo');
+                        const vAuthUr   = formElement.querySelector('#vAuthUsageRights');
+                        const allLegal  = vAuthOwn?.checked && vAuthEmb?.checked && vAuthUr?.checked;
+                        formData.append('vaultLegalTermsAck', allLegal ? 'agreed' : 'false');
+
+                        // Custom message
+                        const vMsg = formElement.querySelector('#vCustomMsg');
+                        if (vMsg?.value) formData.append('customNotificationMessage', vMsg.value.trim());
+
+                        // Invited journalists (from window.vRecipients array)
+                        const recipients = window.vRecipients || [];
+                        if (recipients.length) {
+                            recipients.forEach(email => formData.append('invitedUsers[]', email));
+                        }
+                        // Also append as JSON for backend fallback
+                        formData.append('invitedUsersJson', JSON.stringify(recipients));
+
+                        // Files — read from _vaultFiles store (inputs are cleared after preview)
+                        const vTeaser = formElement.querySelector('#vTeaserImage');
+                        const vNdaDoc = formElement.querySelector('#vNdaFile');
+                        if (vTeaser?.files?.[0])  formData.append('teaserImage', vTeaser.files[0]);
+                        if (vNdaDoc?.files?.[0])  formData.append('ndaDocument', vNdaDoc.files[0]);
+                        (window._vaultFiles?.images || []).forEach(f => formData.append('vaultImages', f));
+                        (window._vaultFiles?.videos || []).forEach(f => formData.append('vaultVideos', f));
+                        (window._vaultFiles?.docs   || []).forEach(f => formData.append('vaultReleaseDocs', f));
+
                     } else {
-                        formData = new FormData(formElement); 
+                        formData = new FormData(formElement);
                     }
 
                     // Action is already included in FormData from hidden input centerSubmitAction
@@ -7963,6 +8111,7 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                 window.vRecipients = [];
                 window.vTeaserUploaded = false;
                 window.vBentoState = {};
+                window._vaultFiles = { images: [], videos: [], docs: [] }; // reset on each new vault
 
                 // Populate all timezones
                 const allTz = document.getElementById('vAllTzOptgroup');
@@ -8195,19 +8344,37 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                 vCheckComplete('teaser');
             }
 
+            // ── Vault file stores — files are removed from inputs after preview
+            // so we keep them here for FormData at submit time
+            window._vaultFiles = { images: [], videos: [], docs: [] };
+
             function vHandleAssetUpload(input, listId, type) {
                 const list = document.getElementById(listId); if (!list) return;
                 const icons = { image: 'fa-image', video: 'fa-video', doc: 'fa-file-alt' };
                 const icon = icons[type] || 'fa-file';
+                const storeKey = type === 'image' ? 'images' : type === 'video' ? 'videos' : 'docs';
+
                 Array.from(input.files).forEach(function(file) {
+                    // Store file reference before input is cleared
+                    window._vaultFiles[storeKey].push(file);
+
                     const size = file.size > 1048576 ? (file.size/1048576).toFixed(1)+' MB' : (file.size/1024).toFixed(0)+' KB';
                     const item = document.createElement('div');
                     item.className = 'file-list-item';
+                    item.dataset.filename = file.name;
+                    item.dataset.filetype = storeKey;
                     item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg-secondary);border:1px solid var(--border-primary);border-radius:6px;margin-top:6px;font-size:12px;';
-                    item.innerHTML = '<i class="fas ' + icon + '" style="color:var(--accent-primary,#3b82f6);flex-shrink:0;"></i><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-primary);">' + file.name + '</span><span style="color:var(--text-secondary);flex-shrink:0;">' + size + '</span><button type="button" onclick="this.closest(\'.file-list-item\').remove()" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:12px;padding:2px 4px;"><i class="fas fa-times"></i></button>';
+                    item.innerHTML = '<i class="fas ' + icon + '" style="color:var(--accent-primary,#3b82f6);flex-shrink:0;"></i><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-primary);">' + file.name + '</span><span style="color:var(--text-secondary);flex-shrink:0;">' + size + '</span><button type="button" onclick="vRemoveAssetFile(this,\'' + storeKey + '\',\'' + file.name + '\')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:12px;padding:2px 4px;"><i class="fas fa-times"></i></button>';
                     list.appendChild(item);
                 });
                 input.value = '';
+            }
+
+            function vRemoveAssetFile(btn, storeKey, filename) {
+                // Remove from stored array
+                window._vaultFiles[storeKey] = window._vaultFiles[storeKey].filter(f => f.name !== filename);
+                // Remove from UI
+                btn.closest('.file-list-item').remove();
             }
 
             function vSelectSecLevel(radio) {
@@ -8216,6 +8383,21 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                 if (card) card.classList.add('selected');
             }
 
+            // ── Expose vault functions to global scope ───────────────
+            // The vault form HTML is injected as a string, so onclick=""
+            // attributes need these functions on window to find them.
+            window.toggleVaultBento      = toggleVaultBento;
+            window.vCheckComplete        = vCheckComplete;
+            window.vUpdateSchedulePreview = vUpdateSchedulePreview;
+            window.vVerifyEmbargo        = vVerifyEmbargo;
+            window.vToggleNdaSection     = vToggleNdaSection;
+            window.vHandleNdaUpload      = vHandleNdaUpload;
+            window.vAddRecipient         = vAddRecipient;
+            window.vRemoveRecipient      = vRemoveRecipient;
+            window.vHandleTeaserUpload   = vHandleTeaserUpload;
+            window.vHandleAssetUpload    = vHandleAssetUpload;
+            window.vRemoveAssetFile      = vRemoveAssetFile;
+            window.vSelectSecLevel       = vSelectSecLevel;
 
             function initializeCenterFormJS() {
                  console.log("DEBUG: Initializing Center Form JS...");
@@ -8490,12 +8672,13 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                             radarUpdateLangMarketsState();
                         });
                     });
+
+                    const legalCb = form.querySelector('#radarLegalAck');
+                    if (legalCb) legalCb.addEventListener('change', radarUpdateLegalState);
                     ['radarImages','radarVideos','radarSupDocs'].forEach(id => {
                         const el = form.querySelector('#' + id);
                         if (el) el.addEventListener('change', updateRadarCardPreview);
                     });
-                    const legalCb = form.querySelector('#radarLegalAck');
-                    if (legalCb) legalCb.addEventListener('change', radarUpdateLegalState);
                     // Drag-drop on all file-upload-area zones inside radar form
                     document.querySelectorAll('#radar-form .file-upload-area').forEach(function(zone) {
                         zone.addEventListener('click', function(e) {
@@ -8560,6 +8743,21 @@ console.log(`DEBUG: Form submitted. Action: ${action}, Type: ${formType}, Editin
                     const prev = document.getElementById('radarSchedulePreview');
                     if (prev) { const time = f.querySelector('#radarEventTime')?.value || '00:00'; const d = new Date(date.value + 'T' + time); prev.textContent = 'Event: ' + d.toLocaleDateString('en-GB', {weekday:'long',year:'numeric',month:'long',day:'numeric'}) + (f.querySelector('#radarEventTime')?.value ? ' at ' + f.querySelector('#radarEventTime').value : '') + ' (' + tz.value + ')'; }
                 } else { box.classList.remove('schedule-ready'); if (chip) { chip.textContent = 'Incomplete'; chip.className = 'status-chip'; } }
+            }
+
+            function toggleRadarMultiDay(cb) {
+                const endRow    = document.getElementById('radarEndDateRow');
+                const endDateEl = document.getElementById('radarEventEndDate');
+                if (!endRow) return;
+                if (cb.checked) {
+                    endRow.style.display = '';
+                    if (endDateEl) endDateEl.required = true;
+                } else {
+                    endRow.style.display = 'none';
+                    if (endDateEl) { endDateEl.required = false; endDateEl.value = ''; }
+                    const endTimeEl = document.getElementById('radarEventEndTime');
+                    if (endTimeEl) endTimeEl.value = '';
+                }
             }
 
             function verifyRadarSchedule() {
@@ -10300,8 +10498,9 @@ console.log('✅ Menu upgrade JavaScript loaded');
         window.setBentoStatus = setBentoStatus;
 
         // Radar alert form inline handlers
-        window.verifyRadarSchedule = verifyRadarSchedule;
-        window.unlockRadarSchedule = unlockRadarSchedule;
+        window.verifyRadarSchedule  = verifyRadarSchedule;
+        window.unlockRadarSchedule  = unlockRadarSchedule;
+        window.toggleRadarMultiDay  = toggleRadarMultiDay;
         window.radarSetAction = radarSetAction;
         window.toggleRadarDocUpload = toggleRadarDocUpload;
         
@@ -10618,5 +10817,144 @@ button,
 
 </style>
 
+<style>
+/* ── Universal form-control box model fix ────────────────────────────────
+   Without box-sizing:border-box, width:100% means 100% + padding, making
+   inputs wider than their container. This fixes the long-title overflow
+   on mobile for all form types (radar, center, vault, live).
+──────────────────────────────────────────────────────────────────────── */
+#dynamic-form-container .form-control,
+#dynamic-form-container input[type="text"],
+#dynamic-form-container input[type="date"],
+#dynamic-form-container input[type="time"],
+#dynamic-form-container input[type="email"],
+#dynamic-form-container input[type="url"],
+#dynamic-form-container input[type="number"],
+#dynamic-form-container input[type="password"],
+#dynamic-form-container textarea,
+#dynamic-form-container select {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+}
+
+/* ── Mobile overflow fix: radar (and all) form pages ─────────────────────
+   The bento-grid has its own padding:24px which stacks on top of .amc-page's
+   padding, pushing content wider than the viewport on narrow screens.
+   This block wins by being last in cascade + uses !important to beat
+   all earlier conflicting rules.
+──────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Kill bento-grid's own padding — .amc-page already provides the gutter */
+    .bento-grid {
+        padding: 0 !important;
+        gap: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Bento boxes must not escape their column */
+    .bento-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    /* Bento header: release fixed height so it can wrap on mobile,
+       and stop the title/chip pushing outside the box */
+    .bento-header {
+        height: auto !important;
+        min-height: 44px !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        padding: 12px 16px !important;
+    }
+
+    /* Title (icon + text): allow it to shrink rather than overflow */
+    .bento-title {
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+        overflow: hidden !important;
+    }
+
+    .bento-title h3 {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        min-width: 0 !important;
+    }
+
+    /* Controls (COMPLETE chip + chevron): never shrink below content */
+    .bento-controls {
+        flex-shrink: 0 !important;
+    }
+
+    /* Bento body: prevent any child from stretching past viewport */
+    .bento-body {
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+    }
+
+    /* form-group: constrain children */
+    .form-group {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    /* form-row: don't let two-column rows overflow on narrow screens */
+    .form-row {
+        flex-direction: column !important;
+        gap: 0 !important;
+    }
+    .form-col {
+        min-width: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* All inputs/selects/textareas: never exceed container */
+    #dynamic-form-container .form-control,
+    #dynamic-form-container select[style*="width"],
+    #dynamic-form-container input,
+    #dynamic-form-container textarea,
+    #dynamic-form-container select {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        min-width: 0 !important;
+    }
+
+    /* Checkbox grids: single column on mobile */
+    .checkbox-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Market grid: single column on mobile */
+    .market-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Preview card sidebar: full width, not sticky */
+    .bento-sidebar {
+        width: 100% !important;
+    }
+    .preview-card,
+    .preview-card.sticky {
+        position: relative !important;
+        top: auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+</style>
+
+<script src="/amc-notifications.js"></script>
 </body>
 </html>
