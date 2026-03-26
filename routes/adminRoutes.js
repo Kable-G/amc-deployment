@@ -24,6 +24,9 @@ const createAdminRoute = (pageName, requiredRoles) => {
         // FIX: Use single '..' to go up one directory from routes to amc-deployment
         const filePath = path.join(__dirname, '..', 'Frontend', pageName);
         console.log(`📁 Serving file from: ${filePath}`);
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
         res.sendFile(filePath, (sendErr) => {
             if (sendErr) {
                 console.error(`Error serving admin page ${pageName}:`, sendErr);
