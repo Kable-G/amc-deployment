@@ -11,7 +11,8 @@ const adminPages = {
     'radar_analytics.html': ['client_user', 'client_admin', 'platform_admin'], // Analytics
     'radar_history.html': ['client_user', 'client_admin', 'platform_admin'], // History
     'manage_releases.html': ['client_user', 'client_admin', 'platform_admin'], // Release Management
-    'automediavault.html': ['media_user', 'client_user', 'client_admin', 'platform_admin'] // Vault Portal
+    'automediavault.html': ['media_user', 'client_user', 'client_admin', 'platform_admin'], // Vault Portal
+    'manage_vault.html': ['client_admin', 'platform_admin'] // Manage Media Vaults
 };
 
 // Create explicit routes for each admin page to avoid path-to-regexp issues with dots
@@ -64,6 +65,7 @@ createAdminRoute('radar_analytics.html', ['client_user', 'client_admin', 'platfo
 createAdminRoute('radar_history.html', ['client_user', 'client_admin', 'platform_admin']);
 createAdminRoute('manage_releases.html', ['client_user', 'client_admin', 'platform_admin']);
 createAdminRoute('automediavault.html', ['media_user', 'client_user', 'client_admin', 'platform_admin']);
+createAdminRoute('manage_vault.html', ['client_admin', 'platform_admin']);
 
 // Legacy route handler for any remaining admin page requests
 router.get('/:pageName', (req, res, next) => {

@@ -5,6 +5,8 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth'); // Real authentication for proper user tracking
 const CenterRelease = require('../models/CenterRelease');
+const BrandIntelligenceCache = require('../models/BrandIntelligenceCache');
+const BrandIntelligenceDoc = require('../models/BrandIntelligenceDoc');
 const { z } = require('zod');
 const multer = require('multer');
 const path = require('path');
@@ -12,6 +14,8 @@ const fs = require('fs');
 const pdf = require('pdf-parse');
 const { extractText } = require('unpdf');
 const { spawn, exec } = require('child_process');
+const Anthropic = require('@anthropic-ai/sdk');
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const ffmpegStatic = require('ffmpeg-static');
 
 // <<< MODIFICATION: NEW MODELS IMPORTED FOR DOWNLOAD ENDPOINT >>>
@@ -175,6 +179,121 @@ async function generateVideoThumbnail(videoPath, outputPath) {
 }
 
 // POST /api/v1/center/releases - Create a new Center Release
+
+// ══════════════════════════════════════════════════════════════
+// MRIS INTELLIGENCE EXTRACTION — Sprint 1
+// Called after upload. Runs in background — never blocks response.
+// ══════════════════════════════════════════════════════════════
+async function extractReleaseIntelligence(release) {
+    try {
+        if (!process.env.ANTHROPIC_API_KEY) {
+            console.log('⚠️  MRIS: ANTHROPIC_API_KEY not set — skipping intelligence extraction');
+            return;
+        }
+
+        console.log(`🧠 MRIS: Starting intelligence extraction for "${release.title}"`);
+
+        // Get PDF text — use already extracted if available, otherwise extract now
+        let pdfText = '';
+        if (release.pdfTextExtracted && release.extractedPdfText) {
+            // Strip HTML tags for clean text input to Claude
+            pdfText = release.extractedPdfText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+        } else {
+            // Try to extract from the first PDF in releaseDocs
+            const pdfDoc = release.releaseDocs && release.releaseDocs.find(d => d.mimetype === 'application/pdf');
+            if (pdfDoc) {
+                try {
+                    const pdfPath = path.join(__dirname, '..', 'public', pdfDoc.path);
+                    if (fs.existsSync(pdfPath)) {
+                        const dataBuffer = fs.readFileSync(pdfPath);
+                        const pdfData = await require('pdf-parse')(dataBuffer);
+                        pdfText = pdfData.text.replace(/\s+/g, ' ').trim();
+                    }
+                } catch (pdfErr) {
+                    console.warn('MRIS: PDF extraction failed:', pdfErr.message);
+                }
+            }
+        }
+
+        // Build context — use PDF text if available, otherwise use summary + title
+        const documentContent = pdfText
+            ? `FULL DOCUMENT TEXT:\n${pdfText.substring(0, 8000)}`
+            : `TITLE: ${release.title}\nSUMMARY: ${(release.summary || '').substring(0, 2000)}`;
+
+        const prompt = `You are the AMC Intelligence Extraction Agent. Analyse this automotive press release and return a structured JSON intelligence report.
+
+PRESS RELEASE:
+Brand: ${release.brand}
+Title: ${release.title}
+Date: ${release.releaseDate ? new Date(release.releaseDate).toLocaleDateString('en-GB') : 'Unknown'}
+
+${documentContent}
+
+Return ONLY valid JSON, no markdown, no explanation:
+{
+  "mrisScore": <integer 0-100 composite quality score>,
+  "mrisTier": "<Excellent|Good|Average|Needs Improvement>",
+  "releaseType": "<sales|product-launch|financial|strategy|personnel|event|other>",
+  "period": "<reporting period if financial/sales e.g. Full Year 2025 or null>",
+  "units": "<vehicle sales figure with context e.g. 279,449 worldwide or null>",
+  "revenue": "<revenue figure with currency or null>",
+  "profit": "<profit figure with type or null>",
+  "change": "<YoY change e.g. -10% or null>",
+  "financialHighlight": "<most significant financial/sales statement — direct quote if possible or null>",
+  "ceoName": "<CEO or most senior executive named in release or null>",
+  "ceoQuote": "<most quotable executive statement max 150 chars or null>",
+  "keyPersonnel": ["<name - role>"],
+  "topMarket": "<strongest performing market mentioned or null>",
+  "technologySignals": ["<each technology first-claim or notable tech announcement>"],
+  "riskFlags": ["<any legal, compliance or claim risk>"],
+  "storyAngles": ["<angle 1 for trade press>", "<angle 2 for consumer press>", "<angle 3 if applicable>"],
+  "headlineSuggestions": ["<headline option 1>", "<headline option 2>", "<headline option 3>"]
+}`;
+
+        const message = await anthropic.messages.create({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 2048,
+            messages: [{ role: 'user', content: prompt }]
+        });
+
+        const responseText = message.content?.find(c => c.type === 'text')?.text || '';
+
+        // Parse JSON response
+        let intel = null;
+        try {
+            const clean = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+            intel = JSON.parse(clean);
+        } catch {
+            const match = responseText.match(/(\{[\s\S]*\})/);
+            if (match) {
+                try { intel = JSON.parse(match[0]); } catch {}
+            }
+        }
+
+        if (!intel) {
+            console.warn(`MRIS: Could not parse JSON response for "${release.title}"`);
+            return;
+        }
+
+        // Store in MongoDB
+        await require('../models/CenterRelease').findByIdAndUpdate(release._id, {
+            intelligence: {
+                ...intel,
+                extractedAt: new Date(),
+                extractionMethod: 'auto-upload'
+            },
+            intelligenceExtracted: true
+        });
+
+        console.log(`✅ MRIS: Intelligence extracted for "${release.title}" — Score: ${intel.mrisScore}/100 (${intel.mrisTier})`);
+        console.log(`   Type: ${intel.releaseType} | Tech signals: ${intel.technologySignals?.length || 0} | Risk flags: ${intel.riskFlags?.length || 0}`);
+
+    } catch (err) {
+        // Never crash the upload — log and continue
+        console.error(`❌ MRIS: Intelligence extraction failed for "${release.title}":`, err.message);
+    }
+}
+
 router.post('/releases', handleMulterUpload, auth, async (req, res) => { 
     console.log('Backend received POST /api/v1/center/releases');
     
@@ -329,6 +448,9 @@ router.post('/releases', handleMulterUpload, auth, async (req, res) => {
         
         const newRelease = await CenterRelease.create(releaseDataForDb);
         console.log(`DEBUG: New CenterRelease created. Title: '${newRelease.title}', ClientID: ${newRelease.clientId}, UserID: ${newRelease.user}, UUID: ${newRelease.uuid}`);
+
+        // 🧠 MRIS: Fire intelligence extraction in background — does not delay response
+        setImmediate(() => extractReleaseIntelligence(newRelease));
 
         res.status(201).json({
             success: true,
@@ -1319,6 +1441,198 @@ router.get('/releases/:uuid/download-all', async (req, res) => {
             error: 'Failed to initiate download',
             details: error.message
         });
+    }
+});
+
+// ADD THIS ENDPOINT TO centerRoutes.js
+// It serves the brand channel intelligence panels from MongoDB cache
+
+
+
+// ══════════════════════════════════════════════════════════════
+// BRAND INTELLIGENCE ENDPOINTS — all public, no auth required
+// Priority: BrandIntelligenceDoc > MRIS releases > AI cache
+// ══════════════════════════════════════════════════════════════
+
+router.get('/brand-intelligence/:brand/financials', async (req, res) => {
+    try {
+        const brand = req.params.brand;
+        const biDoc = await BrandIntelligenceDoc.findOne({
+            brand: { $regex: new RegExp(brand, 'i') },
+            docType: 'financials', status: 'active'
+        }).lean();
+        if (biDoc && biDoc.intelligence) {
+            const i = biDoc.intelligence;
+            return res.json({ success: true, data: {
+                period: i.period, units: i.units, revenue: i.revenue,
+                profit: i.profit, change: i.change, highlight: i.financialHighlight,
+                source: biDoc.originalName || 'Brand Intelligence Document',
+                publishedDate: biDoc.uploadedAt, uuid: null
+            }, source: 'brand-intel-doc' });
+        }
+        let release = await CenterRelease.findOne({
+            brand: { $regex: new RegExp(brand, 'i') },
+            intelligenceExtracted: true, status: 'published',
+            'intelligence.releaseType': { $regex: /sales|financial|delivery|annual/i }
+        }).sort({ releaseDate: -1 }).lean();
+        if (!release) {
+            const candidates = await CenterRelease.find({
+                brand: { $regex: new RegExp(brand, 'i') },
+                intelligenceExtracted: true, status: 'published',
+                $or: [{ 'intelligence.revenue': { $ne: null } }, { 'intelligence.change': { $ne: null } }]
+            }).sort({ releaseDate: -1 }).lean();
+            release = candidates.find(r => {
+                const u = r.intelligence.units;
+                if (!u) return !!r.intelligence.revenue;
+                return parseInt(String(u).replace(/[^0-9]/g, '')) > 1000;
+            }) || null;
+        }
+        if (!release || !release.intelligence) {
+            return res.json({ success: true, data: null, message: 'No financial data found' });
+        }
+        const intel = release.intelligence;
+        res.json({ success: true, data: {
+            period: intel.period, units: intel.units, revenue: intel.revenue,
+            profit: intel.profit, change: intel.change, highlight: intel.financialHighlight,
+            source: release.title, publishedDate: release.releaseDate, uuid: release.uuid
+        }});
+    } catch (err) {
+        console.error('Brand financials error:', err.message);
+        res.status(500).json({ success: false, error: 'Server error' });
+    }
+});
+
+router.get('/brand-intelligence/:brand/profile', async (req, res) => {
+    try {
+        const brand = req.params.brand;
+        const biDocP = await BrandIntelligenceDoc.findOne({
+            brand: { $regex: new RegExp(brand, 'i') },
+            docType: 'profile', status: 'active'
+        }).lean();
+        if (biDocP && biDocP.intelligence) {
+            const i = biDocP.intelligence;
+            return res.json({ success: true, data: {
+                founded: i.founded && i.founded !== 'Not stated in document' ? i.founded : null,
+                headquarters: i.headquarters || null,
+                ceo: i.ceo || null,
+                group: i.group || null,
+                brands: Array.isArray(i.brands) ? i.brands.join(', ') : (i.brands || null),
+                employees: i.employees && i.employees !== 'Not stated in document' ? i.employees : null,
+                production: i.annualSales || i.production || null,
+                markets: Array.isArray(i.markets) ? i.markets.join(', ') : (i.markets || null),
+                description: i.description || null,
+                dataNote: 'Source: ' + (biDocP.originalName || 'Brand Intelligence Document')
+            }, source: 'brand-intel-doc' });
+        }
+        const cachedP = await BrandIntelligenceCache.findOne({
+            brand: { $regex: new RegExp('^' + brand + '$', 'i') },
+            type: 'profile', expiresAt: { $gt: new Date() }
+        }).lean();
+        if (cachedP && cachedP.data) {
+            return res.json({ success: true, data: cachedP.data, cached: true, generatedAt: cachedP.generatedAt });
+        }
+        const releases = await CenterRelease.find({
+            brand: { $regex: new RegExp(brand, 'i') }, status: 'published'
+        }).sort({ releaseDate: -1 }).limit(8).select('title releaseDate').lean();
+        const releaseContext = releases.map((r, i) =>
+            `${i+1}. "${r.title}" (${new Date(r.releaseDate).toLocaleDateString('en-GB')})`
+        ).join('\n');
+        const ceoRelease = await CenterRelease.findOne({
+            brand: { $regex: new RegExp(brand, 'i') },
+            intelligenceExtracted: true, status: 'published',
+            'intelligence.ceoName': { $ne: null },
+            'intelligence.releaseType': { $regex: /sales|financial|delivery|annual|leadership|personnel|strategy/i }
+        }).sort({ releaseDate: -1 }).select('intelligence.ceoName').lean();
+        const confirmedCEO = ceoRelease ? ceoRelease.intelligence.ceoName : null;
+        const ceoNote = confirmedCEO ? `\nCONFIRMED FROM PLATFORM RELEASE: Current CEO/Chairman is "${confirmedCEO}" — use this exactly.` : '';
+        const prompt = `Provide a factual company profile for ${brand} for automotive journalists. Current date: May 2026.${ceoNote}\n\nRecent official ${brand} press releases:\n${releaseContext}\n\nReturn ONLY valid JSON:\n{"founded":"year","headquarters":"city, country","ceo":"${confirmedCEO || 'current CEO full name and title'}","group":"parent company or Independent","brands":"other brands in portfolio","employees":"approximate headcount","annualSales":"most recent annual deliveries with year","markets":"key markets","description":"2 current accurate sentences","dataNote":"As of May 2026"}`;
+        const message = await anthropic.messages.create({
+            model: 'claude-sonnet-4-6', max_tokens: 800,
+            messages: [{ role: 'user', content: prompt }]
+        });
+        const text = message.content?.find(c => c.type === 'text')?.text || '';
+        const clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        const match = clean.match(/\{[\s\S]*\}/);
+        if (!match) throw new Error('No JSON in response');
+        const profileData = JSON.parse(match[0]);
+        if (confirmedCEO) profileData.ceo = confirmedCEO;
+        const expiry = new Date(); expiry.setDate(expiry.getDate() + 30);
+        await BrandIntelligenceCache.findOneAndUpdate(
+            { brand, type: 'profile' },
+            { brand, type: 'profile', data: profileData, generatedAt: new Date(), expiresAt: expiry },
+            { upsert: true, new: true }
+        );
+        res.json({ success: true, data: profileData, cached: false, generatedAt: new Date() });
+    } catch (err) {
+        console.error('Brand profile error:', err.message);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+router.get('/brand-intelligence/:brand/personnel', async (req, res) => {
+    try {
+        const brand = req.params.brand;
+        const biDocPer = await BrandIntelligenceDoc.findOne({
+            brand: { $regex: new RegExp(brand, 'i') },
+            docType: 'personnel', status: 'active'
+        }).lean();
+        if (biDocPer && biDocPer.intelligence && biDocPer.intelligence.personnel) {
+            return res.json({ success: true, data: { personnel: biDocPer.intelligence.personnel }, cached: false, source: 'brand-intel-doc' });
+        }
+        const cachedPer = await BrandIntelligenceCache.findOne({
+            brand: { $regex: new RegExp('^' + brand + '$', 'i') },
+            type: 'personnel', expiresAt: { $gt: new Date() }
+        }).lean();
+        if (cachedPer && cachedPer.data && cachedPer.data.personnel) {
+            return res.json({ success: true, data: cachedPer.data, cached: true });
+        }
+        const appointmentReleases = await CenterRelease.find({
+            brand: { $regex: new RegExp(brand, 'i') }, status: 'published',
+            intelligenceExtracted: true,
+            $or: [
+                { 'intelligence.releaseType': /leadership|personnel|appointment/i },
+                { title: /appoints|appointed|new.*board|new.*ceo|new.*cfo/i }
+            ]
+        }).sort({ releaseDate: -1 }).limit(5).select('title releaseDate intelligence.keyPersonnel').lean();
+        const appointmentContext = appointmentReleases.length
+            ? '\nRECENT APPOINTMENTS:\n' + appointmentReleases.map(r => `- "${r.title}"`).join('\n') : '';
+        const prompt = `List ONLY the current Executive Board members of ${brand} as of May 2026 for automotive journalists.${appointmentContext}\n\nOnly include current board-level executives. Exclude drivers, spokespeople, engineers, historical figures, deceased persons.\n\nReturn ONLY valid JSON:\n{"personnel":["Full Name - Exact Current Board Title"]}\nMaximum 8 people.`;
+        const message = await anthropic.messages.create({
+            model: 'claude-sonnet-4-6', max_tokens: 512,
+            messages: [{ role: 'user', content: prompt }]
+        });
+        const text = message.content?.find(c => c.type === 'text')?.text || '';
+        const clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        const match = clean.match(/\{[\s\S]*\}/);
+        if (!match) throw new Error('No JSON in response');
+        const data = JSON.parse(match[0]);
+        const expiry = new Date(); expiry.setDate(expiry.getDate() + 30);
+        await BrandIntelligenceCache.findOneAndUpdate(
+            { brand, type: 'personnel' },
+            { brand, type: 'personnel', data, generatedAt: new Date(), expiresAt: expiry },
+            { upsert: true, new: true }
+        );
+        res.json({ success: true, data, cached: false });
+    } catch (err) {
+        console.error('Brand personnel error:', err.message);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+router.get('/brand-intelligence/:brand', async (req, res) => {
+    try {
+        const brand = req.params.brand;
+        const release = await CenterRelease.findOne({
+            brand: { $regex: new RegExp(brand, 'i') },
+            intelligenceExtracted: true, status: 'published'
+        }).sort({ releaseDate: -1 }).lean();
+        if (!release) return res.json({ success: true, data: null });
+        res.json({ success: true, data: {
+            ...release.intelligence,
+            sourceRelease: { title: release.title, uuid: release.uuid, releaseDate: release.releaseDate }
+        }});
+    } catch (err) {
+        res.status(500).json({ success: false, error: 'Server error' });
     }
 });
 

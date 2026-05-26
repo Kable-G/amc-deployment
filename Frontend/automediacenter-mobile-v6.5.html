@@ -967,6 +967,7 @@
             color: #0f172a;
         }
 
+
         .page-header p {
             font-size: 16px;
             font-weight: 300;
@@ -2751,6 +2752,34 @@ body.dark-mode .chip-recency {
     }
 }
 
+
+        .amc-page-title {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
+            font-size: clamp(26px, 3.9vw, 42px) !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.04em !important;
+            line-height: 1.05 !important;
+            margin: 0 0 8px 0 !important;
+        }
+        body:not(.dark-mode) .amc-page-title { color: #0f172a !important; }
+        body.dark-mode .amc-page-title { color: #f1f5f9 !important; }
+        @media (max-width: 1099px) {
+            .amc-page-title {
+                font-size: 26px !important;
+                letter-spacing: -0.025em !important;
+                line-height: 1.15 !important;
+                margin-bottom: 4px !important;
+                font-variation-settings: 'opsz' 26 !important;
+            }
+        }
+        @media (max-width: 900px) {
+            .amc-page-title {
+                font-size: 26px !important;
+                letter-spacing: -0.025em !important;
+                line-height: 1.15 !important;
+                margin-bottom: 4px !important;
+            }
+        }
 </style>
 </head>
 <body>
@@ -2937,7 +2966,7 @@ body.dark-mode .chip-recency {
 <!-- Main Content -->
 <main class="mobile-main">
     <header class="page-header">
-        <h1>Media Releases</h1>
+        <h1 class="amc-page-title">Media Releases</h1>
         <p>Latest media releases, images, videos and more</p>
     </header>
     
@@ -3267,17 +3296,17 @@ document.getElementById('toolsDropdownClose').addEventListener('click', () => {
 
 // Tool items
 document.getElementById('toolUnitConverter').addEventListener('click', () => {
-    alert('Unit Converter coming soon!');
+    if(window.AMCTools) AMCTools.open('unit');
     document.getElementById('toolsDropdown').classList.add('hidden');
 });
 
 document.getElementById('toolCurrencyConverter').addEventListener('click', () => {
-    alert('Currency Converter coming soon!');
+    if(window.AMCTools) AMCTools.open('currency');
     document.getElementById('toolsDropdown').classList.add('hidden');
 });
 
 document.getElementById('toolTimezoneConverter').addEventListener('click', () => {
-    alert('Timezone Converter coming soon!');
+    if(window.AMCTools) AMCTools.open('timezone');
     document.getElementById('toolsDropdown').classList.add('hidden');
 });
 
@@ -4339,7 +4368,7 @@ function createReleaseCard(release) {
                 </button>
             </div>
         </div>
-        <div class="brand-band" title="${brandName}">
+        <div class="brand-band" title="${brandName}" onclick="event.stopPropagation();event.preventDefault();window.location.href='brand-channel.html?brand='+encodeURIComponent('${brandName}')" style="cursor:pointer">
             ${brandName}
         </div>
         <div class="card-content">
@@ -5419,5 +5448,6 @@ console.log('✅ Scrollbar safety checks enabled');
 </script>
 
 <script src="/amc-notifications.js"></script>
+<script src="journalist-tools-loader.js"></script>
 </body>
 </html>

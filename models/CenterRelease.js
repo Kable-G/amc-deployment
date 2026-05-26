@@ -114,6 +114,36 @@ const centerReleaseSchema = new mongoose.Schema({
         default: false
     },
 
+    // ==========================================
+    // MRIS INTELLIGENCE (Sprint 1)
+    // Populated automatically on upload via Claude API
+    // ==========================================
+    intelligence: {
+        mrisScore:        { type: Number,  required: false },
+        mrisTier:         { type: String,  required: false }, // Excellent/Good/Average/Needs Improvement
+        period:           { type: String,  required: false }, // e.g. Full Year 2025
+        units:            { type: String,  required: false }, // vehicle sales figure
+        revenue:          { type: String,  required: false },
+        profit:           { type: String,  required: false },
+        change:           { type: String,  required: false }, // YoY change
+        financialHighlight: { type: String, required: false },
+        ceoName:          { type: String,  required: false },
+        ceoQuote:         { type: String,  required: false },
+        keyPersonnel:     { type: [String], default: [] },   // names mentioned
+        topMarket:        { type: String,  required: false },
+        technologySignals: { type: [String], default: [] },  // first-claims found
+        riskFlags:        { type: [String], default: [] },
+        storyAngles:      { type: [String], default: [] },   // journalist story angles
+        headlineSuggestions: { type: [String], default: [] },
+        releaseType:      { type: String,  required: false }, // sales/product/financial/strategy
+        extractedAt:      { type: Date,    required: false },
+        extractionMethod: { type: String,  required: false }, // 'auto-upload' or 'manual'
+    },
+    intelligenceExtracted: { type: Boolean, default: false },
+    // ==========================================
+    // END MRIS INTELLIGENCE
+    // ==========================================
+
     watermarkEnabled: {
         type: Boolean,
         default: false

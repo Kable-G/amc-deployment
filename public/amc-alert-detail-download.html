@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Media Alert — AutoMediaCenter</title>
+
+    <!-- Auth -->
+    <script type="module">
+      import { protectPage } from "./auth.js";
+      protectPage("media_user");
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Inter variable font — weights 300–800, opsz 14–144 (typography spec v1.0) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,32..144,800&display=swap" rel="stylesheet">
+
+    <!-- v6.5 shell CSS (must load before page styles) -->
+    <link rel="stylesheet" href="./components/shell/v6_5-shell.css">
+
+    <!-- PDF.js for attachment viewer -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <style>
+        /* ============================================================
+           AMC TYPOGRAPHY SYSTEM v1.0
+           Inter variable font — Linear-inspired weight hierarchy
+           ============================================================ */
+        html, body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ============================================================
+           LAYOUT VARIABLES + ICON RAIL — mirrors newradarfe.html exactly
+           ============================================================ */
+        :root {
+            --amc-header-h: 56px;
+            --amc-rail-w: 72px;
+        }
+
+        /* Avatar — reinforces shell CSS */
+        .amc-avatar {
+            width: 40px; height: 40px;
+            display: flex !important;
+            align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 50%;
+        }
+        .amc-avatar i { font-size: 24px; }
+        .amc-avatar.role-media-user     { color: #3B82F6; }
+        .amc-avatar.role-client-user    { color: #10B981; }
+        .amc-avatar.role-client-admin   { color: #F59E0B; }
+        .amc-avatar.role-platform-admin { color: #EF4444; }
+        body.dark-mode .amc-avatar.role-media-user     { color: #60a5fa; }
+        body.dark-mode .amc-avatar.role-client-user    { color: #34d399; }
+        body.dark-mode .amc-avatar.role-client-admin   { color: #fbbf24; }
+        body.dark-mode .amc-avatar.role-platform-admin { color: #f87171; }
+
+        /* ============================================================
+           PAGE TYPOGRAPHY (spec v1.0)
+           ============================================================ */
+
+        /* H1 — 42px / 800 / -0.04em / opsz 42 */
+        .alert-page-title {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            font-variation-settings: 'opsz' 42;
+            letter-spacing: -0.04em;
+            line-height: 1.05;
+            margin: 0 0 8px 0;
+            padding: 0;
+        }
+        body:not(.dark-mode) .alert-page-title { color: #0f172a; }
+        body.dark-mode      .alert-page-title { color: #f8fafc; }
+
+        @media (max-width: 767px) {
+            .alert-page-title { font-size: 28px; letter-spacing: -0.03em; }
+        }
+
+        /* Subtitle — 16px / 300 / 1.55lh */
+        .alert-page-subtitle {
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 1.55;
+            letter-spacing: 0;
+            margin: 0;
+            padding: 0;
+        }
+        body:not(.dark-mode) .alert-page-subtitle { color: #6b7280; }
+        body.dark-mode      .alert-page-subtitle { color: #64748b; }
+
+        /* ============================================================
+           LAYOUT
+           ============================================================ */
+        /* mobile-main — matches .mobile-main.amc-release-detail-main */
+        @media (max-width: 960px) {
+        @media (max-width: 767px) {
+            .mobile-main { padding: 16px 12px; }
+        }
+        @media (min-width: 1100px) {
+            .mobile-main { padding-left: calc(32px + var(--amc-rail-w)) !important; }
+        }
+        @media (min-width: 1366px) {
+            .mobile-main { padding-left: calc(40px + var(--amc-rail-w)) !important; }
+        }
+
+        /* Content container — matches pr-content-container in amc-release-detail.html exactly */
+        .amc-page {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem 2rem 2rem 0.5rem;
+            min-height: calc(100vh - 120px);
+        }
+        @media (max-width: 1199px) {
+            .amc-page { padding: 1.75rem 1.5rem 1.75rem 0.5rem; }
+        }
+        @media (max-width: 960px) {
+        @media (max-width: 767px) {
+            .amc-page { padding: 0 !important; }
+        }
+
+        .page-header { margin-bottom: 16px; }
+
+        /* Two-column body */
+        .alert-body-layout {
+            display: flex;
+            gap: 32px;
+            align-items: flex-start;
+        }
+
+        .alert-main-col { flex: 1; min-width: 0; padding-top: 0; }
+
+        .alert-sidebar-col {
+            width: 300px;
+            flex-shrink: 0;
+            position: sticky;
+            top: calc(var(--amc-header-h) + 16px);
+            max-height: calc(100vh - var(--amc-header-h) - 32px);
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        .alert-sidebar-col::-webkit-scrollbar { display: none; }
+
+        @media (max-width: 960px) {
+        @media (max-width: 767px) {
+            .alert-main-col { padding: 0; }
+            .alert-body-layout { gap: 0; }
+        }
+        @media (max-width: 960px) {
+            .alert-body-layout { flex-direction: column; }
+            .alert-sidebar-col { width: 100%; position: static; max-height: none; }
+            .pdf-viewer-wrap { margin: 0 -24px; border-radius: 0; border-left: none; border-right: none; }
+        }
+
+        /* ============================================================
+           META BAR
+           ============================================================ */
+        .alert-meta-bar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-primary);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 400;
+        }
+
+        .meta-item i {
+            color: var(--accent-primary, #3b82f6);
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .meta-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+
+        .meta-action-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary, #64748b);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.15s, color 0.15s;
+            font-family: inherit;
+        }
+
+        .meta-action-btn i { font-size: 13px; }
+        .meta-action-btn:hover { background: rgba(59,130,246,0.08); color: #3b82f6; }
+
+        /* ============================================================
+           STATUS BADGE
+           ============================================================ */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .status-published { background: rgba(16,185,129,0.1); color: #059669; border: 1px solid rgba(16,185,129,0.2); }
+        .status-draft     { background: rgba(245,158,11,0.1); color: #d97706; border: 1px solid rgba(245,158,11,0.2); }
+        .status-archived  { background: rgba(107,114,128,0.1); color: #6b7280; border: 1px solid rgba(107,114,128,0.2); }
+        .status-cancelled { background: rgba(239,68,68,0.1); color: #dc2626; border: 1px solid rgba(239,68,68,0.2); }
+
+        /* ============================================================
+           TAG CHIPS — spec: 13px / 500 / rgba(59,130,246,0.08) / border-radius 6px
+           ============================================================ */
+        .alert-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .tag-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px 3px 8px;
+            background: rgba(59,130,246,0.08);
+            border: 1px solid rgba(59,130,246,0.20);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #3b82f6;
+        }
+
+        .tag-chip i { font-size: 9px; opacity: 0.6; }
+
+        /* ============================================================
+           TEASER IMAGE
+           ============================================================ */
+        .alert-teaser {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-primary);
+        }
+
+        .alert-teaser img {
+            width: 100%;
+            height: auto;
+            max-height: 460px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ============================================================
+           CONTENT SECTIONS
+           ============================================================ */
+        .content-section { margin-bottom: 28px; }
+
+        /* No gap between last visible section and PDF viewer */
+        .content-section.hidden + .pdf-viewer-wrap,
+        .content-section.hidden + .content-section.hidden + .pdf-viewer-wrap {
+            margin-top: 0;
+        }
+        .pdf-viewer-wrap { margin-top: 0; }
+
+        .content-section + .content-section {
+            padding-top: 24px;
+            border-top: 1px solid var(--border-primary);
+        }
+
+        /* Section label — spec: 11px / 700 / 0.08em */
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-secondary, #64748b);
+            margin-bottom: 10px;
+        }
+
+        /* Section body — spec: 16px / 400 / 1.7lh */
+        .section-body {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.7;
+            color: var(--text-primary, #1e293b);
+            white-space: pre-wrap;
+        }
+
+        .section-body.empty {
+            color: var(--text-secondary, #64748b);
+            font-style: italic;
+        }
+
+        /* ============================================================
+           PDF VIEWER — exact port from amc-release-detail.html
+           ============================================================ */
+
+        /* Outer container — white, flex column */
+        .pdf-viewer-wrap {
+            width: 100%;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #ffffff;
+            overflow: hidden; /* must clip to stay within main column */
+            display: block;   /* not flex — wrapper grows naturally */
+            position: relative;
+            margin-bottom: 32px;
+        }
+        body.dark-mode .pdf-viewer-wrap { background: #ffffff; border-color: #e5e7eb; }
+
+        /* Wrapper — grows with rendered pages, outer page scrolls */
+        .pdf-viewer-wrapper {
+            overflow: visible;
+            padding: 0;
+            background: #ffffff;
+            position: relative;
+            width: 100%;
+            /* Top padding makes room for the absolute control bar on hover */
+            padding-top: 0;
+        }
+        body.dark-mode .pdf-viewer-wrapper { background: #ffffff; }
+
+        /* Control bar — absolutely positioned, slides in from top over PDF */
+        .pdf-control-bar {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+            gap: 16px;
+            flex-shrink: 0;
+            transform: translateY(0);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        body.dark-mode .pdf-control-bar { background: #f8f9fa; border-bottom-color: #e5e7eb; }
+        .pdf-control-bar.control-bar-hidden { transform: translateY(-100%); }
+
+        .pdf-controls-left, .pdf-controls-center, .pdf-controls-right {
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .pdf-nav-btn, .pdf-zoom-btn, .pdf-action-btn {
+            background: none;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            min-width: 28px;
+            justify-content: center;
+            transition: all 0.15s;
+            height: 26px;
+        }
+        .pdf-nav-btn:hover:not(:disabled),
+        .pdf-zoom-btn:hover:not(:disabled),
+        .pdf-action-btn:hover {
+            background: rgba(59,130,246,0.08);
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        .pdf-nav-btn:disabled, .pdf-zoom-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .pdf-page-info, .pdf-zoom-display {
+            font-size: 12px; font-weight: 500; color: #374151;
+            min-width: 50px; text-align: center; white-space: nowrap;
+        }
+
+        /* Page container — full width, clips canvas to column */
+        .pdf-page-container {
+            position: relative;
+            width: 100%;
+            line-height: 0;
+            background: #ffffff;
+            overflow: hidden; /* clip canvas to column width */
+        }
+        .pdf-page-container:not(:last-of-type) { border-bottom: 1px solid #e5e7eb; }
+
+        /* Canvas — sized precisely by JS (DPR-aware), no CSS size overrides */
+        .pdf-canvas {
+            display: block;
+            max-width: 100%; /* safety — never overflow column */
+        }
+
+        /* Annotation layer */
+        .annotationLayer {
+            position: absolute; top: 0; left: 0;
+            pointer-events: none; z-index: 10;
+        }
+        .annotationLayer a { pointer-events: auto; display: block; }
+        .annotationLayer a:hover { background-color: rgba(59,130,246,0.15) !important; }
+
+        /* Loading */
+        .pdf-loading {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding: 60px 20px;
+            color: #6b7280; font-size: 16px; background: #ffffff;
+        }
+        .pdf-loading i { font-size: 48px; margin-bottom: 16px; color: #3b82f6; }
+        @keyframes pdf-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .pdf-loading i.fa-spin { animation: pdf-spin 1s linear infinite; }
+
+        /* See Full Media Alert button */
+        .see-full-alert-btn {
+            display: flex; align-items: center; justify-content: center;
+            padding: 32px 20px; background: #ffffff;
+        }
+        .see-full-alert-btn button {
+            display: flex; align-items: center; gap: 10px;
+            padding: 14px 28px; background: #3b82f6; color: #ffffff;
+            border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
+            font-family: 'Inter', sans-serif; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.25); transition: all 0.2s ease;
+        }
+        .see-full-alert-btn button:hover {
+            background: #2563eb; transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59,130,246,0.35);
+        }
+        .see-full-alert-btn button i { font-size: 16px; }
+
+                /* ============================================================
+           SIDEBAR BLOCKS
+           ============================================================ */
+        .sidebar-block {
+            background: var(--bg-secondary, #fff);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+
+
+
+        /* Sidebar label — spec: 11px / 700 / 0.08em */
+        .sidebar-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-secondary, #64748b);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Countdown — large display weight */
+        .countdown-val {
+            font-size: 1.6rem;
+            font-weight: 800;
+            font-variation-settings: 'opsz' 32;
+            letter-spacing: -0.03em;
+            line-height: 1;
+        }
+
+        .countdown-val.urgent   { color: #ef4444; }
+        .countdown-val.soon     { color: #f59e0b; }
+        .countdown-val.upcoming { color: #3b82f6; }
+        .countdown-val.past     { color: var(--text-secondary, #64748b); }
+
+        .countdown-sub {
+            font-size: 12px;
+            color: var(--text-secondary, #64748b);
+            margin-top: 4px;
+        }
+
+        /* Event date — 14px / 600 */
+        .event-date-val {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary, #1e293b);
+        }
+
+        .event-date-time {
+            font-size: 12px;
+            color: var(--text-secondary, #64748b);
+            margin-top: 2px;
+        }
+
+        /* ============================================================
+           ACTION BUTTONS
+           ============================================================ */
+        .btn-calendar {
+            width: 100%;
+            padding: 11px 16px;
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s, transform 0.15s;
+            font-family: inherit;
+            margin-bottom: 8px;
+        }
+
+        .btn-calendar:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-calendar:active { transform: translateY(0); }
+        .btn-calendar { margin-bottom: 10px; }
+
+        .btn-share {
+            width: 100%;
+            padding: 10px 16px;
+            background: var(--bg-tertiary, #f9fafb);
+            color: var(--text-primary, #1e293b);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: border-color 0.15s, color 0.15s;
+            font-family: inherit;
+        }
+
+        .btn-share:hover { border-color: #3b82f6; color: #3b82f6; }
+        .btn-share { margin-bottom: 10px; }
+
+        /* ============================================================
+           ATTACHMENTS
+           ============================================================ */
+        .attachments-list {
+            list-style: none;
+            padding: 0; margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            background: var(--bg-tertiary, #f9fafb);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.15s;
+        }
+
+        .attachment-item:hover { background: var(--border-primary); transform: translateY(-1px); }
+
+        .att-icon {
+            width: 30px; height: 30px;
+            border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; font-size: 14px; color: #fff;
+        }
+        .att-icon.pdf   { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .att-icon.word  { background: linear-gradient(135deg, #2980b9, #3498db); }
+        .att-icon.image { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .att-icon.other { background: linear-gradient(135deg, #7f8c8d, #95a5a6); }
+
+        .att-info { flex: 1; min-width: 0; }
+
+        .att-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary, #1e293b);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .att-meta {
+            font-size: 11px;
+            color: var(--text-secondary, #64748b);
+        }
+
+        .att-dl {
+            color: #3b82f6;
+            font-size: 13px;
+            padding: 4px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            transition: background 0.15s, color 0.15s;
+        }
+        .att-dl:hover { background: #3b82f6; color: #fff; }
+
+        /* ============================================================
+           CALENDAR PICKER POPOVER
+           ============================================================ */
+        #amc-cal-picker {
+            position: fixed;
+            background: var(--bg-secondary, #fff);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+            width: 250px;
+            z-index: 9000;
+            overflow: hidden;
+            animation: calPickerIn 0.15s cubic-bezier(0.34,1.56,0.64,1) both;
+            font-family: "Inter", sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        @keyframes calPickerIn {
+            from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .cal-picker-header {
+            padding: 10px 14px 8px;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--text-secondary, #64748b);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .cal-option {
+            width: 100%; padding: 11px 14px;
+            display: flex; align-items: center; gap: 10px;
+            background: none; border: none; cursor: pointer;
+            border-bottom: 1px solid var(--border-primary);
+            font-family: inherit; transition: background 0.12s;
+        }
+        .cal-option:last-child { border-bottom: none; }
+        .cal-option:hover { background: var(--bg-tertiary, #f9fafb); }
+        .cal-opt-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+        .cal-opt-label strong { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary, #1e293b); }
+        .cal-opt-label small  { display: block; font-size: 11px; color: var(--text-secondary, #64748b); margin-top: 1px; }
+
+        /* ============================================================
+           SHARE MODAL
+           ============================================================ */
+        .share-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 8000;
+            display: none;
+            align-items: flex-start; justify-content: center;
+            padding: 80px 20px 20px;
+            backdrop-filter: blur(4px);
+            opacity: 0; transition: opacity 0.25s;
+        }
+        .share-backdrop.open { display: flex; opacity: 1; }
+
+        .share-modal {
+            background: var(--bg-secondary, #fff);
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            width: 100%; max-width: 420px;
+            overflow: hidden;
+            transform: scale(0.95); transition: transform 0.25s;
+        }
+        .share-backdrop.open .share-modal { transform: scale(1); }
+
+        .share-modal-header {
+            display: flex; align-items: center;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .share-modal-title {
+            font-size: 15px; font-weight: 600;
+            color: var(--text-primary, #1e293b); flex: 1;
+        }
+
+        .share-close {
+            background: none; border: none; font-size: 20px; line-height: 1;
+            color: var(--text-secondary, #64748b); cursor: pointer;
+            padding: 2px 6px; border-radius: 4px;
+        }
+        .share-close:hover { background: var(--bg-tertiary, #f9fafb); }
+
+        .share-modal-body { padding: 20px; }
+
+        .share-icons {
+            display: flex; gap: 12px; justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .shr-icon {
+            width: 48px; height: 48px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--bg-tertiary, #f9fafb);
+            border: 1px solid var(--border-primary);
+            font-size: 18px; text-decoration: none;
+            color: var(--text-secondary, #64748b);
+            transition: background 0.15s, transform 0.15s;
+        }
+        .shr-icon:hover { background: var(--border-primary); transform: translateY(-2px); }
+        .shr-icon.x-twitter i { color: #000; }
+        body.dark-mode .shr-icon.x-twitter i { color: #fff; }
+        .shr-icon.linkedin i  { color: #0A66C2; }
+        .shr-icon.email i     { color: #3b82f6; }
+
+        .copy-row { text-align: center; }
+
+        .copy-btn {
+            padding: 8px 18px;
+            background: #3b82f6; color: #fff;
+            border: none; border-radius: 6px;
+            font-size: 13px; font-weight: 500;
+            cursor: pointer; font-family: inherit;
+            transition: background 0.15s;
+        }
+        .copy-btn:hover { background: #2563eb; }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast-wrap {
+            position: fixed; top: 72px;
+            left: 50%; transform: translateX(-50%);
+            z-index: 99999; pointer-events: none;
+            width: 100%; max-width: 420px;
+        }
+
+        .toast {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff; padding: 13px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            margin: 0 auto 10px;
+            font-size: 14px; font-weight: 500; text-align: center;
+            opacity: 0; transform: translateY(-10px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+        }
+        .toast.show { opacity: 1; transform: translateY(0) scale(1); }
+        .toast.hide { opacity: 0; transform: translateY(-10px) scale(0.95); }
+
+        /* ============================================================
+           LOADING OVERLAY
+           ============================================================ */
+        #loading-overlay {
+            position: fixed; inset: 0;
+            background: var(--bg-primary, #f3f4f6);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; gap: 12px;
+            font-size: 15px; color: var(--text-secondary, #64748b);
+            font-family: "Inter", sans-serif;
+            transition: opacity 0.3s;
+        }
+        body.dark-mode #loading-overlay { background: #0f1419; }
+        #loading-overlay i { color: #3b82f6; font-size: 22px; animation: spin 0.9s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ============================================================
+           BACK LINK
+           ============================================================ */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 13px; font-weight: 500;
+            color: var(--text-secondary, #64748b);
+            text-decoration: none; margin-bottom: 20px;
+            transition: color 0.15s;
+        }
+        .back-link:hover { color: #3b82f6; }
+        .back-link i { font-size: 10px; }
+
+        /* ============================================================
+           HIDDEN
+           ============================================================ */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loading-overlay">
+    <i class="fas fa-circle-notch"></i>
+    <span>Loading media alert…</span>
+</div>
+
+<!-- v6.5 Shell mount points — identical to newradarfe.html -->
+<div id="amcShellHeader"></div>
+<div id="amcShellSidebar"></div>
+
+<!-- ================================================================
+     PAGE CONTENT
+     ================================================================ -->
+<main class="mobile-main">
+    <div class="amc-page">
+
+        <!-- Back -->
+        <a class="back-link" href="newradarfe.html">
+            <i class="fas fa-chevron-left"></i> Back to Media Alerts
+        </a>
+
+        <!-- PAGE TITLE BLOCK -->
+        <div class="page-header">
+            <h1 class="alert-page-title" id="alert-title">Loading…</h1>
+            <p class="alert-page-subtitle" id="alert-subtitle"></p>
+        </div>
+
+        <!-- Tags -->
+        <div id="alert-tags" class="alert-tags"></div>
+
+        <!-- Meta bar -->
+        <div class="alert-meta-bar">
+            <span class="meta-item"><i class="fas fa-calendar-alt"></i><span id="alert-date-display">—</span></span>
+            <span class="meta-item"><i class="fas fa-building"></i><span id="alert-brand-meta">—</span></span>
+            <span class="meta-item meta-item--status"><span id="alert-status-badge" class="status-badge status-published">PUBLISHED</span></span>
+            <div class="meta-actions">
+                <button class="meta-action-btn" id="btn-print"><i class="fas fa-print"></i> Print</button>
+                <button class="meta-action-btn" id="btn-share-header"><i class="fas fa-share-alt"></i> Share</button>
+            </div>
+        </div>
+
+        <!-- Two-column body -->
+        <div class="alert-body-layout">
+
+            <!-- MAIN COLUMN -->
+            <div class="alert-main-col">
+
+                <!-- Teaser image (injected by JS) -->
+                <div id="teaser-wrap"></div>
+
+                <!-- Description -->
+                <div class="content-section hidden" id="desc-section">
+                    <div class="section-label">About this alert</div>
+                    <div class="section-body" id="alert-description">Loading…</div>
+                </div>
+
+                <!-- Quick view / full content -->
+                <div class="content-section hidden" id="qv-section">
+                    <div class="section-label">Full details</div>
+                    <div class="section-body" id="alert-quickview"></div>
+                </div>
+
+                <!-- PDF viewer — structure matches amc-release-detail.html -->
+                <div class="pdf-viewer-wrap hidden" id="pdf-viewer-wrap">
+                    <!-- Control bar: hidden by default, slides in on hover -->
+                    <div class="pdf-control-bar control-bar-hidden">
+                        <div class="pdf-controls-left">
+                            <button class="pdf-nav-btn" id="pdf-prev-page" disabled title="Previous page"><i class="fas fa-chevron-left"></i></button>
+                            <span class="pdf-page-info"><span id="pdf-current-page">1</span> / <span id="pdf-total-pages">—</span></span>
+                            <button class="pdf-nav-btn" id="pdf-next-page" disabled title="Next page"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="pdf-controls-center">
+                            <button class="pdf-zoom-btn" id="pdf-zoom-out" title="Zoom out"><i class="fas fa-minus"></i></button>
+                            <span class="pdf-zoom-display" id="pdf-zoom-level">100%</span>
+                            <button class="pdf-zoom-btn" id="pdf-zoom-in" title="Zoom in"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="pdf-controls-right">
+                            <button class="pdf-action-btn" id="pdf-print-btn" title="Print"><i class="fas fa-print"></i></button>
+                            <a class="pdf-action-btn" id="pdf-download-btn" title="Download" target="_blank" rel="noopener"><i class="fas fa-download"></i></a>
+                        </div>
+                    </div>
+                    <!-- Hoverable wrapper — mouseenter/leave triggers control bar -->
+                    <div class="pdf-viewer-wrapper" id="pdf-viewer-wrapper">
+                        <div class="pdf-loading" id="pdf-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <div>Loading PDF…</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /alert-main-col -->
+
+            <!-- SIDEBAR -->
+            <aside class="alert-sidebar-col">
+
+                <!-- Countdown -->
+                <div class="sidebar-block" id="countdown-block">
+                    <div class="sidebar-label"><i class="fas fa-stopwatch"></i>Time until event</div>
+                    <div class="countdown-val" id="countdown-val">—</div>
+                    <div class="countdown-sub" id="countdown-sub"></div>
+                </div>
+
+                <!-- Event date -->
+                <div class="sidebar-block hidden" id="event-date-block">
+                    <div class="sidebar-label"><i class="fas fa-calendar-check"></i>Event date &amp; time</div>
+                    <div class="event-date-val" id="event-date-val"></div>
+                    <div class="event-date-time" id="event-date-time"></div>
+                </div>
+
+                <!-- Calendar CTA -->
+                <button class="btn-calendar" id="btn-calendar">
+                    <i class="fas fa-calendar-plus"></i> Add to Calendar
+                </button>
+
+                <!-- Share CTA -->
+                <button class="btn-share" id="btn-share-sidebar">
+                    <i class="fas fa-share-alt"></i> Share Alert
+                </button>
+
+                <!-- Attachments (future — rendered by JS when available) -->
+                <div class="sidebar-block hidden" id="attachments-block" style="margin-top:2px;">
+                    <div class="sidebar-label"><i class="fas fa-paperclip"></i>Attachments</div>
+                    <ul class="attachments-list" id="attachments-list"></ul>
+                </div>
+
+            </aside>
+
+        </div><!-- /alert-body-layout -->
+
+    </div><!-- /amc-page -->
+</main>
+
+<!-- Footer mount (required by shell loader) -->
+<div id="amcShellFooter" style="display:none;"></div>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- Share modal -->
+<div class="share-backdrop" id="share-backdrop">
+    <div class="share-modal">
+        <div class="share-modal-header">
+            <span class="share-modal-title">Share this Alert</span>
+            <button class="share-close" id="share-close">×</button>
+        </div>
+        <div class="share-modal-body">
+            <div class="share-icons">
+                <a href="#" target="_blank" rel="noopener noreferrer" class="shr-icon x-twitter" id="shr-twitter" title="Share on X / Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="shr-icon linkedin" id="shr-linkedin" title="Share on LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="#" class="shr-icon email" id="shr-email" title="Share via email"><i class="fas fa-envelope"></i></a>
+            </div>
+            <div class="copy-row">
+                <button class="copy-btn" id="shr-copy"><i class="fas fa-link"></i> Copy link</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================
+     SCRIPTS — v6.5 shell loaded exactly as newradarfe.html
+     ================================================================ -->
+<script src="./components/shell/v6_5-shell.js" defer></script>
+<script src="./components/shell/v6_5-shell-loader.js" defer></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof loadV65Shell === 'function') {
+            loadV65Shell({ basePath: './components/shell' });
+        }
+    });
+</script>
+
+<script>
+// Dynamic API Base URL
+const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
+
+// ================================================================
+// UTILITY
+// ================================================================
+function getCurrentPage() {
+    return window.location.pathname.split('/').pop() || 'amc-alert-detail.html';
+}
+
+function showToast(msg) {
+    const wrap = document.getElementById('toast-wrap');
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    wrap.appendChild(t);
+    requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+    setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 400); }, 3000);
+}
+
+function hideLoading() {
+    const el = document.getElementById('loading-overlay');
+    if (!el) return;
+    el.style.opacity = '0';
+    setTimeout(() => { el.style.display = 'none'; }, 300);
+}
+
+// ================================================================
+// CALENDAR FUNCTIONS (identical logic to newradarfe.html)
+// ================================================================
+function generateICS(data) {
+    const title     = (data.title || 'AutoMediaCenter Media Alert').replace(/[\r\n]/g, ' ');
+    const eventDate = new Date(data.eventDateTime);
+    if (isNaN(eventDate)) return null;
+    const endDate   = new Date(eventDate.getTime() + 3600000);
+    const uid       = (data.uuid || ('amc-' + Date.now())) + '@automediacenter.com';
+
+    function toICS(d) { return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''); }
+    function fold(s) {
+        const lines = [];
+        while (s.length > 75) { lines.push(s.slice(0,75)); s = ' ' + s.slice(75); }
+        lines.push(s);
+        return lines.join('\r\n');
+    }
+
+    const descParts = ['AutoMediaCenter: Media Alert'];
+    if (data.brand)                     descParts.push('Brand: '  + data.brand);
+    if (data.region)                    descParts.push('Region: ' + data.region);
+    if (data.tags && data.tags.length)  descParts.push('Tags: '   + data.tags.join(', '));
+
+    return [
+        'BEGIN:VCALENDAR', 'VERSION:2.0',
+        'PRODID:-//AutoMediaCenter//Media Alert//EN',
+        'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+        'BEGIN:VEVENT',
+        fold('UID:' + uid),
+        fold('DTSTART:' + toICS(eventDate)),
+        fold('DTEND:' + toICS(endDate)),
+        fold('SUMMARY:' + title),
+        fold('DESCRIPTION:' + descParts.join('\\n')),
+        'STATUS:CONFIRMED', 'SEQUENCE:0',
+        fold('DTSTAMP:' + toICS(new Date())),
+        'END:VEVENT', 'END:VCALENDAR'
+    ].join('\r\n');
+}
+
+function downloadICS(data) {
+    const ics = generateICS(data);
+    if (!ics) { alert('Invalid event date — cannot create calendar file.'); return; }
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = (data.title || 'alert').replace(/[^a-zA-Z0-9-_]/g,'_').slice(0,50) + '.ics';
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+}
+
+function buildGoogleURL(data) {
+    const eventDate = new Date(data.eventDateTime);
+    if (isNaN(eventDate)) return null;
+    const endDate   = new Date(eventDate.getTime() + 3600000);
+    function toGC(d) { return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z/,'Z'); }
+    const details   = encodeURIComponent(
+        ['AutoMediaCenter: Media Alert', data.brand ? 'Brand: ' + data.brand : ''].filter(Boolean).join('\n')
+    );
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+        + '&text='    + encodeURIComponent(data.title || 'Media Alert')
+        + '&dates='   + toGC(eventDate) + '/' + toGC(endDate)
+        + '&details=' + details
+        + '&sf=true&output=xml';
+}
+
+let _calBtn = null;
+
+function removeCalPicker() {
+    const el = document.getElementById('amc-cal-picker');
+    if (el) el.remove();
+    _calBtn = null;
+}
+
+function showCalPicker(triggerEl, data) {
+    if (_calBtn === triggerEl) { removeCalPicker(); return; }
+    removeCalPicker();
+    _calBtn = triggerEl;
+
+    const googleUrl = buildGoogleURL(data);
+    const picker    = document.createElement('div');
+    picker.id       = 'amc-cal-picker';
+    picker.innerHTML = `
+        <div class="cal-picker-header">Add to Calendar</div>
+        <button class="cal-option" id="cal-ics">
+            <span class="cal-opt-icon">📅</span>
+            <span class="cal-opt-label">
+                <strong>Download .ics</strong>
+                <small>Apple Calendar · Outlook · All apps</small>
+            </span>
+        </button>
+        ${googleUrl ? `<button class="cal-option" id="cal-google">
+            <span class="cal-opt-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+            </span>
+            <span class="cal-opt-label">
+                <strong>Google Calendar</strong>
+                <small>Opens in new tab</small>
+            </span>
+        </button>` : ''}
+    `;
+    document.body.appendChild(picker);
+
+    const rect = triggerEl.getBoundingClientRect();
+    let top = rect.bottom + 8, left = rect.left;
+    if (left + 250 > window.innerWidth - 10) left = window.innerWidth - 260;
+    if (top + 148 > window.innerHeight - 10) top = rect.top - 156;
+    picker.style.top = top + 'px';
+    picker.style.left = left + 'px';
+
+    document.getElementById('cal-ics').addEventListener('click', () => { downloadICS(data); removeCalPicker(); });
+    const gBtn = document.getElementById('cal-google');
+    if (gBtn) gBtn.addEventListener('click', () => { window.open(googleUrl, '_blank', 'noopener'); removeCalPicker(); });
+
+    setTimeout(() => {
+        document.addEventListener('click', function outside(e) {
+            if (!picker.contains(e.target) && e.target !== triggerEl) {
+                removeCalPicker();
+                document.removeEventListener('click', outside);
+            }
+        });
+    }, 50);
+}
+
+// ================================================================
+// COUNTDOWN
+// ================================================================
+function formatCountdown(eventDate) {
+    const diff  = eventDate - Date.now();
+    if (diff <= 0) return { text: 'Event passed', cls: 'past', sub: '' };
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000)  / 60000);
+    let text, cls;
+    if (days > 30)      { text = days + ' days';            cls = 'upcoming'; }
+    else if (days > 0)  { text = days + 'd ' + hours + 'h'; cls = days <= 7 ? 'soon' : 'upcoming'; }
+    else if (hours > 0) { text = hours + 'h ' + mins + 'm'; cls = 'urgent'; }
+    else                { text = mins + 'min';               cls = 'urgent'; }
+    return {
+        text, cls,
+        sub: 'until ' + eventDate.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' })
+    };
+}
+
+// ================================================================
+// SHARE MODAL
+// ================================================================
+function openShare() {
+    const bd = document.getElementById('share-backdrop');
+    bd.style.display = 'flex';
+    requestAnimationFrame(() => bd.classList.add('open'));
+}
+
+function closeShare() {
+    const bd = document.getElementById('share-backdrop');
+    bd.classList.remove('open');
+    setTimeout(() => { bd.style.display = 'none'; }, 300);
+}
+
+// ================================================================
+// ================================================================
+// PDF VIEWER — ported from amc-release-detail-functionality.js
+// ================================================================
+let _alertPdfDoc       = null;
+let _alertPdfUrl       = null;
+let _alertCurrentPage  = 1;
+let _alertTotalPages   = 0;
+let _alertCurrentScale = 1.0;
+let _alertShowFull     = false;
+let _alertIsRendering  = false;
+let _alertHideTimeout, _alertMaxVisibleTimeout;
+let _alertControlBarVisible = false;
+
+// ── Render all pages (up to 3 unless expanded) ───────────────────
+async function _alertRenderAllPages() {
+    if (!_alertPdfDoc || _alertIsRendering) return;
+    _alertIsRendering = true;
+
+    const wrapper = document.getElementById('pdf-viewer-wrapper');
+    void wrapper.offsetWidth; // force reflow
+    const wrapperWidth = wrapper.clientWidth || 800;
+    // Clear existing pages and expand button
+
+    const pagesToRender = _alertShowFull ? _alertTotalPages : Math.min(3, _alertTotalPages);
+
+    for (let pageNum = 1; pageNum <= pagesToRender; pageNum++) {
+        const page = await _alertPdfDoc.getPage(pageNum);
+
+        const pageContainer = document.createElement('div');
+        pageContainer.className = 'pdf-page-container';
+        pageContainer.dataset.pageNumber = pageNum;
+
+        const canvas = document.createElement('canvas');
+        canvas.className = 'pdf-canvas';
+
+        const viewport = page.getViewport({ scale: 1 });
+        const scale    = (wrapperWidth / viewport.width) * _alertCurrentScale;
+        const scaledVp = page.getViewport({ scale });
+
+        const dpr = window.devicePixelRatio || 2;
+        canvas.width        = scaledVp.width  * dpr;
+        canvas.height       = scaledVp.height * dpr;
+        canvas.style.width  = `${scaledVp.width}px`;
+        canvas.style.height = `${scaledVp.height}px`;
+
+        pageContainer.appendChild(canvas);
+
+        await page.render({
+            canvasContext: canvas.getContext('2d'),
+            viewport: scaledVp,
+            transform: [dpr, 0, 0, dpr, 0, 0]
+        }).promise;
+
+        // Annotation layer — clickable links
+        try {
+            const annotations = await page.getAnnotations();
+            const annLayer = document.createElement('div');
+            annLayer.className = 'annotationLayer';
+            annLayer.style.cssText = `position:absolute;top:0;left:0;width:${scaledVp.width}px;height:${scaledVp.height}px;pointer-events:none;z-index:10;`;
+            annotations.forEach(ann => {
+                if (ann.subtype === 'Link' && ann.url) {
+                    const [x1,y1,x2,y2] = scaledVp.convertToViewportRectangle(ann.rect);
+                    const isEmail = ann.url.startsWith('mailto:');
+                    const a = document.createElement('a');
+                    a.href   = ann.url;
+                    a.target = '_blank';
+                    a.rel    = 'noopener noreferrer';
+                    a.style.cssText = `
+                        position:absolute;
+                        left:${Math.min(x1,x2)}px; top:${Math.min(y1,y2)}px;
+                        width:${Math.abs(x2-x1)}px; height:${Math.abs(y2-y1)}px;
+                        pointer-events:auto; cursor:pointer; display:block;
+                        background:${isEmail?'rgba(16,185,129,0.08)':'rgba(59,130,246,0.08)'};
+                        border:1px solid ${isEmail?'rgba(16,185,129,0.2)':'rgba(59,130,246,0.2)'};
+                        border-radius:2px; transition:all 0.2s;`;
+                    a.addEventListener('mouseenter', () => {
+                        a.style.background = isEmail?'rgba(16,185,129,0.15)':'rgba(59,130,246,0.15)';
+                    });
+                    a.addEventListener('mouseleave', () => {
+                        a.style.background = isEmail?'rgba(16,185,129,0.08)':'rgba(59,130,246,0.08)';
+                    });
+                    if (isEmail) {
+                        // Email links: show popover on hover with copy/send options
+                        let _hoverT, _closeT;
+                        a.addEventListener('mouseenter', function(e) {
+                            const existing = document.getElementById('email-link-popover');
+                            if (existing) existing.remove();
+                            if (_closeT) clearTimeout(_closeT);
+                            _hoverT = setTimeout(() => {
+                                showEmailLinkPopover(ann.url, this);
+                                const pop = document.getElementById('email-link-popover');
+                                if (pop) {
+                                    pop.addEventListener('mouseenter', () => { if(_closeT) clearTimeout(_closeT); });
+                                    pop.addEventListener('mouseleave', () => {
+                                        _closeT = setTimeout(() => { const p=document.getElementById('email-link-popover'); if(p) p.remove(); }, 300);
+                                    });
+                                }
+                            }, 200);
+                        });
+                        a.addEventListener('mouseleave', function() {
+                            clearTimeout(_hoverT);
+                            _closeT = setTimeout(() => { const p=document.getElementById('email-link-popover'); if(p) p.remove(); }, 300);
+                        });
+                        a.removeAttribute('href'); // prevent navigation; popover handles action
+                    }
+                    annLayer.appendChild(a);
+                }
+            });
+            pageContainer.appendChild(annLayer);
+        } catch(_) {}
+
+        wrapper.appendChild(pageContainer);
+    }
+
+    // "See Full Media Alert" button if >3 pages and not expanded
+    if (!_alertShowFull && _alertTotalPages > 3) {
+        const btnWrap = document.createElement('div');
+        btnWrap.className = 'see-full-alert-btn';
+        btnWrap.innerHTML = `<button id="see-full-alert"><i class="fas fa-chevron-down"></i> See Full Media Alert</button>`;
+        wrapper.appendChild(btnWrap);
+        document.getElementById('see-full-alert').addEventListener('click', async () => {
+            _alertShowFull = true;
+            _alertIsRendering = false;
+            await _alertRenderAllPages();
+            _alertUpdateControls();
+        });
+    }
+
+    _alertIsRendering = false;
+    _alertUpdateControls();
+}
+
+// ── Update control bar state ──────────────────────────────────────
+function _alertUpdateControls() {
+    document.getElementById('pdf-current-page').textContent = _alertCurrentPage;
+    document.getElementById('pdf-total-pages').textContent  = _alertTotalPages;
+    document.getElementById('pdf-zoom-level').textContent   = Math.round(_alertCurrentScale * 100) + '%';
+    document.getElementById('pdf-prev-page').disabled = _alertCurrentPage <= 1;
+    document.getElementById('pdf-next-page').disabled = _alertCurrentPage >= _alertTotalPages;
+}
+
+// ── Scroll to page ────────────────────────────────────────────────
+function _alertScrollToPage(num) {
+    const wrapper = document.getElementById('pdf-viewer-wrapper');
+    const target  = wrapper.querySelector(`.pdf-page-container[data-page-number="${num}"]`);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Hover slide control bar ───────────────────────────────────────
+function _alertInitSlideControls() {
+    const wrapper    = document.getElementById('pdf-viewer-wrapper');
+    const controlBar = document.querySelector('#pdf-viewer-wrap .pdf-control-bar');
+    if (!wrapper || !controlBar) return;
+
+    const isTouch = window.matchMedia('(hover:none) and (pointer:coarse)').matches;
+    if (isTouch) {
+        controlBar.classList.remove('control-bar-hidden');
+        _alertControlBarVisible = true;
+        return;
+    }
+
+    // Always start hidden
+    controlBar.classList.add('control-bar-hidden');
+    _alertControlBarVisible = false;
+
+    const show = () => {
+        clearTimeout(_alertHideTimeout); clearTimeout(_alertMaxVisibleTimeout);
+        if (!_alertControlBarVisible) {
+            controlBar.classList.remove('control-bar-hidden');
+            _alertControlBarVisible = true;
+        }
+        _alertMaxVisibleTimeout = setTimeout(() => {
+            controlBar.classList.add('control-bar-hidden');
+            _alertControlBarVisible = false;
+        }, 3000);
+    };
+    const hide = (delay = 500) => {
+        clearTimeout(_alertHideTimeout); clearTimeout(_alertMaxVisibleTimeout);
+        _alertHideTimeout = setTimeout(() => {
+            controlBar.classList.add('control-bar-hidden');
+            _alertControlBarVisible = false;
+        }, delay);
+    };
+
+    wrapper.addEventListener('mouseenter', show);
+    wrapper.addEventListener('mouseleave', () => hide(500));
+    controlBar.addEventListener('mouseenter', () => {
+        clearTimeout(_alertHideTimeout); clearTimeout(_alertMaxVisibleTimeout);
+        if (!_alertControlBarVisible) {
+            controlBar.classList.remove('control-bar-hidden');
+            _alertControlBarVisible = true;
+        }
+        _alertMaxVisibleTimeout = setTimeout(() => {
+            controlBar.classList.add('control-bar-hidden');
+            _alertControlBarVisible = false;
+        }, 5000);
+    });
+    controlBar.addEventListener('mouseleave', () => hide(1000));
+
+    // Keep bar visible briefly on button click
+    document.querySelectorAll('#pdf-viewer-wrap .pdf-nav-btn, #pdf-viewer-wrap .pdf-zoom-btn, #pdf-viewer-wrap .pdf-action-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            clearTimeout(_alertHideTimeout); clearTimeout(_alertMaxVisibleTimeout);
+            if (!_alertControlBarVisible) {
+                controlBar.classList.remove('control-bar-hidden');
+                _alertControlBarVisible = true;
+            }
+            _alertMaxVisibleTimeout = setTimeout(() => {
+                controlBar.classList.add('control-bar-hidden');
+                _alertControlBarVisible = false;
+            }, 2000);
+        });
+    });
+}
+
+// ── Wire control buttons ──────────────────────────────────────────
+function _alertSetupControls() {
+    const prev   = document.getElementById('pdf-prev-page');
+    const next   = document.getElementById('pdf-next-page');
+    const zoomIn = document.getElementById('pdf-zoom-in');
+    const zoomOt = document.getElementById('pdf-zoom-out');
+    const print  = document.getElementById('pdf-print-btn');
+
+    if (prev) prev.addEventListener('click', () => {
+        if (_alertCurrentPage > 1) { _alertCurrentPage--; _alertScrollToPage(_alertCurrentPage); _alertUpdateControls(); }
+    });
+    if (next) next.addEventListener('click', () => {
+        if (_alertCurrentPage < _alertTotalPages) { _alertCurrentPage++; _alertScrollToPage(_alertCurrentPage); _alertUpdateControls(); }
+    });
+    if (zoomIn) zoomIn.addEventListener('click', async () => {
+        if (_alertCurrentScale < 2.0) { _alertCurrentScale += 0.25; _alertIsRendering = false; await _alertRenderAllPages(); }
+    });
+    if (zoomOt) zoomOt.addEventListener('click', async () => {
+        if (_alertCurrentScale > 0.5) { _alertCurrentScale -= 0.25; _alertIsRendering = false; await _alertRenderAllPages(); }
+    });
+    if (print) print.addEventListener('click', () => {
+        if (_alertPdfUrl) { const w = window.open(_alertPdfUrl,'_blank'); if(w) w.addEventListener('load',()=>w.print()); }
+    });
+
+    // Track scroll → update current page indicator
+    const wrapper = document.getElementById('pdf-viewer-wrapper');
+    if (wrapper) {
+        wrapper.addEventListener('scroll', () => {
+            const pages = wrapper.querySelectorAll('.pdf-page-container');
+            pages.forEach(p => {
+                const r = p.getBoundingClientRect();
+                const w = wrapper.getBoundingClientRect();
+                if (r.top >= w.top && r.top < w.top + w.height / 2) {
+                    const pg = parseInt(p.dataset.pageNumber, 10);
+                    if (pg !== _alertCurrentPage) {
+                        _alertCurrentPage = pg;
+                        document.getElementById('pdf-current-page').textContent = pg;
+                        _alertUpdateControls();
+                    }
+                }
+            });
+        }, { passive: true });
+    }
+}
+
+// ── Main entry point — called with the PDF URL ────────────────────
+async function loadPDF(url) {
+    _alertPdfUrl      = url;
+    _alertCurrentPage = 1;
+    _alertShowFull    = false;
+    _alertIsRendering = false;
+
+    const wrap    = document.getElementById('pdf-viewer-wrap');
+    const wrapper = document.getElementById('pdf-viewer-wrapper');
+    const loading = document.getElementById('pdf-loading');
+
+    wrap.classList.remove('hidden');
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Reset wrapper, show loading
+    wrapper.querySelectorAll('.pdf-page-container, .see-full-alert-btn').forEach(el => el.remove());
+    if (loading) loading.style.display = 'flex';
+
+    // Wire download link
+    const dlBtn = document.getElementById('pdf-download-btn');
+    if (dlBtn) dlBtn.href = url;
+
+    try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        _alertPdfDoc    = await pdfjsLib.getDocument({ url, cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/', cMapPacked: true }).promise;
+        _alertTotalPages = _alertPdfDoc.numPages;
+
+        
+
+        await _alertRenderAllPages();
+        _alertSetupControls();
+        _alertInitSlideControls();
+
+    } catch(e) {
+        console.error('PDF load error:', e);
+        if (loading) loading.innerHTML = `
+            <i class="fas fa-file-pdf" style="color:#ef4444;font-size:2.5em;margin-bottom:12px;"></i>
+            <div>Could not display PDF.</div>
+            <a href="${url}" target="_blank" style="color:#3b82f6;font-weight:500;margin-top:8px;">
+                <i class="fas fa-external-link-alt"></i> Open in new tab
+            </a>`;
+    }
+}
+// ================================================================
+// EMAIL LINK POPOVER (ported from amc-release-detail-functionality.js)
+// ================================================================
+async function checkInternalUser(email) {
+    try {
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        if (!token) return null;
+        const response = await fetch(`${API_BASE_URL}/api/v1/center/users/lookup-by-email?email=${encodeURIComponent(email)}`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) return null;
+        const data = await response.json();
+        if (data.success && data.user) {
+            const user = data.user;
+            const parts = user.name ? user.name.split(' ') : ['User'];
+            return {
+                userId:    user._id || user.id,
+                name:      user.name || email,
+                firstName: parts[0],
+                initials:  parts.length > 1 ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase() : parts[0].substring(0,2).toUpperCase(),
+                role:      user.role || user.title || null
+            };
+        }
+        return null;
+    } catch(e) { return null; }
+}
+
+async function showEmailLinkPopover(mailtoUrl, anchorElement) {
+    const existing = document.getElementById('email-link-popover');
+    if (existing) existing.remove();
+
+    const emailMatch = mailtoUrl.match(/mailto:([^?]+)/i);
+    if (!emailMatch) return;
+    const emailAddress = emailMatch[1].trim();
+
+    const popover = document.createElement('div');
+    popover.id = 'email-link-popover';
+    const rect = anchorElement.getBoundingClientRect();
+    popover.style.cssText = `
+        position:fixed; left:${rect.left}px; top:${rect.bottom+8}px;
+        background:#fff; border:2px solid #3b82f6; border-radius:8px;
+        box-shadow:0 4px 16px rgba(59,130,246,0.12),0 2px 4px rgba(0,0,0,0.08);
+        z-index:10000; min-width:280px; max-width:320px; padding:0;
+        font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+        animation:popoverSlideIn 0.15s ease-out;`;
+
+    if (!document.getElementById('popover-animations')) {
+        const s = document.createElement('style');
+        s.id = 'popover-animations';
+        s.textContent = `@keyframes popoverSlideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}`;
+        document.head.appendChild(s);
+    }
+
+    const internalUser = await checkInternalUser(emailAddress);
+
+    if (internalUser) {
+        popover.innerHTML = `
+            <div style="padding:16px;border-bottom:1px solid #e5e7eb;">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                    <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:20px;">${internalUser.initials}</div>
+                    <div><div style="font-weight:600;font-size:15px;color:#111827;">${internalUser.name}</div>
+                    <div style="font-size:13px;color:#6b7280;">${emailAddress}</div>
+                    ${internalUser.role?`<div style="font-size:12px;color:#9ca3af;margin-top:2px;">${internalUser.role}</div>`:''}</div>
+                </div>
+            </div>
+            <div style="padding:8px;">
+                <button class="popover-action-btn" data-action="copy" style="width:100%;padding:10px 16px;background:#fff;color:#374151;border:1px solid #3b82f6;border-radius:6px;font-weight:500;font-size:14px;cursor:pointer;margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <i class="fas fa-copy" style="color:#3b82f6;"></i> Copy Address</button>
+                <button class="popover-action-btn" data-action="email" style="width:100%;padding:10px 16px;background:#fff;color:#374151;border:1px solid #d1d5db;border-radius:6px;font-weight:500;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <i class="fas fa-envelope" style="color:#3b82f6;"></i> Send Email</button>
+            </div>`;
+    } else {
+        popover.innerHTML = `
+            <div style="padding:12px 16px;border-bottom:1px solid #e5e7eb;">
+                <div style="font-size:13px;color:#6b7280;margin-bottom:4px;">Email Contact</div>
+                <div style="font-weight:500;font-size:14px;color:#111827;word-break:break-all;">${emailAddress}</div>
+            </div>
+            <div style="padding:8px;">
+                <button class="popover-action-btn" data-action="copy" style="width:100%;padding:10px 16px;background:#fff;color:#374151;border:1px solid #3b82f6;border-radius:6px;font-weight:500;font-size:14px;cursor:pointer;margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <i class="fas fa-copy" style="color:#3b82f6;"></i> Copy Address</button>
+                <button class="popover-action-btn" data-action="email" style="width:100%;padding:10px 16px;background:#fff;color:#374151;border:1px solid #d1d5db;border-radius:6px;font-weight:500;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <i class="fas fa-envelope" style="color:#3b82f6;"></i> Send Email</button>
+            </div>`;
+    }
+
+    document.body.appendChild(popover);
+
+    // Hover effects
+    popover.querySelectorAll('.popover-action-btn').forEach(btn => {
+        btn.addEventListener('mouseenter', function() { this.style.background='#f9fafb'; });
+        btn.addEventListener('mouseleave', function() { this.style.background='#fff'; });
+    });
+
+    // Click actions
+    popover.querySelectorAll('.popover-action-btn').forEach(btn => {
+        btn.addEventListener('click', async function(e) {
+            e.stopPropagation();
+            if (this.dataset.action === 'copy') {
+                try { await navigator.clipboard.writeText(emailAddress); }
+                catch(_) { /* fallback */ const t=document.createElement('textarea'); t.value=emailAddress; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+                showToast('Email address copied!', 'success');
+                popover.remove();
+            } else if (this.dataset.action === 'email') {
+                window.location.href = mailtoUrl;
+                popover.remove();
+            }
+        });
+    });
+
+    // Close on outside click
+    setTimeout(() => {
+        document.addEventListener('click', function closeIt(e) {
+            if (!popover.contains(e.target)) { popover.remove(); document.removeEventListener('click', closeIt); }
+        });
+    }, 100);
+
+    // Adjust if off-screen
+    setTimeout(() => {
+        const pr = popover.getBoundingClientRect();
+        if (pr.right > window.innerWidth)  popover.style.left = (window.innerWidth - pr.width - 20) + 'px';
+        if (pr.bottom > window.innerHeight) popover.style.top = (rect.top - pr.height - 8) + 'px';
+    }, 10);
+}
+
+// ================================================================
+// RENDER ALERT
+// ================================================================
+function renderAlert(alert) {
+    // Title & subtitle
+    document.getElementById('alert-title').textContent    = alert.title || 'Untitled Alert';
+    document.getElementById('alert-subtitle').textContent = alert.brand || '';
+
+    // Tags
+    const tagsEl = document.getElementById('alert-tags');
+    if (tagsEl) {
+        tagsEl.innerHTML = '';
+        const tags = alert.tags || [];
+        tags.forEach(tag => {
+            const span = document.createElement('span');
+            span.className = 'tag-chip';
+            span.innerHTML = `<i class="fas fa-tag"></i>${tag}`;
+            tagsEl.appendChild(span);
+        });
+    }
+
+    // Meta bar
+    const eventDate = alert.eventDateTime;
+    const validDate = eventDate && !isNaN(new Date(eventDate).getTime());
+    if (validDate) {
+        const d = new Date(eventDate);
+        document.getElementById('alert-date-display').textContent =
+            d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'long', year:'numeric' }) +
+            ' · ' + d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+    }
+    const brandMetaEl = document.getElementById('alert-brand-meta');
+    if (brandMetaEl) brandMetaEl.textContent = alert.brand || '';
+
+    // Status badge
+    const statusEl = document.getElementById('alert-status-badge');
+    if (statusEl) {
+        const status = (alert.status || 'PUBLISHED').toUpperCase();
+        statusEl.textContent = status;
+        statusEl.className = 'status-badge status-' + status.toLowerCase();
+    }
+
+    // Description
+    const descSection = document.getElementById('desc-section');
+    const descEl      = document.getElementById('alert-description');
+    if (alert.description && alert.description.trim()) {
+        descEl.textContent = alert.description;
+        descSection.classList.remove('hidden');
+    }
+    // else stays hidden (default in HTML)
+
+    // Quick view / full content
+    if (alert.quickViewContent && alert.quickViewContent.trim()) {
+        document.getElementById('alert-quickview').textContent = alert.quickViewContent;
+        document.getElementById('qv-section').classList.remove('hidden');
+    }
+
+    // Countdown + event date sidebar
+    if (validDate) {
+        const valEl = document.getElementById('countdown-val');
+        const subEl = document.getElementById('countdown-sub');
+        const now   = new Date();
+        const ev    = new Date(eventDate);
+        const diff  = ev - now;
+
+        if (diff > 0) {
+            const days  = Math.floor(diff / 86400000);
+            const hrs   = Math.floor((diff % 86400000) / 3600000);
+            const mins  = Math.floor((diff % 3600000)  /   60000);
+            if (days > 0)       { valEl.textContent = `${days}d ${hrs}h`; }
+            else if (hrs > 0)   { valEl.textContent = `${hrs}h ${mins}m`; }
+            else                { valEl.textContent = `${mins}m`; }
+            subEl.textContent = 'until ' + ev.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' });
+            // Colour urgency classes
+            valEl.classList.remove('urgent','soon','upcoming');
+            if (diff < 3600000)        valEl.classList.add('urgent');   // <1h  red
+            else if (diff < 86400000)  valEl.classList.add('soon');     // <24h amber
+            else                       valEl.classList.add('upcoming'); // >24h blue
+        } else {
+            valEl.textContent = 'Event passed';
+            valEl.classList.add('past');
+            subEl.textContent = '';
+        }
+
+        // Event date block
+        const edBlock   = document.getElementById('event-date-block');
+        const edVal     = document.getElementById('event-date-val');
+        const edTime    = document.getElementById('event-date-time');
+        if (edBlock && edVal && edTime) {
+            edBlock.classList.remove('hidden');
+            edVal.textContent  = ev.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+            edTime.textContent = ev.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }) + ' local time';
+        }
+
+        // Countdown live update
+        const tick = () => {
+            const now2 = new Date(), ev2 = new Date(eventDate), d2 = ev2 - now2;
+            if (d2 > 0) {
+                const dy = Math.floor(d2/86400000), hr = Math.floor((d2%86400000)/3600000), mn = Math.floor((d2%3600000)/60000);
+                valEl.textContent = dy > 0 ? `${dy}d ${hr}h` : hr > 0 ? `${hr}h ${mn}m` : `${mn}m`;
+            } else { valEl.textContent = 'Event passed'; }
+        };
+        setInterval(tick, 60000);
+
+        // Calendar button — show picker modal (ICS download + Google Calendar)
+        const calBtn = document.getElementById('btn-calendar');
+        if (calBtn) {
+            calBtn.addEventListener('click', (e) => {
+                showCalPicker(calBtn, {
+                    title:         alert.title || 'Media Alert',
+                    eventDateTime: alert.eventDateTime,
+                    brand:         alert.brand  || '',
+                    region:        alert.region || '',
+                    tags:          alert.tags   || [],
+                    uuid:          alert.uuid   || ''
+                });
+                e.stopPropagation();
+            });
+        }
+    } else {
+        // No valid date — hide countdown, show static unavailable
+        const cBlock = document.getElementById('countdown-block');
+        if (cBlock) cBlock.classList.add('hidden');
+    }
+
+    // Teaser image
+    if (alert.teaserImagePath) {
+        const imgUrl = alert.teaserImagePath.startsWith('http')
+            ? alert.teaserImagePath
+            : `${API_BASE_URL}/` + alert.teaserImagePath;
+        const imgEl = document.getElementById('alert-teaser-image');
+        if (imgEl) {
+            imgEl.src = imgUrl;
+            imgEl.style.display = 'block';
+        }
+    }
+
+    // Attachments — alertDocPath (new bento form) + legacy attachments array
+    const attachmentsToRender = [];
+    if (alert.alertDocPath) {
+        const docUrl = alert.alertDocPath.startsWith('http')
+            ? alert.alertDocPath
+            : `${API_BASE_URL}` + alert.alertDocPath;
+        attachmentsToRender.push({
+            url:          docUrl,
+            path:         docUrl,
+            filename:     alert.alertDocOriginalName || alert.alertDocPath.split('/').pop(),
+            originalname: alert.alertDocOriginalName || alert.alertDocPath.split('/').pop()
+        });
+    }
+    if (alert.attachments && alert.attachments.length) {
+        attachmentsToRender.push(...alert.attachments);
+    }
+    if (attachmentsToRender.length) {
+        renderAttachments(attachmentsToRender);
+        // Auto-render first PDF — no click required
+        const firstPdf = attachmentsToRender.find(a => {
+            const ext = (a.filename || a.url || '').split('.').pop().toLowerCase();
+            return ext === 'pdf';
+        });
+        if (firstPdf) {
+            const pdfUrl = firstPdf.url || firstPdf.path;
+            setTimeout(() => loadPDF(pdfUrl), 500);
+        }
+    }
+
+    hideLoading();
+}
+
+
+// ================================================================
+// ATTACHMENTS
+// ================================================================
+function renderAttachments(attachments) {
+    document.getElementById('attachments-block').classList.remove('hidden');
+    const list = document.getElementById('attachments-list');
+    list.innerHTML = '';
+    attachments.forEach(att => {
+        const ext     = (att.filename || att.path || '').split('.').pop().toLowerCase();
+        const iconCls = ext === 'pdf' ? 'pdf' : ['doc','docx'].includes(ext) ? 'word' : ['jpg','jpeg','png','gif','webp'].includes(ext) ? 'image' : 'other';
+        const iconFA  = ext === 'pdf' ? 'fas fa-file-pdf' : ['doc','docx'].includes(ext) ? 'fas fa-file-word' : ['jpg','jpeg','png','gif','webp'].includes(ext) ? 'fas fa-file-image' : 'fas fa-file';
+        const name    = att.filename || att.originalname || (att.path || '').split('/').pop() || 'Attachment';
+        const url     = att.url || att.path || '#';
+        const li      = document.createElement('li');
+        li.className  = 'attachment-item';
+        li.innerHTML  = `
+            <div class="att-icon ${iconCls}"><i class="${iconFA}"></i></div>
+            <div class="att-info">
+                <div class="att-name">${name}</div>
+                <div class="att-meta">${ext.toUpperCase()}</div>
+            </div>
+            <a href="${url}" target="_blank" rel="noopener" class="att-dl" title="Download" onclick="event.stopPropagation()">
+                <i class="fas fa-download"></i>
+            </a>`;
+        li.addEventListener('click', () => ext === 'pdf' ? loadPDF(url) : window.open(url, '_blank', 'noopener'));
+        list.appendChild(li);
+    });
+}
+
+// ================================================================
+// INIT
+// ================================================================
+async function initAlertDetail() {
+    const uuid  = new URLSearchParams(window.location.search).get('uuid');
+    const token = localStorage.getItem('authToken')
+               || localStorage.getItem('token')
+               || sessionStorage.getItem('authToken');
+
+    if (!uuid) {
+        hideLoading();
+        document.getElementById('alert-title').textContent = 'Alert not found';
+        document.getElementById('alert-subtitle').textContent = 'No alert ID was provided in the URL.';
+        document.getElementById('alert-description').textContent = 'Please go back and select an alert from the Media Alerts page.';
+        document.getElementById('alert-description').classList.add('empty');
+        return;
+    }
+
+    try {
+        const res  = await fetch(`${API_BASE_URL}/api/v1/radar/alerts/${uuid}`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const json  = await res.json();
+        const alert = json.data || json.alert || json;
+        renderAlert(alert);
+    } catch (err) {
+        console.error('Alert detail load error:', err);
+        hideLoading();
+        document.getElementById('alert-title').textContent = 'Could not load alert';
+        document.getElementById('alert-subtitle').textContent = 'Please go back and try again.';
+        document.getElementById('alert-description').textContent = 'Error: ' + (err.message || 'Unknown error');
+        document.getElementById('alert-description').classList.add('empty');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initAlertDetail);
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

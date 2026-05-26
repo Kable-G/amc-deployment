@@ -22,6 +22,9 @@
 'use strict';
 
 const express      = require('express');
+const PDFDocument  = require('pdfkit');
+const fs           = require('fs');
+const fspath       = require('path');
 const router       = express.Router();
 const crypto       = require('crypto');
 const bcrypt       = require('bcrypt');
@@ -143,22 +146,34 @@ router.get('/my-vaults', authenticate, async (req, res) => {
     if (!user) return res.status(401).json({ success: false, error: 'User not found' });
 
     const userEmail = user.email;
+    const view      = req.query.view || 'received'; // 'received' | 'sent'
 
-    // Build query based on role
+    // Build query based on role and view
     let query;
     if (userRole === 'platform_admin') {
-      // Platform admin sees all active vaults
-      query = { status: 'active' };
+      if (view === 'sent') {
+        // Sent: vaults created by this user
+        query = { status: 'active', user: userId };
+      } else {
+        // Received: all active vaults (platform admin sees everything)
+        query = { status: 'active' };
+      }
     } else if (userRole === 'client_admin' || userRole === 'client_user') {
-      // Client admin/user sees vaults they created
-      query = { status: 'active', user: userId };
+      if (view === 'sent') {
+        // Sent: vaults they created
+        query = { status: 'active', user: userId };
+      } else {
+        // Received: vaults they were invited to
+        query = { status: 'active', invitedUsers: userEmail };
+      }
     } else {
-      // media_user — only vaults they were explicitly invited to
+      // media_user — always received view only
       query = { status: 'active', invitedUsers: userEmail };
     }
     // Fetch vaults matching the role-based query
     const vaults = await VaultAsset.find(query)
       .select('_id vaultAssetUUID title embargoUntil availabilityDate availabilityTime availabilityTimezone requireNDA images videos vaultReleaseDocs supplementaryDocs teaserImage clearanceLevel vaultExpirationDays invitedUsers brand companyName')
+      .sort({ createdAt: -1 })
       .lean();
 
     if (!vaults.length) {
@@ -205,6 +220,11 @@ router.get('/my-vaults', authenticate, async (req, res) => {
         lastAccessedAt:   access?.lastAccessedAt  || null,
         accessGrantedAt:  access?.accessGrantedAt || null,
         isLocked:         access?.lockedAt ? true : false,
+        minutesLeft:      access?.lockedAt ? (() => {
+          const lockAge = Date.now() - new Date(access.lockedAt).getTime();
+          const remaining = Math.ceil((30 * 60 * 1000 - lockAge) / 60000);
+          return remaining > 0 ? remaining : 0;
+        })() : 0,
       };
     });
 
@@ -287,69 +307,241 @@ router.post('/nda-sign', authenticate, async (req, res) => {
     });
 
     // Format embargo datetime for email
+    const _vaultTz = vault.availabilityTimezone || 'UTC';
+    const _tzLabel = vault.embargoUntil ? (() => { try { return new Date(vault.embargoUntil).toLocaleTimeString('en-GB', { timeZone: _vaultTz, timeZoneName: 'short' }).split(' ').pop(); } catch(e) { return 'UTC'; } })() : '';
     const embargoDate = vault.embargoUntil
-      ? new Date(vault.embargoUntil).toLocaleString('en-GB', {
-          day: '2-digit', month: 'long', year: 'numeric',
-          hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
-        })
+      ? new Date(vault.embargoUntil).toLocaleString('en-GB', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: _vaultTz, hour12: false }) + ' ' + _tzLabel
       : 'See vault details';
 
     // Send password via nodemailer (Gmail SMTP)
-    let emailSent = false;
-    if (deliveryMethods.includes('email') && process.env.SMTP_USER) {
-      try {
-        await mailer.sendMail({
-          to:      userEmail,
-          from:    `"${FROM_NAME}" <${process.env.SMTP_USER}>`,
-          subject: `Your vault access password — ${vault.title}`,
-          html: `
-            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 560px; margin: 0 auto; color: #0f172a;">
-              <div style="background: #ffd000; padding: 24px 28px 20px; border-radius: 8px 8px 0 0;">
-                <p style="margin: 0; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(0,0,0,0.6);">AutoMediaVault</p>
-                <h1 style="margin: 6px 0 0; font-size: 22px; font-weight: 800; color: rgba(0,0,0,0.75);">Your vault is ready</h1>
-              </div>
-              <div style="background: #ffffff; padding: 28px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px;">
-                <p style="margin: 0 0 16px; font-size: 14px; color: #475569;">Hi ${userName},</p>
-                <p style="margin: 0 0 20px; font-size: 14px; color: #475569; line-height: 1.6;">
-                  Your NDA has been recorded for <strong>${vault.title}</strong>. Use the password below to unlock the vault.
-                </p>
+    const emailSent = true; // Password delivered in combined NDA email below
 
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 18px 20px; margin: 0 0 20px; text-align: center;">
-                  <p style="margin: 0 0 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #94a3b8;">Vault Access Password</p>
-                  <p style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.12em; color: #0f172a; font-family: 'Courier New', monospace;">${plainPassword}</p>
-                </div>
 
-                <div style="background: #fef2f2; border-left: 3px solid #dc2626; padding: 10px 14px; border-radius: 0 4px 4px 0; margin: 0 0 20px;">
-                  <p style="margin: 0; font-size: 12px; font-weight: 700; color: #dc2626;">
-                    ⚠ Do not publish before: ${embargoDate}
-                  </p>
-                </div>
+    // Generate signed NDA PDF, email journalist and optionally notify creator
+    try {
+      const _etz = vault.availabilityTimezone || 'UTC';
+      const _etzLabel = vault.embargoUntil ? (() => { try { return new Date(vault.embargoUntil).toLocaleTimeString('en-GB', { timeZone: _etz, timeZoneName: 'short' }).split(' ').pop(); } catch(e) { return 'UTC'; } })() : '';
+      const embargoStr = vault.embargoUntil
+        ? new Date(vault.embargoUntil).toLocaleString('en-GB', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: _etz, hour12: false }) + ' ' + _etzLabel
+        : 'As specified in the vault';
 
-                <p style="margin: 0 0 6px; font-size: 12px; color: #94a3b8; line-height: 1.5;">
-                  By accessing this vault you confirm your agreement to the NDA signed on ${now.toUTCString()}.
-                  All downloads are logged, watermarked, and traceable.
-                </p>
-                <p style="margin: 0; font-size: 11px; color: #cbd5e1;">
-                  AutoMediaVault · automediacenter.com · Do not forward this email.
-                </p>
-              </div>
-            </div>
-          `
+      const signedAtStr = now.toLocaleString('en-GB', {
+        day: '2-digit', month: 'long', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+      });
+
+      // Generate PDF in memory
+      const pdfBuffer = await new Promise((resolve, reject) => {
+        const doc = new PDFDocument({ margin: 50, size: 'A4' });
+        const buffers = [];
+        doc.on('data', chunk => buffers.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(buffers)));
+        doc.on('error', reject);
+
+        // Header bar
+        doc.rect(0, 0, doc.page.width, 80).fill('#1e293b');
+        doc.fillColor('#94a3b8').fontSize(9).font('Helvetica-Bold')
+           .text('AUTOMEDIACENTER', 50, 28, { characterSpacing: 1.5 });
+        doc.fillColor('#ffffff').fontSize(20).font('Helvetica-Bold')
+           .text('Non-Disclosure Agreement', 50, 46);
+        doc.fillColor('#0f172a');
+
+        doc.moveDown(3.5);
+        doc.fontSize(15).font('Helvetica-Bold').fillColor('#0f172a')
+           .text('SIGNED NDA CERTIFICATE', { align: 'center' });
+        doc.moveDown(0.4);
+        doc.fontSize(10).font('Helvetica').fillColor('#64748b')
+           .text('This document certifies that the following party has agreed to the Non-Disclosure Agreement', { align: 'center' });
+        doc.text('governing access to the Media Vault described below.', { align: 'center' });
+
+        doc.moveDown(1);
+        doc.moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).strokeColor('#e2e8f0').stroke();
+        doc.moveDown(1);
+
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#94a3b8').text('MEDIA VAULT');
+        doc.moveDown(0.3);
+        doc.fontSize(13).font('Helvetica-Bold').fillColor('#0f172a').text(vault.title);
+        doc.moveDown(0.4);
+        doc.fontSize(10).font('Helvetica').fillColor('#dc2626')
+           .text('EMBARGO DATE: ' + embargoStr, { font: 'Helvetica-Bold' });
+        doc.moveDown(1);
+
+        doc.moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).strokeColor('#e2e8f0').stroke();
+        doc.moveDown(1);
+
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#94a3b8').text('SIGNATORY DETAILS');
+        doc.moveDown(0.5);
+        const rows = [
+          ['Full Name',       signatureName],
+          ['Email Address',   userEmail],
+          ['Signed At',       signedAtStr],
+          ['IP Address',      ip],
+          ['Device / Browser', ua.substring(0, 80)],
+        ];
+        rows.forEach(([label, value]) => {
+          doc.fontSize(9).font('Helvetica-Bold').fillColor('#64748b').text(label + ':');
+          doc.fontSize(10).font('Helvetica').fillColor('#0f172a').text(value);
+          doc.moveDown(0.4);
         });
-        emailSent = true;
-        await VaultAccess.findOneAndUpdate(
-          { userId, vaultId },
-          { $set: { emailDispatchedAt: new Date() } }
+
+        doc.moveDown(0.5);
+        doc.moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).strokeColor('#e2e8f0').stroke();
+        doc.moveDown(1);
+
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#94a3b8').text('AGREED TERMS');
+        doc.moveDown(0.5);
+        doc.fontSize(10).font('Helvetica').fillColor('#374151').text(
+          '1. CONFIDENTIALITY. The signatory agrees to keep all content accessed through this Media Vault strictly confidential and not to disclose, publish, broadcast, or otherwise make available any content to any third party prior to the embargo date and time specified above.\n\n' +
+          '2. EMBARGO. The signatory agrees not to publish, broadcast, or otherwise make public any content from this Media Vault before the embargo date and time. Breach of embargo constitutes a material breach of this agreement.\n\n' +
+          '3. PERMITTED USE. Content from this Media Vault may only be used for editorial, journalistic, or media purposes directly related to the subject matter of the vault. Commercial use is prohibited without express written consent.\n\n' +
+          '4. WATERMARKING & TRACKING. The signatory acknowledges that all downloaded assets are watermarked with their identity, IP address, and timestamp. All access and download activity is logged as part of an immutable audit record.\n\n' +
+          '5. LIABILITY. Breach of this agreement may result in legal action. The signatory accepts full liability for any loss or damage caused by unauthorised disclosure or pre-embargo publication.\n\n' +
+          '6. GOVERNING LAW. This agreement is governed by the laws of the jurisdiction in which AutoMediaCenter operates.',
+          { lineGap: 3 }
         );
-        await audit(VaultAuditLog.EVENTS.PASSWORD_DISPATCHED, {
-          vaultId, userId,
-          meta: { method: 'email', to: userEmail },
-          req
-        });
-      } catch (emailErr) {
-        console.error('[VAULT] Email error:', emailErr.message);
-        // Don't fail the request — password is set, email failed silently
+
+        doc.moveDown(1.5);
+        doc.moveTo(50, doc.y).lineTo(doc.page.width - 50, doc.y).strokeColor('#e2e8f0').stroke();
+        doc.moveDown(1);
+
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#94a3b8').text('DIGITAL SIGNATURE');
+        doc.moveDown(0.5);
+        doc.fontSize(20).font('Helvetica-Oblique').fillColor('#1e293b').text(signatureName);
+        doc.moveDown(0.3);
+        doc.fontSize(9).font('Helvetica').fillColor('#64748b')
+           .text('Digitally signed on ' + signedAtStr);
+        doc.moveDown(0.2);
+        doc.text('Recorded by AutoMediaCenter at IP address ' + ip);
+
+        doc.moveDown(2);
+        doc.fontSize(8).font('Helvetica').fillColor('#94a3b8')
+           .text('This document was automatically generated by AutoMediaCenter · automediacenter.com', { align: 'center' });
+        doc.text('It constitutes a legally binding record of the NDA signed by the above party.', { align: 'center' });
+
+        doc.end();
+      });
+
+      // Save PDF to disk
+      const ndaDir = fspath.join(__dirname, '..', 'uploads', 'vault_assets', 'nda_signed');
+      if (!fs.existsSync(ndaDir)) fs.mkdirSync(ndaDir, { recursive: true });
+      const pdfFilename = 'nda_' + vaultId + '_' + userId + '_' + Date.now() + '.pdf';
+      const pdfPath = fspath.join(ndaDir, pdfFilename);
+      fs.writeFileSync(pdfPath, pdfBuffer);
+
+      // Store PDF path on VaultAccess record
+      await VaultAccess.findOneAndUpdate(
+        { userId, vaultId },
+        { $set: { signedNdaPdfPath: 'uploads/vault_assets/nda_signed/' + pdfFilename } }
+      );
+
+      const pdfAttachment = {
+        filename: 'NDA_Signed_' + vault.title.replace(/[^a-z0-9]/gi, '_').substring(0, 40) + '.pdf',
+        content: pdfBuffer,
+        contentType: 'application/pdf'
+      };
+
+      // Generate magic link for vault access
+      let vaultMagicUrl = process.env.APP_URL + '/automediavault.html';
+      try {
+        const VaultMagicLink = require('../models/VaultMagicLink');
+        const crypto = require('crypto');
+        let ml = await VaultMagicLink.findOne({ userId, vaultId, status: 'active', expiresAt: { $gt: new Date() } });
+        if (!ml) {
+          const tok = crypto.randomBytes(32).toString('hex');
+          await VaultMagicLink.create({ token: tok, vaultId, vaultAssetUUID: vault.vaultAssetUUID || vaultId, userId, email: userEmail });
+          ml = { token: tok };
+        }
+        vaultMagicUrl = (process.env.APP_URL || 'http://44.200.25.168:5000') + '/api/v1/vault/access?token=' + ml.token;
+      } catch(mlErr) { console.error('[VAULT] Magic link error:', mlErr.message); }
+
+      // Send combined email: NDA confirmation + password + signed PDF
+      await mailer.sendMail({
+        from: '"AutoMediaVault" <noreply@automediacenter.com>',
+        to: userEmail,
+        subject: 'NDA signed & vault access — ' + vault.title,
+        html: '<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:580px;margin:0 auto;">' +
+          '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;"><tr><td align="center">' +
+          '<table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07);">' +
+          '<tr><td style="background:#1e293b;padding:28px 36px;">' +
+          '<p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;">AutoMediaCenter</p>' +
+          '<p style="margin:8px 0 0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.02em;">Your vault is ready</p>' +
+          '</td></tr>' +
+          '<tr><td style="padding:32px 36px;">' +
+          '<p style="margin:0 0 20px;font-size:15px;color:#334155;line-height:1.6;">Hi ' + userName + ',</p>' +
+          '<p style="margin:0 0 24px;font-size:15px;color:#334155;line-height:1.6;">Your NDA has been recorded. Use the password below to unlock the vault. Your signed NDA is attached to this email for your records.</p>' +
+
+          // Vault info
+          '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:24px;">' +
+          '<tr><td style="padding:20px 24px;">' +
+          '<p style="margin:0 0 4px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#94a3b8;">MEDIA VAULT</p>' +
+          '<p style="margin:0 0 10px;font-size:16px;font-weight:700;color:#0f172a;">' + vault.title + '</p>' +
+          '<p style="margin:0;font-size:13px;font-weight:600;color:#dc2626;">Embargo: ' + embargoStr + '</p>' +
+          '</td></tr></table>' +
+
+          // Password
+          '<table width="100%" cellpadding="0" cellspacing="0" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;margin-bottom:24px;text-align:center;">' +
+          '<tr><td style="padding:20px 24px;">' +
+          '<p style="margin:0 0 8px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#3b82f6;">Media Vault Access Password</p>' +
+          '<p style="margin:0;font-size:30px;font-weight:700;letter-spacing:0.12em;color:#0f172a;font-family:Courier New,monospace;">' + plainPassword + '</p>' +
+          '</td></tr></table>' +
+
+          // CTA button
+          '<table cellpadding="0" cellspacing="0" style="margin-bottom:24px;">' +
+          '<tr><td style="background:#2563eb;border-radius:8px;">' +
+          '<a href="' + vaultMagicUrl + '" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">Open Media Vault →</a>' +
+          '</td></tr></table>' +
+
+          // Security notice
+          '<table width="100%" cellpadding="0" cellspacing="0" style="background:#eff6ff;border-left:3px solid #2563eb;border-radius:0 6px 6px 0;margin-bottom:24px;">' +
+          '<tr><td style="padding:14px 18px;font-size:12px;color:#1e40af;line-height:1.6;">' +
+          'All downloads are watermarked with your identity. The embargo date is legally binding under the NDA you signed. Do not publish before the embargo lifts.' +
+          '</td></tr></table>' +
+
+          '<p style="margin:0;font-size:11px;color:#94a3b8;">AutoMediaCenter · automediacenter.com · Do not forward this email.</p>' +
+          '</td></tr>' +
+          '<tr><td style="padding:16px 36px;border-top:1px solid #f1f5f9;">' +
+          '<p style="margin:0;font-size:11px;color:#94a3b8;">Signed NDA attached · ' + signedAtStr + '</p>' +
+          '</td></tr>' +
+          '</table></td></tr></table></div>',
+        attachments: [pdfAttachment]
+      });
+      console.log('[VAULT] Combined NDA + password email sent to journalist: ' + userEmail);
+
+      // Email PDF to creator if NDA notification enabled
+      if (vault.notifyClientOnNda) {
+        const creator = await User.findById(vault.user).select('email firstName name').lean();
+        if (creator && creator.email) {
+          const creatorName = creator.firstName || creator.name || creator.email;
+          const journalistName = userName || userEmail;
+          await mailer.sendMail({
+            from: '"AutoMediaVault" <noreply@automediacenter.com>',
+            to: creator.email,
+            subject: 'NDA signed — ' + vault.title,
+            html: '<div style="font-family:-apple-system,sans-serif;max-width:560px;margin:0 auto;">' +
+              '<div style="background:#1e293b;padding:24px 28px;border-radius:8px 8px 0 0;">' +
+              '<p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#94a3b8;">AutoMediaCenter</p>' +
+              '<h1 style="margin:6px 0 0;font-size:22px;font-weight:800;color:#ffffff;">NDA Signed</h1>' +
+              '</div>' +
+              '<div style="background:#ffffff;padding:28px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 8px 8px;">' +
+              '<p style="margin:0 0 16px;font-size:14px;color:#475569;">Hi ' + creatorName + ',</p>' +
+              '<p style="margin:0 0 16px;font-size:14px;color:#475569;line-height:1.6;"><strong>' + journalistName + '</strong> has signed the NDA for your Media Vault:</p>' +
+              '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:16px 18px;margin:0 0 20px;">' +
+              '<p style="margin:0 0 6px;font-size:13px;font-weight:700;color:#0f172a;">' + vault.title + '</p>' +
+              '<p style="margin:0 0 10px;font-size:13px;font-weight:600;color:#dc2626;">Embargo: ' + embargoStr + '</p>' +
+              '<p style="margin:0 0 4px;font-size:12px;color:#64748b;">Signed by: ' + journalistName + ' (' + userEmail + ')</p>' +
+              '<p style="margin:0 0 4px;font-size:12px;color:#64748b;">Signed at: ' + signedAtStr + '</p>' +
+              '<p style="margin:0;font-size:12px;color:#64748b;">IP address: ' + ip + '</p>' +
+              '</div>' +
+              '<p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.5;">The signed NDA PDF is attached to this email for your records. The vault password has been dispatched to the journalist.</p>' +
+              '</div></div>',
+            attachments: [pdfAttachment]
+          });
+          console.log('[VAULT] NDA notification + PDF sent to creator: ' + creator.email);
+        }
       }
+
+    } catch (pdfErr) {
+      console.error('[VAULT] PDF generation/send error:', pdfErr.message);
     }
 
     res.json({
@@ -386,13 +578,28 @@ router.post('/unlock', authenticate, async (req, res) => {
       return res.status(403).json({ success: false, error: 'No access record found. Please sign the NDA first.' });
     }
 
-    // Check lockout
+    // Check lockout — auto-unlock after 30 minutes
     if (access.lockedAt) {
-      return res.status(429).json({
-        success: false,
-        error: 'Too many failed attempts. This vault has been locked. Contact support.',
-        locked: true
-      });
+      const lockAge = Date.now() - new Date(access.lockedAt).getTime();
+      const LOCK_DURATION_MS = 30 * 60 * 1000; // 30 minutes
+      if (lockAge < LOCK_DURATION_MS) {
+        const minutesLeft = Math.ceil((LOCK_DURATION_MS - lockAge) / 60000);
+        return res.status(429).json({
+          success: false,
+          error: `Too many failed attempts. Vault locked for ${minutesLeft} more minute${minutesLeft === 1 ? '' : 's'}. Or request a new password below.`,
+          locked: true,
+          minutesLeft,
+          autoUnlockAt: new Date(new Date(access.lockedAt).getTime() + LOCK_DURATION_MS).toISOString()
+        });
+      }
+      // Auto-unlock — 30 minutes have passed
+      await VaultAccess.findOneAndUpdate(
+        { userId, vaultId },
+        { $set: { lockedAt: null, failedAttempts: 0 } }
+      );
+      access.lockedAt = null;
+      access.failedAttempts = 0;
+      console.log('[VAULT] Auto-unlocked vault access after 30 min timeout for userId:', userId);
     }
 
     const valid = await bcrypt.compare(password, access.passwordHash);
@@ -564,6 +771,106 @@ router.get('/:vaultId/assets', authenticate, async (req, res) => {
   } catch (err) {
     console.error('[VAULT] GET /assets error:', err);
     res.status(500).json({ success: false, error: 'Failed to load vault assets' });
+  }
+});
+
+
+// ─────────────────────────────────────────────────────────────
+// POST /api/v1/vault/resend-password
+// Re-generates and re-sends the vault password to the journalist.
+// Only works if journalist has already signed the NDA.
+// ─────────────────────────────────────────────────────────────
+router.post('/resend-password', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { vaultId } = req.body;
+
+    if (!vaultId) return res.status(400).json({ success: false, error: 'vaultId required' });
+
+    const vault = await VaultAsset.findById(vaultId).lean();
+    if (!vault || vault.status !== 'active') {
+      return res.status(404).json({ success: false, error: 'Vault not found or not active' });
+    }
+
+    const access = await VaultAccess.findOne({ userId, vaultId });
+    if (!access || !access.signedAt) {
+      return res.status(403).json({ success: false, error: 'NDA not signed for this vault' });
+    }
+
+    const user = await User.findById(userId).select('email name firstName lastName').lean();
+    if (!user) return res.status(404).json({ success: false, error: 'User not found' });
+
+    const userEmail = user.email;
+    const userName  = user.name || user.firstName || userEmail;
+
+    // Generate new password
+    const plainPassword = generateVaultPassword();
+    const passwordHash  = await bcrypt.hash(plainPassword, BCRYPT_ROUNDS);
+
+    await VaultAccess.findOneAndUpdate(
+      { userId, vaultId },
+      { $set: { passwordHash, passwordSetAt: new Date(), resendCount: (access.resendCount || 0) + 1, lastResendAt: new Date(), lockedAt: null, failedAttempts: 0 } }
+    );
+
+    const _rtz = vault.availabilityTimezone || 'UTC';
+    const _rtzLabel = vault.embargoUntil ? (() => { try { return new Date(vault.embargoUntil).toLocaleTimeString('en-GB', { timeZone: _rtz, timeZoneName: 'short' }).split(' ').pop(); } catch(e) { return 'UTC'; } })() : '';
+    const embargoStr = vault.embargoUntil
+      ? new Date(vault.embargoUntil).toLocaleString('en-GB', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', timeZone: _rtz, hour12: false }) + ' ' + _rtzLabel
+      : 'See vault details';
+
+    // Generate magic link
+    let vaultMagicUrl = (process.env.APP_URL || 'http://44.200.25.168:5000') + '/automediavault.html';
+    try {
+      const VaultMagicLink = require('../models/VaultMagicLink');
+      const crypto = require('crypto');
+      let ml = await VaultMagicLink.findOne({ userId, vaultId, status: 'active', expiresAt: { $gt: new Date() } });
+      if (!ml) {
+        const tok = crypto.randomBytes(32).toString('hex');
+        await VaultMagicLink.create({ token: tok, vaultId, vaultAssetUUID: vault.vaultAssetUUID || vaultId, userId, email: userEmail });
+        ml = { token: tok };
+      }
+      vaultMagicUrl = (process.env.APP_URL || 'http://44.200.25.168:5000') + '/api/v1/vault/access?token=' + ml.token;
+    } catch(mlErr) { console.error('[RESEND] Magic link error:', mlErr.message); }
+
+    await mailer.sendMail({
+      from: `"${FROM_NAME}" <noreply@automediacenter.com>`,
+      to: userEmail,
+      subject: `Your new vault password — ${vault.title}`,
+      html: '<div style="font-family:-apple-system,sans-serif;max-width:580px;margin:0 auto;">' +
+        '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;"><tr><td align="center">' +
+        '<table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07);">' +
+        '<tr><td style="background:#0f172a;padding:24px 32px;">' +
+        '<p style="margin:0;font-size:12px;font-weight:600;letter-spacing:0.06em;color:#64748b;">AutoMediaCenter</p>' +
+        '<p style="margin:6px 0 0;font-size:22px;font-weight:800;color:#f8fafc;letter-spacing:-0.02em;">New Media Vault Password</p>' +
+        '</td></tr>' +
+        '<tr><td style="padding:32px 36px;">' +
+        '<p style="margin:0 0 20px;font-size:15px;color:#334155;">Hi ' + userName + ',</p>' +
+        '<p style="margin:0 0 24px;font-size:15px;color:#334155;line-height:1.6;">Here is your new password for the vault below. Your previous password has been invalidated.</p>' +
+        '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:20px;">' +
+        '<tr><td style="padding:16px 20px;">' +
+        '<p style="margin:0 0 4px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#94a3b8;">MEDIA VAULT</p>' +
+        '<p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#0f172a;">' + vault.title + '</p>' +
+        '<p style="margin:0;font-size:13px;font-weight:600;color:#dc2626;">Embargo: ' + embargoStr + '</p>' +
+        '</td></tr></table>' +
+        '<table width="100%" cellpadding="0" cellspacing="0" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;margin-bottom:24px;text-align:center;">' +
+        '<tr><td style="padding:20px 24px;">' +
+        '<p style="margin:0 0 8px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#3b82f6;">New Media Vault Access Password</p>' +
+        '<p style="margin:0;font-size:30px;font-weight:700;letter-spacing:0.12em;color:#0f172a;font-family:Courier New,monospace;">' + plainPassword + '</p>' +
+        '</td></tr></table>' +
+        '<table cellpadding="0" cellspacing="0" style="margin-bottom:24px;">' +
+        '<tr><td style="background:#2563eb;border-radius:8px;">' +
+        '<a href="' + vaultMagicUrl + '" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">Open Media Vault →</a>' +
+        '</td></tr></table>' +
+        '<p style="margin:0;font-size:11px;color:#94a3b8;">AutoMediaCenter · automediacenter.com · Do not forward this email.</p>' +
+        '</td></tr></table></td></tr></table></div>'
+    });
+
+    console.log('[VAULT] Password resent to:', userEmail, 'for vault:', vault.title);
+    res.json({ success: true, message: 'New password sent to your email.' });
+
+  } catch (err) {
+    console.error('[VAULT] Resend password error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to resend password' });
   }
 });
 

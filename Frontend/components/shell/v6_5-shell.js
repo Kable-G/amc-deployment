@@ -109,7 +109,7 @@ const mobileSidebarConfig = [
             },
             {
                 label: "Manage Live Events",
-                href: "manage_live.html",
+                href: "manage_streams.html",
                 icon: "fas fa-flag-checkered",
                 roles: ["client_admin", "platform_admin"],
                 enabled: true
@@ -135,9 +135,9 @@ const mobileSidebarConfig = [
                 enabled: true
             },
             {
-                label: "AMC Analytics",
-                href: "amc-analytics.html",
-                icon: "fas fa-chart-bar",
+                label: "Media Analytics",
+                href: "amc-analytics-saved.html",
+                icon: "fas fa-brain",
                 roles: ["client_admin", "platform_admin"],
                 enabled: true
             },
@@ -772,7 +772,7 @@ function initHeaderEventHandlers() {
     const toolUnitConverter = document.getElementById('toolUnitConverter');
     if (toolUnitConverter) {
         toolUnitConverter.addEventListener('click', () => {
-            alert('Unit Converter coming soon!');
+            if(window.AMCTools) AMCTools.open('unit');
             const toolsDropdown = document.getElementById('toolsDropdown');
             if (toolsDropdown) toolsDropdown.classList.add('hidden');
         });
@@ -781,7 +781,7 @@ function initHeaderEventHandlers() {
     const toolCurrencyConverter = document.getElementById('toolCurrencyConverter');
     if (toolCurrencyConverter) {
         toolCurrencyConverter.addEventListener('click', () => {
-            alert('Currency Converter coming soon!');
+            if(window.AMCTools) AMCTools.open('currency');
             const toolsDropdown = document.getElementById('toolsDropdown');
             if (toolsDropdown) toolsDropdown.classList.add('hidden');
         });
@@ -790,7 +790,7 @@ function initHeaderEventHandlers() {
     const toolTimezoneConverter = document.getElementById('toolTimezoneConverter');
     if (toolTimezoneConverter) {
         toolTimezoneConverter.addEventListener('click', () => {
-            alert('Timezone Converter coming soon!');
+            if(window.AMCTools) AMCTools.open('timezone');
             const toolsDropdown = document.getElementById('toolsDropdown');
             if (toolsDropdown) toolsDropdown.classList.add('hidden');
         });
@@ -862,5 +862,11 @@ window.AMCShell = {
     initHeaderEventHandlers();
     
     console.log('✅ AMC Shell v6.5 initialized successfully');
+    // Load journalist tools drawer
+    if (!document.getElementById('amc-tools-drawer')) {
+      var s = document.createElement('script');
+      s.src = 'journalist-tools-loader.js';
+      document.body.appendChild(s);
+    }
   }
 };

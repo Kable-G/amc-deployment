@@ -118,6 +118,8 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
         }
 
+        .btn-text-short { display: none; }
+
         .btn-create-account:hover {
             background: #2563eb;
             box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
@@ -138,6 +140,15 @@
         .hero-content {
             display: flex;
             flex-direction: column;
+        }
+
+        .hero-accent {
+            display: none;
+            width: 36px;
+            height: 3px;
+            background: #3b82f6;
+            border-radius: 2px;
+            margin: 0 auto 18px auto;
         }
 
         .hero-content h1 {
@@ -330,20 +341,21 @@
 
         /* Mobile sign-in emphasis (landing page) */
         .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-        .mobile-auth-card{display:none;border-radius:18px;padding:18px 18px 14px;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);box-shadow:0 16px 40px rgba(0,0,0,0.08);border:1px solid rgba(0,0,0,0.06)}
+        .mobile-auth-card{display:none;border-radius:12px;padding:24px 24px 20px;background:#ffffff;box-shadow:0 2px 12px rgba(0,0,0,0.08),0 0 0 1px rgba(0,0,0,0.06);border:none}
         .mobile-auth-subtitle{margin:0 0 14px;font-size:14px;opacity:.82}
-        .mobile-login-form{display:flex;flex-direction:column;gap:10px}
-        .mobile-login-form input{height:44px;border-radius:999px;border:1px solid rgba(0,0,0,0.12);padding:0 14px;font-size:15px;outline:none}
-        .mobile-login-form input:focus{border-color:rgba(29,155,240,0.9);box-shadow:0 0 0 4px rgba(29,155,240,0.18)}
-        .mobile-login-form .primary-btn{height:44px;border-radius:999px;font-weight:700;background:#1a73e8;color:white;border:none;cursor:pointer}
-        .mobile-auth-links{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;font-size:13px;opacity:.9}
-        .link-btn{background:none;border:none;color:rgb(29,155,240);padding:4px 6px;border-radius:8px;cursor:pointer}
-        .link-btn:hover{background:rgba(29,155,240,0.08)}
+        .mobile-login-form{display:flex;flex-direction:column;gap:12px}
+        .mobile-login-form input{height:48px;border-radius:8px;border:1.5px solid #e2e8f0;padding:0 14px;font-size:15px;outline:none;background:#f8fafc;font-family:'Inter',-apple-system,sans-serif;color:#0f172a;transition:border-color 0.15s ease,box-shadow 0.15s ease}
+        .mobile-login-form input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.12);background:#fff}
+        .mobile-login-form .primary-btn{height:48px;border-radius:8px;font-weight:600;font-size:15px;background:#3b82f6;color:white;border:none;cursor:pointer;letter-spacing:0.01em;transition:background 0.15s ease,box-shadow 0.15s ease;font-family:'Inter',-apple-system,sans-serif}
+        .mobile-login-form .primary-btn:hover{background:#2563eb;box-shadow:0 4px 12px rgba(59,130,246,0.3)}
+        .mobile-auth-links{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px;font-size:13px;color:#64748b}
+        .link-btn{background:none;border:none;color:#3b82f6;padding:4px 6px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;font-family:'Inter',-apple-system,sans-serif}
+        .link-btn:hover{background:rgba(59,130,246,0.08)}
         .mobile-auth-links .dot{opacity:.45}
-        .mobile-sso{margin-top:12px}
-        .mobile-sso summary{cursor:pointer;font-size:13px;opacity:.85}
+        .mobile-sso{margin-top:14px;border-top:1px solid #f1f5f9;padding-top:14px}
+        .mobile-sso summary{cursor:pointer;font-size:13px;color:#64748b;font-family:'Inter',-apple-system,sans-serif}
         .mobile-sso-buttons{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-        .mobile-sso-buttons button{width:100%;border-radius:999px;height:42px}
+        .mobile-sso-buttons button{width:100%;border-radius:8px;height:44px;border:1.5px solid #e2e8f0;background:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',-apple-system,sans-serif}
 
         /* Desktop-only wrapper */
         .desktop-auth{display:block}
@@ -353,11 +365,14 @@
           .header{padding:0 12px;height:56px}
           .header-right{width:auto}
           .logo{font-size:18px}
-          .btn-create-account{padding:6px 12px;font-size:13px}
-          .btn-signin{padding:6px 10px;font-size:13px}
+          .btn-create-account{padding:6px 14px;font-size:13px;font-weight:600;white-space:nowrap;border-radius:7px;letter-spacing:0.01em}
+          .btn-signin{display:none}
+          .btn-create-account .btn-text-full{display:none}
+          .btn-create-account .btn-text-short{display:inline}
 
-          .hero{padding:80px 16px 24px;gap:20px;grid-template-columns:1fr;min-height:auto}
-          .hero-content{display:flex;flex-direction:column;gap:12px;align-items:flex-start;text-align:left}
+          .hero{padding:72px 20px 32px;gap:16px;grid-template-columns:1fr;min-height:auto}
+          .hero-content{display:flex;flex-direction:column;gap:0;align-items:center;text-align:center}
+          .hero-accent{display:block}
           .hero-blueprint{display:none} /* hidden on mobile — image below fold unnecessary */
           .signup-section{position:static;width:100%}
 
@@ -366,8 +381,8 @@
           .desktop-auth{display:none}
 
           /* Reduce headline size slightly to keep auth card above the fold */
-          .hero-content h1{font-size:32px;line-height:1.05;letter-spacing:-0.03em}
-          .hero-content>p{white-space:normal;max-width:100%}
+          .hero-content h1{font-size:30px;line-height:1.08;letter-spacing:-0.03em;text-align:center;margin-bottom:20px}
+          .hero-content>p{display:none}
           .hero-content p{font-size:18px;margin-bottom:18px}
           .signup-section h3{font-size:20px;margin-bottom:20px;text-align:center;white-space:nowrap}
         }
@@ -385,7 +400,16 @@
                 padding: 108px 24px 60px;
                 gap: 60px;
             }
-            .hero-content h1 {
+            .hero-accent {
+            display: none;
+            width: 36px;
+            height: 3px;
+            background: #3b82f6;
+            border-radius: 2px;
+            margin: 0 auto 18px auto;
+        }
+
+        .hero-content h1 {
                 font-size: 48px;
             }
             .signup-section h3 {
@@ -1011,7 +1035,16 @@
                 padding: 96px 20px 60px;
             }
 
-            .hero-content h1 {
+            .hero-accent {
+            display: none;
+            width: 36px;
+            height: 3px;
+            background: #3b82f6;
+            border-radius: 2px;
+            margin: 0 auto 18px auto;
+        }
+
+        .hero-content h1 {
                 font-size: 40px;
             }
 
@@ -1037,7 +1070,16 @@
         }
 
         @media (max-width: 480px) {
-            .hero-content h1 {
+            .hero-accent {
+            display: none;
+            width: 36px;
+            height: 3px;
+            background: #3b82f6;
+            border-radius: 2px;
+            margin: 0 auto 18px auto;
+        }
+
+        .hero-content h1 {
                 font-size: 32px;
             }
 
@@ -1227,7 +1269,7 @@
         <div class="header-right">
             <div class="header-buttons">
                 <a href="login-dropbox-style.html" class="btn-signin">Sign in</a>
-                <a href="register.html" class="btn-create-account">Create an account</a>
+                <a href="register.html" class="btn-create-account"><span class="btn-text-full">Create an account</span><span class="btn-text-short">Register</span></a>
             </div>
         </div>
     </header>
@@ -1235,6 +1277,7 @@
     <!-- Hero -->
     <section class="hero">
         <div class="hero-content">
+            <span class="hero-accent"></span>
             <h1>Where automotive stories begin</h1>
             <p>
                 AutoMediaCenter is the global source for automotive media assets — all accessible and instantly downloadable.
@@ -1254,14 +1297,20 @@
             
       <!-- Mobile-first sign-in (shown on small screens) -->
       <div class="mobile-auth-card" aria-label="Sign in">
-        <p class="mobile-auth-subtitle">Sign in to access releases and download assets.</p>
+        
 
         <form id="mobileLoginForm" class="mobile-login-form" autocomplete="on">
           <label class="sr-only" for="mobileLoginEmail">Email</label>
           <input id="mobileLoginEmail" type="email" placeholder="Email" autocomplete="email" required />
 
           <label class="sr-only" for="mobileLoginPassword">Password</label>
-          <input id="mobileLoginPassword" type="password" placeholder="Password" autocomplete="current-password" required />
+          <div style="position:relative;display:flex;align-items:center">
+            <input id="mobileLoginPassword" type="password" placeholder="Password" autocomplete="current-password" required style="width:100%;padding-right:44px" />
+            <button type="button" onclick="toggleMobilePassword()" id="mobilePasswordToggle" style="position:absolute;right:0;top:0;bottom:0;width:44px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6b7280;font-size:18px" aria-label="Toggle password visibility">
+              <svg id="mobileEyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg id="mobileEyeOffIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
 
           <button id="mobileLoginSubmit" type="submit" class="primary-btn">Sign in</button>
 
@@ -2135,7 +2184,22 @@
             }
         });
 
-        // ENHANCED Login form submission with email verification handling
+        function toggleMobilePassword() {
+            const input = document.getElementById('mobileLoginPassword');
+            const eyeOn = document.getElementById('mobileEyeIcon');
+            const eyeOff = document.getElementById('mobileEyeOffIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeOn.style.display = 'none';
+                eyeOff.style.display = 'block';
+            } else {
+                input.type = 'password';
+                eyeOn.style.display = 'block';
+                eyeOff.style.display = 'none';
+            }
+        }
+
+                // ENHANCED Login form submission with email verification handling
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             

@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Media Streams — AutoMediaCenter</title>
+
+    <!-- Auth — exact pattern from newradarfe.html -->
+    <script type="module">
+        import { protectPage } from "./auth.js";
+        protectPage("media_user");
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Inter variable font — AMC Typography Spec v1.0 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,32..144,800&display=swap" rel="stylesheet">
+
+    <!-- v6.5 Shell CSS -->
+    <link rel="stylesheet" href="./components/shell/v6_5-shell.css">
+
+    <style>
+        /* ============================================================
+           AMC TYPOGRAPHY SYSTEM v1.0
+           Matches newradarfe.html exactly
+        ============================================================ */
+        html, body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Page title — Inter 800, fluid mobile to 42px desktop */
+        .amc-page-title {
+            font-size: clamp(26px, 3.9vw, 42px) !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.04em !important;
+            line-height: 1.05 !important;
+            margin: 0 0 8px 0 !important;
+        }
+        body:not(.dark-mode) .amc-page-title { color: #0f172a !important; }
+        body.dark-mode .amc-page-title { color: #f8fafc !important; }
+
+        /* Page subtitle — Inter 300, fluid mobile to 16px desktop */
+        .amc-page-subtitle {
+            font-size: clamp(13px, 1.9vw, 16px) !important;
+            font-weight: 300 !important;
+            line-height: 1.55 !important;
+            letter-spacing: 0 !important;
+            margin: 0 0 24px 0 !important;
+            padding: 0 !important;
+            border-bottom: none !important;
+        }
+        body:not(.dark-mode) .amc-page-subtitle { color: #6b7280 !important; }
+        body.dark-mode .amc-page-subtitle { color: #64748b !important; }
+
+        /* ============================================================
+           COLOR TOKENS
+        ============================================================ */
+        :root {
+            --bg-primary: #f3f4f6;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f9fafb;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-headings: #0f172a;
+            --border-primary: #e2e8f0;
+            --border-card: #d1d5db;
+            --accent-primary: #3b82f6;
+            --accent-primary-hover: #2563eb;
+            --accent-primary-rgb: 59, 130, 246;
+            --color-danger: #ef4444;
+            /* ── AMC Corporate Palette ───────────────────────────────
+               Blue   #3b82f6  — brand, interactive, primary
+               Purple #7c3aed  — upcoming, embargoed, restricted
+               Green  #16a34a  — live, active, unlocked, success
+               Slate  #475569  — recording, past, inactive, neutral
+            ─────────────────────────────────────────────────── */
+            --amc-blue:   #3b82f6;
+            --amc-purple: #7c3aed;
+            --amc-green:  #16a34a;
+            --amc-slate:  #475569;
+            /* aliases for live page */
+            --aml-live: var(--amc-green);
+            --aml-live-glow: rgba(22,163,74,0.25);
+            --aml-upcoming: var(--amc-purple);
+            --aml-recording: var(--amc-slate);
+            --amc-header-h: 56px;
+            --amc-rail-w: 72px;
+        }
+        body.dark-mode {
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a1f2e;
+            --bg-tertiary: #161b26;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-headings: #f1f5f9;
+            --border-primary: #2d3748;
+            --border-card: #374151;
+            --accent-primary: #3b82f6;
+            --accent-primary-hover: #2563eb;
+            --accent-primary-rgb: 59,130,246;
+            /* Dark mode palette — brighter status colours for legibility */
+            --amc-blue:   #60a5fa;
+            --amc-purple: #a78bfa;
+            --amc-green:  #4ade80;
+            --amc-slate:  #94a3b8;
+        }
+
+        /* ============================================================
+           SEARCH BAR — exact from automediacenter-mobile-v6.5.html
+        ============================================================ */
+        .search-bar { margin: 0 0 16px 0; padding: 0; max-width: 400px; }
+        .search-input-wrapper { display: flex; gap: 8px; width: 100%; }
+        .search-input { flex: 1; height: 44px; padding: 0 16px; border: 2px solid var(--border-primary); border-radius: 8px; font-size: 16px; font-family: inherit; background: var(--bg-secondary); color: var(--text-primary); transition: border-color 0.2s, box-shadow 0.2s; }
+        .search-input:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(var(--accent-primary-rgb),0.1); }
+        .search-input.searching { border-color: var(--accent-primary); }
+        .search-btn { width: 44px; height: 44px; background: var(--accent-primary); color: #fff; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
+        .search-btn:active { background: #2563eb; }
+        .filter-count-badge { position: absolute; top: -4px; right: -4px; background: #ef4444; color: #fff; font-size: 9px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .filter-count-badge.hidden { display: none; }
+
+        /* Search context */
+        .search-context-field { max-width: 400px; margin: 0 0 16px; display: flex; align-items: center; gap: 8px; }
+        .search-context-field.hidden { display: none; }
+        .search-context-top { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+        .search-context-count, .search-context-for { font-size: 14px; font-weight: 300; color: var(--text-secondary); white-space: nowrap; }
+        .search-context-pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px 2px 10px; background: rgba(var(--accent-primary-rgb),0.08); border: 1px solid rgba(var(--accent-primary-rgb),0.2); border-radius: 6px; font-size: 13px; font-weight: 500; color: var(--accent-primary); max-width: 180px; }
+        #searchContextTerm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .search-context-clear { background: none; border: none; color: var(--accent-primary); cursor: pointer; padding: 0; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border-radius: 50%; opacity: 0.6; }
+        .search-context-clear:hover { opacity: 1; }
+        .search-context-clear i { font-size: 9px; }
+        .search-context-bottom { display: none; }
+
+        /* ============================================================
+           MOBILE MAIN & ICON RAIL PADDING
+           Exact from automediacenter-mobile-v6.5.html
+        ============================================================ */
+        .mobile-main { padding: 16px 12px; min-height: calc(100vh - var(--amc-header-h)); }
+
+
+        .amc-avatar { width: 40px; height: 40px; display: flex !important; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; }
+        .amc-avatar i { font-size: 24px; }
+        .amc-avatar.role-media-user     { color: #3B82F6; }
+        .amc-avatar.role-client-user    { color: #10B981; }
+        .amc-avatar.role-client-admin   { color: #F59E0B; }
+        .amc-avatar.role-platform-admin { color: #EF4444; }
+        body.dark-mode .amc-avatar.role-media-user     { color: #60a5fa; }
+        body.dark-mode .amc-avatar.role-client-user    { color: #34d399; }
+        body.dark-mode .amc-avatar.role-client-admin   { color: #fbbf24; }
+        body.dark-mode .amc-avatar.role-platform-admin { color: #f87171; }
+
+        /* ============================================================
+           STATUS FILTER TABS
+        ============================================================ */
+        .aml-status-tabs { display: flex; gap: 4px; padding: 4px; background: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: 10px; margin-bottom: 24px; width: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .stab { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 7px; font-family: inherit; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; border: none; background: none; transition: background 0.15s, color 0.15s; white-space: nowrap; }
+        .stab:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+        .stab.active { background: var(--accent-primary); color: #fff; font-weight: 600; }
+        .stab-count { padding: 1px 6px; border-radius: 10px; font-size: 10px; font-weight: 700; background: rgba(255,255,255,0.3); }
+        .stab:not(.active) .stab-count { background: var(--border-primary); color: var(--text-secondary); }
+
+        /* ── Mobile: horizontal scroll with edge fade (Bloomberg / Linear pattern) ──
+           Below 640px the 5 tabs would overflow viewport. Switch to a scrollable strip
+           that takes full width. Right edge gets a strong fade-to-bg gradient AND a
+           small chevron indicator (>) hinting at scrollable content. */
+        @media (max-width: 639px) {
+            .aml-status-tabs-wrap {
+                position: relative;
+                width: 100%;
+                margin-bottom: 24px;
+            }
+            .aml-status-tabs {
+                width: 100%;
+                max-width: 100%;
+                margin-bottom: 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;        /* Firefox */
+                -ms-overflow-style: none;     /* old Edge / IE */
+                padding: 4px 36px 4px 4px;     /* extra right padding so last pill clears the chevron */
+                justify-content: flex-start;
+                /* Strong gradient fade-out on right — uses page bg so it visibly trails off */
+                -webkit-mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 40px), transparent 100%);
+                mask-image:         linear-gradient(to right, #000 0%, #000 calc(100% - 40px), transparent 100%);
+            }
+            .aml-status-tabs::-webkit-scrollbar { display: none; }
+            .aml-status-tabs.scrolled-end {
+                /* When scrolled to the right edge, remove the right fade (nothing to hint at) */
+                -webkit-mask-image: none;
+                mask-image: none;
+            }
+            .stab { flex-shrink: 0; }
+            /* Chevron affordance — sits over the right edge, fades when at scroll end */
+            .aml-status-tabs-chevron {
+                position: absolute;
+                right: 4px;
+                top: 50%;
+                transform: translateY(-50%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 24px;
+                height: 28px;
+                border-radius: 6px;
+                background: var(--bg-tertiary);
+                color: var(--text-secondary);
+                font-size: 12px;
+                pointer-events: none;
+                opacity: 0.85;
+                transition: opacity 0.2s;
+                z-index: 2;
+            }
+            .aml-status-tabs.scrolled-end + .aml-status-tabs-chevron {
+                opacity: 0;
+            }
+        }
+        /* Hide the chevron above mobile — desktop has all tabs visible */
+        @media (min-width: 640px) {
+            .aml-status-tabs-chevron { display: none; }
+        }
+        .live-pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; animation: aml-pulse 1.5s infinite; display: inline-block; }
+        @keyframes aml-pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(0.65);} }
+
+        /* ============================================================
+           SECTION HEADINGS
+        ============================================================ */
+        .section-hdr { display: flex; align-items: center; gap: 12px; margin: 28px 0 16px; }
+        .section-hdr:first-of-type { margin-top: 0; }
+        .section-hdr-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-secondary); white-space: nowrap; }
+        .section-hdr-starting-soon { color: #d97706; }
+        body.dark-mode .section-hdr-starting-soon { color: #fbbf24; }
+        .section-hdr-recording { color: #475569; }
+        body.dark-mode .section-hdr-recording { color: #94a3b8; }
+        .section-hdr-line { flex: 1; height: 1px; background: var(--border-primary); }
+        .section-live-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--aml-live); white-space: nowrap; }
+        body.dark-mode .section-live-badge { color: #4ade80; }
+
+        /* Empty state — shown when a filtered section has no cards */
+        .aml-empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-secondary);
+        }
+        .aml-empty-state i {
+            font-size: 32px;
+            opacity: 0.3;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .aml-empty-state p {
+            font-size: 14px;
+            font-weight: 400;
+            margin: 0;
+        }
+
+        /* ============================================================
+           EVENT CARD GRID
+        ============================================================ */
+        /* ============================================================
+           EVENT CARD GRID — matches AMC/radar breakpoint structure
+           Mobile (<640px): 1 col
+           Tablet  (640–1099): 2 col
+           Laptop  (1100–1599): 4 col
+           Desktop (1600+):    5 col
+        ============================================================ */
+        .aml-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
+        @media (min-width: 640px)  { .aml-grid { grid-template-columns: repeat(2,1fr); gap: 20px; } }
+        @media (min-width: 1100px) and (max-width: 1599px) { .aml-grid { grid-template-columns: repeat(4,1fr) !important; gap: 12px !important; } }
+        @media (min-width: 1600px) { .aml-grid { grid-template-columns: repeat(5,1fr) !important; gap: 24px !important; max-width: 1760px !important; } }
+
+        .event-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-primary);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            display: flex; flex-direction: column;
+            cursor: pointer;
+            transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+        }
+
+        /* Status-keyed borders */
+        .event-card[data-status="live"]         { border-color: rgba(22,163,74,0.45); }
+        .event-card[data-status="starting-soon"]{ border-color: rgba(252,211,77,0.3); }
+        .event-card[data-status="upcoming"]     { border-color: rgba(124,58,237,0.35); }
+        .event-card[data-status="recording"]    { border-color: rgba(71,85,105,0.30); }
+
+        /* Hover — intensify border + lift + shadow */
+        .event-card[data-status="live"]:hover {
+            border-color: rgba(22,163,74,0.85);
+            box-shadow: 0 8px 28px rgba(22,163,74,0.25), 0 2px 8px rgba(0,0,0,0.12);
+            transform: translateY(-3px);
+        }
+        .event-card[data-status="starting-soon"]:hover {
+            border-color: rgba(245,158,11,0.85);
+            box-shadow: 0 8px 28px rgba(245,158,11,0.22), 0 2px 8px rgba(0,0,0,0.12);
+            transform: translateY(-3px);
+        }
+        .event-card[data-status="upcoming"]:hover {
+            border-color: rgba(124,58,237,0.80);
+            box-shadow: 0 8px 28px rgba(124,58,237,0.22), 0 2px 8px rgba(0,0,0,0.12);
+            transform: translateY(-3px);
+        }
+        .event-card[data-status="recording"]:hover {
+            border-color: rgba(71,85,105,0.70);
+            box-shadow: 0 8px 28px rgba(71,85,105,0.18), 0 2px 8px rgba(0,0,0,0.12);
+            transform: translateY(-3px);
+        }
+
+        /* Live glow pulse */
+        .event-card.is-live {
+            animation: aml-card-glow 3s ease-in-out infinite;
+        }
+        @keyframes aml-card-glow {
+            0%,100% { box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(22,163,74,0.2); }
+            50%      { box-shadow: 0 4px 16px rgba(0,0,0,0.10), 0 0 0 2px rgba(22,163,74,0.45); }
+        }
+        /* Starting Soon amber pulse */
+        .event-card.is-starting-soon {
+            animation: aml-card-amber-glow 2s ease-in-out infinite;
+        }
+        @keyframes aml-card-amber-glow {
+            0%,100% { box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(245,158,11,0.2); }
+            50%      { box-shadow: 0 4px 16px rgba(0,0,0,0.10), 0 0 0 2px rgba(245,158,11,0.5); }
+        }
+        .event-card.is-live:hover,
+        .event-card.is-starting-soon:hover { animation: none; }
+
+        .card-thumb { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; flex-shrink: 0; }
+        .card-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.35s; }
+        .event-card:hover .card-thumb img { transform: scale(1.04); }
+
+        /* Colour-coded placeholder — background + icon by status */
+        .card-thumb-placeholder {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .card-thumb-placeholder i { font-size: 48px; opacity: 0.85; }
+        /* ── Card thumbnail placeholders — AMC corporate palette ── */
+        /* Dark mode (default) */
+        .placeholder-live          { background: linear-gradient(135deg, #14532d, #166534); }
+        .placeholder-live i        { color: #4ade80; }
+        .placeholder-starting-soon { background: linear-gradient(135deg, #78350f, #92400e); }
+        .placeholder-starting-soon i { color: #fbbf24; }
+        .placeholder-upcoming      { background: linear-gradient(135deg, #2e1065, #4c1d95); }
+        .placeholder-upcoming i    { color: #a78bfa; }
+        .placeholder-recording     { background: linear-gradient(135deg, #1e293b, #334155); }
+        .placeholder-recording i   { color: #94a3b8; }
+        /* Light mode */
+        body:not(.dark-mode) .placeholder-live          { background: #16a34a; }
+        body:not(.dark-mode) .placeholder-live i        { color: #fff; }
+        body:not(.dark-mode) .placeholder-starting-soon { background: #d97706; }
+        body:not(.dark-mode) .placeholder-starting-soon i { color: #fff; }
+        body:not(.dark-mode) .placeholder-upcoming      { background: #7c3aed; }
+        body:not(.dark-mode) .placeholder-upcoming i    { color: #fff; }
+        body:not(.dark-mode) .placeholder-recording     { background: #475569; }
+        body:not(.dark-mode) .placeholder-recording i   { color: #fff; }
+
+        /* Status pill — bottom-left of image, colour-keyed, fixed size */
+        .aml-status-pill {
+            position: absolute; bottom: 10px; left: 10px; z-index: 2;
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 9px; border-radius: 20px;
+            font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+            text-transform: uppercase; white-space: nowrap;
+            backdrop-filter: blur(6px);
+        }
+        /* ── Status pills — AMC corporate palette ── */
+        .aml-status-pill {
+            text-shadow: none;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+        .pill-live          { background: rgba(0,0,0,0.45); color: #4ade80; border: 1px solid rgba(74,222,128,0.4); }
+        .pill-starting-soon { background: rgba(0,0,0,0.45); color: #fbbf24; border: 1px solid rgba(251,191,36,0.4); }
+        .pill-upcoming      { background: rgba(0,0,0,0.45); color: #c4b5fd; border: 1px solid rgba(196,181,253,0.4); }
+        .pill-recording     { background: rgba(0,0,0,0.45); color: #cbd5e1; border: 1px solid rgba(203,213,225,0.3); }
+        /* Light mode */
+        body:not(.dark-mode) .pill-live          { background: #16a34a; color: #fff; border: none; }
+        body:not(.dark-mode) .pill-starting-soon { background: #d97706; color: #fff; border: none; }
+        body:not(.dark-mode) .pill-upcoming      { background: #7c3aed; color: #fff; border: none; }
+        body:not(.dark-mode) .pill-recording     { background: #475569; color: #fff; border: none; }
+        .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: aml-pulse 1.5s infinite; }
+
+        /* Brand band — matches AMC .brand-band exactly */
+        .aml-brand-band {
+            background: #2a2a2a;
+            color: #ffffff;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 0;
+        }
+
+        /* Image overlay — tap/hover reveals action button, matches AMC overlay pattern */
+        .card-image-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.78);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .card-image-overlay.active,
+        .event-card:hover .card-image-overlay {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .overlay-btn {
+            width: 100%;
+            max-width: 200px;
+            height: 42px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.15s, opacity 0.15s;
+        }
+        .overlay-btn:active { transform: scale(0.96); }
+        .overlay-btn-join          { background: #16a34a; color: #fff; }
+        .overlay-btn-join:hover    { background: #15803d; }
+        .overlay-btn-starting-soon { background: #d97706; color: #fff; }
+        .overlay-btn-starting-soon:hover { background: #b45309; }
+        .overlay-btn-reminder      { background: #7c3aed; color: #fff; }
+        .overlay-btn-reminder:hover { background: #6d28d9; }
+        .overlay-btn-recording     { background: #475569; color: #fff; }
+        .overlay-btn-recording:hover { background: #334155; }
+
+        /* Viewer count badge — top-right of image for live cards */
+        .aml-viewer-count {
+            position: absolute; top: 10px; right: 10px; z-index: 2;
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 8px; border-radius: 20px;
+            font-size: 10px; font-weight: 600;
+            background: rgba(22,163,74,0.85); color: #fff;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Card body — matches AMC mobile card-content pattern */
+        .card-content-area {
+            padding: 14px;
+            background: var(--bg-tertiary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Title — always reserves exactly 3 lines, truncates with … */
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-headings);
+            line-height: 1.4;
+            min-height: calc(15px * 1.4 * 3); /* 63px — always 3 lines, matches AMC/radar */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin: 0 0 10px 0;
+        }
+
+        /* Faint divider + meta row — pinned to bottom of card body, content anchored to bottom edge (matches AMC/radar) */
+        .card-meta {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 8px;
+            padding-top: 12px;
+            padding-bottom: 4px;
+            border-top: 1px solid var(--border-primary);
+            margin-top: auto;
+            min-height: 52px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Left: status / countdown */
+        .card-meta-left {
+            display: flex;
+            align-items: center;
+            align-self: flex-end;
+            gap: 5px;
+            flex: 1;
+            min-width: 0;
+        }
+        .card-meta-left i {
+            color: var(--accent-primary); /* same blue as AMC */
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+        /* Live card — viewer count icon in green */
+        .event-card[data-status="live"] .card-meta-left i {
+            color: #16a34a;
+        }
+        body.dark-mode .event-card[data-status="live"] .card-meta-left i {
+            color: #4ade80;
+        }
+        /* Upcoming card — calendar btn in purple */
+        .event-card[data-status="upcoming"] .cal-btn {
+            color: #7c3aed;
+        }
+        /* Recording card — icon in slate */
+        .event-card[data-status="recording"] .card-meta-left i {
+            color: #475569;
+        }
+        body.dark-mode .event-card[data-status="recording"] .card-meta-left i {
+            color: #94a3b8;
+        }
+
+        /* Right: date on one line, time on next — matches AMC two-line format */
+        .card-meta-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+            min-width: 85px;
+            flex-shrink: 0;
+        }
+        .card-meta-date {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+            font-size: 12px;
+            color: #6b7280;  /* Light mode: unified date/time emphasis colour (matches AMC + radar) */
+        }
+        body.dark-mode .card-meta-date {
+            color: #adb5bd;  /* Dark mode: unified date/time emphasis colour (matches AMC + radar) */
+        }
+        .card-meta-date i {
+            color: var(--accent-primary); /* same blue calendar icon as AMC */
+            font-size: 11px;
+        }
+        .card-meta-time {
+            font-size: 11px;
+            color: #6b7280;  /* Light mode: unified date/time emphasis colour (matches AMC + radar) */
+            text-align: right;
+        }
+        body.dark-mode .card-meta-time {
+            color: #adb5bd;  /* Dark mode: unified date/time emphasis colour (matches AMC + radar) */
+        }
+
+        /* card-cta retained for API-rendered cards */
+        .card-cta { margin-top: 10px; width: 100%; padding: 9px 16px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 7px; transition: background 0.15s; }
+        .btn-join     { background: var(--aml-live); color: #fff; }
+        .btn-join:hover { background: #15803d; }
+        .btn-reminder { background: var(--accent-primary); color: #fff; }
+        .btn-reminder:hover { background: #2563eb; }
+        .btn-archive  { background: #475569; color: #fff; }
+        .btn-archive:hover { background: #334155; }
+
+        /* ============================================================
+           LAPTOP BREAKPOINT (1100–1599) — matches AMC/radar exactly
+           4-column grid, compressed brand band, card body, title, meta.
+           Page header compressed: 30px / 14px.
+        ============================================================ */
+        @media (min-width: 1100px) and (max-width: 1599px) {
+            /* Header: 56px → 50px, logo 18px → 16px (compromise between thin laptop + brand presence) */
+            .mobile-header { height: 50px !important; padding: 0 14px !important; }
+            .mobile-logo { font-size: 18px !important; font-weight: 700 !important; letter-spacing: -0.01em !important; }
+            .mobile-hamburger, .header-icon-btn, .amc-avatar { width: 38px !important; height: 38px !important; }
+            .mobile-hamburger { font-size: 17px !important; }
+            .header-icon-btn  { font-size: 17px !important; }
+            .amc-avatar i     { font-size: 22px !important; }
+            .header-right     { gap: 8px !important; }
+            .header-icon-btn .badge { top: 2px !important; right: 2px !important; font-size: 10px !important; padding: 2px 5px !important; min-width: 16px !important; }
+
+            /* Icon rail: 72px → 52px, top aligned with 50px header */
+            .amc-icon-rail { width: 52px !important; top: 50px !important; height: calc(100vh - 50px) !important; }
+            .amc-icon-rail-inner { padding: 6px 0 !important; gap: 4px !important; }
+            .amc-rail-open { width: 34px !important; height: 34px !important; border-radius: 8px !important; font-size: 13px !important; }
+            .amc-rail-item { width: 36px !important; height: 36px !important; border-radius: 8px !important; }
+            .amc-rail-item i { font-size: 14px !important; }
+
+            /* Content area top aligned with 50px header */
+            .mobile-main { top: 50px !important; height: calc(100vh - 50px) !important; }
+
+            /* Page header */
+            .amc-page-title    { font-size: 30px !important; letter-spacing: -0.025em !important; line-height: 1.15 !important; margin-bottom: 4px !important; }
+            .amc-page-subtitle { font-size: 14px !important; margin-bottom: 12px !important; }
+
+            /* Search */
+            .search-bar   { margin: 0 0 10px 0 !important; }
+            .search-input { height: 36px !important; font-size: 13px !important; }
+
+            /* Cards: flat border + hover elevation */
+            .event-card  { border-radius: 8px !important; box-shadow: none !important; transition: border-color 0.15s ease, transform 0.15s ease !important; }
+            .event-card:hover { transform: translateY(-2px) !important; }
+
+            /* Brand band: compact */
+            .aml-brand-band { padding: 5px 10px !important; font-size: 10px !important; letter-spacing: 0.06em !important; }
+
+            /* Card body: compressed padding matches AMC/radar */
+            .card-content-area { padding: 11px 10px 10px 10px !important; }
+            .card-title        { font-size: 13px !important; line-height: 1.4 !important; -webkit-line-clamp: 3 !important; min-height: calc(13px * 1.4 * 3) !important; margin: 0 0 8px 0 !important; }
+
+            /* Card meta: compact, bottom-anchored */
+            .card-meta        { padding-top: 7px !important; padding-bottom: 6px !important; align-items: flex-end !important; min-height: 48px !important; font-size: 11px !important; gap: 6px !important; }
+            .card-meta-left   { font-size: 11px !important; gap: 4px !important; }
+            .card-meta-left i { font-size: 10px !important; }
+            .card-meta-right  { min-width: 72px !important; gap: 2px !important; }
+            .card-meta-date   { font-size: 11px !important; gap: 3px !important; }
+            .card-meta-date i { font-size: 10px !important; }
+            .card-meta-time   { font-size: 10px !important; }
+        }
+
+        /* ============================================================
+           DESKTOP (1600px+) — full sizes restored, 5-column grid
+           Matches AMC/radar exactly.
+        ============================================================ */
+        @media (min-width: 1600px) {
+            /* Match AMC's PC top padding so title sits at viewport y=96, not y=72.
+               Without this, .mobile-main inherits a smaller padding-top from the laptop
+               breakpoint or shell defaults, putting the title 24px too high. */
+            main.mobile-main {
+                padding-top: 40px !important;
+            }
+            /* Page header restored to full size */
+            .amc-page-title    { font-size: 42px !important; letter-spacing: -0.04em !important; line-height: 1.05 !important; margin-bottom: 8px !important; }
+            .amc-page-subtitle { font-size: 16px !important; margin-bottom: 24px !important; }
+
+            /* Cards: full shadow, full radius */
+            .event-card        { border-radius: 12px !important; }
+
+            /* Brand band: full */
+            .aml-brand-band    { padding: 6px 12px !important; font-size: 11px !important; letter-spacing: 0.05em !important; }
+
+            /* Card body: full padding */
+            .card-content-area { padding: 14px !important; }
+            .card-title        { font-size: 18px !important; line-height: 1.4 !important; min-height: calc(18px * 1.4 * 3) !important; margin: 0 0 10px 0 !important; }
+
+            /* Card meta: full */
+            .card-meta         { padding-top: 12px !important; padding-bottom: 4px !important; align-items: flex-end !important; min-height: 52px !important; font-size: 12px !important; gap: 8px !important; }
+            .card-meta-left    { font-size: 12px !important; }
+            .card-meta-left i  { font-size: 11px !important; }
+            .card-meta-right   { min-width: 85px !important; gap: 2px !important; }
+            .card-meta-date    { font-size: 12px !important; gap: 4px !important; }
+            .card-meta-date i  { font-size: 11px !important; }
+            .card-meta-time    { font-size: 11px !important; }
+        }
+
+        /* SR only */
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+        /* ============================================================
+           ICON RAIL + DESKTOP PADDING
+           Exact from newradarfe.html post-shell style block
+        ============================================================ */
+        .amc-avatar { width: 40px; height: 40px; display: flex !important; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; }
+        .amc-avatar i { font-size: 24px; }
+        .amc-avatar.role-media-user     { color: #3B82F6; }
+        .amc-avatar.role-client-user    { color: #10B981; }
+        .amc-avatar.role-client-admin   { color: #F59E0B; }
+        .amc-avatar.role-platform-admin { color: #EF4444; }
+        body.dark-mode .amc-avatar.role-media-user     { color: #60a5fa; }
+        body.dark-mode .amc-avatar.role-client-user    { color: #34d399; }
+        body.dark-mode .amc-avatar.role-client-admin   { color: #fbbf24; }
+        body.dark-mode .amc-avatar.role-platform-admin { color: #f87171; }
+
+        @media (min-width: 1100px) {
+            .mobile-main { padding-left: calc(32px + var(--amc-rail-w)) !important; }
+        }
+        @media (min-width: 1366px) {
+            .mobile-main { padding-left: calc(40px + var(--amc-rail-w)) !important; }
+        }
+
+        /* ── Calendar picker — ported from newradarfe.html ── */
+        .cal-btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: none; border: none; cursor: pointer;
+            font-family: inherit; font-size: 12px; font-weight: 500;
+            color: #7c3aed; padding: 0;
+            transition: color 0.15s;
+        }
+        .cal-btn:hover { color: #6d28d9; }
+        .cal-btn i { font-size: 11px; }
+        body.dark-mode .cal-btn { color: #a78bfa; }
+        body.dark-mode .cal-btn:hover { color: #c4b5fd; }
+
+        #amc-cal-picker {
+            background: var(--bg-secondary, #1e293b);
+            border: 1px solid var(--border-primary, #334155);
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: calPickerIn 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-family: "Inter", -apple-system, sans-serif;
+        }
+        @keyframes calPickerIn {
+            from { opacity:0; transform:translateY(-6px) scale(0.97); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+        .amc-cal-picker-header { padding:10px 14px 8px; font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-secondary,#94a3b8); border-bottom:1px solid var(--border-primary,#334155); }
+        .amc-cal-option { display:flex; align-items:center; gap:10px; width:100%; padding:10px 14px; background:none; border:none; cursor:pointer; text-align:left; color:var(--text-primary,#f1f5f9); transition:background 0.1s ease; font-family:inherit; }
+        .amc-cal-option:hover { background:rgba(255,255,255,0.06); }
+        .amc-cal-option + .amc-cal-option { border-top:1px solid var(--border-primary,#334155); }
+        .amc-cal-icon { width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+        .amc-cal-label { display:flex; flex-direction:column; gap:1px; }
+        .amc-cal-label strong { font-size:13px; font-weight:500; color:var(--text-primary,#f1f5f9); }
+        .amc-cal-label small  { font-size:11px; color:var(--text-secondary,#94a3b8); }
+        body:not(.dark-mode) #amc-cal-picker { background:#ffffff; border-color:#e2e8f0; box-shadow:0 8px 32px rgba(0,0,0,0.12),0 2px 8px rgba(0,0,0,0.06); }
+        body:not(.dark-mode) .amc-cal-picker-header { border-bottom-color:#e2e8f0; color:#64748b; }
+        body:not(.dark-mode) .amc-cal-option { color:#1e293b; }
+        body:not(.dark-mode) .amc-cal-option:hover { background:#f8fafc; }
+        body:not(.dark-mode) .amc-cal-option + .amc-cal-option { border-top-color:#e2e8f0; }
+        body:not(.dark-mode) .amc-cal-label strong { color:#1e293b; }
+        body:not(.dark-mode) .amc-cal-label small  { color:#64748b; }
+
+        /* ============================================================
+           ENTERPRISE FOOTER — matches automediavault.html exactly
+        ============================================================ */
+        #amcShellFooter { display: none !important; }
+        /* ===== ENTERPRISE FOOTER (unified — matches vault spec) ===== */
+        .amc-footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-primary);
+            border-left: none !important;
+            border-right: none !important;
+            border-bottom: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            margin-top: 60px;
+            padding: 48px 0 0 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .mobile-main .amc-footer {
+            border: none !important;
+            border-top: 1px solid var(--border-primary) !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .footer-content {
+            padding: 40px 0 40px 2.5rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+        @media (max-width: 960px) { .footer-content { grid-template-columns: repeat(2,1fr); gap: 24px; padding-left: 2rem; } }
+        @media (max-width: 700px) { .footer-content { grid-template-columns: 1fr; gap: 20px; padding-left: 1.25rem; } }
+        .footer-column { min-width: 0; }
+        .footer-heading {
+            font-size: 13px; font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 14px 0; letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+        .footer-brand-name {
+            font-size: 18px; font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0 0 6px 0; display: block;
+        }
+        .footer-tagline {
+            font-size: 13px; color: var(--accent-primary);
+            font-style: italic; margin: 6px 0 0 0; opacity: 0.9;
+        }
+        .footer-links { list-style: none; margin: 0; padding: 0; }
+        .footer-links li { margin-bottom: 10px; }
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none; font-size: 13px; font-weight: 500;
+            font-family: 'Inter', -apple-system, sans-serif;
+            transition: color 0.2s ease; display: inline-block;
+            letter-spacing: 0;
+        }
+        .footer-links a:hover { color: var(--accent-primary); }
+        .footer-bottom {
+            border-top: 1px solid var(--border-primary);
+            background: var(--bg-primary);
+        }
+        .footer-bottom-content {
+            padding: 20px 0 20px 2.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        @media (max-width: 960px) { .footer-bottom-content { padding-left: 2rem; } }
+        @media (max-width: 700px) { .footer-bottom-content { padding-left: 1.25rem; flex-direction: column; gap: 12px; text-align: center; } }
+        .footer-copyright {
+            font-size: 12px; font-weight: 400;
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-secondary); margin: 0;
+            letter-spacing: 0;
+        }
+        .footer-social { display: flex; gap: 16px; }
+        .footer-social a {
+            color: var(--text-secondary);
+            font-size: 18px; transition: color 0.2s ease; text-decoration: none;
+        }
+        .footer-social a:hover { color: var(--accent-primary); }
+        @media (max-width: 1024px) { .footer-content { grid-template-columns: repeat(2, 1fr); gap: 32px; } }
+        @media (max-width: 640px) {
+            .amc-footer { margin-top: 40px; padding: 32px 0 0 0; }
+            .footer-content { grid-template-columns: 1fr; gap: 32px; padding: 0 20px 32px 20px; }
+            .footer-bottom-content { flex-direction: column; gap: 16px; text-align: center; padding: 16px 20px; }
+        }
+    
+
+@media (max-width: 1099px) { .mobile-main { padding-top: 16px !important; } }
+</style>
+</head>
+
+<body>
+
+    <!-- ============================================================
+         v6.5 SHELL MOUNT POINTS
+         loadV65Shell() fetches header.html + sidebar.html and injects
+         them here, then calls AMCShell.init() to wire everything up.
+    ============================================================ -->
+    <div id="amcShellHeader"></div>
+    <div id="amcShellSidebar"></div>
+
+    <!-- ============================================================
+         PAGE CONTENT
+    ============================================================ -->
+    <main class="mobile-main">
+        <div class="amc-page">
+
+            <!-- Page header -->
+            <header class="amc-page-header">
+                <h1 class="amc-page-title">Media Streams</h1>
+                <p class="amc-page-subtitle">Stream media conferences and live events.</p>
+            </header>
+
+            <!-- Search bar -->
+            <div class="search-bar">
+                <label for="searchInput" class="sr-only">Search live events</label>
+                <div class="search-input-wrapper">
+                    <input
+                        type="search"
+                        class="search-input"
+                        placeholder="Search live events, brands, speakers…"
+                        id="searchInput"
+                        aria-label="Search live events"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <button class="search-btn" id="searchBtn" title="Open Filters" aria-label="Open filters">
+                        <i class="fas fa-filter"></i>
+                        <span class="filter-count-badge hidden" id="filterCountBadge">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search context -->
+            <div class="search-context-field hidden" id="searchContextField">
+                <div class="search-context-top">
+                    <span class="search-context-count" id="searchContextCount">0 Results</span>
+                    <span class="search-context-for">for</span>
+                    <span class="search-context-pill">
+                        <span id="searchContextTerm"></span>
+                        <button class="search-context-clear" id="searchContextClear" aria-label="Clear search">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </span>
+                </div>
+                <div class="search-context-bottom" id="searchContextBottom"></div>
+            </div>
+
+            <!-- Status filter tabs -->
+            <div class="aml-status-tabs-wrap">
+                <div class="aml-status-tabs" role="tablist" id="amlStatusTabs">
+                    <button class="stab active" data-filter="all">All Events <span class="stab-count" id="countAll">6</span></button>
+                    <button class="stab" data-filter="live"><span class="live-pulse-dot"></span> Live Now <span class="stab-count" id="countLive">1</span></button>
+                    <button class="stab" data-filter="starting-soon">Starting Soon <span class="stab-count" id="countStartingSoon">0</span></button>
+                    <button class="stab" data-filter="upcoming">Upcoming <span class="stab-count" id="countUpcoming">0</span></button>
+                    <button class="stab" data-filter="recording">Archive <span class="stab-count" id="countArchive">0</span></button>
+                </div>
+                <div class="aml-status-tabs-chevron" aria-hidden="true">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <!-- LIVE NOW -->
+            <div class="section-hdr" id="hdr-live" style="display:none">
+                <span class="section-live-badge"><span class="live-pulse-dot"></span> LIVE NOW</span>
+                <div class="section-hdr-line"></div>
+            </div>
+            <div class="aml-grid" id="liveGrid" style="display:none">
+            </div>
+            <div class="aml-empty-state" id="empty-live" style="display:none">
+                <i class="fas fa-circle-play"></i>
+                <p>No streams are live right now</p>
+            </div>
+
+            <!-- STARTING SOON -->
+            <div class="section-hdr" id="hdr-starting-soon" style="display:none">
+                <span class="section-hdr-label section-hdr-starting-soon">Starting Soon</span>
+                <div class="section-hdr-line"></div>
+            </div>
+            <div class="aml-grid" id="startingSoonGrid" style="display:none"></div>
+            <div class="aml-empty-state" id="empty-starting-soon" style="display:none">
+                <i class="fas fa-clock"></i>
+                <p>No streams starting soon</p>
+            </div>
+
+            <!-- UPCOMING -->
+            <div class="section-hdr" id="hdr-upcoming" style="display:none">
+                <span class="section-hdr-label">Upcoming</span>
+                <div class="section-hdr-line"></div>
+            </div>
+            <div class="aml-grid" id="upcomingGrid" style="display:none"></div>
+            <div class="aml-empty-state" id="empty-upcoming" style="display:none">
+                <i class="fas fa-calendar-alt"></i>
+                <p>No upcoming streams scheduled</p>
+            </div>
+
+            <!-- RECORDING — stream ended, replay available -->
+            <div class="section-hdr" id="hdr-recording" style="display:none">
+                <span class="section-hdr-label section-hdr-recording">Archive</span>
+                <div class="section-hdr-line"></div>
+            </div>
+            <div class="aml-grid" id="recordingGrid" style="display:none"></div>
+            <div class="aml-empty-state" id="empty-recording" style="display:none">
+                <i class="fas fa-film"></i>
+                <p>No archived streams</p>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════
+                 ENTERPRISE FOOTER — matches automediavault.html
+            ═══════════════════════════════════════════════════ -->
+            <footer class="amc-footer">
+                <div class="footer-content">
+                    <div class="footer-column">
+                        <span class="footer-brand-name">AutoMediaCenter</span>
+                        <p class="footer-tagline">Where Automotive Stories Begin</p>
+                    </div>
+                    <div class="footer-column">
+                        <h4 class="footer-heading">Product</h4>
+                        <ul class="footer-links">
+                            <li><a href="/features">Features</a></li>
+                            <li><a href="/pricing">Pricing</a></li>
+                            <li><a href="/api-docs">API Documentation</a></li>
+                            <li><a href="https://status.automediacenter.com" target="_blank">System Status</a></li>
+                            <li><a href="/changelog">Changelog</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4 class="footer-heading">Company</h4>
+                        <ul class="footer-links">
+                            <li><a href="/about">About Us</a></li>
+                            <li><a href="/contact">Contact</a></li>
+                            <li><a href="/help">Help Center</a></li>
+                            <li><a href="/security">Security</a></li>
+                            <li><a href="/careers">Careers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4 class="footer-heading">Legal &amp; Resources</h4>
+                        <ul class="footer-links">
+                            <li><a href="/privacy">Privacy Policy</a></li>
+                            <li><a href="/terms">Terms of Service</a></li>
+                            <li><a href="/cookies">Cookie Policy</a></li>
+                            <li><a href="/dpa">Data Processing Agreement</a></li>
+                            <li><a href="/accessibility">Accessibility</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <div class="footer-bottom-content">
+                        <p class="footer-copyright">© 2026 AutoMediaCenter. All rights reserved.</p>
+                        <div class="footer-social">
+                            <a href="https://twitter.com/automediacenter" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                            <a href="https://linkedin.com/company/automediacenter" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                            <a href="https://github.com/automediacenter" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+        </div><!-- /amc-page -->
+    </main>
+
+    <!-- Footer mount — hidden until redesign, same as newradarfe.html -->
+    <div id="amcShellFooter" style="display:none"></div>
+
+    <!-- ============================================================
+         v6.5 SHELL SCRIPTS — exact pattern from newradarfe.html
+    ============================================================ -->
+    <script src="./components/shell/v6_5-shell.js" defer></script>
+    <script src="./components/shell/v6_5-shell-loader.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof loadV65Shell === 'function') {
+                loadV65Shell({ basePath: './components/shell' });
+            }
+            // After shell injects header into #amcShellHeader,
+            // hoist the .mobile-header to be a direct child of <body>
+            // so position:sticky works on mobile (same DOM structure as AMC mobile).
+            setTimeout(() => {
+                const mount  = document.getElementById('amcShellHeader');
+                const header = mount && mount.querySelector('.mobile-header');
+                if (header && mount.parentNode === document.body) {
+                    // Move header before the mount div
+                    document.body.insertBefore(header, mount);
+                    // Move all other shell elements (modals, dropdowns) too
+                    while (mount.firstChild) {
+                        document.body.insertBefore(mount.firstChild, mount);
+                    }
+                    mount.style.display = 'none';
+                }
+            }, 100);
+        });
+    </script>
+
+    <!-- Post-shell styles — exact pattern from newradarfe.html -->
+    <style>
+        /* Explicit dark mode background */
+        body.dark-mode { background: var(--bg-primary) !important; color: var(--text-primary) !important; }
+        body.dark-mode main.mobile-main,
+        body.dark-mode .mobile-main { background: var(--bg-primary) !important; }
+        body:not(.dark-mode) main.mobile-main,
+        body:not(.dark-mode) .mobile-main { background: var(--bg-primary) !important; }
+        :root {
+            --amc-header-h: 56px;
+            --amc-rail-w: 72px;
+        }
+
+        /* ── Sticky header fix — all viewports ────────────────────────
+           Root cause: shell CSS sets overflow-x:hidden on body.
+           On iOS Safari + Chrome Mobile this creates an implicit scroll
+           container on body, which breaks position:sticky — the browser
+           can no longer use the viewport as the sticky reference frame.
+
+           Fix: move scroll responsibility to html, let body flow freely.
+           The header then sticks correctly on ALL devices.
+           Desktop (≥1100px) uses position:fixed on .mobile-main anyway
+           so this only meaningfully changes mobile behaviour.
+        ──────────────────────────────────────────────────────────────── */
+
+        /* Move scroll to html so body overflow-x:hidden does not break sticky */
+        html { overflow-y: auto; }
+        body { overflow-y: visible !important; height: auto !important; }
+
+        /* Sticky header: promote #amcShellHeader wrapper to sticky.
+           The shell injects .mobile-header inside this div — the wrapper
+           breaks sticky on the inner element on mobile browsers.
+           Both wrapper and inner header are sticky at top:0. */
+        #amcShellHeader,
+        #amcShellHeader .mobile-header {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 1000 !important;
+        }
+
+        .mobile-main { padding: 16px 12px; }
+        @media (min-width: 1100px) {
+            .mobile-main { padding-left: calc(32px + var(--amc-rail-w)) !important; }
+        }
+        @media (min-width: 1366px) {
+            .mobile-main { padding-left: calc(40px + var(--amc-rail-w)) !important; }
+        }
+    </style>
+
+    <!-- ============================================================
+         PAGE JAVASCRIPT
+    ============================================================ -->
+    <script>
+        'use strict';
+
+        const API_BASE_URL = window.location.hostname === 'localhost'
+            ? 'http://localhost:5000' : '';
+
+        // ── Auth & data loading
+        function checkAmlLoginStatus() {
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            let user = null;
+            try {
+                user = JSON.parse(
+                    localStorage.getItem('user') ||
+                    localStorage.getItem('currentUser') ||
+                    localStorage.getItem('amcUser') || '{}'
+                );
+            } catch(e) {}
+            if (!token || !user?.email) return;
+            loadLiveEvents(token);
+        }
+
+        function renderEventGrid(events) {
+            const liveGrid         = document.getElementById('liveGrid');
+            const startingSoonGrid = document.getElementById('startingSoonGrid');
+            const upcomingGrid     = document.getElementById('upcomingGrid');
+            const recordingGrid    = document.getElementById('recordingGrid');
+
+            const ARCHIVE_AFTER_MS = 4 * 60 * 60 * 1000;
+            const now = Date.now();
+
+            function correctedStatus(e) {
+                const eventMs = new Date(e.eventDateTime).getTime();
+                const earlyMs = (e.earlyAccessMins || 15) * 60 * 1000;
+                const ARCHIVE_AFTER_MS = 4 * 60 * 60 * 1000;
+                // Already marked recording in DB — always archive
+                if (e.status === 'recording') return 'recording';
+                // Past 4h after start — archive regardless of DB status
+                if (now > eventMs + ARCHIVE_AFTER_MS) return 'recording';
+                // DB ready but past start time — stale, treat as recording
+                if (e.status === 'ready' && now >= eventMs) return 'recording';
+                // Past actual start but within 4h AND DB status is live — treat as live
+                if (now >= eventMs && e.status === 'live') return 'live';
+                // upcoming/ready past start by more than 30 mins — stale, archive it
+                if (now > eventMs + 30 * 60 * 1000) return 'recording';
+                // DB ready = encoder connected, not yet public — amber (only if future)
+                if (e.status === 'ready' && now < eventMs) return 'starting-soon';
+                // Within early window
+                if (e.status === 'upcoming' && now >= eventMs - earlyMs) return 'starting-soon';
+                return e.status;
+            }
+
+            const live         = events.filter(e => correctedStatus(e) === 'live');
+            const startingSoon = events.filter(e => correctedStatus(e) === 'starting-soon');
+            const upcoming     = events.filter(e => correctedStatus(e) === 'upcoming');
+            const recording    = events.filter(e => correctedStatus(e) === 'recording').sort((a,b) => new Date(b.eventDateTime) - new Date(a.eventDateTime));
+
+            // Update tab counts
+            const countAll          = document.getElementById('countAll');
+            const countLive         = document.getElementById('countLive');
+            const countStartingSoon = document.getElementById('countStartingSoon');
+            const countUpcoming     = document.getElementById('countUpcoming');
+            const countArchive      = document.getElementById('countArchive');
+            if (countAll)          countAll.textContent          = events.length;
+            if (countLive)         countLive.textContent         = live.length;
+            if (countStartingSoon) countStartingSoon.textContent = startingSoon.length;
+            if (countUpcoming)     countUpcoming.textContent     = upcoming.length;
+            if (countArchive)      countArchive.textContent      = recording.length;
+
+            // Show/hide section headers
+            const hdrLive         = document.getElementById('hdr-live');
+            const hdrStartingSoon = document.getElementById('hdr-starting-soon');
+            const hdrUpcoming     = document.getElementById('hdr-upcoming');
+            const hdrRecording    = document.getElementById('hdr-recording');
+            if (hdrLive)         hdrLive.style.display         = live.length         ? '' : 'none';
+            if (hdrStartingSoon) hdrStartingSoon.style.display = startingSoon.length ? '' : 'none';
+            if (hdrUpcoming)     hdrUpcoming.style.display     = upcoming.length     ? '' : 'none';
+            if (hdrRecording)    hdrRecording.style.display    = recording.length    ? '' : 'none';
+
+            function formatDate(iso, tz) {
+                try {
+                    return new Date(iso).toLocaleString('en-GB', {
+                        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: tz || 'UTC', timeZoneName: 'short',
+                    });
+                } catch(e) { return iso; }
+            }
+
+            function countdownText(iso, earlyAccessMins) {
+                const now      = Date.now();
+                const eventMs  = new Date(iso).getTime();
+                const earlyMs  = (earlyAccessMins || 15) * 60 * 1000;
+                const SHOW_MINS_FROM = 60 * 60 * 1000; // show minute countdown from 1h before early window
+
+                const remToEarly = (eventMs - earlyMs) - now;  // to early window
+                const remToStart = eventMs - now;               // to actual start
+
+                if (remToStart <= 0)     return 'Starting Soon';
+                if (remToEarly <= 0)     return 'Starting Soon'; // inside early window
+
+                // Within 1 hour of early window — show minutes
+                if (remToEarly <= SHOW_MINS_FROM) {
+                    const totalMins = Math.ceil(remToEarly / 60000);
+                    return `In ${totalMins}m`;
+                }
+
+                // Further out — show days/hours
+                const totalMins = Math.floor(remToEarly / 60000);
+                const d = Math.floor(totalMins / 1440);
+                const h = Math.floor((totalMins % 1440) / 60);
+                const m = totalMins % 60;
+                if (d > 1)   return `In ${d}d ${h}h`;
+                if (d === 1) return `Tomorrow`;
+                if (h > 0)   return `In ${h}h ${m}m`;
+                return `In ${m}m`;
+            }
+
+            function thumbHtml(event) {
+                if (event.teaserImageUrl) {
+                    return `<img src="${event.teaserImageUrl}" alt="${event.title}" loading="lazy">`;
+                }
+                return `<div class="card-thumb-placeholder"><i class="fas fa-video"></i></div>`;
+            }
+
+            function buildCard(event) {
+                const now = Date.now();
+                const eventMs = new Date(event.eventDateTime).getTime();
+
+                // Use correctedStatus — single source of truth for card rendering
+                const status = correctedStatus(event);
+
+                const isLive         = status === 'live';
+                const isStartingSoon = status === 'starting-soon';
+                const isUpcoming     = status === 'upcoming';
+                const isRecording    = status === 'recording';
+
+                // ── Date / time display ───────────────────────────────────
+                const tz = event.timezone || 'UTC';
+                const d  = new Date(event.eventDateTime);
+                const dateStr = d.toLocaleDateString('en-GB', {
+                    day: 'numeric', month: 'short', year: 'numeric', timeZone: tz
+                });
+                const timeStr = d.toLocaleTimeString('en-GB', {
+                    hour: '2-digit', minute: '2-digit', timeZone: tz, timeZoneName: 'short'
+                });
+
+                // ── Status pill ───────────────────────────────────────────
+                const pill = isLive
+                    ? `<span class="aml-status-pill pill-live"><span class="pill-dot"></span> Live</span>`
+                    : isStartingSoon
+                    ? `<span class="aml-status-pill pill-starting-soon"><span class="pill-dot" style="background:#fbbf24;animation:aml-pulse 1s infinite;"></span> Starting Soon</span>`
+                    : isUpcoming
+                    ? `<span class="aml-status-pill pill-upcoming"><i class="fas fa-clock" style="font-size:8px;"></i> <span class="countdown-label">${countdownText(event.eventDateTime, event.earlyAccessMins)}</span></span>`
+                    : `<span class="aml-status-pill pill-recording"><i class="fas fa-film" style="font-size:8px;"></i> Archive</span>`;
+
+                // ── Overlay button ────────────────────────────────────────
+                const overlayBtn = isLive
+                    ? `<button class="overlay-btn overlay-btn-join" onclick="event.stopPropagation();window.location.href='amc-live-detail.html?id=${event._id}'">
+                           <i class="fas fa-circle-play"></i> Join Now
+                       </button>`
+                    : isStartingSoon
+                    ? `<button class="overlay-btn overlay-btn-starting-soon" onclick="event.stopPropagation();window.location.href='amc-live-detail.html?id=${event._id}'">
+                           <i class="fas fa-clock"></i> Join Early
+                       </button>`
+                    : isUpcoming
+                    ? `<button class="overlay-btn overlay-btn-reminder" onclick="event.stopPropagation();setStreamReminder('${event._id}',this)">
+                           <i class="fas fa-bell"></i> Set Reminder
+                       </button>`
+                    : `<button class="overlay-btn overlay-btn-recording" onclick="event.stopPropagation();window.location.href='amc-live-detail.html?id=${event._id}'">
+                           <i class="fas fa-play"></i> Watch Replay
+                       </button>`;
+
+                // ── Meta left ─────────────────────────────────────────────
+                const metaLeft = isLive
+                    ? `<span class="card-meta-left"><i class="fas fa-eye"></i> <span class="viewer-count-meta">${(event.viewerCount||0).toLocaleString()}</span> viewers</span>`
+                    : isStartingSoon
+                    ? `<span class="card-meta-left" style="color:#f59e0b;"><i class="fas fa-clock"></i> Starts at ${new Date(event.eventDateTime).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:event.timezone||'UTC',timeZoneName:'short'})}</span>`
+                    : isUpcoming
+                    ? `<button class="cal-btn" 
+                           data-title="${(event.title||'').replace(/"/g,'&quot;')}"
+                           data-brand="${(event.brand||'').replace(/"/g,'&quot;')}"
+                           data-eventdatetime="${event.eventDateTime}"
+                           onclick="event.stopPropagation();showCalendarPicker(this,{title:this.dataset.title,brand:this.dataset.brand,eventdatetime:this.dataset.eventdatetime})">
+                           <i class="far fa-calendar-plus"></i> Add to Calendar
+                       </button>`
+                    : `<span class="card-meta-left"><i class="fas fa-play-circle"></i> Available to replay</span>`;
+
+                // ── Placeholder ───────────────────────────────────────────
+                const placeholder = isLive
+                    ? `<div class="card-thumb-placeholder placeholder-live"><i class="fas fa-circle-play"></i></div>`
+                    : isStartingSoon
+                    ? `<div class="card-thumb-placeholder placeholder-starting-soon"><i class="fas fa-clock"></i></div>`
+                    : isUpcoming
+                    ? `<div class="card-thumb-placeholder placeholder-upcoming"><i class="fas fa-clock"></i></div>`
+                    : `<div class="card-thumb-placeholder placeholder-recording"><i class="fas fa-play-circle"></i></div>`;
+
+                return `
+                <div class="event-card${isLive?' is-live':''}${isStartingSoon?' is-starting-soon':''}" data-status="${status}" data-brand="${event.brand||''}" data-eventtime="${event.eventDateTime}" data-earlylive="${event.earlyAccessMins||15}"
+                     onclick="window.location.href='amc-live-detail.html?id=${event._id}'">
+                    <div class="card-thumb">
+                        ${placeholder}
+                        ${pill}
+                        <div class="card-image-overlay">
+                            ${overlayBtn}
+                        </div>
+                    </div>
+                    <div class="aml-brand-band">${event.brand || ''}</div>
+                    <div class="card-content-area">
+                        <div class="card-title">${event.title}</div>
+                        <div class="card-meta">
+                            ${metaLeft}
+                            <span class="card-meta-right">
+                                <span class="card-meta-date"><i class="far fa-calendar-alt"></i> ${dateStr}</span>
+                                <span class="card-meta-time">${timeStr}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            if (liveGrid)         liveGrid.innerHTML         = live.length         ? live.map(buildCard).join('')         : '';
+            if (startingSoonGrid) startingSoonGrid.innerHTML = startingSoon.length ? startingSoon.map(buildCard).join('') : '';
+            if (upcomingGrid)     upcomingGrid.innerHTML     = upcoming.length     ? upcoming.map(buildCard).join('')     : '';
+            if (recordingGrid)    recordingGrid.innerHTML    = recording.length    ? recording.map(buildCard).join('')    : '';
+
+            // ── Archive pagination — show first 12, hide the rest ────────────
+            const ARCHIVE_PAGE_SIZE = 12;
+            window._archiveTotal = recording.length;
+            window._archiveShown = Math.min(ARCHIVE_PAGE_SIZE, recording.length);
+
+            if (recordingGrid && recording.length > 0) {
+                const archiveCards = recordingGrid.querySelectorAll('.event-card');
+                archiveCards.forEach((card, i) => {
+                    card.dataset.archiveIndex = i;
+                    if (i >= ARCHIVE_PAGE_SIZE) card.style.display = 'none';
+                });
+            }
+
+            // Show/hide "Show more" button and counter
+            let showMoreWrap = document.getElementById('archiveShowMoreWrap');
+            if (!showMoreWrap && recording.length > ARCHIVE_PAGE_SIZE) {
+                showMoreWrap = document.createElement('div');
+                showMoreWrap.id = 'archiveShowMoreWrap';
+                showMoreWrap.style.cssText = 'text-align:center;padding:24px 0 8px;';
+                showMoreWrap.innerHTML = `
+                    <div id="archiveCounter" style="font-size:13px;font-weight:400;color:var(--text-secondary);margin-bottom:12px;">
+                        Showing ${Math.min(ARCHIVE_PAGE_SIZE, recording.length)} of ${recording.length} archived streams
+                    </div>
+                    <button class="ld-btn" id="archiveShowMoreBtn" style="padding:10px 28px;font-size:13px;font-weight:600;background:#475569;color:#fff;border:none;border-radius:8px;cursor:pointer;">
+                        Show More
+                    </button>
+                `;
+                recordingGrid.parentNode.insertBefore(showMoreWrap, recordingGrid.nextSibling);
+                document.getElementById('archiveShowMoreBtn').addEventListener('click', showMoreArchive);
+            } else if (showMoreWrap) {
+                if (recording.length <= ARCHIVE_PAGE_SIZE) {
+                    showMoreWrap.style.display = 'none';
+                } else {
+                    showMoreWrap.style.display = '';
+                    document.getElementById('archiveCounter').textContent = `Showing ${Math.min(ARCHIVE_PAGE_SIZE, recording.length)} of ${recording.length} archived streams`;
+                }
+            }
+
+            // Show/hide section headers and grids based on content
+            if (hdrLive)      hdrLive.style.display      = live.length         ? '' : 'none';
+            if (hdrStartingSoon) hdrStartingSoon.style.display = startingSoon.length ? '' : 'none';
+            if (hdrUpcoming)  hdrUpcoming.style.display  = upcoming.length     ? '' : 'none';
+            if (hdrRecording) hdrRecording.style.display = recording.length    ? '' : 'none';
+            if (liveGrid)         liveGrid.style.display         = live.length         ? '' : 'none';
+            if (startingSoonGrid) startingSoonGrid.style.display = startingSoon.length ? '' : 'none';
+            if (upcomingGrid)     upcomingGrid.style.display     = upcoming.length     ? '' : 'none';
+            if (recordingGrid)    recordingGrid.style.display    = recording.length    ? '' : 'none';
+
+            // Run countdown engine immediately so cards update without waiting 30s
+            if (typeof updateCountdowns === 'function') updateCountdowns();
+        }
+
+        // ── Show More archive cards ────────────────────────────────────
+        function showMoreArchive() {
+            const ARCHIVE_PAGE_SIZE = 12;
+            const grid = document.getElementById('recordingGrid');
+            if (!grid) return;
+            const hiddenCards = grid.querySelectorAll('.event-card[style*="display: none"]');
+            let revealed = 0;
+            hiddenCards.forEach(card => {
+                if (revealed < ARCHIVE_PAGE_SIZE) {
+                    card.style.display = '';
+                    revealed++;
+                }
+            });
+            window._archiveShown = Math.min(window._archiveShown + revealed, window._archiveTotal);
+            const counter = document.getElementById('archiveCounter');
+            if (counter) counter.textContent = `Showing ${window._archiveShown} of ${window._archiveTotal} archived streams`;
+            // Hide button if all shown
+            const remaining = grid.querySelectorAll('.event-card[style*="display: none"]').length;
+            if (remaining === 0) {
+                const wrap = document.getElementById('archiveShowMoreWrap');
+                if (wrap) wrap.style.display = 'none';
+            }
+        }
+
+        async function loadLiveEvents(token) {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/v1/live/events`, {
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                });
+                if (!res.ok) return;
+                const json = await res.json();
+                if (json.success && json.data?.length) {
+                    console.log('[AML] Loaded', json.data.length, 'live events from API');
+                    renderEventGrid(json.data);
+                }
+            } catch(e) {
+                console.warn('[AML] Error loading or rendering events:', e.message, e.stack);
+            }
+        }
+
+        // ── Status filter tabs
+        document.querySelectorAll('.stab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                /* On mobile the tabs scroll horizontally — auto-scroll active into view
+                   so a partially-hidden tab becomes fully visible after being tapped. */
+                tab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                const f = tab.dataset.filter;
+                const showMoreWrap = document.getElementById('archiveShowMoreWrap');
+
+                // Hide all empty states first
+                document.querySelectorAll('.aml-empty-state').forEach(el => el.style.display = 'none');
+
+                [
+                    ['hdr-live',          'liveGrid',         'empty-live',          f === 'all' || f === 'live'],
+                    ['hdr-starting-soon', 'startingSoonGrid', 'empty-starting-soon', f === 'all' || f === 'starting-soon'],
+                    ['hdr-upcoming',      'upcomingGrid',     'empty-upcoming',      f === 'all' || f === 'upcoming'],
+                    ['hdr-recording',     'recordingGrid',    'empty-recording',     f === 'all' || f === 'recording']
+                ].forEach(([h, g, e, show]) => {
+                    const he = document.getElementById(h), gr = document.getElementById(g), em = document.getElementById(e);
+                    const hasContent = gr && gr.querySelectorAll('.event-card').length > 0;
+                    if (he) he.style.display = (show && hasContent) ? '' : 'none';
+                    if (gr) gr.style.display = (show && hasContent) ? '' : 'none';
+                    // Show empty state only when this specific filter is active and has no content
+                    if (em) em.style.display = (show && !hasContent && f !== 'all') ? '' : 'none';
+                });
+
+                // Only show archive pagination when Archive or All Events is selected
+                if (showMoreWrap) {
+                    showMoreWrap.style.display = (f === 'all' || f === 'recording') && window._archiveShown < window._archiveTotal ? '' : 'none';
+                }
+            });
+        });
+
+        // ── Status tabs: toggle scrolled-end class to hide chevron/fade when at right edge
+        (() => {
+            const tabsEl = document.getElementById('amlStatusTabs');
+            if (!tabsEl) return;
+            const update = () => {
+                const atEnd = tabsEl.scrollLeft + tabsEl.clientWidth >= tabsEl.scrollWidth - 2;
+                tabsEl.classList.toggle('scrolled-end', atEnd);
+            };
+            tabsEl.addEventListener('scroll', update, { passive: true });
+            window.addEventListener('resize', update);
+            // Run once on load to set initial state
+            requestAnimationFrame(update);
+        })();
+
+        // ── Search
+        let searchTimeout = null;
+        const searchInput        = document.getElementById('searchInput');
+        const searchContextField = document.getElementById('searchContextField');
+        const searchContextCount = document.getElementById('searchContextCount');
+        const searchContextTerm  = document.getElementById('searchContextTerm');
+        const searchContextClear = document.getElementById('searchContextClear');
+
+        function normalizeText(s) { return s.toLowerCase().replace(/[^\w\s]/g, ' '); }
+
+        function cardMatchesQuery(card, words) {
+            const text = normalizeText(['.card-title', '.aml-brand-band', '.card-meta']
+                .map(s => card.querySelector(s)?.textContent || '').join(' '));
+            return words.every(w => text.includes(w));
+        }
+
+        function performSearch(term) {
+            const trimmed = term.trim();
+            const cards   = document.querySelectorAll('.event-card');
+            const hdrs    = ['hdr-live', 'hdr-starting-soon', 'hdr-upcoming', 'hdr-recording'];
+            const showMoreWrap = document.getElementById('archiveShowMoreWrap');
+
+            if (!trimmed) {
+                // Clear search — restore pagination state for archive cards
+                searchInput.classList.remove('searching');
+                searchContextField.classList.add('hidden');
+                cards.forEach(c => {
+                    // Archive cards: respect pagination (only show up to _archiveShown)
+                    if (c.dataset.archiveIndex !== undefined) {
+                        c.style.display = parseInt(c.dataset.archiveIndex) < (window._archiveShown || 12) ? '' : 'none';
+                    } else {
+                        c.style.display = '';
+                    }
+                });
+                // Only show headers for sections that have cards
+                [
+                    ['hdr-live',          'liveGrid'],
+                    ['hdr-starting-soon', 'startingSoonGrid'],
+                    ['hdr-upcoming',      'upcomingGrid'],
+                    ['hdr-recording',     'recordingGrid']
+                ].forEach(([h, g]) => {
+                    const he = document.getElementById(h), gr = document.getElementById(g);
+                    const hasContent = gr && gr.querySelectorAll('.event-card').length > 0;
+                    if (he) he.style.display = hasContent ? '' : 'none';
+                    if (gr) gr.style.display = hasContent ? '' : 'none';
+                });
+                // Hide all empty states on clear (back to All Events view)
+                document.querySelectorAll('.aml-empty-state').forEach(el => el.style.display = 'none');
+                // Restore Show More button visibility
+                if (showMoreWrap && window._archiveShown < window._archiveTotal) showMoreWrap.style.display = '';
+                return;
+            }
+
+            searchInput.classList.add('searching');
+            const words = normalizeText(trimmed).split(/\s+/).filter(Boolean);
+            let count = 0;
+            // Search ALL cards — including hidden archive cards
+            cards.forEach(card => {
+                const show = cardMatchesQuery(card, words);
+                card.style.display = show ? '' : 'none';
+                if (show) count++;
+            });
+            hdrs.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+            // Hide Show More during search — all matching cards are already visible
+            if (showMoreWrap) showMoreWrap.style.display = 'none';
+            searchContextField.classList.remove('hidden');
+            searchContextCount.textContent = `${count} Result${count !== 1 ? 's' : ''}`;
+            searchContextTerm.textContent  = trimmed;
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', e => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => performSearch(e.target.value), 300);
+            });
+            searchInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter')  { e.preventDefault(); clearTimeout(searchTimeout); performSearch(e.target.value); searchInput.blur(); }
+                if (e.key === 'Escape') { e.preventDefault(); searchInput.value = ''; performSearch(''); }
+            });
+        }
+        if (searchContextClear) {
+            searchContextClear.addEventListener('click', () => { searchInput.value = ''; performSearch(''); });
+        }
+
+        // ── Filter panel — opens via searchBtn (same as newradarfe.html)
+        const searchBtn = document.getElementById('searchBtn');
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                const filterPanel = document.getElementById('filterPanel');
+                const backdrop    = document.getElementById('drawerBackdrop');
+                if (filterPanel) {
+                    filterPanel.classList.toggle('active');
+                    if (backdrop) backdrop.classList.toggle('visible', filterPanel.classList.contains('active'));
+                }
+            });
+        }
+
+        // (viewer count updated by simulation below)
+
+
+        // ── getDynamicTimezone — exact from automediacenter-mobile-v6.5.html
+        function getDynamicTimezone(dateObj) {
+            if (!dateObj || !(dateObj instanceof Date)) return 'CET';
+            const year = dateObj.getFullYear();
+            const marchLastSunday = new Date(year, 2, 31);
+            marchLastSunday.setDate(31 - marchLastSunday.getDay());
+            const octoberLastSunday = new Date(year, 9, 31);
+            octoberLastSunday.setDate(31 - octoberLastSunday.getDay());
+            return (dateObj >= marchLastSunday && dateObj < octoberLastSunday) ? 'CEST' : 'CET';
+        }
+
+        // ── Live countdown engine — runs every 30s
+        // diffMs: ms until event. earlyMs: early-live window in ms.
+        // Returns null when card should flip to live (within early window or past start).
+        function formatCountdown(diffMs) {
+            if (diffMs <= 0) return null; // past start — signal live
+            const totalMins = Math.floor(diffMs / 60000);
+            const days  = Math.floor(totalMins / 1440);
+            const hours = Math.floor((totalMins % 1440) / 60);
+            const mins  = totalMins % 60;
+            if (days > 1)   return `In ${days}d`;
+            if (days === 1) return `Tomorrow`;
+            if (hours > 0)  return `In ${hours}h ${mins}m`;
+            if (mins > 1)   return `In ${mins}m`;
+            return 'Starting Soon';
+        }
+
+        function countdownText(iso, earlyAccessMins) {
+            const now      = Date.now();
+            const eventMs  = new Date(iso).getTime();
+            const earlyMs  = (earlyAccessMins || 15) * 60 * 1000;
+            const SHOW_MINS_FROM = 60 * 60 * 1000;
+            const remToEarly = (eventMs - earlyMs) - now;
+            const remToStart = eventMs - now;
+            if (remToStart <= 0)    return 'Starting Soon';
+            if (remToEarly <= 0)    return 'Starting Soon';
+            if (remToEarly <= SHOW_MINS_FROM) {
+                const totalMins = Math.ceil(remToEarly / 60000);
+                return `In ${totalMins}m`;
+            }
+            const totalMins = Math.floor(remToEarly / 60000);
+            const days  = Math.floor(totalMins / 1440);
+            const hours = Math.floor((totalMins % 1440) / 60);
+            const mins  = totalMins % 60;
+            if (days > 1)   return `In ${days}d ${String(hours).padStart(2,'0')}h`;
+            if (days === 1) return `Tomorrow`;
+            if (hours > 0)  return `In ${hours}h ${mins}m`;
+            return `In ${mins}m`;
+        }
+
+        function updateCountdowns() {
+            // Process both upcoming and starting-soon cards
+            document.querySelectorAll('.event-card[data-status="upcoming"], .event-card[data-status="starting-soon"]').forEach(card => {
+                const eventTime  = card.dataset.eventtime;
+                if (!eventTime) return;
+                const eventDate  = new Date(eventTime);
+                const earlyMins  = parseInt(card.dataset.earlylive) || 15;
+                const earlyMs    = earlyMins * 60 * 1000;
+                const now        = new Date();
+                const diffMs     = eventDate.getTime() - now.getTime();
+                const ARCHIVE_AFTER_MS = 4 * 60 * 60 * 1000; // 4 hours after start = archive
+
+                // If event was more than 4 hours ago — flip to recording/archived
+                if (now.getTime() > eventDate.getTime() + ARCHIVE_AFTER_MS) {
+                    card.dataset.status = 'recording';
+                    card.classList.remove('is-live');
+                    const pill = card.querySelector('.aml-status-pill');
+                    if (pill) { pill.className = 'aml-status-pill pill-recording'; pill.innerHTML = '<i class="fas fa-film" style="font-size:8px;"></i> Archive'; }
+                    const placeholder = card.querySelector('.card-thumb-placeholder');
+                    if (placeholder) { placeholder.className = 'card-thumb-placeholder placeholder-recording'; placeholder.innerHTML = '<i class="fas fa-play-circle"></i>'; }
+                    const ctaBtn = card.querySelector('.card-cta');
+                    if (ctaBtn) { ctaBtn.className = 'card-cta btn-archive'; ctaBtn.innerHTML = '<i class="fas fa-play"></i> Watch Replay'; }
+                    const recordingGrid = document.getElementById('recordingGrid');
+                    const hdrRecording  = document.getElementById('hdr-recording');
+                    if (recordingGrid) { recordingGrid.appendChild(card); if (hdrRecording) hdrRecording.style.display = ''; recordingGrid.style.display = ''; }
+                    return;
+                }
+
+                const remToEarly = eventDate.getTime() - earlyMs - now.getTime();
+                const remToStart = eventDate.getTime() - now.getTime();
+                const SHOW_MINS_FROM = 60 * 60 * 1000; // 1h before early window
+
+                // Inside early window — flip to Starting Soon (amber), not Live
+                if (remToEarly <= 0 && remToStart > 0) {
+                    card.dataset.status = 'starting-soon';
+                    card.classList.add('is-starting-soon');
+
+                    const pill = card.querySelector('.aml-status-pill');
+                    if (pill) {
+                        pill.className = 'aml-status-pill pill-starting-soon';
+                        pill.innerHTML = '<span class="pill-dot" style="background:#fbbf24;animation:aml-pulse 1s infinite;"></span> Starting Soon';
+                    }
+
+                    const ph = card.querySelector('.card-thumb-placeholder');
+                    if (ph) { ph.className = 'card-thumb-placeholder placeholder-starting-soon'; ph.innerHTML = '<i class="fas fa-clock"></i>'; }
+
+                    const overlayBtn = card.querySelector('.overlay-btn');
+                    if (overlayBtn) {
+                        overlayBtn.className = 'overlay-btn overlay-btn-starting-soon';
+                        overlayBtn.innerHTML = '<i class="fas fa-clock"></i> Join Early';
+                    }
+
+                    // Move to startingSoonGrid
+                    const startingSoonGrid = document.getElementById('startingSoonGrid');
+                    const hdrStartingSoon  = document.getElementById('hdr-starting-soon');
+                    if (startingSoonGrid) {
+                        startingSoonGrid.appendChild(card);
+                        if (hdrStartingSoon) hdrStartingSoon.style.display = '';
+                        startingSoonGrid.style.display = '';
+                    }
+
+                    // Hide upcoming section if now empty
+                    const upcomingGrid = document.getElementById('upcomingGrid');
+                    if (upcomingGrid && upcomingGrid.querySelectorAll('.event-card').length === 0) {
+                        const hdrUpcoming = document.getElementById('hdr-upcoming');
+                        if (hdrUpcoming) hdrUpcoming.style.display = 'none';
+                        upcomingGrid.style.display = 'none';
+                    }
+                    return;
+                }
+
+                // Past actual start — flip to live (green)
+                if (remToStart <= 0 && now.getTime() <= eventDate.getTime() + ARCHIVE_AFTER_MS) {
+                    card.dataset.status = 'live';
+                    card.classList.remove('is-starting-soon');
+                    card.classList.add('is-live');
+
+                    const pill = card.querySelector('.aml-status-pill');
+                    if (pill) { pill.className = 'aml-status-pill pill-live'; pill.innerHTML = '<span class="pill-dot"></span> Live'; }
+
+                    const ph = card.querySelector('.card-thumb-placeholder');
+                    if (ph) { ph.className = 'card-thumb-placeholder placeholder-live'; ph.innerHTML = '<i class="fas fa-circle-play"></i>'; }
+
+                    const overlayBtn = card.querySelector('.overlay-btn');
+                    if (overlayBtn) { overlayBtn.className = 'overlay-btn overlay-btn-join'; overlayBtn.innerHTML = '<i class="fas fa-circle-play"></i> Join Now'; }
+
+                    const liveGrid = document.getElementById('liveGrid');
+                    const hdrLive  = document.getElementById('hdr-live');
+                    if (liveGrid) { liveGrid.appendChild(card); if (hdrLive) hdrLive.style.display = ''; liveGrid.style.display = ''; }
+                    return;
+                }
+
+                // Compute label
+                let label;
+                if (remToEarly <= SHOW_MINS_FROM && remToEarly > 0) {
+                    const mins = Math.ceil(remToEarly / 60000);
+                    label = `In ${mins}m`;
+                } else if (remToEarly > 0) {
+                    label = countdownText(eventTime, earlyMins);
+                } else {
+                    label = null; // flip to live
+                }
+
+                if (label === null) {
+                    // ── Flip upcoming → live
+                    card.dataset.status = 'live';
+                    card.classList.add('is-live');
+
+                    // Pill: purple → green
+                    const pill = card.querySelector('.aml-status-pill');
+                    if (pill) {
+                        pill.className = 'aml-status-pill pill-live';
+                        pill.innerHTML = '<span class="pill-dot"></span> Live';
+                    }
+
+                    // Placeholder: purple clock → green play
+                    const placeholder = card.querySelector('.card-thumb-placeholder');
+                    if (placeholder) {
+                        placeholder.className = 'card-thumb-placeholder placeholder-live';
+                        placeholder.innerHTML = '<i class="fas fa-circle-play"></i>';
+                    }
+
+                    // Overlay button: Set Reminder → Join Now
+                    const overlayBtn = card.querySelector('.overlay-btn');
+                    if (overlayBtn) {
+                        overlayBtn.className = 'overlay-btn overlay-btn-join';
+                        overlayBtn.innerHTML = '<i class="fas fa-circle-play"></i> Join Now';
+                    }
+
+                    // CTA button
+                    const ctaBtn = card.querySelector('.card-cta');
+                    if (ctaBtn) { ctaBtn.className = 'card-cta btn-join'; ctaBtn.innerHTML = '<i class="fas fa-circle-play"></i> Join Now'; }
+
+                    // Meta left: replace "Add to Calendar" button with viewer count
+                    const calBtn = card.querySelector('.cal-btn');
+                    if (calBtn) {
+                        calBtn.outerHTML = '<span class="card-meta-left"><i class="fas fa-eye"></i> <span class="viewer-count-meta">1250</span> viewers</span>';
+                    }
+
+                    // ── Move card from upcomingGrid → liveGrid
+                    const liveGrid = document.getElementById('liveGrid');
+                    const hdrLive  = document.getElementById('hdr-live');
+                    if (liveGrid) {
+                        liveGrid.appendChild(card);
+                        if (hdrLive) hdrLive.style.display = '';
+                        liveGrid.style.display = '';
+                    }
+
+                    // Hide upcoming section if now empty
+                    const upcomingGrid = document.getElementById('upcomingGrid');
+                    if (upcomingGrid && upcomingGrid.querySelectorAll('.event-card[data-status="upcoming"]').length === 0) {
+                        const hdrUpcoming = document.getElementById('hdr-upcoming');
+                        if (hdrUpcoming) hdrUpcoming.style.display = 'none';
+                        upcomingGrid.style.display = 'none';
+                    }
+                } else {
+                    // Update countdown label on card
+                    card.querySelectorAll('.countdown-label').forEach(el => {
+                        el.textContent = label;
+                    });
+                }
+            });
+        }
+
+        // ── Check if live cards should move to recording
+        // A live event becomes a recording 2 hours after scheduled start.
+        function updateLiveToRecording() {
+            document.querySelectorAll('.event-card[data-status="live"]').forEach(card => {
+                const eventTime = card.dataset.eventtime;
+                if (!eventTime) return;
+                const eventDate   = new Date(eventTime);
+                const recordingAt = new Date(eventDate.getTime() + 2 * 60 * 60 * 1000); // start + 2h
+                if (new Date() < recordingAt) return; // still live
+
+                // ── Flip live → recording
+                card.dataset.status = 'recording';
+                card.classList.remove('is-live');
+
+                const pill = card.querySelector('.aml-status-pill');
+                if (pill) {
+                    pill.className = 'aml-status-pill pill-recording';
+                    pill.innerHTML = '<i class="fas fa-play-circle" style="font-size:8px;"></i> Archive';
+                }
+
+                const placeholder = card.querySelector('.card-thumb-placeholder');
+                if (placeholder) {
+                    placeholder.className = 'card-thumb-placeholder placeholder-recording';
+                    placeholder.innerHTML = '<i class="fas fa-play-circle"></i>';
+                }
+
+                const overlayBtn = card.querySelector('.overlay-btn');
+                if (overlayBtn) {
+                    overlayBtn.className = 'overlay-btn overlay-btn-recording';
+                    overlayBtn.innerHTML = '<i class="fas fa-play"></i> Watch Replay';
+                }
+
+                const metaLeft = card.querySelector('.card-meta-left');
+                if (metaLeft) {
+                    metaLeft.innerHTML = '<i class="fas fa-play-circle"></i> Available to replay';
+                }
+
+                // Move to recordingGrid
+                const recordingGrid = document.getElementById('recordingGrid');
+                const hdrRecording  = document.getElementById('hdr-recording');
+                if (recordingGrid) {
+                    recordingGrid.prepend(card);
+                    if (hdrRecording) hdrRecording.style.display = '';
+                    recordingGrid.style.display = '';
+                }
+
+                // Hide live section if empty
+                const liveGrid = document.getElementById('liveGrid');
+                if (liveGrid && liveGrid.querySelectorAll('.event-card[data-status="live"]').length === 0) {
+                    const hdrLive = document.getElementById('hdr-live');
+                    if (hdrLive) hdrLive.style.display = 'none';
+                    liveGrid.style.display = 'none';
+                }
+            });
+        }
+
+        // Run countdowns immediately, delay recording check until after API renders
+        updateCountdowns();
+        setTimeout(updateLiveToRecording, 3000);
+        setInterval(updateCountdowns, 30000);
+        setInterval(updateLiveToRecording, 30000);
+
+
+        // ── Calendar picker — ported verbatim from newradarfe.html ──
+        function generateICS(eventData) {
+            const title = (eventData.title || 'AutoMediaCenter Live Event').replace(/[\r\n]/g, ' ');
+            const brand = eventData.brand || '';
+            const eventDate = new Date(eventData.eventdatetime);
+            if (isNaN(eventDate.getTime())) return null;
+            const endDate = new Date(eventDate.getTime() + 60 * 60 * 1000);
+            function toICSDate(d) { return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''); }
+            function fold(str) {
+                const lines = [];
+                while (str.length > 75) { lines.push(str.substring(0,75)); str = ' ' + str.substring(75); }
+                lines.push(str); return lines.join('\r\n');
+            }
+            const desc = ['AutoMediaCenter: Media Live', brand ? 'Brand: ' + brand : ''].filter(Boolean).join('\n');
+            return [
+                'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//AutoMediaCenter//Media Live//EN',
+                'CALSCALE:GREGORIAN','METHOD:PUBLISH','BEGIN:VEVENT',
+                fold('UID:aml-' + Date.now() + '@automediacenter.com'),
+                fold('DTSTART:' + toICSDate(eventDate)), fold('DTEND:' + toICSDate(endDate)),
+                fold('SUMMARY:' + title), fold('DESCRIPTION:' + desc.replace(/\n/g,'\\n')),
+                'STATUS:CONFIRMED','SEQUENCE:0', fold('DTSTAMP:' + toICSDate(new Date())),
+                'END:VEVENT','END:VCALENDAR'
+            ].join('\r\n');
+        }
+
+        function downloadICS(eventData) {
+            const ics = generateICS(eventData);
+            if (!ics) { alert('Could not generate calendar event.'); return; }
+            const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = (eventData.title || 'live-event').replace(/[^a-zA-Z0-9-_]/g,'_').substring(0,50) + '.ics';
+            document.body.appendChild(a); a.click();
+            setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+        }
+
+        function buildGoogleCalendarURL(eventData) {
+            const title = eventData.title || 'AutoMediaCenter Live Event';
+            const eventDate = new Date(eventData.eventdatetime);
+            if (isNaN(eventDate.getTime())) return null;
+            const endDate = new Date(eventDate.getTime() + 60 * 60 * 1000);
+            function toGCDate(d) { return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z/,'Z'); }
+            const details = encodeURIComponent(['AutoMediaCenter: Media Live', eventData.brand ? 'Brand: ' + eventData.brand : ''].filter(Boolean).join('\n'));
+            return 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+                + '&text=' + encodeURIComponent(title)
+                + '&dates=' + toGCDate(eventDate) + '/' + toGCDate(endDate)
+                + '&details=' + details + '&sf=true&output=xml';
+        }
+
+        let activePickerBtn = null;
+        function removeCalendarPicker() {
+            const el = document.getElementById('amc-cal-picker');
+            if (el) el.remove();
+            activePickerBtn = null;
+        }
+
+        function showCalendarPicker(triggerEl, eventData) {
+            if (activePickerBtn === triggerEl) { removeCalendarPicker(); return; }
+            removeCalendarPicker();
+            activePickerBtn = triggerEl;
+            const googleUrl = buildGoogleCalendarURL(eventData);
+            const picker = document.createElement('div');
+            picker.id = 'amc-cal-picker';
+            picker.innerHTML = `
+                <div class="amc-cal-picker-header">Add to Calendar</div>
+                <button class="amc-cal-option" id="amc-cal-ics">
+                    <span class="amc-cal-icon">📅</span>
+                    <span class="amc-cal-label"><strong>Download .ics</strong><small>Apple Calendar · Outlook · All apps</small></span>
+                </button>
+                ${googleUrl ? `<button class="amc-cal-option" id="amc-cal-google">
+                    <span class="amc-cal-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg></span>
+                    <span class="amc-cal-label"><strong>Google Calendar</strong><small>Opens in new tab</small></span>
+                </button>` : ''}
+            `;
+            document.body.appendChild(picker);
+            const rect = triggerEl.getBoundingClientRect();
+            const pickerW = 240;
+            let left = rect.left + window.scrollX;
+            let top = rect.bottom + window.scrollY + 6;
+            if (left + pickerW > window.innerWidth - 16) left = window.innerWidth - pickerW - 16;
+            picker.style.cssText = `position:absolute;left:${left}px;top:${top}px;width:${pickerW}px;z-index:9999;`;
+            document.getElementById('amc-cal-ics').addEventListener('click', (e) => { e.stopPropagation(); downloadICS(eventData); removeCalendarPicker(); });
+            if (googleUrl) {
+                document.getElementById('amc-cal-google').addEventListener('click', (e) => { e.stopPropagation(); window.open(googleUrl,'_blank','noopener'); removeCalendarPicker(); });
+            }
+            setTimeout(() => { document.addEventListener('click', removeCalendarPicker, { once:true }); }, 0);
+        }
+
+
+        // ── Stream reminder ─────────────────────────────────────────────
+        async function setStreamReminder(eventId, btn) {
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            if (!token) { alert('Please log in to set a reminder.'); return; }
+            const original = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Setting...';
+            try {
+                const res = await fetch(API_BASE_URL + '/api/v1/live/events/' + eventId + '/reminder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }
+                });
+                const json = await res.json();
+                if (json.success) {
+                    if (json.alreadySet) {
+                        btn.innerHTML = '<i class="fas fa-bell"></i> Reminder set';
+                        btn.style.opacity = '0.6';
+                    } else {
+                        btn.innerHTML = '<i class="fas fa-check"></i> Reminder set';
+                        btn.style.background = '#16a34a';
+                        const toast = document.createElement('div');
+                        toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;padding:12px 24px;border-radius:8px;font-size:13px;font-weight:600;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+                        toast.innerHTML = '<i class="fas fa-bell"></i>&nbsp; ' + json.remindersSet + ' reminder' + (json.remindersSet > 1 ? 's' : '') + ' set — 24h before, 1h before and at start';
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 4000);
+                    }
+                } else {
+                    btn.disabled = false;
+                    btn.innerHTML = original;
+                    alert(json.error || 'Failed to set reminder');
+                }
+            } catch(e) {
+                btn.disabled = false;
+                btn.innerHTML = original;
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // ── Boot
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply dark mode immediately from localStorage
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+            checkAmlLoginStatus();
+            const p = new URLSearchParams(window.location.search).get('status');
+            if (p) { const t = document.querySelector(`.stab[data-filter="${p}"]`); if (t) t.click(); }
+        });
+    </script>
+
+</body>
+</html>

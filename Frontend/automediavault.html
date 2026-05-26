@@ -84,6 +84,27 @@
      No overrides needed — vault plays by the same rules as other pages. */
 }
 
+/* Define rail width variable (icon rail base width). Matches AMC/radar/live. */
+:root {
+  --amc-rail-w: 72px;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   ICON RAIL OFFSET — make room for the rail at desktop widths.
+   These rules mirror AMC's late shell-injected rules exactly so
+   the page title doesn't bleed under the rail.
+   ────────────────────────────────────────────────────────────── */
+@media (min-width: 1100px) {
+  .mobile-main {
+    padding-left: calc(32px + var(--amc-rail-w)) !important;
+  }
+}
+@media (min-width: 1366px) {
+  .mobile-main {
+    padding-left: calc(40px + var(--amc-rail-w)) !important;
+  }
+}
+
 /* Icon rail background needs to respect vault's dark palette */
 body.dark-mode .amc-icon-rail {
   background: #0d1628;
@@ -300,17 +321,17 @@ body.dark-mode .vsb-nav li.active a { background: rgba(37,99,235,0.15); }
 .amc-page-title,
 #main-content-title {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 42px !important;
+  font-size: clamp(26px, 3.9vw, 42px) !important;
   font-weight: 800 !important;
   letter-spacing: -0.04em !important;
   line-height: 1.05 !important;
   margin: 0 0 8px 0 !important;
 }
 body:not(.dark-mode) .amc-page-title { color: #0f172a !important; }
-body.dark-mode .amc-page-title { color: #f8fafc !important; }
+body.dark-mode .amc-page-title { color: #f1f5f9 !important; }
 
 .amc-page-subtitle {
-  font-size: 16px !important;
+  font-size: clamp(13px, 1.9vw, 16px) !important;
   font-weight: 300 !important;
   line-height: 1.55 !important;
   letter-spacing: 0 !important;
@@ -318,10 +339,63 @@ body.dark-mode .amc-page-title { color: #f8fafc !important; }
   padding: 0 !important;
   border-bottom: none !important;
 }
-body:not(.dark-mode) .amc-page-subtitle { color: #6b7280 !important; }
-body.dark-mode .amc-page-subtitle { color: #64748b !important; }
+body:not(.dark-mode) .amc-page-subtitle { color: #64748b !important; }
+body.dark-mode .amc-page-subtitle { color: #94a3b8 !important; }
 
-.amc-page-header { padding: 24px 0 16px 0; }
+.amc-page-header {
+  padding: 24px 0 16px 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.amc-page-header-left { flex: 1; min-width: 0; }
+
+/* ── Sent/Received toggle ── */
+.vault-view-toggle {
+  display: none;
+  align-items: center;
+  background: var(--v-bg-raised);
+  border: 1px solid var(--v-border);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
+  flex-shrink: 0;
+  margin-bottom: 18px; /* aligns with subtitle baseline */
+}
+body.dark-mode .vault-view-toggle {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.1);
+}
+.vault-view-toggle.visible { display: flex; }
+.vvt-btn {
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--v-text-2);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  font-family: var(--font);
+}
+.vvt-btn:hover { color: var(--v-text-1); }
+.vvt-btn.active {
+  background: var(--v-blue);
+  color: #ffffff;
+  font-weight: 600;
+}
+body.dark-mode .vvt-btn { color: #94a3b8; }
+body.dark-mode .vvt-btn:hover { color: #e2e8f0; }
+body.dark-mode .vvt-btn.active { background: var(--v-blue); color: #fff; }
+
+@media (max-width: 700px) {
+  .amc-page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .vault-view-toggle { align-self: flex-start; }
+}
 
 /* ── Vault main page wrapper — matches alert-detail content padding ── */
 .vmain > .amc-page {
@@ -331,7 +405,114 @@ body.dark-mode .amc-page-subtitle { color: #64748b !important; }
 }
 @media (max-width: 1199px) { .vmain > .amc-page { padding: 1.75rem 1.5rem 1.75rem 0.5rem; } }
 @media (max-width: 960px)  { .vmain > .amc-page { padding: 1.5rem 1.25rem 1.5rem 0.75rem; } }
-@media (max-width: 700px)  { .vmain > .amc-page { padding: 1.25rem 1rem; } }
+@media (max-width: 700px)  { .vmain > .amc-page { padding: 16px 1rem 1.25rem 1rem; } }
+
+/* Mobile: zero out amc-page-header top padding so title sits where it does on AMC mobile.
+   Base rule has padding: 24px 0 16px 0 which compounds with .amc-page padding-top.
+   On mobile we want the title at ~16px from .mobile-main top, matching AMC. */
+@media (max-width: 1099px) {
+  .amc-page-header {
+    padding-top: 0 !important;
+  }
+}
+
+/* At laptop+ widths the icon rail provides the left offset (via .mobile-main padding-left).
+   Drop the max-width, centering, AND inner padding so .amc-page is a transparent passthrough.
+   .mobile-main already provides padding-right (20px laptop / 40px desktop) — duplicating it
+   here would shrink the grid relative to AMC. */
+@media (min-width: 1100px) {
+  .vmain > .amc-page {
+    max-width: none !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+/* ============================================================
+   LAPTOP BREAKPOINT (1100–1599) — matches AMC/radar/live
+   Title 42→26, subtitle 16→13, top padding 32→18.
+   ============================================================ */
+@media (min-width: 1100px) and (max-width: 1599px) {
+  /* Header: 56px → 50px, logo 18px → 16px (matches all 4 pages) */
+  .mobile-header { height: 50px !important; padding: 0 14px !important; }
+  .mobile-logo { font-size: 18px !important; font-weight: 700 !important; letter-spacing: -0.01em !important; }
+  .mobile-hamburger, .header-icon-btn, .amc-avatar { width: 38px !important; height: 38px !important; }
+  .mobile-hamburger { font-size: 17px !important; }
+  .header-icon-btn  { font-size: 17px !important; }
+  .amc-avatar i     { font-size: 22px !important; }
+  .header-right     { gap: 8px !important; }
+  .header-icon-btn .badge { top: 2px !important; right: 2px !important; font-size: 10px !important; padding: 2px 5px !important; min-width: 16px !important; }
+
+  /* Icon rail: 72px → 52px, top aligned with 50px header */
+  .amc-icon-rail { width: 52px !important; top: 50px !important; height: calc(100vh - 50px) !important; }
+  .amc-icon-rail-inner { padding: 6px 0 !important; gap: 4px !important; }
+  .amc-rail-open { width: 34px !important; height: 34px !important; border-radius: 8px !important; font-size: 13px !important; }
+  .amc-rail-item { width: 36px !important; height: 36px !important; border-radius: 8px !important; }
+  .amc-rail-item i { font-size: 14px !important; }
+
+  /* Match AMC's pattern exactly — .mobile-main is position:fixed under the shell header.
+     Without this rule, vault sits in flow inside .vault-page-wrap and gets pushed down
+     by the full header stack height instead of slotting under it. */
+  main.vmain.mobile-main {
+    position: fixed !important;
+    top: 50px !important;
+    height: calc(100vh - 50px) !important;
+    overflow-y: auto !important;
+    width: 100% !important;
+    padding-top: 18px !important;
+  }
+  .amc-page-title,
+  #main-content-title {
+    font-size: 30px !important;
+    letter-spacing: -0.025em !important;
+    line-height: 1.15 !important;
+    margin-bottom: 4px !important;
+  }
+  .amc-page-subtitle {
+    font-size: 14px !important;
+    margin-bottom: 12px !important;
+  }
+  .amc-page-header {
+    padding: 0 0 12px 0 !important;
+  }
+  .vmain > .amc-page {
+    padding-top: 0 !important;
+    padding-bottom: 32px !important;
+  }
+  .vault-view-toggle {
+    margin-bottom: 8px !important;
+  }
+}
+
+/* ============================================================
+   DESKTOP (1600px+) — full sizes restored, matches AMC/radar/live
+   ============================================================ */
+@media (min-width: 1600px) {
+  main.vmain.mobile-main {
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+  }
+  .amc-page-title,
+  #main-content-title {
+    font-size: 42px !important;
+    letter-spacing: -0.04em !important;
+    line-height: 1.05 !important;
+    margin-bottom: 8px !important;
+  }
+  .amc-page-subtitle {
+    font-size: 16px !important;
+    margin-bottom: 16px !important;
+  }
+  .amc-page-header {
+    padding: 0 0 16px 0 !important;
+  }
+  .vmain > .amc-page {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-right: 0 !important;  /* .mobile-main already supplies 40px right padding at PC */
+  }
+}
 
 /* ============================================================
    SECURITY STATUS BAR
@@ -452,11 +633,24 @@ body.dark-mode .btn-muted { background: rgba(124,58,237,0.14); }
 /* ============================================================
    VAULT GRID
    ============================================================ */
+/* ============================================================
+   VAULT GRID — matches AMC/radar/live breakpoint structure
+   Mobile (<640px):  1 col
+   Tablet  (640–1099): 2 col
+   Laptop  (1100–1599): 4 col
+   Desktop (1600+):    5 col
+   Card widths now identical to AMC at every breakpoint.
+   ============================================================ */
 .vault-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 18px; margin-bottom: 40px;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 40px;
+  min-height: 100px; /* Reserve space so the page doesn't jump as JS replaces the grid contents */
 }
+@media (min-width: 640px)  { .vault-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
+@media (min-width: 1100px) and (max-width: 1599px) { .vault-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 12px !important; } }
+@media (min-width: 1600px) { .vault-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 24px !important; max-width: 1760px !important; } }
 
 .vault-card {
   background: var(--v-bg-surface);
@@ -1582,8 +1776,18 @@ body.dark-mode .vault-exp-icon {
     <div class="page-vault" id="pageVault">
 
       <header class="amc-page-header">
-        <h1 class="amc-page-title">Media Vaults</h1>
-        <p class="amc-page-subtitle">Secured media content. Cryptographically verified access. Password-protected downloads.</p>
+        <div class="amc-page-header-left">
+          <h1 class="amc-page-title">Media Vaults</h1>
+          <p class="amc-page-subtitle">Secured media content. Cryptographically verified access. Password-protected downloads.</p>
+        </div>
+        <div class="vault-view-toggle" id="vaultViewToggle">
+          <button class="vvt-btn active" id="vvtReceived" onclick="switchVaultView('received')">
+            <i class="fas fa-inbox" style="margin-right:5px;font-size:11px;"></i>Received
+          </button>
+          <button class="vvt-btn" id="vvtSent" onclick="switchVaultView('sent')">
+            <i class="fas fa-paper-plane" style="margin-right:5px;font-size:11px;"></i>Sent
+          </button>
+        </div>
       </header>
 
       <!-- Security status bar -->
@@ -1620,139 +1824,6 @@ body.dark-mode .vault-exp-icon {
 
       <!-- Vault Grid -->
       <div class="vault-grid" id="vaultGrid">
-
-        <!-- STATE A: NDA Required -->
-        <div class="vault-card" data-state="nda" data-vid="1" onclick="openNdaModal(this)">
-          <div class="cv">
-            <span class="cv-brand">BMW Group</span>
-            <span class="cv-chip chip-nda"><i class="fas fa-file-contract" style="margin-right:4px;"></i>NDA Required</span>
-            <div class="cv-placeholder">
-              <i class="fas fa-lock lock-ico lock-nda" id="lock-1"></i>
-            </div>
-          </div>
-          <div class="vault-brand-band">BMW Group</div>
-          <div class="cb">
-            <div class="cb-title">Concept ZM Global Reveal — Complete Press Kit</div>
-            <div class="cb-embargo"><i class="fas fa-exclamation-triangle"></i> Embargo: 14:00 CEST · 10 April 2025</div>
-            <div class="cb-meta">
-              <div class="cb-meta-i has"><i class="fas fa-images"></i> 47</div>
-              <div class="cb-meta-i has"><i class="fas fa-film"></i> 3</div>
-              <div class="cb-meta-i has"><i class="fas fa-file-pdf"></i> 2</div>
-            </div>
-            <div class="cb-divider"></div>
-            <div class="cb-status-block">
-              <div class="cb-status s-nda">
-                <span class="cb-status-dot dot-nda"></span> NDA signature required
-              </div>
-              <div class="cb-status-sub">Sign to receive vault password by email or SMS</div>
-            </div>
-            <div class="cb-cta-wrap">
-              <button class="btn btn-amber btn-full" onclick="event.stopPropagation(); openNdaModal(this.closest('.vault-card'))">
-                <i class="fas fa-pen-alt"></i> Sign NDA to Access
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- STATE B: NDA Signed, Password Required -->
-        <div class="vault-card" data-state="ready" data-vid="2" onclick="openPwdModal(this)">
-          <div class="cv">
-            <span class="cv-brand">Mercedes-Benz</span>
-            <span class="cv-chip chip-ready"><i class="fas fa-key" style="margin-right:4px;"></i>Password Required</span>
-            <div class="cv-placeholder">
-              <i class="fas fa-lock lock-ico lock-ready" id="lock-2"></i>
-            </div>
-          </div>
-          <div class="vault-brand-band">Mercedes-Benz</div>
-          <div class="cb">
-            <div class="cb-title">EQS SUV 2026 Facelift — Pre-Release Photography &amp; Specs</div>
-            <div class="cb-embargo"><i class="fas fa-exclamation-triangle"></i> Embargo: 08:00 CET · 11 April 2025</div>
-            <div class="cb-meta">
-              <div class="cb-meta-i has"><i class="fas fa-images"></i> 62</div>
-              <div class="cb-meta-i has"><i class="fas fa-film"></i> 1</div>
-              <div class="cb-meta-i has"><i class="fas fa-file-pdf"></i> 4</div>
-            </div>
-            <div class="cb-divider"></div>
-            <div class="cb-status-block">
-              <div class="cb-status s-blue">
-                <span class="cb-status-dot dot-ready"></span> NDA signed · 3 April 2025
-              </div>
-              <div class="cb-status-sub">Password issued — check your email</div>
-            </div>
-            <div class="cb-cta-wrap">
-              <button class="btn btn-blue btn-full" onclick="event.stopPropagation(); openPwdModal(this.closest('.vault-card'))">
-                <i class="fas fa-key"></i> Enter Password to Access
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- STATE C: Full Access -->
-        <div class="vault-card" data-state="open" data-vid="3" onclick="openAssetPageWithHistory()">
-          <div class="cv">
-            <span class="cv-brand">Audi</span>
-            <span class="cv-chip chip-open"><i class="fas fa-check-circle" style="margin-right:4px;"></i>Access Granted</span>
-            <div class="cv-placeholder" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-              <i class="fas fa-lock-open lock-ico lock-open" id="lock-3"></i>
-            </div>
-          </div>
-          <div class="vault-brand-band">Audi</div>
-          <div class="cb">
-            <div class="cb-title">E-tron GT Facelift — First Official Photos &amp; Spec Sheet</div>
-            <div class="cb-embargo"><i class="fas fa-exclamation-triangle"></i> Embargo: 10:00 CET · 15 April 2025</div>
-            <div class="cb-meta">
-              <div class="cb-meta-i has"><i class="fas fa-images"></i> 31</div>
-              <div class="cb-meta-i has"><i class="fas fa-film"></i> 2</div>
-              <div class="cb-meta-i has"><i class="fas fa-file-pdf"></i> 3</div>
-            </div>
-            <div class="cb-divider"></div>
-            <div class="cb-status-block">
-              <div class="cb-status s-ok">
-                <span class="cb-status-dot dot-open"></span> NDA signed · Access granted
-              </div>
-              <div class="cb-status-sub">Last accessed 6 April 2025</div>
-            </div>
-            <div class="cb-cta-wrap">
-              <button class="btn btn-green btn-full" onclick="event.stopPropagation(); openAssetPageWithHistory()">
-                <i class="fas fa-folder-open"></i> View Assets
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- STATE D: Access Pending -->
-        <div class="vault-card" data-state="pending" data-vid="4">
-          <div class="cv">
-            <span class="cv-brand">Volkswagen</span>
-            <span class="cv-chip chip-wait"><i class="fas fa-clock" style="margin-right:4px;"></i>Not Yet Open</span>
-            <div class="cv-placeholder">
-              <i class="fas fa-lock lock-ico lock-wait" id="lock-4"></i>
-            </div>
-          </div>
-          <div class="vault-brand-band">Volkswagen</div>
-          <div class="cb">
-            <div class="cb-title">ID. Software 4.0 — Technical Briefing &amp; Imagery</div>
-            <div class="cb-embargo"><i class="fas fa-exclamation-triangle"></i> Embargo: 12:00 CET · 20 April 2025</div>
-            <div class="cb-meta">
-              <div class="cb-meta-i has"><i class="fas fa-images"></i> 18</div>
-              <div class="cb-meta-i has"><i class="fas fa-film"></i> 1</div>
-              <div class="cb-meta-i has"><i class="fas fa-file-pdf"></i> 6</div>
-            </div>
-            <div class="cb-divider"></div>
-            <div class="cb-status-block">
-              <div class="cb-status s-muted">
-                <span class="cb-status-dot dot-pending"></span> NDA signed · 5 April 2025
-              </div>
-              <div class="cb-status-sub">Vault opens 20 April 2025 · 14:00 CEST</div>
-            </div>
-            <div class="cb-cta-wrap">
-              <button class="btn btn-muted btn-full" disabled>
-                <i class="fas fa-clock"></i> Access Pending
-              </button>
-            </div>
-          </div>
-        </div>
-
       </div><!-- /vault-grid -->
 
       <!-- ── How AutoMediaVault Works ── -->
@@ -2284,8 +2355,20 @@ function buildVaultCard(v) {
     </div>`;
 }
 
+// ── Current view state ───────────────────────────────────────
+let _currentVaultView = 'received'; // default
+
+// ── Switch toggle view ────────────────────────────────────────
+function switchVaultView(view) {
+  _currentVaultView = view;
+  document.getElementById('vvtReceived')?.classList.toggle('active', view === 'received');
+  document.getElementById('vvtSent')?.classList.toggle('active', view === 'sent');
+  loadVaults(view);
+}
+
 // ── Load vaults from API and render grid ─────────────────────
-async function loadVaults() {
+async function loadVaults(view) {
+  view = view || _currentVaultView || 'received';
   // Self-heal: clear poisoned "undefined" token so user gets proper 401 message
   const _storedToken = localStorage.getItem('token');
   if (_storedToken === 'undefined' || _storedToken === 'null') {
@@ -2297,20 +2380,24 @@ async function loadVaults() {
 
   grid.innerHTML = `
     <div style="grid-column:1/-1;padding:48px 0;text-align:center;color:var(--v-text-3);font-size:13px;">
-      <i class="fas fa-circle-notch fa-spin" style="margin-right:8px;"></i>Loading vaults…
+      <i class="fas fa-circle-notch fa-spin" style="margin-right:8px;"></i>Loading ${view === 'sent' ? 'sent' : ''} vaults…
     </div>`;
 
   try {
-    const res  = await fetch(`${API_BASE}/api/v1/vault/my-vaults`, { headers: vaultAuthHeaders() });
+    const url = `${API_BASE}/api/v1/vault/my-vaults?view=${view}`;
+    const res  = await fetch(url, { headers: vaultAuthHeaders() });
     const json = await res.json();
 
     if (!res.ok || !json.success) throw new Error(json.error || 'Failed to load vaults');
 
     if (!json.data.length) {
+      const emptyMsg = view === 'sent'
+        ? 'No vaults sent yet. <a href="AssetDBmenu1.6.html?formType=vault" style="color:var(--v-blue);text-decoration:none;font-weight:500;">Create your first vault →</a>'
+        : 'No vaults assigned to you yet.';
       grid.innerHTML = `
         <div style="grid-column:1/-1;padding:64px 0;text-align:center;color:var(--v-text-3);font-size:13px;">
-          <i class="fas fa-lock" style="font-size:36px;margin-bottom:14px;display:block;opacity:0.2;"></i>
-          No vaults available yet.
+          <i class="fas fa-${view === 'sent' ? 'paper-plane' : 'lock'}" style="font-size:36px;margin-bottom:14px;display:block;opacity:0.2;"></i>
+          ${emptyMsg}
         </div>`;
       updateSecBarVaultCount();
       return;
@@ -2337,7 +2424,19 @@ async function loadVaults() {
 }
 
 // Boot on DOM ready
-document.addEventListener('DOMContentLoaded', loadVaults);
+document.addEventListener('DOMContentLoaded', () => {
+  // Show toggle for client_admin and platform_admin
+  try {
+    const raw = localStorage.getItem('user') || localStorage.getItem('currentUser') || localStorage.getItem('amcUser');
+    const user = raw ? JSON.parse(raw) : null;
+    const role = user?.role || '';
+    if (role === 'client_admin' || role === 'platform_admin') {
+      const toggle = document.getElementById('vaultViewToggle');
+      if (toggle) toggle.classList.add('visible');
+    }
+  } catch(e) {}
+  loadVaults('received');
+});
 
 // ── Populate security bar from stored user data ────────────
 function populateSecBar() {

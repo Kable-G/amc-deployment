@@ -40,7 +40,7 @@ html, body {
     color: var(--text-primary);
     background: var(--bg-primary);
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    overflow-x: clip;
     transition: background 0.3s ease, color 0.3s ease;
 }
 
@@ -1580,4 +1580,17 @@ body.dark-mode .amc-rail-items::-webkit-scrollbar-thumb:hover{
     .amc-icon-rail {
         animation: slideInLeft 0.3s ease;
     }
+}
+/* ── Fix: mobile header stays visible when scrolling ── */
+@media (max-width: 1099px) {
+  .mobile-header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+  }
+  .mobile-main {
+    padding-top: 56px !important;
+  }
 }

@@ -38,7 +38,7 @@
         .amc-page-title,
         #main-content-title {
             font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif !important;
-            font-size: 42px !important;
+            font-size: clamp(26px, 3.9vw, 42px) !important;
             font-weight: 800 !important;
             letter-spacing: -0.04em !important;
             line-height: 1.05 !important;
@@ -49,7 +49,7 @@
 
         /* Page subtitle */
         .amc-page-subtitle {
-            font-size: 16px !important;
+            font-size: clamp(13px, 1.9vw, 16px) !important;
             font-weight: 300 !important;
             line-height: 1.55 !important;
             letter-spacing: 0 !important;
@@ -64,12 +64,13 @@
            COLOR TOKENS
            ============================================================ */
         :root {
-            --bg-primary: #f8fafc;
+            --bg-primary: #f3f4f6;
             --bg-secondary: #ffffff;
-            --text-primary: #374151;
-            --text-secondary: #6b7280;
+            --bg-tertiary: #f9fafb;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
             --text-headings: #0f172a;
-            --border-primary: #e5e7eb;
+            --border-primary: #e2e8f0;
             --accent-primary: #3b82f6;
             --accent-primary-hover: #2563eb;
             --accent-primary-rgb: 59, 130, 246;
@@ -81,16 +82,16 @@
             --shadow-hover: rgba(0,0,0,0.15);
         }
         body.dark-mode {
-            --bg-primary: #121212;
-            --bg-secondary: #1a1c1e;
-            --bg-tertiary: #2a2d30;
-            --text-primary: #e0e0e0;
-            --text-secondary: #adb5bd;
-            --text-headings: #f8f9fa;
-            --border-primary: #3a3a3a;
-            --accent-primary: #3f91ff;
-            --accent-primary-hover: #5fa0ff;
-            --accent-primary-rgb: 63, 145, 255;
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a1f2e;
+            --bg-tertiary: #161b26;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-headings: #f1f5f9;
+            --border-primary: #2d3748;
+            --accent-primary: #3b82f6;
+            --accent-primary-hover: #2563eb;
+            --accent-primary-rgb: 59, 130, 246;
             --color-warning: #ffd04a;
             --color-info: #36c4d9;
             --tag-bg: #4a4a4a;
@@ -107,6 +108,9 @@
         .amc-page {
             max-width: none;
             margin-inline: 0;
+        }
+        @media (max-width: 700px) {
+            .amc-page { padding-top: 16px; }
         }
 
         /* ============================================================
@@ -164,6 +168,13 @@
         .btn-sm { padding: 5px 10px; font-size: 13px; }
         .btn-icon { padding: 7px 10px; }
 
+
+/* Mobile: zero out amc-page-header top padding to match Vaults/AMC positioning */
+@media (max-width: 1099px) {
+  .amc-page-header {
+    padding-top: 0 !important;
+  }
+}
 </style>
 
     <style id="radar-specific">
@@ -172,8 +183,8 @@
 
         .radar-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
+            grid-template-columns: 1fr;
+            gap: 16px;
             margin-bottom: 30px;
         }
 
@@ -190,16 +201,16 @@
         }
 
         .radar-card:hover {
-            box-shadow: 0 12px 28px rgba(var(--accent-primary-rgb, 13, 110, 253), 0.15);
-            transform: translateY(-4px);
-            border-color: rgba(var(--accent-primary-rgb, 13, 110, 253), 0.3);
+            transform: translateY(-2px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 4px 12px rgba(37,99,235,0.12);
         }
 
         /* Card Image Area with Hover Overlay */
         .card-image-area {
             position: relative;
             width: 100%;
-            height: 180px;
+            height: 200px;
             background-color: var(--bg-image-placeholder);
             background-size: cover;
             background-position: center;
@@ -301,44 +312,53 @@
 
         /* Brand band - Match AutoMediaCenter styling exactly */
         .brand-band {
-            padding: 8px 15px;
-            font-size: 0.9em;
+            padding: 6px 12px;
+            font-size: 11px;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             text-align: left;
-            background-color: var(--brand-band-light-bg);
-            color: var(--brand-band-light-text);
-            border-bottom: 1px solid var(--border-primary);
+            background: #2a2a2a;
+            color: #ffffff;
+            border-bottom: none;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         
         body.dark-mode .brand-band {
-            background-color: var(--brand-band-dark-bg);
-            color: var(--brand-band-dark-text);
-            border-bottom-color: var(--border-secondary);
+            background: #2a2a2a;
+            color: #ffffff;
+            border-bottom: none;
+        }
+
+        body:not(.dark-mode) .brand-band {
+            background: #1e293b;
+            color: #ffffff;
+            border-bottom: none;
         }
 
         /* Card Content */
         .card-content-area {
-            padding: 15px;
+            padding: 16px 14px 14px 14px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            background: var(--bg-tertiary);
         }
 
         .card-content-area h3 {
-            font-size: 1.1em;
+            font-size: 15px;
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: var(--text-headings);
-            line-height: 1.45;
+            line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
-            min-height: calc(1.45em * 3);
+            min-height: calc(15px * 1.4 * 3);
             transition: color 0.2s ease;
         }
 
@@ -369,21 +389,26 @@
             align-items: flex-end;
             margin-top: auto;
             padding-top: 12px;
-            border-top: 1px solid var(--border-secondary);
+            border-top: 1px solid var(--border-primary);
+            min-height: 52px;
         }
 
         .drop-time {
-            font-size: 0.8em;
-            color: var(--text-secondary);
+            font-size: 12px;
+            color: #6b7280;  /* Light mode: radar-original neutral gray for date/time emphasis */
             text-align: right;
             line-height: 1.35;
             flex-shrink: 0;
         }
 
+        body.dark-mode .drop-time {
+            color: #adb5bd;  /* Dark mode: radar-original brighter gray for date/time emphasis */
+        }
+
         .drop-time i {
             margin-right: 5px;
-            opacity: 0.7;
-            color: var(--icon-available);
+            opacity: 0.9;
+            color: var(--accent-primary);
         }
 
         .drop-time .date-line {
@@ -398,7 +423,7 @@
         .countdown-badge {
             padding: 4px 8px;
             border-radius: 12px;
-            font-size: 0.75em;
+            font-size: 12px;
             font-weight: 600;
             text-align: center;
             white-space: nowrap;
@@ -482,7 +507,8 @@
          /* Responsive Design for New Radar Cards */
          @media (max-width: 992px) {
              .main-content { padding: 20px; }
-             .radar-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+             /* Tablet: 2 columns matching AMC tablet portrait */
+             .radar-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
          }
          
          @media (max-width: 768px) {
@@ -496,7 +522,7 @@
              }
              
              .card-image-area {
-                 height: 160px;
+                 height: 200px;
              }
              
              .card-image-hover-overlay .btn {
@@ -506,11 +532,11 @@
              }
              
              .card-content-area {
-                 padding: 12px;
+                 padding: 14px;
              }
              
              .card-content-area h3 {
-                 font-size: 1em;
+                 font-size: 15px;
                  margin-bottom: 12px;
              }
              
@@ -522,13 +548,13 @@
              }
              
              .countdown-badge {
-                 font-size: 0.7em;
+                 font-size: 12px;
                  padding: 3px 6px;
                  align-self: auto;
              }
              
              .drop-time {
-                 font-size: 0.75em;
+                 font-size: 12px;
                  align-self: auto;
                  text-align: right;
              }
@@ -536,6 +562,7 @@
          
          @media (max-width: 550px) {
              .main-content { padding: 15px;}
+             /* Mobile: 1 column matching AMC mobile */
              .radar-grid {
                  grid-template-columns: 1fr;
                  gap: 16px;
@@ -555,7 +582,7 @@
                  font-size: 0.85em;
              }
              
-             .card-content-area { padding: 10px; }
+             .card-content-area { padding: 14px; }
 
              /* Keep badge left, date right — no stacking */
              .card-bottom-meta {
@@ -819,18 +846,103 @@
 
         /* Dark mode loading overlay */
         body.dark-mode .loading-overlay {
-            background: linear-gradient(135deg, #121212 0%, #1a1c1e 100%);
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
         }
 
         body.dark-mode .loading-title {
-            color: #f8f9fa;
+            color: #f1f5f9;
         }
 
         body.dark-mode .loading-subtitle,
         body.dark-mode .loading-status {
-            color: #adb5bd;
+            color: #94a3b8;
         }
-        
+
+        /* ===== ENTERPRISE FOOTER (unified — matches vault spec) ===== */
+        .amc-footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-primary);
+            border-left: none !important;
+            border-right: none !important;
+            border-bottom: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            margin-top: 60px;
+            padding: 48px 0 0 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .mobile-main .amc-footer {
+            border: none !important;
+            border-top: 1px solid var(--border-primary) !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .footer-content {
+            padding: 40px 0 40px 2.5rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+        }
+        @media (max-width: 960px) { .footer-content { grid-template-columns: repeat(2,1fr); gap: 24px; padding-left: 2rem; } }
+        @media (max-width: 700px) { .footer-content { grid-template-columns: 1fr; gap: 20px; padding-left: 1.25rem; } }
+        .footer-column { min-width: 0; }
+        .footer-heading {
+            font-size: 13px; font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 14px 0; letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+        .footer-brand-name {
+            font-size: 18px; font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0 0 6px 0; display: block;
+        }
+        .footer-tagline {
+            font-size: 13px; color: var(--accent-primary);
+            font-style: italic; margin: 6px 0 0 0; opacity: 0.9;
+        }
+        .footer-links { list-style: none; margin: 0; padding: 0; }
+        .footer-links li { margin-bottom: 10px; }
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none; font-size: 13px; font-weight: 500;
+            font-family: 'Inter', -apple-system, sans-serif;
+            transition: color 0.2s ease; display: inline-block;
+            letter-spacing: 0;
+        }
+        .footer-links a:hover { color: var(--accent-primary); }
+        .footer-bottom {
+            border-top: 1px solid var(--border-primary);
+            background: var(--bg-primary);
+        }
+        .footer-bottom-content {
+            padding: 20px 0 20px 2.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        @media (max-width: 960px) { .footer-bottom-content { padding-left: 2rem; } }
+        @media (max-width: 700px) { .footer-bottom-content { padding-left: 1.25rem; flex-direction: column; gap: 12px; text-align: center; } }
+        .footer-copyright {
+            font-size: 12px; font-weight: 400;
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-secondary); margin: 0;
+            letter-spacing: 0;
+        }
+        .footer-social { display: flex; gap: 16px; }
+        .footer-social a {
+            color: var(--text-secondary);
+            font-size: 18px; transition: color 0.2s ease; text-decoration: none;
+        }
+        .footer-social a:hover { color: var(--accent-primary); }
+        @media (max-width: 1024px) { .footer-content { grid-template-columns: repeat(2, 1fr); gap: 32px; } }
+        @media (max-width: 640px) {
+            .amc-footer { margin-top: 40px; padding: 32px 0 0 0; }
+            .footer-content { grid-template-columns: 1fr; gap: 32px; padding: 0 20px 32px 20px; }
+            .footer-bottom-content { flex-direction: column; gap: 16px; text-align: center; padding: 16px 20px; }
+        }
 
     </style>
 </head>
@@ -891,6 +1003,58 @@
             <div class="pagination"></div>
 
         </div>
+
+        <!-- ═══════════════════════════════════════════════════
+             ENTERPRISE FOOTER — unified across all pages
+        ═══════════════════════════════════════════════════ -->
+        <footer class="amc-footer">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <span class="footer-brand-name">AutoMediaCenter</span>
+                    <p class="footer-tagline">Where Automotive Stories Begin</p>
+                </div>
+                <div class="footer-column">
+                    <h4 class="footer-heading">Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="/features">Features</a></li>
+                        <li><a href="/pricing">Pricing</a></li>
+                        <li><a href="/api-docs">API Documentation</a></li>
+                        <li><a href="https://status.automediacenter.com" target="_blank">System Status</a></li>
+                        <li><a href="/changelog">Changelog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4 class="footer-heading">Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="/help">Help Center</a></li>
+                        <li><a href="/security">Security</a></li>
+                        <li><a href="/careers">Careers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4 class="footer-heading">Legal &amp; Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                        <li><a href="/cookies">Cookie Policy</a></li>
+                        <li><a href="/dpa">Data Processing Agreement</a></li>
+                        <li><a href="/accessibility">Accessibility</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p class="footer-copyright">© 2026 AutoMediaCenter. All rights reserved.</p>
+                    <div class="footer-social">
+                        <a href="https://twitter.com/automediacenter" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://linkedin.com/company/automediacenter" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://github.com/automediacenter" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </main>
 
 
@@ -1877,6 +2041,109 @@
         }
         @media (min-width: 1366px) {
             .mobile-main { padding-left: calc(40px + var(--amc-rail-w)) !important; }
+        }
+
+        /* ═══════════════════════════════════════════════════════════
+           LAPTOP BREAKPOINT — 1100px to 1599px
+           Matches automediacenter laptop treatment exactly.
+           ═══════════════════════════════════════════════════════════ */
+        @media (min-width: 1100px) and (max-width: 1599px) {
+
+            /* ── Header: 56px → 44px ── */
+            .mobile-header { height: 50px !important; padding: 0 14px !important; }
+            .mobile-logo { font-size: 18px !important; font-weight: 700 !important; letter-spacing: -0.01em !important; }
+            .mobile-hamburger, .header-icon-btn, .amc-avatar { width: 38px !important; height: 38px !important; }
+            .mobile-hamburger { font-size: 17px !important; }
+            .header-icon-btn  { font-size: 17px !important; }
+            .amc-avatar i     { font-size: 22px !important; }
+            .header-right     { gap: 8px !important; }
+            .header-icon-btn .badge { top: 2px !important; right: 2px !important; font-size: 10px !important; padding: 2px 5px !important; min-width: 16px !important; }
+
+            /* ── Icon rail: 72px → 52px ── */
+            .amc-icon-rail { width: 52px !important; top: 50px !important; height: calc(100vh - 50px) !important; }
+            .amc-icon-rail-inner { padding: 6px 0 !important; gap: 4px !important; }
+            .amc-rail-open { width: 34px !important; height: 34px !important; border-radius: 8px !important; font-size: 13px !important; }
+            .amc-rail-item { width: 36px !important; height: 36px !important; border-radius: 8px !important; }
+            .amc-rail-item i { font-size: 14px !important; }
+
+            /* ── Content area ── */
+            /* Note: padding-left is governed by the @media (min-width: 1100px) and
+               @media (min-width: 1366px) rules earlier in the cascade — this matches
+               AMC's structure exactly (40px + rail-w = 112px gap at 1366px+). */
+            .mobile-main { top: 50px !important; padding-top: 18px !important; padding-right: 20px !important; padding-bottom: 32px !important; height: calc(100vh - 50px) !important; }
+
+            /* ── Page title ── */
+            .amc-page-title, #main-content-title { font-size: 30px !important; letter-spacing: -0.025em !important; font-variation-settings: 'opsz' 30 !important; line-height: 1.15 !important; margin-bottom: 4px !important; }
+            .amc-page-subtitle { font-size: 14px !important; margin-bottom: 12px !important; }
+
+            /* ── Search bar ── */
+            .search-bar { margin: 0 0 10px 0 !important; }
+            .search-input { height: 36px !important; font-size: 13px !important; }
+
+            /* ── Card grid: 4 columns forced ── */
+            .radar-grid,
+            #radarGridContainer,
+            div.radar-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 12px !important; }
+
+            /* ── Cards: flat border + hover elevation ── */
+            .radar-card { box-shadow: none !important; border: 1px solid var(--border-primary) !important; border-radius: 8px !important; transition: border-color 0.15s ease, transform 0.15s ease !important; }
+            .radar-card:hover { transform: translateY(-2px) !important; border-color: var(--accent-primary) !important; box-shadow: 0 4px 12px rgba(37,99,235,0.12) !important; }
+
+            /* ── Card image: locked 16:9 ── */
+            .card-image-area { height: auto !important; aspect-ratio: 16 / 9 !important; }
+
+            /* ── Brand band: compact ── */
+            .brand-band { padding: 5px 10px !important; font-size: 10px !important; letter-spacing: 0.06em !important; }
+
+            /* ── Card content ── */
+            .card-content-area { padding: 11px 10px 10px 10px !important; }
+            .card-content-area h3 { font-size: 13px !important; line-height: 1.4 !important; margin-bottom: 8px !important; -webkit-line-clamp: 3 !important; min-height: calc(13px * 1.4 * 3) !important; }
+
+            /* ── Bottom meta ── */
+            .card-bottom-meta { padding-top: 7px !important; padding-bottom: 6px !important; border-top: 1px solid var(--border-primary) !important; align-items: flex-end !important; min-height: 48px !important; }
+            .drop-time { font-size: 11px !important; }
+            .countdown-badge { font-size: 11px !important; padding: 3px 7px !important; }
+
+            /* ── Drawer / modals ── */
+            .mobile-drawer  { top: 44px !important; height: calc(100vh - 44px) !important; width: 250px !important; }
+            .avatar-modal   { top: 48px !important; right: 12px !important; width: 265px !important; }
+            .cart-modal     { top: 44px !important; height: calc(100vh - 44px) !important; }
+            .tools-dropdown { top: 48px !important; }
+        }
+
+        /* ═══════════════════════════════════════════════════
+           DESKTOP (1600px+) — full sizes restored
+           ═══════════════════════════════════════════════════ */
+        @media (min-width: 1600px) {
+            .mobile-header   { height: 56px !important; padding: 0 16px !important; }
+            .mobile-logo     { font-size: 18px !important; }
+            .mobile-hamburger, .header-icon-btn, .amc-avatar { width: 40px !important; height: 40px !important; }
+            .mobile-hamburger { font-size: 18px !important; }
+            .header-icon-btn  { font-size: 18px !important; }
+            .amc-avatar i     { font-size: 24px !important; }
+            .header-right     { gap: 12px !important; }
+            .amc-icon-rail    { width: 72px !important; top: 56px !important; height: calc(100vh - 56px) !important; }
+            .amc-icon-rail-inner { padding: 10px 0 !important; gap: 10px !important; }
+            .amc-rail-open    { width: 42px !important; height: 42px !important; }
+            .amc-rail-item    { width: 46px !important; height: 46px !important; }
+            .amc-rail-item i  { font-size: 16px !important; }
+            .mobile-main      { top: 56px !important; height: calc(100vh - 56px) !important; padding: 40px 40px 40px calc(72px + 40px) !important; }
+            /* Grid: 5 columns at full desktop — matches AMC */
+            .radar-grid,
+            #radarGridContainer,
+            div.radar-grid    { grid-template-columns: repeat(5, 1fr) !important; gap: 24px !important; max-width: 1760px !important; }
+            /* Card: restore shadows, full sizes */
+            .radar-card       { box-shadow: 0 3px 7px var(--shadow-primary) !important; }
+            .radar-card:hover { transform: translateY(-4px) !important; }
+            .card-image-area  { aspect-ratio: unset !important; height: 200px !important; }
+            .card-content-area { padding: 14px !important; }
+            .card-content-area h3 { font-size: 18px !important; line-height: 1.4 !important; min-height: calc(18px * 1.4 * 3) !important; }
+            .card-bottom-meta { align-items: flex-end !important; min-height: 52px !important; padding-top: 12px !important; }
+            .drop-time        { font-size: 12px !important; }
+            .countdown-badge  { font-size: 12px !important; }
+            .mobile-drawer    { top: 56px !important; height: calc(100vh - 56px) !important; }
+            .avatar-modal     { top: 60px !important; right: 16px !important; }
+            .cart-modal       { top: 56px !important; height: calc(100vh - 56px) !important; }
         }
     
         /* ===== SEARCH BAR — matches automediacenter-mobile-v6.5.html exactly ===== */

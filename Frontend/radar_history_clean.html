@@ -314,11 +314,16 @@ body.dark-mode .amc-page-subtitle { color: #94a3b8 !important; }
     
     .card-footer {
         padding: 15px 20px;
-        background: var(--bg-tertiary);
-        border-top: 1px solid var(--border-primary);
+        background: #f8fafc;
+        border-top: 1px solid #d1d5db;
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: #6b7280;
     }
+    body.dark-mode .card-footer { background: rgba(255,255,255,0.03); border-top-color: #2d3748; color: #94a3b8; }
     
     .card:last-of-type {
         margin-bottom: 40px;
@@ -724,7 +729,8 @@ body.dark-mode .amc-page-subtitle { color: #94a3b8 !important; }
     body.dark-mode .section-divider{ background:var(--border-secondary) !important; opacity:.3; }
     
     /* ——— Manage Radar Alerts: dark-mode polish for card + table ——— */
-    .manage-radar-alerts .amc-card { border-radius: 10px; }
+    .manage-radar-alerts .amc-card { border-radius: 10px; border: 1px solid #d1d5db; overflow: hidden; }
+    body.dark-mode .manage-radar-alerts .amc-card { background: var(--bg-secondary) !important; border-color: #374151 !important; }
     
     /* Global shell system handles all layout - no overrides needed */
     
@@ -936,21 +942,21 @@ body.dark-mode .manage-radar-alerts .amc-card .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
-  background: rgba(0,0,0,0.04);
-  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 14px;
+  background: #f1f5f9;
+  border-bottom: 1px solid #d1d5db;
 }
 body.dark-mode .radar-table-title-bar {
-  background: rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.06);
   border-bottom-color: #374151;
 }
 .radar-table-title {
   font-family: Inter, system-ui, -apple-system, sans-serif !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
   line-height: 1.2 !important;
-  color: #374151 !important;
-  letter-spacing: 0 !important;
+  color: #1e293b !important;
+  letter-spacing: -0.01em !important;
   text-transform: none !important;
 }
 body.dark-mode .radar-table-title {
@@ -1038,7 +1044,7 @@ body.dark-mode .manage-radar-alerts .table-head-meta span#totalAlerts {
 .manage-radar-alerts .amc-table th,
 .manage-radar-alerts .amc-table td {
   border-bottom: 1px solid #d1d5db;
-  border-right: 1px solid #cbd5e1;
+  border-right: 1px solid #e5e7eb;
   padding: 10px 12px;
 }
 .manage-radar-alerts .amc-table th:last-child,
@@ -1053,14 +1059,17 @@ body.dark-mode .manage-radar-alerts .table-head-meta span#totalAlerts {
   color: #374151 !important;
   text-transform: none !important;
   letter-spacing: 0 !important;
+  background: #f8fafc;
 }
 body.dark-mode .manage-radar-alerts .amc-table thead th {
   color: #e2e8f0 !important;
+  background: rgba(255,255,255,0.04) !important;
+  border-bottom-color: #4b5563 !important;
 }
 body.dark-mode .manage-radar-alerts .amc-table th,
 body.dark-mode .manage-radar-alerts .amc-table td {
-  border-bottom-color: #374151;
-  border-right-color: #2d3748;
+  border-bottom-color: #2d3748;
+  border-right-color: #1e293b;
 }
 body.dark-mode .manage-radar-alerts .amc-table thead th {
   border-bottom-color: #4b5563;
@@ -1088,6 +1097,44 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
 
 /* Mobile card list hidden by default — shown only via @media (max-width:767px) */
 .mobile-alert-list { display: none !important; }
+
+/* ── Sortable column headers ── */
+.manage-radar-alerts .amc-table thead th.sortable { cursor: pointer; user-select: none; position: relative; padding-right: 22px; }
+.manage-radar-alerts .amc-table thead th.sortable:hover { color: #111827 !important; }
+body.dark-mode .manage-radar-alerts .amc-table thead th.sortable:hover { color: #f8fafc !important; }
+.sort-arrow { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 10px; color: #9ca3af; transition: color 0.15s; }
+th.sortable.asc .sort-arrow, th.sortable.desc .sort-arrow { color: #2563eb; }
+body.dark-mode th.sortable.asc .sort-arrow, body.dark-mode th.sortable.desc .sort-arrow { color: #60a5fa; }
+
+/* ── Row left-edge status colour bar ── */
+.manage-radar-alerts .amc-table tbody tr td:first-child { position: relative; }
+.manage-radar-alerts .amc-table tbody tr td:first-child::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+.manage-radar-alerts .amc-table tbody tr[data-status="active"] td:first-child::before    { background: #16a34a; }
+.manage-radar-alerts .amc-table tbody tr[data-status="published"] td:first-child::before { background: #16a34a; }
+.manage-radar-alerts .amc-table tbody tr[data-status="pending"] td:first-child::before   { background: #3b82f6; }
+.manage-radar-alerts .amc-table tbody tr[data-status="draft"] td:first-child::before     { background: #f59e0b; }
+.manage-radar-alerts .amc-table tbody tr[data-status="archived"] td:first-child::before  { background: #9ca3af; }
+
+/* ── Checkbox column ── */
+.manage-radar-alerts .amc-table .cell--check { width: 40px; text-align: center; padding: 10px 6px; }
+.manage-radar-alerts .amc-table .cell--check input[type="checkbox"] { width: 16px; height: 16px; accent-color: #3b82f6; cursor: pointer; margin: 0; -webkit-appearance: auto; appearance: auto; }
+body.dark-mode .manage-radar-alerts .amc-table .cell--check input[type="checkbox"] { accent-color: #60a5fa; }
+
+/* ── Bulk action bar ── */
+.bulk-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 9998; background: #1e293b; color: #f1f5f9; padding: 12px 24px; box-shadow: 0 -4px 16px rgba(0,0,0,0.25); align-items: center; justify-content: space-between; font-size: 13.5px; font-weight: 500; animation: bulkSlideUp 0.2s ease-out; }
+@keyframes bulkSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.bulk-bar.visible { display: flex; }
+.bulk-bar-left { display: flex; align-items: center; gap: 12px; }
+.bulk-bar-right { display: flex; gap: 8px; }
+.bulk-bar .btn { font-size: 13px; padding: 6px 16px; border-radius: 6px; }
+.bulk-bar .btn-cancel-bulk { background: transparent; color: #94a3b8; border: 1px solid #475569; }
+.bulk-bar .btn-cancel-bulk:hover { color: #f1f5f9; border-color: #64748b; }
+
+/* ── Export CSV button ── */
+.btn-export { background: transparent; color: #6b7280; border: 1px solid #d1d5db; font-size: 13px; padding: 0 14px; height: 38px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; transition: all 0.15s; }
+.btn-export:hover { background: #f9fafb; color: #374151; border-color: #9ca3af; }
+body.dark-mode .btn-export { color: #94a3b8; border-color: #475569; }
+body.dark-mode .btn-export:hover { background: rgba(255,255,255,0.04); color: #e2e8f0; border-color: #64748b; }
 
 /* ═══════════════════════════════════════════════════════
    RESPONSIVE — TABLET (768–1024px)
@@ -1124,6 +1171,7 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
 
   /* Page title scales down */
   .amc-page-title { font-size: 28px !important; letter-spacing: -0.03em !important; }
+  .cell--check { display: none !important; }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1324,6 +1372,9 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
     padding: 0 12px !important;
     letter-spacing: -0.01em !important;
   }
+  .cell--check { display: none !important; }
+  .bulk-bar { display: none !important; }
+  .btn-export { display: none; }
 }
 
 /* ── Landscape mobile: single-column wide cards ── */
@@ -1463,6 +1514,7 @@ body.dark-mode .manage-radar-alerts .amc-table tbody tr:hover td {
     .amc-page__tools { padding: 0 14px 6px !important; }
     #searchResultsRow { padding-left: 14px !important; padding-right: 14px !important; }
     .manage-radar-alerts .amc-card { border-radius: 0 !important; box-shadow: none !important; }
+    .cell--check { display: none !important; }
 
     /* Pagination bar */
     .pagination-bar, .pagination-wrap, .card-footer {
@@ -1578,6 +1630,7 @@ body.dark-mode #backToTop {
             </div>
           </div>
           <div class="controls-right">
+            <button class="btn-export" id="exportCsvBtn" title="Export to CSV"><i class="fas fa-download"></i> Export</button>
             <a href="AssetDBmenu1.6.html?formType=radar" class="btn btn-primary" style="white-space:nowrap;">
               <i class="fas fa-plus"></i> New Alert
             </a>
@@ -1607,6 +1660,7 @@ body.dark-mode #backToTop {
           </div>
           <table class="amc-table table-lined releases-table">
             <colgroup>
+              <col class="cell--check" style="width:40px;">
               <col style="width:96px;">
               <col>
               <col style="width:15%;">
@@ -1618,13 +1672,14 @@ body.dark-mode #backToTop {
             </colgroup>
             <thead>
               <tr>
+                <th class="cell--check"><input type="checkbox" id="selectAll" title="Select all"></th>
                 <th class="cell--teaser" style="text-align:left;">Teaser</th>
-                <th style="text-align:left;">Title</th>
-                <th style="text-align:left;">Brand</th>
-                <th style="text-align:center;">Status</th>
-                <th style="text-align:left;">Uploaded By</th>
-                <th style="text-align:left;">Alert Date &amp; Time</th>
-                <th style="text-align:left;">Last Updated</th>
+                <th class="sortable" data-sort="title" style="text-align:left;">Title <span class="sort-arrow">↕</span></th>
+                <th class="sortable" data-sort="brand" style="text-align:left;">Brand <span class="sort-arrow">↕</span></th>
+                <th class="sortable" data-sort="status" style="text-align:center;">Status <span class="sort-arrow">↕</span></th>
+                <th class="sortable" data-sort="uploader" style="text-align:left;">Uploaded By <span class="sort-arrow">↕</span></th>
+                <th class="sortable" data-sort="alertDate" style="text-align:left;">Alert Date &amp; Time <span class="sort-arrow">↕</span></th>
+                <th class="sortable" data-sort="updated" style="text-align:left;">Last Updated <span class="sort-arrow">↕</span></th>
                 <th class="cell--actions" style="text-align:center;">Actions</th>
               </tr>
             </thead>
@@ -1685,6 +1740,8 @@ body.dark-mode #backToTop {
         </div>
     </div>
 
+
+<div class="bulk-bar" id="bulkBar"><div class="bulk-bar-left"><span id="bulkCount">0 selected</span></div><div class="bulk-bar-right"><button class="btn btn-cancel-bulk" id="bulkDeselectBtn">Deselect All</button><button class="btn btn-danger" id="bulkDeleteBtn"><i class="fas fa-trash"></i> Delete Selected</button></div></div>
 
 <div id="kebab-portal" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></div>
 
@@ -1802,7 +1859,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Main Fetch Function ---
     async function fetchRadarAlerts(page = 1, search = '', brand = '', status = '') {
         
-        alertsTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">Loading... <i class="fas fa-spinner fa-spin"></i></td></tr>`;
+        alertsTableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px;">Loading... <i class="fas fa-spinner fa-spin"></i></td></tr>`;
         let queryParams = `?page=${page}&limit=${limitPerPage}&title=${encodeURIComponent(search)}&brand=${encodeURIComponent(brand)}&status=${encodeURIComponent(status)}`;
         const apiUrl = `/api/v1/radar/all-alerts${queryParams}`;
         
@@ -1860,7 +1917,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('🚨 FETCH ERROR:', error);
-            alertsTableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--color-danger); padding:20px;">Error: ${error.message}<br><small>Check browser console for details</small></td></tr>`;
+            alertsTableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--color-danger); padding:20px;">Error: ${error.message}<br><small>Check browser console for details</small></td></tr>`;
         }
     }
 
@@ -1900,7 +1957,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get company name using helper function
             const companyName = getCompanyName(alert);
             
-            const row = `<tr data-id="${alert.uuid}">
+            const row = `<tr data-id="${alert.uuid}" data-status="${statusClass}">
+                <td class="cell--check"><input type="checkbox" class="row-check" data-uuid="${alert.uuid}"></td>
                 <td class="cell--teaser">${teaserHtml}</td>
                 <td class="col-title"><span class="truncate">${alert.title || 'N/A'}</span></td>
                 <td class="col-company"><span class="truncate">${companyName}</span></td>
@@ -2304,6 +2362,92 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         }
     }
+
+    // ── Bulk select ──
+    let selectedUuids = new Set();
+
+    document.getElementById('selectAll').addEventListener('change', e => {
+      const checked = e.target.checked;
+      document.querySelectorAll('.row-check').forEach(cb => { cb.checked = checked; if (checked) selectedUuids.add(cb.dataset.uuid); else selectedUuids.delete(cb.dataset.uuid); });
+      updateBulkBar();
+    });
+    alertsTableBody.addEventListener('change', e => {
+      if (!e.target.classList.contains('row-check')) return;
+      if (e.target.checked) selectedUuids.add(e.target.dataset.uuid); else selectedUuids.delete(e.target.dataset.uuid);
+      document.getElementById('selectAll').checked = document.querySelectorAll('.row-check:checked').length === document.querySelectorAll('.row-check').length;
+      updateBulkBar();
+    });
+    function updateBulkBar() {
+      const bar = document.getElementById('bulkBar');
+      document.getElementById('bulkCount').textContent = `${selectedUuids.size} selected`;
+      bar.classList.toggle('visible', selectedUuids.size > 0);
+    }
+    document.getElementById('bulkDeselectBtn').addEventListener('click', () => {
+      selectedUuids.clear(); document.querySelectorAll('.row-check').forEach(cb => cb.checked = false);
+      document.getElementById('selectAll').checked = false; updateBulkBar();
+    });
+    document.getElementById('bulkDeleteBtn').addEventListener('click', async () => {
+      if (!selectedUuids.size) return;
+      if (!confirm(`Delete ${selectedUuids.size} alert(s)? This cannot be undone.`)) return;
+      for (const uuid of [...selectedUuids]) {
+        try { await fetch(`/api/v1/radar/alerts/${uuid}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); } catch(e) {}
+      }
+      selectedUuids.clear();
+      fetchRadarAlerts(currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value);
+    });
+
+    // ── Column sorting ──
+    let radarSortField = null;
+    let radarSortDir = 'asc';
+
+    document.querySelectorAll('.manage-radar-alerts .amc-table thead th.sortable').forEach(th => {
+      th.addEventListener('click', () => {
+        const field = th.dataset.sort;
+        if (radarSortField === field) { radarSortDir = radarSortDir === 'asc' ? 'desc' : 'asc'; }
+        else { radarSortField = field; radarSortDir = 'asc'; }
+        document.querySelectorAll('.manage-radar-alerts th.sortable').forEach(h => { h.classList.remove('asc','desc'); h.querySelector('.sort-arrow').textContent = '↕'; });
+        th.classList.add(radarSortDir);
+        th.querySelector('.sort-arrow').textContent = radarSortDir === 'asc' ? '↑' : '↓';
+        const rows = Array.from(alertsTableBody.querySelectorAll('tr[data-id]'));
+        rows.sort((a, b) => {
+          let colIdx;
+          if (field === 'title')        colIdx = 2;
+          else if (field === 'brand')       colIdx = 3;
+          else if (field === 'status')      colIdx = 4;
+          else if (field === 'uploader')    colIdx = 5;
+          else if (field === 'alertDate')   colIdx = 6;
+          else if (field === 'updated')     colIdx = 7;
+          else return 0;
+          let va = (a.children[colIdx]?.textContent || '').trim().toLowerCase();
+          let vb = (b.children[colIdx]?.textContent || '').trim().toLowerCase();
+          if (va < vb) return radarSortDir === 'asc' ? -1 : 1;
+          if (va > vb) return radarSortDir === 'asc' ? 1 : -1;
+          return 0;
+        });
+        rows.forEach(r => alertsTableBody.appendChild(r));
+      });
+    });
+
+    // ── Export CSV ──
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+      const rows = [['Title','Brand','Status','Uploaded By','Alert Date','Last Updated']];
+      document.querySelectorAll('#alertsTableBody tr[data-id]').forEach(tr => {
+        const cells = tr.querySelectorAll('td');
+        rows.push([
+          (cells[2]?.textContent || '').trim(),
+          (cells[3]?.textContent || '').trim(),
+          (cells[4]?.textContent || '').trim(),
+          (cells[5]?.textContent || '').trim(),
+          (cells[6]?.textContent || '').trim(),
+          (cells[7]?.textContent || '').trim(),
+        ]);
+      });
+      const csv = rows.map(r => r.map(c => `"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const u = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = u; a.download = `media-alerts-${new Date().toISOString().split('T')[0]}.csv`; a.click();
+      URL.revokeObjectURL(u);
+    });
 
     // --- Initial Load ---
     

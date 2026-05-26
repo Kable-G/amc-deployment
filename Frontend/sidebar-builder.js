@@ -27,7 +27,7 @@ const sidebarConfig = [
       { label: "Upload Dashboard", href: "AssetDBmenu1.6.html", icon: "fas fa-upload" },
       { label: "Manage Releases", href: "manage_releases.html", icon: "fas fa-folder-open" },
       { label: "Radar History", href: "radar_history.html", icon: "fas fa-history" },
-      { label: "Manage Live Events", href: "manage_live.html", icon: "fas fa-flag-checkered" },
+      { label: "Manage Live Events", href: "manage_streams.html", icon: "fas fa-flag-checkered" },
       { label: "Manage Vault Assets", href: "manage_vault.html", icon: "fas fa-lock" },
     ],
   },

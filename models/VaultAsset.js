@@ -84,6 +84,7 @@ const vaultAssetSchema = new mongoose.Schema({
     */
     notifyClientOnAccess: { type: Boolean, default: false },
     notifyClientOnDownload: { type: Boolean, default: false },
+    notifyClientOnNda: { type: Boolean, default: false },
     vaultExpirationDays: { type: Number, default: 7 },
     watermarkEnabled: { type: Boolean, default: true },
     geoLockEnabled: { type: Boolean, default: false },
@@ -116,6 +117,10 @@ const vaultAssetSchema = new mongoose.Schema({
     invitedUsers: {
         type: [String],
         default: []
+    },
+    embargoReminderSentAt: {
+        type: Date,
+        default: null
     }
 }, {
     timestamps: true // Automatically adds createdAt and updatedAt

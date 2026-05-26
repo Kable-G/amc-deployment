@@ -32,7 +32,7 @@
         .amc-page-header h1, 
         #main-content-title,
         h1.amc-page-title {
-            font-size: 42px !important;
+            font-size: var(--amc-title-size, 42px) !important;
             font-weight: 800 !important;
             letter-spacing: -0.04em !important;
             line-height: 1.05 !important;
@@ -806,14 +806,14 @@ body.dark-mode input[type="time"]{
         .amc-page-subtitle,
         .upload-hub-subtitle {
             margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-primary, #dee2e6);
+            padding-bottom: 0;
+            /* border-bottom removed to match other pages */
             color: var(--text-secondary, #6c757d);
         }
         
         body.dark-mode .amc-page-subtitle,
         body.dark-mode .upload-hub-subtitle {
-            border-bottom-color: #374151;
+            /* border-bottom removed */
             color: #9ca3af;
         }
 
@@ -846,7 +846,7 @@ body.dark-mode input[type="time"]{
             align-items: center !important;
             width: 100% !important;
             max-width: 1400px !important;
-            padding: 40px 60px !important;
+            padding: 16px 60px 40px 60px !important;
             box-sizing: border-box !important;
             margin: 0 auto !important;
         }
@@ -861,7 +861,7 @@ body.dark-mode input[type="time"]{
         .amc-page-header{
     max-width: 1600px;
     margin: 0 auto;
-    padding: 24px 24px 0 24px;
+    padding: 0 24px 0 24px;
 }
         
         body.sidebar-collapsed .amc-page-header {
@@ -1047,8 +1047,8 @@ body.dark-mode input[type="time"]{
         
         .back-to-hub-container {
             margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-primary, #dee2e6);
+            padding-bottom: 0;
+            /* border-bottom removed to match other pages */
         }
 
         /* Form Cards */
@@ -1062,7 +1062,7 @@ body.dark-mode input[type="time"]{
         .form-card-header {
             padding: 15px 20px;
             background-color: var(--bg-tertiary, #e9ecef);
-            border-bottom: 1px solid var(--border-primary, #dee2e6);
+            /* border-bottom removed to match other pages */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -2622,11 +2622,6 @@ body.dark-mode .btn-secondary:hover {
             .bento-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .preview-card.sticky {
-                position: relative;
-                top: 0;
-            }
         }
 
 
@@ -2946,9 +2941,8 @@ body.dark-mode .btn-secondary:hover {
     display: none;
 }
 
-/* Ensure parent containers don't clip */
+/* Ensure parent containers don't clip dropdowns on desktop */
 .bento-box,
-.bento-body,
 .form-group {
     overflow: visible !important;
 }
@@ -2993,7 +2987,7 @@ body.dark-mode .btn-secondary:hover {
 /* 1) Kill page scroll completely (prevents outer scrollbar) */
 html, body{
   height: 100% !important;
-  overflow: hidden !important;
+  overflow: visible;
   margin: 0 !important;
   padding: 0 !important;
 }
@@ -3394,7 +3388,7 @@ body.dark-mode .accordion-header .header-left svg{
 
 /* V6.5 Shell Fixes */
 main.mobile-main {
-    position: relative;
+    position: static;
     z-index: 1;
     min-height: auto !important;
 }
@@ -3560,11 +3554,12 @@ body.dark-mode .mobile-main::-webkit-scrollbar-corner{
         .v-hint { font-size: 11px; color: var(--text-secondary); margin-top: 5px; line-height: 1.5; }
         .v-info-block { display: flex; gap: 10px; padding: 10px 12px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.2); border-radius: 8px; font-size: 12px; color: var(--text-primary); line-height: 1.6; margin-bottom: 14px; }
         .v-info-block i { color: var(--accent-primary, #3b82f6); flex-shrink: 0; margin-top: 1px; }
-        .v-check-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-primary, #e2e8f0); }
+        .v-check-item { display: table; width: 100%; padding: 10px 0; border-bottom: 1px solid var(--border-primary, #e2e8f0); box-sizing: border-box; }
         .v-check-item:last-child { border-bottom: none; }
-        .v-check-item input[type="checkbox"], .v-check-item input[type="radio"] { width: 16px; height: 16px; margin-top: 2px; flex-shrink: 0; accent-color: var(--accent-primary, #3b82f6); cursor: pointer; }
-        .v-check-text .v-clabel { font-size: 13px; font-weight: 500; color: var(--text-primary); display: block; }
-        .v-check-text .v-cdesc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.5; display: block; }
+        .v-check-item input[type="checkbox"], .v-check-item input[type="radio"] { display: table-cell; width: 16px; vertical-align: top; padding-top: 2px; accent-color: var(--accent-primary, #3b82f6); cursor: pointer; }
+        .v-check-label { display: table-cell; padding-left: 10px; vertical-align: top; width: 100%; }
+        .v-check-main { font-size: 13px; font-weight: 500; color: var(--text-primary); display: block; line-height: 1.4; word-break: break-word; }
+        .v-check-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.5; display: block; word-break: break-word; }
         .v-expiry-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
         @media (max-width: 500px) { .v-expiry-grid { grid-template-columns: repeat(2, 1fr); } }
         .v-expiry-opt { border: 2px solid var(--border-primary, #e2e8f0); border-radius: 8px; padding: 10px 8px; text-align: center; cursor: pointer; transition: all .15s; position: relative; display: block; }
@@ -3593,6 +3588,49 @@ body.dark-mode .mobile-main::-webkit-scrollbar-corner{
         .v-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 8px; background: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: 99px; font-size: 12px; color: var(--text-primary); margin: 3px 4px 3px 0; }
         .v-chip button { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0 0 0 2px; font-size: 11px; line-height: 1; }
         .v-chip button:hover { color: #ef4444; }
+
+        /* ── Brand Intelligence Form ── */
+        .bi-brand-selector { margin-bottom: 24px; }
+        .bi-brand-selector label { display:block; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-secondary); margin-bottom:8px; }
+        .bi-brand-selector select { width:100%; padding:10px 14px; border:1px solid var(--border-primary); border-radius:8px; background:var(--bg-secondary); color:var(--text-primary); font-family:'Inter',sans-serif; font-size:14px; }
+        .bi-panels-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        @media(max-width:700px){ .bi-panels-grid { grid-template-columns:1fr; } }
+        .bi-panel-card { background:var(--bg-secondary); border:1px solid var(--border-primary); border-radius:12px; padding:20px; }
+        .bi-panel-card.active { border-color:var(--accent-primary); }
+        .bi-panel-hd { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+        .bi-panel-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; }
+        .bi-panel-icon.profile { background:rgba(59,130,246,0.1); color:#3b82f6; }
+        .bi-panel-icon.personnel { background:rgba(168,85,247,0.1); color:#a855f7; }
+        .bi-panel-icon.financials { background:rgba(16,185,129,0.1); color:#10b981; }
+        .bi-panel-icon.stock { background:rgba(245,158,11,0.1); color:#f59e0b; }
+        .bi-panel-title { font-size:13px; font-weight:700; color:var(--text-headings); }
+        .bi-panel-desc { font-size:11px; color:var(--text-secondary); margin-bottom:14px; line-height:1.5; }
+        .bi-status-chip { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; margin-bottom:12px; }
+        .bi-status-chip.none { background:var(--bg-tertiary); color:var(--text-secondary); }
+        .bi-status-chip.processing { background:rgba(245,158,11,0.1); color:#f59e0b; }
+        .bi-status-chip.active { background:rgba(16,185,129,0.1); color:#10b981; }
+        .bi-upload-zone { border:2px dashed var(--border-primary); border-radius:8px; padding:16px; text-align:center; cursor:pointer; transition:border-color 150ms; position:relative; }
+        .bi-upload-zone:hover { border-color:var(--accent-primary); }
+        .bi-upload-zone input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+        .bi-upload-zone i { font-size:20px; color:var(--text-secondary); margin-bottom:6px; display:block; }
+        .bi-upload-zone span { font-size:12px; color:var(--text-secondary); }
+        .bi-upload-zone .filename { font-size:12px; color:var(--accent-primary); font-weight:600; margin-top:4px; }
+        .bi-text-input { width:100%; padding:9px 12px; border:1px solid var(--border-primary); border-radius:8px; background:var(--bg-secondary); color:var(--text-primary); font-family:'Inter',sans-serif; font-size:13px; box-sizing:border-box; }
+        .bi-search-row { display:flex; gap:8px; margin-bottom:8px; }
+        .bi-search-row input { flex:1; }
+        .bi-search-btn { padding:9px 14px; border:1px solid var(--border-primary); border-radius:8px; background:var(--bg-tertiary); color:var(--text-primary); cursor:pointer; font-size:12px; white-space:nowrap; }
+        .bi-search-results { font-size:12px; margin-top:6px; }
+        .bi-ticker-result { padding:6px 10px; border-radius:6px; cursor:pointer; display:flex; justify-content:space-between; }
+        .bi-ticker-result:hover { background:var(--bg-tertiary); }
+        .bi-ticker-result .symbol { font-weight:700; color:var(--accent-primary); }
+        .bi-ticker-result .exchange { color:var(--text-secondary); font-size:11px; }
+        .bi-selected-ticker { padding:8px 12px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:8px; font-size:13px; color:#10b981; font-weight:600; display:none; margin-top:8px; }
+        .bi-submit-btn { width:100%; padding:12px; border:none; border-radius:8px; background:var(--accent-primary); color:#fff; font-family:'Inter',sans-serif; font-size:14px; font-weight:600; cursor:pointer; margin-top:6px; transition:opacity 150ms; }
+        .bi-submit-btn:hover { opacity:0.9; }
+        .bi-submit-btn:disabled { opacity:0.4; cursor:not-allowed; }
+        .bi-extracted { margin-top:12px; padding:10px 12px; background:var(--bg-tertiary); border-radius:8px; font-size:11px; color:var(--text-secondary); line-height:1.6; display:none; }
+        .bi-extracted.show { display:block; }
+        .bi-extracted strong { color:var(--text-primary); }
 </style>
 
 <style id="amc-final-layout-fix">
@@ -3749,7 +3787,7 @@ main.amc-content{
 /* Prevent the body from creating a second scrollbar */
 html, body{
   height: 100% !important;
-  overflow: hidden !important;
+  overflow: visible;
 }
 
 /* Make header, back button row, and form share the exact same container geometry */
@@ -4244,20 +4282,18 @@ header.mobile-header{
 /* 3) Single-scrollbar contract (match amc-release-detail) */
 html, body{
   height: 100% !important;
-  overflow: hidden !important;
+  overflow: visible;
 }
 
-/* 4) Make main the ONLY vertical scroller */
+/* 4) Make main the ONLY vertical scroller — OVERRIDDEN by nuclear fix below */
 main.mobile-main{
-  position: fixed !important;
-  top: var(--amc-header-h) !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  padding-top: 16px !important; /* v6.5 spacing under header */
-  -webkit-overflow-scrolling: touch;
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* If rail is visible, keep content column aligned */
@@ -4490,6 +4526,188 @@ body.dark-mode hr.amc-page-divider {
 }
 </style>
 
+<style>
+@media (max-width: 768px) { :root { --amc-title-size: 28px; } }
+@media (max-width: 480px) { :root { --amc-title-size: 26px; } }
+</style>
+<style>
+#amcShellHeader { position: sticky; top: 0; z-index: 1000; }
+button { font-weight: 500; }
+.mobile-logo { font-weight: 700 !important; }
+.amc-page { padding-top: 0; }
+</style>
+<style>
+.live-bento-grid{display:flex;flex-direction:column;gap:12px;max-width:860px}
+@media(min-width:1100px){
+  .live-form-layout{display:flex;gap:32px;align-items:flex-start}
+  .live-bento-grid{flex:1;min-width:0}
+  .live-form-layout .bento-sidebar{width:320px;flex-shrink:0}
+}
+.stream-key-row{display:flex;align-items:center;gap:8px}
+.stream-key-val{flex:1;font-family:monospace;font-size:12px;padding:8px 12px;border-radius:6px;background:var(--bg-tertiary);border:1px solid var(--border-primary);color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.early-live-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.early-live-opt{display:flex;align-items:center;gap:6px;cursor:pointer;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;border:1px solid var(--border-primary);background:var(--bg-secondary);color:var(--text-primary);transition:all .15s}
+.early-live-opt input{display:none}
+.early-live-opt.selected{border-color:var(--accent-primary);background:rgba(59,130,246,.08);color:var(--accent-primary)}
+.live-check-item{display:table;width:100%;padding:10px 0;border-bottom:1px solid var(--border-primary);box-sizing:border-box}
+.live-check-item:last-child{border-bottom:none}
+.live-check-item input[type=checkbox]{display:table-cell;width:20px;vertical-align:top;padding-top:2px;flex-shrink:0;accent-color:var(--accent-primary)}
+.live-check-label{display:table-cell;width:100%;padding-left:10px;vertical-align:top;box-sizing:border-box}
+.live-check-main{font-size:13px;font-weight:600;color:var(--text-primary);line-height:1.4}
+.live-check-sub{font-size:12px;color:var(--text-secondary);margin-top:2px;line-height:1.4}
+.latency-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.latency-opt{flex:1;min-width:120px;cursor:pointer;padding:10px 12px;border-radius:8px;border:1px solid var(--border-primary);background:var(--bg-secondary);transition:all .15s;text-align:center}
+.latency-opt input{display:none}
+.latency-opt.selected{border-color:var(--accent-primary);background:rgba(59,130,246,.08)}
+.latency-val{font-size:14px;font-weight:700;color:var(--text-headings)}
+.latency-lbl{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.latency-opt.selected .latency-lbl{color:var(--accent-primary)}
+.position-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:300px}
+.position-opt{cursor:pointer;padding:8px 12px;border-radius:8px;border:1px solid var(--border-primary);background:var(--bg-secondary);font-size:12px;font-weight:500;color:var(--text-primary);text-align:center;transition:all .15s}
+.position-opt input{display:none}
+.position-opt.selected{border-color:var(--accent-primary);background:rgba(59,130,246,.08);color:var(--accent-primary)}
+.lcp-wrap{background:var(--bg-secondary);border:1px solid var(--border-primary);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.lcp-preview-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:12px}
+.lcp-thumb{position:relative;width:100%;padding-top:56.25%;background:linear-gradient(135deg,#2e1065,#4c1d95);overflow:hidden}
+.lcp-thumb-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.lcp-thumb-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.4);font-size:28px}
+.lcp-pill{position:absolute;bottom:10px;left:10px;display:inline-flex;align-items:center;gap:5px;background:rgba(0,0,0,.45);color:#c4b5fd;border:1px solid rgba(196,181,253,.4);font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:3px 8px;border-radius:20px}
+.lcp-brand{padding:7px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:#2a2a2a}
+.lcp-body{padding:12px 14px;background:var(--bg-tertiary)}
+.lcp-title{font-size:14px;font-weight:600;color:var(--text-headings);line-height:1.4;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:58px}
+.lcp-meta{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border-primary);font-size:12px;color:var(--text-secondary)}
+.lcp-cal{display:flex;align-items:center;gap:4px}
+.lcp-date-col{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.lcp-date{font-size:12px;display:flex;align-items:center;gap:4px}
+.lcp-time-val{font-size:11px;color:var(--text-secondary)}
+.live-form-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:1px solid var(--border-primary)}
+.live-btn-draft{padding:10px 20px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;border:1px solid var(--border-primary);background:var(--bg-secondary);color:var(--text-primary);transition:all .15s}
+.live-btn-draft:hover{border-color:var(--accent-primary);color:var(--accent-primary)}
+.live-btn-announce{padding:10px 20px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border:1px solid rgba(124,58,237,.4);background:rgba(124,58,237,.10);color:#7c3aed;transition:all .15s}
+.live-btn-announce:hover{background:rgba(124,58,237,.18)}
+.live-btn-schedule{padding:10px 24px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border:none;background:var(--accent-primary);color:#fff;transition:all .15s}
+.live-btn-schedule:hover{background:#2563eb}
+
+/* ===== MOBILE FIXES FOR LIVE FORM ===== */
+@media (max-width: 768px) {
+
+  /* Force form container to full width — beats .amc-page align-items:center
+     which shrinks flex children to content width */
+  #dynamic-form-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    align-self: stretch !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Stack layout vertically */
+  #dynamic-form-container .live-form-layout {
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  /* Bento grid: full width */
+  #dynamic-form-container .live-bento-grid {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Every bento box: full width, no overflow */
+  #dynamic-form-container .bento-box {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  /* bento-body must also be clipped — beats global overflow:visible !important
+     by using #dynamic-form-container for higher specificity */
+  #dynamic-form-container .bento-body {
+    overflow: hidden !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* v-form-row: single column */
+  #dynamic-form-container .v-form-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* All inputs/selects/textareas: constrained */
+  #dynamic-form-container .bento-body input,
+  #dynamic-form-container .bento-body select,
+  #dynamic-form-container .bento-body textarea {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Multiselect: compact height */
+  #dynamic-form-container select[multiple] {
+    height: 80px !important;
+    overflow-y: auto !important;
+  }
+
+  /* Stream key row */
+  #dynamic-form-container .stream-key-row {
+    flex-wrap: wrap !important;
+  }
+  #dynamic-form-container .stream-key-val {
+    flex: 1 1 100% !important;
+    font-size: 11px !important;
+    min-width: 0 !important;
+  }
+
+  /* Latency: stack */
+  #dynamic-form-container .latency-grid {
+    flex-direction: column !important;
+  }
+  #dynamic-form-container .latency-opt {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Early access: 2 per row */
+  #dynamic-form-container .early-live-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Schedule gate */
+  #dynamic-form-container .schedule-summary {
+    word-break: break-word !important;
+    font-size: 12px !important;
+  }
+  #dynamic-form-container .btn-verify-schedule {
+    width: 100% !important;
+  }
+
+  /* Checkbox rows use display:table — no flex overrides needed */
+
+  /* Action buttons: stack */
+  #dynamic-form-container .live-form-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  #dynamic-form-container .live-btn-draft,
+  #dynamic-form-container .live-btn-announce,
+  #dynamic-form-container .live-btn-schedule {
+    width: 100% !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Card preview: full width on mobile */
+  #dynamic-form-container .bento-sidebar {
+    width: 100% !important;
+  }
+}
+
+
+</style>
 </head>
 <body>
     <!-- Login Form Container -->
@@ -4528,13 +4746,12 @@ body.dark-mode hr.amc-page-divider {
                     <i class="fas fa-chevron-left"></i> Back to Upload Hub
                 </a>
                 <h1 class="amc-page-title" id="main-content-title">
-                    <i class="fas fa-upload"></i> Upload Hub
+                    Upload Hub
                 </h1>
                 <p class="amc-page-subtitle" id="main-content-subtitle">
-                    Welcome! Select the service you wish to upload assets or create content for.
+                    Upload files to AutoMediaCenter.com from any device
                 </p>
             </header>
-            <hr class="amc-page-divider" aria-hidden="true">
 
             <!-- Service Cards Grid -->
             <div class="service-card-grid-2x2" id="service-card-grid">
@@ -4588,6 +4805,22 @@ body.dark-mode hr.amc-page-divider {
                 </div>
                 <div class="card service-card">
                     <div class="card-body">
+                        <div class="service-icon"><i class="fas fa-building"></i></div>
+                        <div class="service-title-area">
+                            <h2>Brand Intelligence</h2>
+                            <i class="fas fa-question-circle service-help-icon" role="button" tabindex="0"
+                               aria-label="Help for Brand Intelligence"
+                               data-service="BrandIntelligence"
+                               data-help-content="Upload official brand documents to populate Brand Channel intelligence panels with accurate, sourced data."></i>
+                        </div>
+                        <p>Upload official brand documents to power Brand Channel intelligence panels with accurate, sourced data.</p>
+                        <a href="#" class="btn btn-primary service-link" data-form-type="brand-intelligence" data-form-title="Brand Intelligence">
+                            <i class="fas fa-brain"></i> Manage Brand Intel
+                        </a>
+                    </div>
+                </div>
+                <div class="card service-card">
+                    <div class="card-body">
                         <div class="service-icon"><i class="fas fa-video"></i></div>
                         <div class="service-title-area">
                             <h2>AutoMediaLive</h2>
@@ -4597,7 +4830,7 @@ body.dark-mode hr.amc-page-divider {
                                data-help-content="Setup and manage live streaming events like press conferences or product launches, including scheduling, input configuration, transcoding, and interactive features (Q&A, assets)."></i>
                         </div>
                         <p>Create and manage live stream events, configure sources, and schedule broadcasts.</p>
-                        <a href="#" class="btn btn-primary service-link" data-form-type="live" data-form-title="Setup New Live Event">
+                        <a href="#" class="btn btn-primary service-link" data-form-type="live" data-form-title="Upload Media Stream">
                             <i class="fas fa-satellite-dish"></i> Setup Live Event
                         </a>
                     </div>
@@ -4979,6 +5212,104 @@ let markedForDeletion = {
 
         console.log("DEBUG: Elements refs obtained.");
 
+
+        // ── BRAND INTELLIGENCE FORM ──────────────────────────────────────────
+        const brandIntelFormHtml = `
+        <div style="max-width:800px;margin:0 auto">
+        <div class="bi-brand-selector">
+            <label>Select Brand</label>
+            <select id="bi-brand-select" onchange="biBrandChanged(this.value)">
+                <option value="">— Select a brand —</option>
+            </select>
+        </div>
+        <div class="bi-panels-grid" id="bi-panels-grid">
+
+            <!-- Company Profile -->
+            <div class="bi-panel-card" id="bi-card-profile">
+                <div class="bi-panel-hd">
+                    <div class="bi-panel-icon profile"><i class="fas fa-building"></i></div>
+                    <div class="bi-panel-title">Company Profile</div>
+                </div>
+                <div class="bi-panel-desc">Upload an official company fact sheet, press kit background, or annual report company overview page.</div>
+                <div class="bi-status-chip none" id="bi-status-profile"><i class="fas fa-circle" style="font-size:7px"></i> Not uploaded</div>
+                <div class="bi-upload-zone">
+                    <input type="file" accept=".pdf" id="bi-file-profile" onchange="biFileSelected('profile', this)">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Drop PDF here or click to browse</span>
+                    <div class="filename" id="bi-filename-profile"></div>
+                </div>
+                <div class="bi-extracted" id="bi-extracted-profile"></div>
+                <button class="bi-submit-btn" id="bi-btn-profile" onclick="biUpload('profile')" disabled>
+                    <i class="fas fa-upload"></i> Upload &amp; Extract
+                </button>
+            </div>
+
+            <!-- Key Personnel -->
+            <div class="bi-panel-card" id="bi-card-personnel">
+                <div class="bi-panel-hd">
+                    <div class="bi-panel-icon personnel"><i class="fas fa-users"></i></div>
+                    <div class="bi-panel-title">Key Personnel</div>
+                </div>
+                <div class="bi-panel-desc">Upload board biographies, annual report management section, or official leadership PDF from company newsroom.</div>
+                <div class="bi-status-chip none" id="bi-status-personnel"><i class="fas fa-circle" style="font-size:7px"></i> Not uploaded</div>
+                <div class="bi-upload-zone">
+                    <input type="file" accept=".pdf" id="bi-file-personnel" onchange="biFileSelected('personnel', this)">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Drop PDF here or click to browse</span>
+                    <div class="filename" id="bi-filename-personnel"></div>
+                </div>
+                <div class="bi-extracted" id="bi-extracted-personnel"></div>
+                <button class="bi-submit-btn" id="bi-btn-personnel" onclick="biUpload('personnel')" disabled>
+                    <i class="fas fa-upload"></i> Upload &amp; Extract
+                </button>
+            </div>
+
+            <!-- Sales & Financials -->
+            <div class="bi-panel-card" id="bi-card-financials">
+                <div class="bi-panel-hd">
+                    <div class="bi-panel-icon financials"><i class="fas fa-chart-line"></i></div>
+                    <div class="bi-panel-title">Sales &amp; Financials</div>
+                </div>
+                <div class="bi-panel-desc">Upload quarterly or annual results press release, delivery figures announcement, or financial highlights document.</div>
+                <div class="bi-status-chip none" id="bi-status-financials"><i class="fas fa-circle" style="font-size:7px"></i> Not uploaded</div>
+                <div class="bi-upload-zone">
+                    <input type="file" accept=".pdf" id="bi-file-financials" onchange="biFileSelected('financials', this)">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Drop PDF here or click to browse</span>
+                    <div class="filename" id="bi-filename-financials"></div>
+                </div>
+                <div class="bi-extracted" id="bi-extracted-financials"></div>
+                <button class="bi-submit-btn" id="bi-btn-financials" onclick="biUpload('financials')" disabled>
+                    <i class="fas fa-upload"></i> Upload &amp; Extract
+                </button>
+            </div>
+
+            <!-- Stock Code -->
+            <div class="bi-panel-card" id="bi-card-stock">
+                <div class="bi-panel-hd">
+                    <div class="bi-panel-icon stock"><i class="fas fa-chart-bar"></i></div>
+                    <div class="bi-panel-title">Stock Price</div>
+                </div>
+                <div class="bi-panel-desc">Search for the company's stock ticker symbol. Used to display live share price on the brand channel. Leave blank for private companies.</div>
+                <div class="bi-status-chip none" id="bi-status-stock"><i class="fas fa-circle" style="font-size:7px"></i> Not set</div>
+                <div class="bi-search-row">
+                    <input type="text" class="bi-text-input" id="bi-ticker-search" placeholder="Search e.g. BMW, Porsche, Volkswagen..." oninput="biTickerSearch(this.value)">
+                </div>
+                <div class="bi-search-results" id="bi-ticker-results"></div>
+                <div class="bi-selected-ticker" id="bi-selected-ticker"></div>
+                <input type="hidden" id="bi-ticker-value" value="">
+                <input type="hidden" id="bi-ticker-exchange" value="">
+                <button class="bi-submit-btn" id="bi-btn-stock" onclick="biSaveTicker()" disabled>
+                    <i class="fas fa-save"></i> Save Ticker
+                </button>
+            </div>
+
+        </div>
+        </div>
+        `;
+
+
+
         const vaultFormHtml = `
             <form id="vault-form">
               <input type="hidden" id="vaultSubmitAction" value="draft">
@@ -5098,13 +5429,7 @@ let markedForDeletion = {
                       <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
                     </div>
                     <div class="bento-body">
-                      <div class="v-check-item">
-                        <input type="checkbox" id="vRequireNda" onchange="vToggleNdaSection();vCheckComplete('nda')">
-                        <div class="v-check-text">
-                          <span class="v-clabel">Require NDA signing to enter vault</span>
-                          <span class="v-cdesc">Journalists must digitally sign your NDA before receiving the vault password. Signature is logged with IP, timestamp, and identity confirmation.</span>
-                        </div>
-                      </div>
+                      <div class="v-check-item"><input type="checkbox" id="vRequireNda" onchange="vToggleNdaSection();vCheckComplete('nda')"><div class="v-check-label"><div class="v-check-main">Require NDA signing to enter vault</div><div class="v-check-sub">Journalists must digitally sign your NDA before receiving the vault password. Signature is logged with IP, timestamp, and identity confirmation.</div></div></div>
                       <div id="vNdaUploadSection" style="margin-top:14px;display:none;">
                         <label>NDA document <span class="v-req">*</span></label>
                         <div class="file-upload-area" id="vNdaDropZone">
@@ -5119,20 +5444,11 @@ let markedForDeletion = {
                           <button type="button" onclick="vRemoveNda()" style="background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:13px;padding:2px 6px;"><i class="fas fa-times"></i></button>
                         </div>
                         <hr style="margin:14px 0;border-color:var(--border-primary,#e2e8f0);">
-                        <div class="v-check-item">
-                          <input type="checkbox" id="vNdaEmailDelivery" checked>
-                          <div class="v-check-text"><span class="v-clabel">Deliver vault password by email after NDA signed</span><span class="v-cdesc">Password sent to journalist's registered email only after NDA signature is confirmed.</span></div>
-                        </div>
-                        <div class="v-check-item">
-                          <input type="checkbox" id="vNdaSmsDelivery">
-                          <div class="v-check-text"><span class="v-clabel">Also send password by SMS (Twilio)</span><span class="v-cdesc">Requires journalist to have a verified mobile number on their profile.</span></div>
-                        </div>
+                        <div class="v-check-item"><input type="checkbox" id="vNdaEmailDelivery" checked><div class="v-check-label"><div class="v-check-main">Deliver vault password by email after NDA signed</div><div class="v-check-sub">Password sent to journalist's registered email only after NDA signature is confirmed.</div></div></div>
+                        <div class="v-check-item"><input type="checkbox" id="vNdaSmsDelivery"><div class="v-check-label"><div class="v-check-main">Also send password by SMS (Twilio)</div><div class="v-check-sub">Requires journalist to have a verified mobile number on their profile.</div></div></div>
                       </div>
                       <hr style="margin:14px 0;border-color:var(--border-primary,#e2e8f0);">
-                      <div class="v-check-item">
-                        <input type="checkbox" id="vRequireMfa" checked onchange="vCheckComplete('nda')">
-                        <div class="v-check-text"><span class="v-clabel">Require MFA re-authentication on vault entry</span><span class="v-cdesc">Forces journalists to re-verify with MFA when accessing this vault, even if already logged in.</span></div>
-                      </div>
+                      <div class="v-check-item"><input type="checkbox" id="vRequireMfa" checked onchange="vCheckComplete('nda')"><div class="v-check-label"><div class="v-check-main">Require MFA re-authentication on vault entry</div><div class="v-check-sub">Forces journalists to re-verify with MFA when accessing this vault, even if already logged in.</div></div></div>
                     </div>
                   </div>
 
@@ -5156,8 +5472,8 @@ let markedForDeletion = {
                       <hr style="margin:14px 0;border-color:var(--border-primary,#e2e8f0);">
                       <div class="v-form-group">
                         <label>Distribution method</label>
-                        <div class="v-check-item"><input type="radio" name="vDistMethod" value="email" checked><div class="v-check-text"><span class="v-clabel">Notify journalists by secure email on publish</span><span class="v-cdesc">Sends vault link and embargo details. NDA link sent first if required.</span></div></div>
-                        <div class="v-check-item"><input type="radio" name="vDistMethod" value="manual"><div class="v-check-text"><span class="v-clabel">Manual distribution</span><span class="v-cdesc">No emails sent. Vault link and password shown to you after publish for manual sharing.</span></div></div>
+                        <div class="v-check-item"><input type="radio" name="vDistMethod" value="email" checked><div class="v-check-label"><div class="v-check-main">Notify journalists by secure email on publish</div><div class="v-check-sub">Sends vault link and embargo details. NDA link sent first if required.</div></div></div>
+                        <div class="v-check-item"><input type="radio" name="vDistMethod" value="manual"><div class="v-check-label"><div class="v-check-main">Manual distribution</div><div class="v-check-sub">No emails sent. Vault link and password shown to you after publish for manual sharing.</div></div></div>
                       </div>
                       <div class="v-form-group">
                         <label>Custom message <span class="v-opt">(optional)</span></label>
@@ -5254,9 +5570,9 @@ let markedForDeletion = {
                         <label class="v-sec-card"><input type="radio" name="vSecLevel" value="enhanced" onclick="vSelectSecLevel(this)"><span class="v-sec-icon">&#128737;</span><span class="v-sec-name">Enhanced</span><span class="v-sec-desc">+ MFA re-auth + geo-lock</span></label>
                         <label class="v-sec-card"><input type="radio" name="vSecLevel" value="maximum" onclick="vSelectSecLevel(this)"><span class="v-sec-icon">&#128272;</span><span class="v-sec-name">Maximum</span><span class="v-sec-desc">+ download limits + forensic watermark</span></label>
                       </div>
-                      <div class="v-check-item"><input type="checkbox" id="vWatermark" checked><div class="v-check-text"><span class="v-clabel">Dynamic watermarking on downloads</span><span class="v-cdesc">Overlays journalist name + timestamp + user ID on every downloaded image/video. Enables leak tracing.</span></div></div>
-                      <div class="v-check-item"><input type="checkbox" id="vGeoLock"><div class="v-check-text"><span class="v-clabel">Geo-restrict access by region/IP</span><span class="v-cdesc">Limit vault access to specific countries or IP ranges. Configure post-creation.</span></div></div>
-                      <div class="v-check-item"><input type="checkbox" id="vDownloadLimit"><div class="v-check-text"><span class="v-clabel">Limit downloads per journalist</span></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vWatermark" checked><div class="v-check-label"><div class="v-check-main">Dynamic watermarking on downloads</div><div class="v-check-sub">Overlays journalist name + timestamp + user ID on every downloaded image/video. Enables leak tracing.</div></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vGeoLock"><div class="v-check-label"><div class="v-check-main">Geo-restrict access by region/IP</div><div class="v-check-sub">Limit vault access to specific countries or IP ranges. Configure post-creation.</div></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vDownloadLimit"><div class="v-check-label"><div class="v-check-main">Limit downloads per journalist</div></div></div>
                     </div>
                   </div>
 
@@ -5267,10 +5583,10 @@ let markedForDeletion = {
                       <div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div>
                     </div>
                     <div class="bento-body">
-                      <div class="v-check-item"><input type="checkbox" id="vNotifyAccess" checked><div class="v-check-text"><span class="v-clabel">Notify me when a journalist first accesses the vault</span></div></div>
-                      <div class="v-check-item"><input type="checkbox" id="vNotifyDownload"><div class="v-check-text"><span class="v-clabel">Notify me on each asset download</span><span class="v-cdesc">Can generate high volume for large vaults.</span></div></div>
-                      <div class="v-check-item"><input type="checkbox" id="vNotifyNda"><div class="v-check-text"><span class="v-clabel">Notify me when an NDA is signed</span></div></div>
-                      <div class="v-check-item"><input type="checkbox" id="vNotifyEmbargoLift" checked><div class="v-check-text"><span class="v-clabel">Remind me 1 hour before embargo lifts</span></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vNotifyAccess" checked><div class="v-check-label"><div class="v-check-main">Notify me when a journalist first accesses the vault</div></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vNotifyDownload"><div class="v-check-label"><div class="v-check-main">Notify me on each asset download</div><div class="v-check-sub">Can generate high volume for large vaults.</div></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vNotifyNda"><div class="v-check-label"><div class="v-check-main">Notify me when an NDA is signed</div></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vNotifyEmbargoLift" checked><div class="v-check-label"><div class="v-check-main">Remind me 1 hour before embargo lifts</div></div></div>
                     </div>
                   </div>
 
@@ -5281,9 +5597,9 @@ let markedForDeletion = {
                       <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
                     </div>
                     <div class="bento-body">
-                      <div class="v-check-item"><input type="checkbox" id="vAuthOwnership" onchange="vCheckComplete('legal')"><div class="v-check-text"><span class="v-clabel">I am authorised to distribute these assets on behalf of the brand <span class="v-req">*</span></span></div></div>
-                      <div class="v-check-item"><input type="checkbox" id="vAuthEmbargo" onchange="vCheckComplete('legal')"><div class="v-check-text"><span class="v-clabel">The embargo date and time are correct and binding <span class="v-req">*</span></span></div></div>
-                      <div class="v-check-item"><input type="checkbox" id="vAuthUsageRights" onchange="vCheckComplete('legal')"><div class="v-check-text"><span class="v-clabel">Media accessing these assets agree to standard asset usage terms <span class="v-req">*</span></span></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vAuthOwnership" onchange="vCheckComplete('legal')"><div class="v-check-label"><div class="v-check-main">I am authorised to distribute these assets on behalf of the brand <span class="v-req">*</span></div></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vAuthEmbargo" onchange="vCheckComplete('legal')"><div class="v-check-label"><div class="v-check-main">The embargo date and time are correct and binding <span class="v-req">*</span></div></div></div>
+                      <div class="v-check-item"><input type="checkbox" id="vAuthUsageRights" onchange="vCheckComplete('legal')"><div class="v-check-label"><div class="v-check-main">Media accessing these assets agree to standard asset usage terms <span class="v-req">*</span></div></div></div>
                     </div>
                   </div>
 
@@ -5291,7 +5607,7 @@ let markedForDeletion = {
 
                 <!-- SIDEBAR -->
                 <div class="bento-sidebar">
-                  <div class="bento-box" style="position:sticky;top:80px;">
+                  <div class="bento-box" style="position:sticky;top:72px;">
                     <div class="bento-header" style="cursor:default;pointer-events:none;">
                       <div class="bento-title"><i class="fas fa-check-circle"></i><h3>Readiness</h3></div>
                     </div>
@@ -6029,17 +6345,439 @@ const radarFormHtml = `
             </form>
         `;
         const liveFormHtml = `
-             <form id="live-form">
-                 <div class="form-card"> <div class="form-card-header" data-bs-toggle="collapse" data-bs-target="#collapse-live-0"> <h2><i class="fas fa-info-circle"></i> Basic Information & Announcement</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body" id="collapse-live-0">  <div class="form-group"> <label for="streamTitle">Stream Title * <i class="fas fa-question-circle service-help-icon" style="margin-left: 5px;" data-service="Live" data-help-content="Public title for the event listing." role="button" tabindex="0"></i></label> <input type="text" class="form-control" id="streamTitle" name="title" placeholder="e.g., World Premiere Event - BMW Concept ZM" required> <small>Appears publicly on AutoMediaLive listings.</small> </div> <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="streamDate">Scheduled Start Date *</label> <input type="date" class="form-control" id="streamDate" name="streamDate" required> </div> </div> <div class="form-col"> <div class="form-group"> <label for="streamTime">Scheduled Start Time *</label> <input type="time" class="form-control" id="streamTime" name="streamTime" required> </div> </div> <div class="form-col"> <div class="form-group"> <label for="streamTimezone">Timezone *</label> <select class="form-control" id="streamTimezone" name="streamTimezone" required> <option value="" disabled selected>Select Timezone...</option> <option value="Europe/Berlin">(GMT+02:00) Berlin</option> <option value="Europe/London">(GMT+01:00) London</option> <option value="America/New_York">(GMT-04:00) New York</option> <option value="America/Los_Angeles">(GMT-07:00) Los Angeles</option> <option value="Asia/Tokyo">(GMT+09:00) Tokyo</option> </select> </div> </div> </div> <div class="form-group"> <label for="streamDesc">Public Description</label> <textarea class="form-control" id="streamDesc" name="description" rows="3" placeholder="Join us live for the unveiling of... (Displayed on the stream listing page)"></textarea> </div> <div class="form-group"> <label for="streamThumbnail">Stream Thumbnail</label> <div class="custom-file-input-wrapper" style="max-width: 400px;"> <input type="file" class="custom-file-input" id="streamThumbnail" name="thumbnailImage" accept="image/jpeg, image/png, image/webp"> <span class="custom-file-input-button">Browse</span> <label class="custom-file-input-label" for="streamThumbnail">Select thumbnail...</label> </div> <small>Preview image shown on listings (Recommended: 16:9 ratio, e.g., 1920x1080px).</small> </div> </div> <div class="form-card-footer space-between" style="border-top: 1px solid var(--border-primary);"> <small style="align-self: center;">Publish basic info to announce the upcoming stream now?</small> <button type="button" class="btn btn-success"><i class="fas fa-bullhorn"></i> Announce Upcoming Stream</button> </div> </div>
-                 <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-1"> <h2><i class="fas fa-tags"></i> Metadata & Analytics</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-1">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="eventType">Event Type</label> <select class="form-control" id="eventType" name="eventType"> <option selected>Press Conference</option> <option>Product Launch</option> <option>Technical Deep Dive</option> <option>Q&A / Interview</option> <option>Motorsport Event</option> <option>Other</option> </select> <small>Categorize the stream for filtering and analytics.</small> </div> <div class="form-group"> <label for="keyTopics">Key Topics / Keywords</label> <select class="form-control tags-input" id="keyTopics" name="keyTopics[]" multiple="multiple"> </select> <small>Add relevant tags (e.g., Sustainability, Autonomous Driving). Type and press Enter or Comma.</small> </div> </div> <div class="form-col"> <div class="form-group"> <label for="productsFeatured">Product(s) / Subject(s) Featured</label> <select class="form-control tags-input" id="productsFeatured" name="productsFeatured[]" multiple="multiple"> </select> <small>Tag specific vehicles or main subjects.</small> </div> <div class="form-group"> <label for="targetRegions">Target Region(s)</label> <select class="form-control multi-select" id="targetRegions" name="targetRegions[]" multiple="multiple"> <option>Global</option> <option>EMEA</option> <option>North America</option> <option>DACH</option> <option>Asia Pacific</option> </select> <small>Select primary geographic focus, if any.</small> </div> </div> </div> <div class="form-group"> <label for="campaignId">Internal Campaign ID (Optional)</label> <input type="text" class="form-control" id="campaignId" name="campaignId" placeholder="e.g., ZM_LAUNCH_Q3"> <small>For your internal tracking and reporting.</small> </div> </div> </div>
-                  <hr style="border: none; border-top: 1px solid var(--border-primary); margin: 30px 0;"> <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">Complete the technical details below before going live.</p>
-                 <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-2"> <h2><i class="fas fa-sign-in-alt"></i> Source & Input</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-2">  <div class="form-group"> <label for="streamSourceType">Input Source Type</label> <select class="form-control" id="streamSourceType" name="streamSourceType"> <option value="rtmp_push" selected>RTMP Push (from Encoder)</option> <option value="srt_listener">SRT Listener</option> <option value="srt_caller">SRT Caller</option> <option value="hls_pull">Pull from HLS/DASH Source</option> </select> <small>How will you send your video feed to AutoMediaCenter?</small> </div> <div id="sourceDetailsRtmp"> <div class="form-group"> <label>RTMP Server URL</label> <input type="text" class="form-control" value="rtmp://live.automediacenter.provider/app/" readonly> </div> <div class="form-group"> <label>Stream Key</label> <div class="stream-key-display"> <span>â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢ (Generated on Save)</span> <button type="button" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i> Show</button> <button type="button" class="btn btn-sm btn-secondary"><i class="fas fa-copy"></i> Copy</button> </div> <small class="form-text">Enter this URL and Key into your streaming software (OBS, Wirecast, etc.).</small> </div> </div> </div> </div>
-                 <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-3"> <h2><i class="fas fa-cogs"></i> Processing & Output</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-3">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="transcodingProfile">Transcoding Profile</label> <select class="form-control" id="transcodingProfile" name="transcodingProfile"> <option selected>Auto-Detect & Adaptive Bitrate (Recommended)</option> <option>HD 1080p (Up to 6 Mbps)</option> <option>HD 720p (Up to 4 Mbps)</option> <option>SD 576p (Up to 2 Mbps)</option> <option disabled>Custom (Advanced)</option> </select> <small>Determines the output quality and resolutions available to viewers.</small> </div> </div> <div class="form-col"> <div class="form-group"> <label for="latencySetting">Latency Setting</label> <select class="form-control" id="latencySetting" name="latencySetting"> <option>Normal (~15-20 seconds delay)</option> <option selected>Low (~5-10 seconds delay)</option> <option>Ultra-Low (~1-5 seconds delay)</option> </select> <small>Lower latency allows faster interaction but may be less stable on poor networks.</small> </div> </div> </div> <div class="form-group"> <label>Recording</label> <div class="form-check"> <input class="form-check-input" type="checkbox" id="recordStream" name="recordStream" value="true" checked> <label class="form-check-label" for="recordStream"> Record this stream to the Asset Library </label> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" id="autoArchive" name="autoArchive" value="true" checked> <label class="form-check-label" for="autoArchive"> Automatically add recording to public AutoMediaLive Archive after stream ends </label> </div> </div> <div class="form-group"> <label>Captions</label> <select class="form-control" id="captionSource" name="captionSource"> <option>None</option> <option selected>Auto-Generate Live Captions (English)</option> <option>Expect Embedded CEA-608/708</option> <option>Expect RTMP onCaptionInfo</option> </select> <small>Select caption source or use AI-powered live captions.</small> </div> </div> </div>
-                 <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-4"> <h2><i class="fas fa-photo-video"></i> Content & Interaction</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-4">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <label>Enable Features</label> <div class="form-check"> <input class="form-check-input" type="checkbox" id="enableQA" name="enableQA" value="true" checked> <label class="form-check-label" for="enableQA"> Live Q&A Tab (Moderated) </label> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" id="enableTranscript" name="enableTranscript" value="true" checked> <label class="form-check-label" for="enableTranscript"> Live Transcript Tab </label> </div> <div class="form-check"> <input class="form-check-input" type="checkbox" id="enableAssets" name="enableAssets" value="true" checked> <label class="form-check-label" for="enableAssets"> Related Assets Tab </label> </div> </div> </div> <div class="form-col"> <div class="form-group"> <label for="linkedAssets">Link Related Assets</label> <div class="asset-link-placeholder" style="border: 1px dashed var(--border-primary); padding: 15px; text-align: center; cursor: pointer; background-color: var(--bg-tertiary); border-radius: 4px;"> <i class="fas fa-plus"></i> Click to select assets (Press Kits, Images...) </div> <small>Choose files from your Asset Library to show in the 'Assets' tab during the stream.</small> </div> </div> </div> </div> </div>
-                 <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-5"> <h2><i class="fas fa-paint-brush"></i> Appearance & Branding</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-5">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <label for="playerLogo">Player Logo Overlay (Optional)</label> <div class="custom-file-input-wrapper" style="max-width: 400px;"> <input type="file" class="custom-file-input" id="playerLogo" name="playerLogo" accept="image/png"> <span class="custom-file-input-button">Browse</span> <label class="custom-file-input-label" for="playerLogo">Select logo PNG...</label> </div> <small>Small PNG with transparency to overlay on the video player (e.g., bottom-right).</small> </div> </div> <div class="form-col">  </div> </div> </div> </div>
-                 <div class="form-card"> <div class="form-card-header collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-live-6"> <h2><i class="fas fa-calendar-check"></i> Access & Scheduling Options</h2> <i class="fas fa-chevron-down toggle-icon"></i> </div> <div class="form-card-body collapsed" id="collapse-live-6">  <div class="form-row"> <div class="form-col"> <div class="form-group"> <span class="radio-group-label">Stream Visibility</span> <div class="form-check"> <input class="form-check-input" type="radio" name="visibility" id="visibilityPublic" value="public" checked> <label class="form-check-label" for="visibilityPublic"> Publicly listed on AutoMediaLive </label> </div> <div class="form-check"> <input class="form-check-input" type="radio" name="visibility" id="visibilityUnlisted" value="unlisted"> <label class="form-check-label" for="visibilityUnlisted"> Unlisted (Accessible only via direct link) </label> </div> </div> </div> <div class="form-col"> <div class="form-group"> <span class="radio-group-label">Stream Start Trigger</span> <div class="form-check"> <input class="form-check-input" type="radio" name="startTrigger" id="startManual" value="manual" checked> <label class="form-check-label" for="startManual"> Manual Go-Live Button (Recommended) </label> <small class="form-text" style="padding-left: 1.7em;">Requires clicking "Start Public Stream" on the Pre-Stream Check page.</small> </div> <div class="form-check"> <input class="form-check-input" type="radio" name="startTrigger" id="startAuto" value="auto"> <label class="form-check-label" for="startAuto"> Automatic at Scheduled Time </label> <small class="form-text" style="padding-left: 1.7em;">Stream goes public automatically if stable input is detected beforehand.</small> </div> </div> </div> </div> </div> </div>
-                     <div class="form-card-footer preview-bar"> <button type="button" class="btn btn-secondary preview-btn"><i class="fas fa-eye"></i> Preview</button> <div> <button type="submit" name="action" value="draft" class="btn btn-primary"><i class="fas fa-save"></i> Save Configuration as Draft</button> <button type="submit" name="action" value="publish" class="btn btn-success"><i class="fas fa-calendar-check"></i> Finalize & Schedule</button> </div> </div>
-                </form>
+<div class="live-form-layout">
+<div class="live-bento-grid">
+<div class="bento-box" data-section="lstream-identity" data-required="true" id="lbox-identity">
+  <div class="bento-header" onclick="toggleLiveBento(this)">
+    <div class="bento-title"><i class="fas fa-broadcast-tower"></i><h3>Media Stream Details</h3></div>
+    <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+  </div>
+  <div class="bento-body">
+    <div class="v-form-row">
+      <div class="v-form-group">
+        <label>Company name <span class="v-req">*</span></label>
+        <input type="text" class="form-control" id="lCompany" placeholder="e.g., BMW Group AG" oninput="lCheck('lstream-identity');lCardPreview()">
+      </div>
+      <div class="v-form-group">
+        <label>Brand <span class="v-req">*</span></label>
+        <input type="text" class="form-control" id="lBrand" placeholder="e.g., BMW" oninput="lCheck('lstream-identity');lCardPreview()">
+      </div>
+    </div>
+    <div class="v-form-group">
+      <label>Stream / Event title <span class="v-req">*</span></label>
+      <input type="text" class="form-control" id="lTitle" placeholder="e.g., World Premiere: The All-New BMW Concept ZM" oninput="lCheck('lstream-identity');lCardPreview()">
+      <div class="v-hint">Displayed publicly on the AutoMediaLive listing.</div>
+    </div>
+    <div class="v-form-group">
+      <label>Public description <span class="v-opt">(optional)</span></label>
+      <textarea class="form-control" id="lDescription" rows="2" placeholder="Brief summary shown on the event listing page."></textarea>
+    </div>
+  </div>
+</div>
+<div class="bento-box" data-section="lstream-schedule" data-required="true" id="lbox-schedule">
+  <div class="bento-header" onclick="toggleLiveBento(this)">
+    <div class="bento-title"><i class="fas fa-calendar-alt"></i><h3>Schedule &amp; Timing</h3></div>
+    <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+  </div>
+  <div class="bento-body">
+    <div class="v-info-block"><i class="fas fa-info-circle"></i><span>The Media Live card switches to <strong style="color:#16a34a;">Live (green)</strong> state at the early-live window before the scheduled start time.</span></div>
+    <div class="v-form-row" style="margin-top:14px;">
+      <div class="v-form-group">
+        <label>Scheduled start date <span class="v-req">*</span></label>
+        <input type="date" class="form-control" id="lStreamDate" oninput="lUpdateSchedPreview();lCheck('lstream-schedule');lCardPreview()">
+      </div>
+      <div class="v-form-group">
+        <label>Scheduled start time <span class="v-req">*</span></label>
+        <input type="time" class="form-control" id="lStreamTime" value="10:00" oninput="lUpdateSchedPreview();lCheck('lstream-schedule');lCardPreview()">
+      </div>
+    </div>
+    <div class="v-form-group">
+      <label>Timezone <span class="v-req">*</span></label>
+      <select class="form-control" id="lTimezone" onchange="lUpdateSchedPreview();lCheck('lstream-schedule');lCardPreview()">
+        <optgroup label="Common">
+          <option value="Europe/Berlin">Europe/Berlin (CET/CEST)</option>
+          <option value="UTC">UTC</option>
+          <option value="America/New_York">America/New_York (ET)</option>
+          <option value="America/Los_Angeles">America/Los_Angeles (PT)</option>
+          <option value="Europe/London">Europe/London (GMT/BST)</option>
+          <option value="Asia/Shanghai">Asia/Shanghai (CST)</option>
+          <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
+          <option value="Australia/Sydney">Australia/Sydney (AEST)</option>
+          <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+        </optgroup>
+      </select>
+      <div id="lSchedPreview" style="margin-top:6px;font-size:12px;color:var(--text-secondary);"></div>
+    </div>
+    <div class="schedule-verification-gate" id="lSchedGate">
+      <div class="schedule-gate-inner">
+        <div id="lSchedSummary" class="schedule-summary">Fill in date, time and timezone &mdash; then verify &amp; lock.</div>
+        <button type="button" id="lVerifyBtn" class="btn-verify-schedule" onclick="lVerifySched()"><i class="fas fa-lock"></i> Verify &amp; Lock Schedule</button>
+        <div class="schedule-edit-link" id="lSchedEditLink" style="display:none;">
+          <a href="#" onclick="lUnlockSched(event)"><i class="fas fa-pencil-alt"></i> Edit schedule</a>
+          <small style="display:block;color:#64748b;font-size:11px;margin-top:4px;">(requires re-verification)</small>
+        </div>
+      </div>
+    </div>
+    <hr style="margin:16px 0;border-color:var(--border-primary);">
+    <div class="v-form-group">
+      <label>Early-live window</label>
+      <div class="v-info-block" style="margin-bottom:10px;"><i class="fas fa-clock"></i><span>Card switches to Live (green) this many minutes <em>before</em> scheduled start.</span></div>
+      <div class="early-live-grid">
+        <label class="early-live-opt" onclick="lPickEarly(this)"><input type="radio" name="lEarlyLive" value="10"><span>10 min</span></label>
+        <label class="early-live-opt selected" onclick="lPickEarly(this)"><input type="radio" name="lEarlyLive" value="15" checked><span>15 min</span></label>
+        <label class="early-live-opt" onclick="lPickEarly(this)"><input type="radio" name="lEarlyLive" value="20"><span>20 min</span></label>
+        <label class="early-live-opt" onclick="lPickEarly(this)"><input type="radio" name="lEarlyLive" value="30"><span>30 min</span></label>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="bento-box" data-section="lstream-category" data-required="true" id="lbox-category">
+  <div class="bento-header" onclick="toggleLiveBento(this)">
+    <div class="bento-title"><i class="fas fa-tag"></i><h3>Category</h3></div>
+    <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+  </div>
+  <div class="bento-body">
+    <div class="v-form-row">
+      <div class="v-form-group">
+        <label>Event type <span class="v-req">*</span></label>
+        <select class="form-control" id="lEventType" onchange="lCheck('lstream-category')">
+          <option value="" disabled selected>Select event type...</option>
+          <option>Press Conference</option>
+          <option>World Premiere</option>
+          <option>Technical Briefing</option>
+          <option>Product Launch</option>
+          <option>Motorsport Event</option>
+          <option>Q&amp;A / Interview</option>
+          <option>Strategy Day</option>
+          <option>Financial Results</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="v-form-group">
+        <label>Target region(s) <span class="v-opt">(optional)</span></label>
+        <select class="form-control" id="lRegions" multiple size="2">
+          <option value="global" selected>Global</option>
+          <option value="emea">EMEA</option>
+          <option value="north-america">North America</option>
+          <option value="dach">DACH</option>
+          <option value="asia-pacific">Asia Pacific</option>
+          <option value="china">China</option>
+          <option value="japan">Japan</option>
+        </select>
+        <div class="v-hint">Hold Ctrl/Cmd to select multiple.</div>
+      </div>
+    </div>
+    <div class="v-form-group">
+      <label>Products / subjects featured <span class="v-opt">(optional)</span></label>
+      <input type="text" class="form-control" id="lProducts" placeholder="e.g., BMW Concept ZM, i7 M70, Neue Klasse Platform">
+      <div class="v-hint">Comma-separated.</div>
+    </div>
+  </div>
+</div>
+<div class="bento-box" data-section="lstream-language" data-required="true" id="lbox-language">
+  <div class="bento-header" onclick="toggleLiveBento(this)">
+    <div class="bento-title"><i class="fas fa-language"></i><h3>Language</h3></div>
+    <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+  </div>
+  <div class="bento-body">
+    <div class="v-form-row">
+      <div class="v-form-group">
+        <label>Primary stream language <span class="v-req">*</span></label>
+        <select class="form-control" id="lPrimaryLang" onchange="lCheck('lstream-language')">
+          <option value="" disabled selected>Select language...</option>
+          <option value="en">English</option>
+          <option value="de">German</option>
+          <option value="fr">French</option>
+          <option value="es">Spanish</option>
+          <option value="it">Italian</option>
+          <option value="ja">Japanese</option>
+          <option value="zh">Chinese (Mandarin)</option>
+          <option value="ko">Korean</option>
+          <option value="pt">Portuguese</option>
+        </select>
+      </div>
+      <div class="v-form-group">
+        <label>Caption / subtitle languages <span class="v-opt">(optional)</span></label>
+        <select class="form-control" id="lCaptionLangs" multiple size="2">
+          <option value="en">English</option>
+          <option value="de">German</option>
+          <option value="fr">French</option>
+          <option value="es">Spanish</option>
+          <option value="zh">Chinese</option>
+          <option value="ja">Japanese</option>
+        </select>
+        <div class="v-hint">Hold Ctrl/Cmd to select multiple.</div>
+      </div>
+    </div>
+    <div class="v-form-group">
+      <label>Caption generation</label>
+      <select class="form-control" id="lCaptionSource">
+        <option value="none">None</option>
+        <option value="auto-en" selected>Auto-generate live captions (English)</option>
+        <option value="embedded">Expect embedded CEA-608/708</option>
+        <option value="rtmp">Expect RTMP onCaptionInfo</option>
+      </select>
+    </div>
+  </div>
+</div>
+<div class="bento-box" data-section="lstream-teaser" data-required="true" id="lbox-teaser">
+  <div class="bento-header" onclick="toggleLiveBento(this)">
+    <div class="bento-title"><i class="fas fa-image"></i><h3>Card Teaser Image</h3></div>
+    <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+  </div>
+  <div class="bento-body">
+    <div class="v-info-block"><i class="fas fa-info-circle"></i><span>Displayed on the Media Live card. Company or brand logo recommended. 16:9 ratio.</span></div>
+    <div class="file-upload-area" id="lTeaserZone" style="margin-top:12px;"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="lTeaserDrop(event)">
+      <input type="file" id="lTeaserFile" accept="image/*" onchange="lTeaserUpload(this)">
+      <i class="fas fa-image" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br>
+      <label for="lTeaserFile" style="cursor:pointer;color:var(--accent-primary);font-weight:500;">Choose teaser image</label> or drag and drop here.
+      <p class="form-text" style="margin-top:6px;">JPG, PNG, WebP &middot; max 5 MB &middot; 1920x1080px recommended</p>
+    </div>
+    <div id="lTeaserPreview" style="display:none;margin-top:12px;">
+      <img id="lTeaserImg" src="" alt="Teaser preview" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;border:1px solid var(--border-primary);">
+      <button type="button" class="btn btn-secondary" style="margin-top:8px;font-size:12px;padding:5px 12px;" onclick="lTeaserRemove()">
+        <i class="fas fa-times"></i> Remove image
+      </button>
+    </div>
+  </div>
+</div>
+<div class="bento-box" data-section="lstream-source" data-required="true" id="lbox-source">
+  <div class="bento-header" onclick="toggleLiveBento(this)">
+    <div class="bento-title"><i class="fas fa-satellite-dish"></i><h3>Stream Source &amp; Input</h3></div>
+    <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+  </div>
+  <div class="bento-body">
+    <div class="v-form-group">
+      <label>Input source type <span class="v-req">*</span></label>
+      <select class="form-control" id="lSourceType" onchange="lSourceToggle();lCheck('lstream-source')">
+        <option value="rtmp_push" selected>RTMP Push (from Encoder)</option>
+        <option value="srt_listener">SRT Listener</option>
+        <option value="srt_caller">SRT Caller</option>
+        <option value="hls_pull">Pull from HLS/DASH Source</option>
+        <option value="webrtc">WebRTC (Browser-based)</option>
+      </select>
+      <div class="v-hint" id="lSourceHint">Recommended for professional encoder software (OBS, Wirecast, vMix, Elemental).</div>
+    </div>
+    <div id="lSrcRtmp">
+      <div class="v-form-group">
+        <label>RTMP server URL</label>
+        <input type="text" class="form-control" value="rtmp://live.automediacenter.provider/app/" readonly style="font-family:monospace;font-size:13px;">
+      </div>
+      <div class="v-form-group">
+        <label>Stream key</label>
+        <div class="stream-key-row">
+          <div class="stream-key-val" id="lKeyVal">&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022; (generated on save)</div>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="lKeyToggle()" id="lKeyToggleBtn"><i class="fas fa-eye"></i> Show</button>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="lKeyCopy()"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+        <div class="v-hint">Enter URL and key into OBS, Wirecast, vMix or your encoder. Keep private.</div>
+      </div>
+      <div class="v-info-block"><i class="fas fa-info-circle"></i><span>Recommended: H.264 video, AAC audio, keyframe interval 2s, CBR 4&ndash;8 Mbps for HD.</span></div>
+    </div>
+    <div id="lSrcSrt" style="display:none;">
+      <div class="v-form-group">
+        <label>SRT server address</label>
+        <input type="text" class="form-control" value="srt://live.automediacenter.provider:9998" readonly style="font-family:monospace;font-size:13px;">
+      </div>
+      <div class="v-form-group">
+        <label>SRT stream ID / passphrase</label>
+        <div class="stream-key-row">
+          <div class="stream-key-val">&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022; (generated on save)</div>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="lSrtCopy()"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+      </div>
+    </div>
+    <div id="lSrcHls" style="display:none;">
+      <div class="v-form-group">
+        <label>Source HLS/DASH URL <span class="v-req">*</span></label>
+        <input type="url" class="form-control" id="lHlsUrl" placeholder="https://your-origin.com/stream/playlist.m3u8" oninput="lCheck('lstream-source')">
+        <div class="v-hint">AutoMediaCenter pulls from this URL at stream start.</div>
+      </div>
+    </div>
+    <div id="lSrcWebrtc" style="display:none;">
+      <div class="v-info-block"><i class="fas fa-info-circle"></i><span>Browser-based streaming via webcam/microphone. No encoder needed. Broadcast link generated on save.</span></div>
+    </div>
+  </div>
+</div>
+<div class="bento-box" data-section="lstream-processing" data-required="true" id="lbox-processing">
+  <div class="bento-header" onclick="toggleLiveBento(this)">
+    <div class="bento-title"><i class="fas fa-cogs"></i><h3>Processing &amp; Output</h3></div>
+    <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+  </div>
+  <div class="bento-body">
+    <div class="v-form-group">
+      <label>Transcoding profile <span class="v-req">*</span></label>
+      <select class="form-control" id="lTranscode" onchange="lCheck('lstream-processing')">
+        <option value="adaptive" selected>Auto-detect &amp; Adaptive Bitrate (Recommended)</option>
+        <option value="4k">4K UHD (up to 25 Mbps)</option>
+        <option value="1080p">HD 1080p (up to 6 Mbps)</option>
+        <option value="720p">HD 720p (up to 4 Mbps)</option>
+        <option value="576p">SD 576p (up to 2 Mbps)</option>
+      </select>
+      <div class="v-hint">Adaptive bitrate serves the highest quality each viewer connection supports.</div>
+    </div>
+    <div class="v-form-group">
+      <label>Latency setting</label>
+      <div class="latency-grid">
+        <label class="latency-opt" onclick="lPickLatency(this,'normal')"><input type="radio" name="lLatency" value="normal"><div class="latency-val">~15&ndash;20s</div><div class="latency-lbl">Normal</div></label>
+        <label class="latency-opt selected" onclick="lPickLatency(this,'low')"><input type="radio" name="lLatency" value="low" checked><div class="latency-val">~5&ndash;10s</div><div class="latency-lbl">Low (Recommended)</div></label>
+        <label class="latency-opt" onclick="lPickLatency(this,'ultralow')"><input type="radio" name="lLatency" value="ultralow"><div class="latency-val">~1&ndash;3s</div><div class="latency-lbl">Ultra-Low</div></label>
+      </div>
+      <div class="v-hint" id="lLatencyHint" style="margin-top:8px;">Low latency recommended for most press events.</div>
+    </div>
+    <hr style="margin:16px 0;border-color:var(--border-primary);">
+    <label style="font-size:13px;font-weight:600;color:var(--text-primary);display:block;margin-bottom:10px;">Recording</label>
+    <div class="live-check-item">
+      <input type="checkbox" id="lRecord" checked>
+      <div class="live-check-label">
+        <div class="live-check-main">Record this stream to the Asset Library</div>
+      <div class="live-check-sub">Recording available immediately after stream ends</div>
+      </div>
+    </div>
+    <div class="live-check-item">
+      <input type="checkbox" id="lAutoArchive" checked>
+      <div class="live-check-label">
+        <div class="live-check-main">Automatically add recording to AutoMediaLive Recording section</div>
+      <div class="live-check-sub">Card moves from Live to Recording after stream ends</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="bento-box collapsed" data-section="lstream-content" data-required="false" id="lbox-content">
+  <div class="bento-header" onclick="toggleLiveBento(this)">
+    <div class="bento-title"><i class="fas fa-photo-video"></i><h3>Content &amp; Interaction</h3></div>
+    <div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+  </div>
+  <div class="bento-body">
+    <label style="font-size:13px;font-weight:600;color:var(--text-primary);display:block;margin-bottom:10px;">Enable journalist tools</label>
+    <div class="live-check-item"><input type="checkbox" id="lEnableNotes" checked><div class="live-check-label"><div class="live-check-main">Notes tab</div><div class="live-check-sub">Journalists can take timestamped notes during the stream</div></div></div>
+    <div class="live-check-item"><input type="checkbox" id="lEnableTranscript" checked><div class="live-check-label"><div class="live-check-main">Live Transcript tab</div><div class="live-check-sub">Auto-generated captions shown as scrolling transcript</div></div></div>
+    <div class="live-check-item"><input type="checkbox" id="lEnableAssets" checked><div class="live-check-label"><div class="live-check-main">Assets tab</div><div class="live-check-sub">Press kit and downloadable files shown during stream</div></div></div>
+    <hr style="margin:16px 0;border-color:var(--border-primary);">
+    <div class="v-form-group">
+      <label>Link press kit assets <span class="v-opt">(optional)</span></label>
+      <div class="file-upload-area" style="cursor:pointer;" onclick="alert('Asset Library picker coming in API integration phase')">
+        <i class="fas fa-plus" style="font-size:1.5em;color:var(--text-secondary);margin-bottom:8px;"></i><br>
+        <span style="color:var(--accent-primary);font-weight:500;">Click to select assets from Asset Library</span>
+        <p class="form-text" style="margin-top:6px;">Press kits, images, spec sheets shown in Assets tab during stream</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="bento-box collapsed" data-section="lstream-appearance" data-required="false" id="lbox-appearance">
+  <div class="bento-header" onclick="toggleLiveBento(this)">
+    <div class="bento-title"><i class="fas fa-paint-brush"></i><h3>Appearance &amp; Branding</h3></div>
+    <div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+  </div>
+  <div class="bento-body">
+    <div class="v-form-group">
+      <label>Player logo overlay <span class="v-opt">(optional)</span></label>
+      <div class="file-upload-area" id="lLogoZone">
+        <input type="file" id="lLogoFile" accept="image/png" onchange="lLogoUpload(this)">
+        <i class="fas fa-image" style="font-size:2em;color:var(--text-secondary);margin-bottom:10px;"></i><br>
+        <label for="lLogoFile" style="cursor:pointer;color:var(--accent-primary);font-weight:500;">Choose logo PNG</label>
+        <p class="form-text" style="margin-top:6px;">PNG with transparency &middot; max 500 KB &middot; overlaid on video player</p>
+      </div>
+      <div id="lLogoPreview" style="display:none;margin-top:12px;">
+        <img id="lLogoImg" src="" alt="Logo" style="max-height:60px;object-fit:contain;border:1px solid var(--border-primary);border-radius:6px;padding:8px;background:#1a1a1a;">
+        <button type="button" class="btn btn-secondary" style="margin-top:8px;font-size:12px;padding:5px 12px;display:block;" onclick="lLogoRemove()"><i class="fas fa-times"></i> Remove logo</button>
+      </div>
+    </div>
+    <div class="v-form-group" id="lLogoPosWrap" style="display:none;">
+      <label>Logo position</label>
+      <div class="position-grid">
+        <label class="position-opt" onclick="lPickPos(this)"><input type="radio" name="lLogoPos" value="top-left"> Top left</label>
+        <label class="position-opt" onclick="lPickPos(this)"><input type="radio" name="lLogoPos" value="top-right"> Top right</label>
+        <label class="position-opt selected" onclick="lPickPos(this)"><input type="radio" name="lLogoPos" value="bottom-left" checked> Bottom left</label>
+        <label class="position-opt" onclick="lPickPos(this)"><input type="radio" name="lLogoPos" value="bottom-right"> Bottom right</label>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="bento-box collapsed" data-section="lstream-access" data-required="false" id="lbox-access">
+  <div class="bento-header" onclick="toggleLiveBento(this)">
+    <div class="bento-title"><i class="fas fa-eye"></i><h3>Access &amp; Visibility</h3></div>
+    <div class="bento-controls"><span class="status-chip">Optional</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+  </div>
+  <div class="bento-body">
+    <div class="v-form-row">
+      <div class="v-form-group">
+        <label>Stream visibility</label>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px;">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;"><input type="radio" name="lVisibility" value="public" checked style="margin-top:2px;"><div><div style="font-size:13px;font-weight:600;color:var(--text-primary);">Publicly listed on AutoMediaLive</div><div style="font-size:12px;color:var(--text-secondary);">Visible to all verified journalists</div></div></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;"><input type="radio" name="lVisibility" value="unlisted" style="margin-top:2px;"><div><div style="font-size:13px;font-weight:600;color:var(--text-primary);">Unlisted</div><div style="font-size:12px;color:var(--text-secondary);">Accessible via direct link only</div></div></label>
+        </div>
+      </div>
+      <div class="v-form-group">
+        <label>Stream start trigger</label>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px;">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;"><input type="radio" name="lStartTrigger" value="manual" checked style="margin-top:2px;"><div><div style="font-size:13px;font-weight:600;color:var(--text-primary);">Manual go-live button (Recommended)</div><div style="font-size:12px;color:var(--text-secondary);">Requires clicking Start Stream on the pre-stream check page</div></div></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;"><input type="radio" name="lStartTrigger" value="auto" style="margin-top:2px;"><div><div style="font-size:13px;font-weight:600;color:var(--text-primary);">Automatic at scheduled time</div><div style="font-size:12px;color:var(--text-secondary);">Goes public if stable input signal is detected</div></div></label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="bento-box legal-authorisation" data-section="lstream-legal" data-required="true" id="lbox-legal">
+  <div class="bento-header" onclick="toggleLiveBento(this)">
+    <div class="bento-title"><i class="fas fa-gavel"></i><h3>Authorisation &amp; Rights</h3></div>
+    <div class="bento-controls"><span class="status-chip">Incomplete</span><i class="fas fa-chevron-down toggle-icon"></i></div>
+  </div>
+  <div class="bento-body">
+    <div class="live-check-item">
+      <input type="checkbox" id="lAuth1" onchange="lCheck('lstream-legal')">
+      <div class="live-check-label">
+        <div class="live-check-main">I am authorised to upload details on this Media Stream on behalf of the brand <span class="v-req">*</span></div>
+      </div>
+    </div>
+    <div class="live-check-item">
+      <input type="checkbox" id="lAuth2" onchange="lCheck('lstream-legal')">
+      <div class="live-check-label">
+        <div class="live-check-main">The Media Stream date/time/time zone are correct and binding <span class="v-req">*</span></div>
+      </div>
+    </div>
+    <div class="live-check-item">
+      <input type="checkbox" id="lAuth3" onchange="lCheck('lstream-legal')">
+      <div class="live-check-label">
+        <div class="live-check-main">Media accessing this Media Stream agree to standard usage terms <span class="v-req">*</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="live-form-actions">
+  <button type="button" class="live-btn-draft" onclick="lDraft()"><i class="fas fa-save"></i> Save as Draft</button>
+  <button type="button" class="live-btn-announce" onclick="lAnnounce()"><i class="fas fa-bullhorn"></i> Announce Upcoming Stream</button>
+  <div style="flex:1;"></div>
+  <button type="button" class="live-btn-schedule" onclick="lFinalise()"><i class="fas fa-calendar-check"></i> Finalise &amp; Schedule</button>
+</div>
+</div>
+<div class="bento-sidebar"><div class="preview-card sticky">
+  <div class="lcp-preview-label">Card Preview</div>
+  <div class="lcp-wrap">
+    <div class="lcp-thumb">
+      <img class="lcp-thumb-img" id="lCpImg" src="" alt="">
+      <div class="lcp-thumb-ph" id="lCpPh"><i class="fas fa-clock"></i></div>
+      <div class="lcp-pill"><i class="fas fa-clock" style="font-size:8px;"></i> Upcoming</div>
+    </div>
+    <div class="lcp-brand" id="lCpBrand">BRAND</div>
+    <div class="lcp-body">
+      <div class="lcp-title" id="lCpTitle">Your event title will appear here</div>
+      <div class="lcp-meta">
+        <div class="lcp-cal"><i class="far fa-calendar-plus" style="font-size:11px;"></i>&nbsp;<span style="font-size:12px;">Add to Calendar</span></div>
+        <div class="lcp-date-col">
+          <div class="lcp-date"><i class="far fa-calendar-alt"></i>&nbsp;<span id="lCpDate">Date</span></div>
+          <div class="lcp-time-val" id="lCpTime">Time TZ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:12px;font-size:11px;color:var(--text-secondary);line-height:1.5;">Preview updates as you fill in the form. Card appears in the <strong>Upcoming</strong> section of AutoMediaLive.</div>
+</div></div>
+</div>
+
              `;
 
             // --- Helper Functions ---
@@ -6078,9 +6816,9 @@ const radarFormHtml = `
                         dynamicFormContainer.style.display = 'none';
                         dynamicFormContainer.innerHTML = '';
                         if(serviceCardGrid) serviceCardGrid.classList.remove('hidden');
-                        if(mainContentTitle) mainContentTitle.innerHTML = '<i class="fas fa-upload"></i> Upload Hub';
+                        if(mainContentTitle) mainContentTitle.innerHTML = 'Upload Hub';
                         const _gbl = document.getElementById('global-back-link'); if (_gbl) _gbl.style.display = 'none';
-                        if(mainContentSubtitle) mainContentSubtitle.textContent = 'Welcome! Select the service you wish to upload assets or create content for.';
+                        if(mainContentSubtitle) mainContentSubtitle.textContent = 'Upload files to AutoMediaCenter.com from any device';
                         dynamicFormContainer.removeAttribute('data-current-form');
                         currentEditingReleaseUUID = null; // Clear editing state
                         currentEditingAlertUUID = null; // Clear editing state
@@ -7557,11 +8295,26 @@ function initCenterLanguageVariants() {
                     let formHtml = '<p style="color: var(--color-danger); text-align: center;">Error: Form content not found.</p>';
                     
                     if (formType === 'vault') formHtml = vaultFormHtml;
+                    else if (formType === 'brand-intelligence') formHtml = brandIntelFormHtml;
                     else if (formType === 'center') formHtml = centerFormHtml;
                     else if (formType === 'radar') formHtml = radarFormHtml;
                     else if (formType === 'live') formHtml = liveFormHtml;
                     
                     dynamicFormContainer.innerHTML = formHtml;
+                    // Init live form functions after DOM injection
+                    if (formType === 'live') {
+                        setTimeout(function() {
+                            if (typeof lCardPreview === 'function') lCardPreview();
+                            if (typeof lSourceToggle === 'function') lSourceToggle();
+                            // On mobile: collapse all bento boxes except the first
+                            if (window.innerWidth <= 768) {
+                                var boxes = document.querySelectorAll('#dynamic-form-container .bento-box');
+                                boxes.forEach(function(box, i) {
+                                    if (i > 0) box.classList.add('collapsed');
+                                });
+                            }
+                        }, 200);
+                    }
 
                     // Show the global back link above the title
                     const globalBackLink = document.getElementById('global-back-link');
@@ -7575,6 +8328,7 @@ function initCenterLanguageVariants() {
                         attachFormSubmitListener(formType); 
                         
                         if (formType === 'vault') initializeVaultFormJS();
+                        else if (formType === 'brand-intelligence') setTimeout(biInit, 100);
                         else if (formType === 'center') {
                             initializeCenterFormJS();
                             if (currentEditingReleaseUUID) {
@@ -10513,6 +11267,387 @@ console.log('✅ Menu upgrade JavaScript loaded');
         console.log("DEBUG: Initial setup script finished.");
         });
     </script>
+<script>
+(function(){
+  var lSchedOk=false, lTeaserOk=false, lTeaserUrl=null, lKeyRevealed=false;
+  var lKeyActual='sk_live_'+Math.random().toString(36).substr(2,32);
+
+  window.toggleLiveBento=function(h){var b=h.closest('.bento-box');if(b)b.classList.toggle('collapsed');};
+
+  window.lCheck=function(s){
+    var ok=false;
+    if(s==='lstream-identity'){var c=document.getElementById('lCompany'),b=document.getElementById('lBrand'),t=document.getElementById('lTitle');ok=!!(c&&c.value.trim()&&b&&b.value.trim()&&t&&t.value.trim());}
+    else if(s==='lstream-schedule'){ok=lSchedOk;}
+    else if(s==='lstream-category'){var e=document.getElementById('lEventType');ok=!!(e&&e.value);}
+    else if(s==='lstream-language'){var p=document.getElementById('lPrimaryLang');ok=!!(p&&p.value);}
+    else if(s==='lstream-teaser'){ok=lTeaserOk;}
+    else if(s==='lstream-source'){var st=document.getElementById('lSourceType');if(st&&st.value==='hls_pull'){var u=document.getElementById('lHlsUrl');ok=!!(u&&u.value.trim());}else{ok=true;}}
+    else if(s==='lstream-processing'){ok=true;}
+    else if(s==='lstream-legal'){var a=document.getElementById('lAuth1'),b2=document.getElementById('lAuth2'),c2=document.getElementById('lAuth3');ok=!!(a&&a.checked&&b2&&b2.checked&&c2&&c2.checked);}
+    else{ok=true;}
+    var box=document.getElementById('lbox-'+s.replace('lstream-',''));
+    if(box){box.classList.toggle('complete',ok);var chip=box.querySelector('.status-chip');if(chip)chip.textContent=ok?'Complete':(box.dataset.required==='true'?'Incomplete':'Optional');}
+    return ok;
+  };
+
+  window.lUpdateSchedPreview=function(){
+    var d=document.getElementById('lStreamDate'),t=document.getElementById('lStreamTime'),tz=document.getElementById('lTimezone'),el=document.getElementById('lSchedPreview');
+    if(el&&d&&d.value&&t&&t.value&&tz&&tz.value)el.textContent='Scheduled: '+d.value+' at '+t.value+' ('+tz.value+')';
+    else if(el)el.textContent='';
+  };
+
+  window.lVerifySched=function(){
+    var d=document.getElementById('lStreamDate'),t=document.getElementById('lStreamTime'),tz=document.getElementById('lTimezone');
+    if(!d||!d.value||!t||!t.value||!tz||!tz.value){alert('Please fill in date, time and timezone first.');return;}
+    var dt=new Date(d.value+'T'+t.value);
+    var fmt=dt.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    var sum=fmt+' at '+t.value+' ('+tz.value+')';
+    if(!confirm('Confirm stream schedule:\n\n'+sum+'\n\nThis will be the public event time shown to journalists.'))return;
+    lSchedOk=true;
+    var gate=document.getElementById('lSchedGate'),sumEl=document.getElementById('lSchedSummary'),btn=document.getElementById('lVerifyBtn'),edit=document.getElementById('lSchedEditLink');
+    if(gate)gate.classList.add('verified');
+    if(sumEl){sumEl.textContent='✓ Verified & Locked: '+sum;sumEl.style.color='#059669';sumEl.style.fontWeight='700';}
+    if(btn){btn.disabled=true;btn.textContent='Verified & Locked';}
+    if(edit)edit.style.display='block';
+    [d,t,tz].forEach(function(el){if(el){el.readOnly=true;el.classList.add('schedule-locked');}});
+    lCheck('lstream-schedule');
+  };
+
+  window.lUnlockSched=function(e){
+    e.preventDefault();lSchedOk=false;
+    var gate=document.getElementById('lSchedGate'),sumEl=document.getElementById('lSchedSummary'),btn=document.getElementById('lVerifyBtn'),edit=document.getElementById('lSchedEditLink');
+    if(gate)gate.classList.remove('verified');
+    if(sumEl){sumEl.textContent='Fill in date, time and timezone — then verify & lock.';sumEl.style.color='';sumEl.style.fontWeight='';}
+    if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-lock"></i> Verify & Lock Schedule';}
+    if(edit)edit.style.display='none';
+    ['lStreamDate','lStreamTime','lTimezone'].forEach(function(id){var el=document.getElementById(id);if(el){el.readOnly=false;el.classList.remove('schedule-locked');}});
+    lCheck('lstream-schedule');
+  };
+
+  window.lPickEarly=function(lbl){document.querySelectorAll('.early-live-opt').forEach(function(l){l.classList.remove('selected');});lbl.classList.add('selected');};
+  window.lPickLatency=function(lbl,val){document.querySelectorAll('.latency-opt').forEach(function(l){l.classList.remove('selected');});lbl.classList.add('selected');var hints={normal:'Stable for all networks.',low:'Recommended for most press events and Q&A sessions.',ultralow:'~1-3s delay. May be unstable on poor connections.'};var h=document.getElementById('lLatencyHint');if(h)h.textContent=hints[val]||'';};
+  window.lPickPos=function(lbl){document.querySelectorAll('.position-opt').forEach(function(l){l.classList.remove('selected');});lbl.classList.add('selected');};
+
+  window.lSourceToggle=function(){
+    var st=document.getElementById('lSourceType');if(!st)return;
+    var v=st.value;
+    var el;el=document.getElementById('lSrcRtmp');if(el)el.style.display=(v==='rtmp_push')?'':'none';
+    el=document.getElementById('lSrcSrt');if(el)el.style.display=(v==='srt_listener'||v==='srt_caller')?'':'none';
+    el=document.getElementById('lSrcHls');if(el)el.style.display=(v==='hls_pull')?'':'none';
+    el=document.getElementById('lSrcWebrtc');if(el)el.style.display=(v==='webrtc')?'':'none';
+    var hints={rtmp_push:'Recommended for professional encoder software (OBS, Wirecast, vMix, Elemental).',srt_listener:'Lower latency and better error correction than RTMP.',srt_caller:'AutoMediaCenter connects outbound to your SRT server.',hls_pull:'Pull from an existing HLS or DASH source URL.',webrtc:'Browser-based streaming via webcam/microphone.'};
+    var h=document.getElementById('lSourceHint');if(h)h.textContent=hints[v]||'';
+  };
+
+  window.lKeyToggle=function(){lKeyRevealed=!lKeyRevealed;var el=document.getElementById('lKeyVal'),btn=document.getElementById('lKeyToggleBtn');if(el)el.textContent=lKeyRevealed?lKeyActual:'•••••••••••••••••••••••••••••• (generated on save)';if(btn)btn.innerHTML=lKeyRevealed?'<i class="fas fa-eye-slash"></i> Hide':'<i class="fas fa-eye"></i> Show';};
+  window.lKeyCopy=function(){if(navigator.clipboard)navigator.clipboard.writeText(lKeyActual).then(function(){alert('Stream key copied.');});};
+  window.lSrtCopy=function(){if(navigator.clipboard)navigator.clipboard.writeText('srt_'+Math.random().toString(36).substr(2,20)).then(function(){alert('SRT passphrase copied.');});};
+
+  window.lTeaserUpload=function(input){
+    if(!input.files||!input.files[0])return;
+    if(lTeaserUrl)URL.revokeObjectURL(lTeaserUrl);
+    lTeaserUrl=URL.createObjectURL(input.files[0]);lTeaserOk=true;
+    var wrap=document.getElementById('lTeaserPreview'),img=document.getElementById('lTeaserImg'),zone=document.getElementById('lTeaserZone');
+    if(img)img.src=lTeaserUrl;if(wrap)wrap.style.display='';if(zone)zone.style.display='none';
+    lCheck('lstream-teaser');lCardPreview();
+  };
+  window.lTeaserDrop=function(e){
+    e.preventDefault();var zone=document.getElementById('lTeaserZone');if(zone)zone.classList.remove('drag-over');
+    var file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+    if(file&&file.type.startsWith('image/')){var dt=new DataTransfer();dt.items.add(file);var inp=document.getElementById('lTeaserFile');if(inp){inp.files=dt.files;lTeaserUpload(inp);}}
+  };
+  window.lTeaserRemove=function(){
+    if(lTeaserUrl){URL.revokeObjectURL(lTeaserUrl);lTeaserUrl=null;}lTeaserOk=false;
+    var inp=document.getElementById('lTeaserFile'),wrap=document.getElementById('lTeaserPreview'),zone=document.getElementById('lTeaserZone');
+    if(inp)inp.value='';if(wrap)wrap.style.display='none';if(zone)zone.style.display='';
+    lCheck('lstream-teaser');lCardPreview();
+  };
+
+  window.lLogoUpload=function(input){
+    if(!input.files||!input.files[0])return;
+    var url=URL.createObjectURL(input.files[0]);
+    var img=document.getElementById('lLogoImg'),wrap=document.getElementById('lLogoPreview'),posW=document.getElementById('lLogoPosWrap'),zone=document.getElementById('lLogoZone');
+    if(img)img.src=url;if(wrap)wrap.style.display='';if(posW)posW.style.display='';if(zone)zone.style.display='none';
+  };
+  window.lLogoRemove=function(){
+    var inp=document.getElementById('lLogoFile'),wrap=document.getElementById('lLogoPreview'),posW=document.getElementById('lLogoPosWrap'),zone=document.getElementById('lLogoZone');
+    if(inp)inp.value='';if(wrap)wrap.style.display='none';if(posW)posW.style.display='none';if(zone)zone.style.display='';
+  };
+
+  window.lCardPreview=function(){
+    var brand=(document.getElementById('lBrand')&&document.getElementById('lBrand').value||'Brand').toUpperCase();
+    var title=document.getElementById('lTitle')&&document.getElementById('lTitle').value||'Your event title will appear here';
+    var dv=document.getElementById('lStreamDate')&&document.getElementById('lStreamDate').value;
+    var tv=document.getElementById('lStreamTime')&&document.getElementById('lStreamTime').value;
+    var tz=(document.getElementById('lTimezone')&&document.getElementById('lTimezone').value)||'Europe/Berlin';
+    var b=document.getElementById('lCpBrand');if(b)b.textContent=brand;
+    var tEl=document.getElementById('lCpTitle');if(tEl)tEl.textContent=title;
+    var img=document.getElementById('lCpImg'),ph=document.getElementById('lCpPh');
+    if(lTeaserUrl&&img&&ph){img.src=lTeaserUrl;img.style.display='';ph.style.display='none';}
+    else if(img&&ph){img.style.display='none';ph.style.display='flex';}
+    if(dv){var dateEl=document.getElementById('lCpDate');if(dateEl){var d=new Date(dv+'T00:00:00');dateEl.textContent=d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}}
+    if(tv&&tz){var tzA='TZ';try{var pts=new Intl.DateTimeFormat('en-US',{timeZone:tz,timeZoneName:'short'}).formatToParts(dv&&tv?new Date(dv+'T'+tv+':00'):new Date());var tzP=pts.find(function(p){return p.type==='timeZoneName';});if(tzP)tzA=tzP.value;}catch(e){tzA=tz.split('/').pop();}var tEl2=document.getElementById('lCpTime');if(tEl2)tEl2.textContent=tv.substring(0,5)+' '+tzA;}
+  };
+
+  window.lAnnounce=function(){
+    var t=document.getElementById('lTitle')&&document.getElementById('lTitle').value;
+    if(!t||!t.trim()){alert('Please enter a stream title before announcing.');return;}
+    if(!lSchedOk){alert('Please verify and lock the schedule before announcing.');return;}
+    lSubmitEvent('upcoming');
+  };
+  window.lFinalise=function(){
+    var req=['lstream-identity','lstream-schedule','lstream-category','lstream-language','lstream-teaser','lstream-source','lstream-processing','lstream-legal'];
+    var ok=req.every(function(s){return lCheck(s);});
+    if(!ok){alert('Please complete all required sections before finalising.');return;}
+    lSubmitEvent('scheduled');
+  };
+  var _lSubmitting = false;
+  window.lSubmitEvent=async function(statusVal){
+    if (_lSubmitting) return;
+    _lSubmitting = true;
+    var API_BASE=window.location.hostname==='localhost'?'http://localhost:5000':'';
+    var token=localStorage.getItem('token')||localStorage.getItem('authToken');
+    if(!token){alert('Not authenticated. Please log in again.');return;}
+    var g=function(id){var el=document.getElementById(id);return el?el.value:'';};
+    var teaserUrl=(lTeaserUrl&&!lTeaserUrl.startsWith('blob:'))?lTeaserUrl:null;
+    var tzVal=g('lTimezone');
+    var dateVal=g('lStreamDate');
+    var timeVal=g('lStreamTime');
+    var eventDT=null;
+    if(dateVal&&timeVal&&tzVal){
+      try{
+        // Convert wall-clock time in the user's chosen IANA timezone to UTC
+        // We use Intl to find the UTC offset at that specific date/time
+        const localStr = dateVal + 'T' + timeVal + ':00';
+        // Create a date assuming UTC, then adjust for the timezone offset
+        const tempDate = new Date(localStr + 'Z');
+        // Get what this UTC moment looks like in the target timezone
+        const parts = new Intl.DateTimeFormat('en-CA', {
+          timeZone: tzVal,
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+          hour12: false
+        }).formatToParts(tempDate);
+        const p = {};
+        parts.forEach(({type, value}) => { p[type] = value; });
+        const tzLocalStr = `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}`;
+        // Difference between what we wanted and what UTC gave us in that tz
+        const diff = new Date(localStr) - new Date(tzLocalStr);
+        eventDT = new Date(tempDate.getTime() + diff).toISOString();
+      }catch(e){ eventDT = new Date(dateVal+'T'+timeVal).toISOString(); }
+    }
+    var earlyVal = 15;
+    var earlyRadio = document.querySelector('input[name="lEarlyLive"]:checked');
+    if (earlyRadio) earlyVal = parseInt(earlyRadio.value) || 15;
+
+    // ── Validate event date is in the future
+    if (eventDT) {
+      const eventMs = new Date(eventDT).getTime();
+      const nowMs = Date.now();
+      if (eventMs <= nowMs) {
+        alert('The scheduled date and time is in the past. Please select a future date and time.');
+        _lSubmitting = false;
+        const btn = statusVal === 'upcoming' ? document.querySelector('.live-btn-announce') : document.querySelector('.live-btn-schedule');
+        if (btn) { btn.disabled = false; btn.innerHTML = statusVal === 'upcoming' ? '<i class="fas fa-bullhorn"></i> Announce Upcoming Stream' : '<i class="fas fa-calendar-check"></i> Schedule Stream'; }
+        return;
+      }
+      // Warn if less than 15 minutes away
+      if (eventMs - nowMs < 15 * 60 * 1000) {
+        const proceed = confirm('Warning: This stream is scheduled to start in less than 15 minutes. Are you sure you want to continue?');
+        if (!proceed) {
+          _lSubmitting = false;
+          return;
+        }
+      }
+    }
+
+    var payload={
+      title:g('lTitle'),
+      brand:g('lBrand'),
+      company:g('lCompany'),
+      description:g('lDescription'),
+      eventDateTime:eventDT,
+      timezone:tzVal||'Europe/London',
+      earlyAccessMins:earlyVal,
+      sourceType:g('lSourceType')||'rtmp_push',
+      latency:g('lLatency')||'low',
+      visibility:g('lVisibility')||'public',
+      startTrigger:g('lStartTrigger')||'manual',
+      teaserImageUrl:teaserUrl,
+      status:statusVal,
+      recordStream:document.getElementById('lRecord')?document.getElementById('lRecord').checked:true,
+      rightsConfirmed:!!(document.getElementById('lAuth1')&&document.getElementById('lAuth1').checked),
+      streamingRights:!!(document.getElementById('lAuth2')&&document.getElementById('lAuth2').checked),
+      contentWarnings:false
+    };
+    var btn=statusVal==='upcoming'?document.querySelector('.live-btn-announce'):document.querySelector('.live-btn-schedule');
+    if(btn){btn.disabled=true;btn.textContent='Posting...';}
+    try{
+      var res=await fetch(API_BASE+'/api/v1/live/events',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+        body:JSON.stringify(payload)
+      });
+      var json=await res.json();
+      if(json.success){
+        const ev = json.data;
+        let streamKey = ev.streamKey || 'not generated';
+        const host = window.location.hostname === 'localhost' ? 'localhost' : window.location.hostname;
+        const rtmpUrl = 'rtmps://' + host + '/live';
+        const eventId = ev._id;
+        let keyRevealed = false;
+        const maskedKey = streamKey.substring(0, 8) + '••••••••••••••••';
+
+        // Build success modal
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);';
+        modal.innerHTML = `
+          <div style="background:#1e293b;border:1px solid #334155;border-radius:16px;padding:32px;max-width:540px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,0.6);">
+
+            <!-- Header -->
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:rgba(22,163,74,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-check" style="color:#22c55e;font-size:16px;"></i>
+              </div>
+              <div>
+                <div style="font-size:16px;font-weight:700;color:#f1f5f9;">${ev.title}</div>
+                <div style="font-size:12px;color:#94a3b8;margin-top:2px;">Announced successfully · ${ev.brand}</div>
+              </div>
+            </div>
+
+            <!-- Credentials box -->
+            <div style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:20px;margin-bottom:16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#64748b;">OBS Stream Settings</div>
+                <div style="font-size:10px;color:#f59e0b;font-weight:600;"><i class="fas fa-lock" style="font-size:9px;"></i> Broadcast team only</div>
+              </div>
+
+              <!-- RTMPS Server -->
+              <div style="margin-bottom:16px;">
+                <div style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">RTMPS Server <span style="color:#22c55e;font-weight:400;text-transform:none;letter-spacing:0;">Encrypted</span></div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <code id="lsModalRtmp" style="flex:1;font-size:12px;font-weight:600;color:#22c55e;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);padding:9px 12px;border-radius:6px;font-family:monospace;">${rtmpUrl}</code>
+                  <button id="lsModalCopyRtmp" style="padding:8px 14px;border:1px solid #334155;border-radius:6px;background:#1e293b;color:#94a3b8;font-size:12px;cursor:pointer;white-space:nowrap;font-weight:600;"><i class="fas fa-copy"></i> Copy</button>
+                </div>
+              </div>
+
+              <!-- Stream Key -->
+              <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                  <div style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.06em;">Stream Key <span style="color:#f59e0b;font-weight:400;text-transform:none;letter-spacing:0;">Never share publicly</span></div>
+                  <div style="display:flex;gap:6px;">
+                    <button id="lsModalRevealKey" style="padding:4px 10px;border:1px solid rgba(251,191,36,0.4);border-radius:5px;background:rgba(251,191,36,0.08);color:#f59e0b;font-size:11px;font-weight:600;cursor:pointer;"><i class="fas fa-eye"></i> Reveal</button>
+                    <button id="lsModalResetKey" style="padding:4px 10px;border:1px solid rgba(239,68,68,0.4);border-radius:5px;background:rgba(239,68,68,0.08);color:#ef4444;font-size:11px;font-weight:600;cursor:pointer;"><i class="fas fa-sync-alt"></i> Reset</button>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <code id="lsModalKey" style="flex:1;font-size:12px;font-weight:600;color:#94a3b8;background:rgba(255,255,255,0.05);border:1px solid #334155;padding:9px 12px;border-radius:6px;font-family:monospace;word-break:break-all;letter-spacing:0.04em;">${maskedKey}</code>
+                  <button id="lsModalCopyKey" style="padding:8px 14px;border:1px solid #334155;border-radius:6px;background:#1e293b;color:#475569;font-size:12px;cursor:not-allowed;white-space:nowrap;font-weight:600;opacity:0.5;" disabled><i class="fas fa-copy"></i> Copy</button>
+                </div>
+                <div style="font-size:10px;color:#475569;margin-top:8px;line-height:1.5;"><i class="fas fa-info-circle" style="color:#3b82f6;"></i> Reveal key before copying. Stream credentials have also been emailed to you. Reset generates a new key — old key stops working immediately.</div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display:flex;gap:10px;">
+              <button id="lsModalGoLive" style="flex:1;padding:12px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">
+                <i class="fas fa-video"></i> View in Media Live
+              </button>
+              <button id="lsModalPreview" style="flex:1;padding:12px;background:transparent;color:#f1f5f9;border:1px solid #334155;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">
+                <i class="fas fa-eye"></i> Preview Detail Page
+              </button>
+            </div>
+          </div>`;
+        document.body.appendChild(modal);
+
+        const keyEl    = document.getElementById('lsModalKey');
+        const copyBtn  = document.getElementById('lsModalCopyKey');
+        const revealBtn= document.getElementById('lsModalRevealKey');
+        const resetBtn = document.getElementById('lsModalResetKey');
+
+        // Reveal toggle
+        revealBtn.addEventListener('click', function() {
+          keyRevealed = !keyRevealed;
+          keyEl.textContent = keyRevealed ? streamKey : maskedKey;
+          keyEl.style.color = keyRevealed ? '#e2e8f0' : '#94a3b8';
+          copyBtn.disabled = !keyRevealed;
+          copyBtn.style.opacity = keyRevealed ? '1' : '0.5';
+          copyBtn.style.cursor = keyRevealed ? 'pointer' : 'not-allowed';
+          copyBtn.style.color = keyRevealed ? '#94a3b8' : '#475569';
+          this.innerHTML = keyRevealed ? '<i class="fas fa-eye-slash"></i> Hide' : '<i class="fas fa-eye"></i> Reveal';
+        });
+
+        // Copy — only works after reveal
+        copyBtn.addEventListener('click', function() {
+          if (!keyRevealed) return;
+          navigator.clipboard.writeText(streamKey).then(() => {
+            this.innerHTML = '<i class="fas fa-check"></i> Copied';
+            setTimeout(() => { this.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 2000);
+          });
+        });
+
+        // Copy RTMP URL
+        document.getElementById('lsModalCopyRtmp').addEventListener('click', function() {
+          navigator.clipboard.writeText(rtmpUrl).then(() => { this.innerHTML = '<i class="fas fa-check"></i> Copied'; setTimeout(() => { this.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 2000); });
+        });
+
+        // Reset key
+        resetBtn.addEventListener('click', async function() {
+          if (!confirm('Reset stream key? The old key will stop working immediately. You will need to update OBS with the new key.')) return;
+          this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+          this.disabled = true;
+          try {
+            const res = await fetch(API_BASE + '/api/v1/live/events/' + eventId + '/reset-key', {
+              method: 'POST',
+              headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await res.json();
+            if (data.success) {
+              streamKey = data.newStreamKey;
+              keyEl.textContent = streamKey;
+              keyRevealed = true;
+              copyBtn.disabled = false;
+              revealBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide';
+              this.innerHTML = '<i class="fas fa-check"></i> Reset';
+              setTimeout(() => { this.innerHTML = '<i class="fas fa-sync-alt"></i> Reset'; this.disabled = false; }, 2000);
+            } else {
+              alert('Failed to reset key: ' + (data.error || 'Unknown error'));
+              this.innerHTML = '<i class="fas fa-sync-alt"></i> Reset';
+              this.disabled = false;
+            }
+          } catch(e) {
+            alert('Network error resetting key');
+            this.innerHTML = '<i class="fas fa-sync-alt"></i> Reset';
+            this.disabled = false;
+          }
+        });
+
+        document.getElementById('lsModalGoLive').addEventListener('click', function() {
+          window.location.href = 'automedialive.html?status=upcoming';
+        });
+        document.getElementById('lsModalPreview').addEventListener('click', function() {
+          window.location.href = 'amc-live-detail.html?id=' + eventId;
+        });
+        modal.addEventListener('click', (e) => { if(e.target===modal) modal.remove(); });
+        if(btn){btn.disabled=false;btn.textContent='Announce Upcoming Stream';}
+        _lSubmitting = false;
+      } else {
+        alert('Error: '+(json.error||'Failed to create event'));
+        if(btn){btn.disabled=false;btn.textContent=statusVal==='upcoming'?'Announce Upcoming Stream':'Finalise & Schedule';}
+        _lSubmitting = false;
+      }
+    } catch(err){
+      console.error('[lSubmitEvent] error:',err);
+      alert('Network error. Please try again.');
+      if(btn){btn.disabled=false;btn.textContent=statusVal==='upcoming'?'Announce Upcoming Stream':'Finalise & Schedule';}
+      _lSubmitting = false;
+    }
+  };
+
+  setTimeout(function(){lCardPreview();lSourceToggle();},150);
+})();
+</script>
+
     <script>document.addEventListener('DOMContentLoaded', function() { if (typeof loadV65Shell === 'function') { loadV65Shell({ basePath: './components/shell' }).then(() => console.log('✅ V6.5 Shell loaded')).catch(error => console.error('❌ Shell load failed:', error)); } });</script>
     <script src="./components/shell/v6_5-shell-loader.js" defer></script>
     <script src="./components/shell/v6_5-shell.js"></script>
@@ -10956,5 +12091,333 @@ button,
 </style>
 
 <script src="/amc-notifications.js"></script>
+<style>
+/* ===== TITLE FIX ===== */
+html body .amc-page,
+html body main.mobile-main .amc-page,
+html body .mobile-main .amc-page { 
+    padding-top: 0 !important; 
+    margin-top: 0 !important; 
+}
+html body .amc-page-header,
+html body main .amc-page-header { 
+    padding-top: 0 !important; 
+    margin-top: 0 !important; 
+}
+
+/* html/body do not scroll — mobile-main is the scroll container */
+html, body {
+    height: 100% !important;
+    overflow: hidden !important;
+}
+
+/* mobile-main is the ONLY scroller — fixed to viewport */
+html body main.mobile-main,
+html body .mobile-main {
+    position: fixed !important;
+    top: 56px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    box-sizing: border-box !important;
+    padding-left: 0 !important;
+    width: 100% !important;
+}
+
+/* Override shell's @media rule that sets left:var(--amc-rail-w) */
+@media (min-width: 1100px) {
+    html body main.mobile-main,
+    html body .mobile-main {
+        left: 0 !important;
+        width: 100% !important;
+        padding-left: var(--amc-rail-w, 72px) !important;
+    }
+}
+
+/* preview card sticky — works because mobile-main is the scroll container */
+.preview-card.sticky {
+    position: sticky;
+    top: 72px;
+}
+
+/* vault sidebar — must stretch full grid height for sticky to work */
+#dynamic-form-container .bento-grid > .bento-sidebar {
+    align-self: stretch !important;
+    position: relative !important;
+}
+
+/* vault sidebar bento-boxes with inline sticky — fix their top value */
+.bento-sidebar .bento-box[style*="position:sticky"] {
+    position: sticky !important;
+    top: 72px !important;
+}
+
+/* live form sidebar sticky */
+.live-form-layout .bento-sidebar {
+    position: sticky !important;
+    top: 72px !important;
+    align-self: flex-start !important;
+}
+
+@media (max-width: 768px) {
+    html body main.mobile-main,
+    html body .mobile-main {
+        padding-left: 0 !important;
+    }
+    .preview-card.sticky,
+    .live-form-layout .bento-sidebar {
+        position: relative !important;
+        top: auto !important;
+    }
+}
+</style>
+
+<script>
+// ── BRAND INTELLIGENCE JS ────────────────────────────────────────────
+const BI_API_KEY = '1E4EFVFR0EFAFK2Y';
+let biCurrentBrand = '';
+let biTickerSearchTimeout = null;
+let biSelectedTicker = null;
+
+async function biInit() {
+    // Load brands from API
+    const sel = document.getElementById('bi-brand-select');
+    if (!sel) return;
+    try {
+const r = await fetch('/api/v1/center/releases?limit=500&status=published', {
+    headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
+});
+const j = await r.json();
+const releases = j.data?.releases || j.data || [];
+const brands = [...new Set(releases.map(r => r.brand).filter(Boolean))].sort();
+brands.forEach(b => {
+    const o = document.createElement('option');
+    o.value = b; o.textContent = b;
+    sel.appendChild(o);
+});
+    } catch(e) { console.warn('Could not load brands:', e); }
+}
+
+async function biBrandChanged(brand) {
+    biCurrentBrand = brand;
+    if (!brand) return;
+    // Check existing status for this brand
+    try {
+const r = await fetch('/api/v1/center/brand-intelligence/' + encodeURIComponent(brand) + '/status', {
+    headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
+});
+const j = await r.json();
+if (j.success && j.data) {
+    ['profile', 'personnel', 'financials', 'stock'].forEach(type => {
+const d = j.data[type];
+if (d) biSetStatus(type, d.uploadedAt ? 'active' : 'none', d);
+    });
+}
+    } catch(e) {}
+}
+
+function biFileSelected(type, input) {
+    if (input.files && input.files[0]) {
+const fn = document.getElementById('bi-filename-' + type);
+if (fn) fn.textContent = input.files[0].name;
+const btn = document.getElementById('bi-btn-' + type);
+if (btn) btn.disabled = false;
+    }
+}
+
+async function biUpload(type) {
+    if (!biCurrentBrand) { alert('Please select a brand first.'); return; }
+    const fileInput = document.getElementById('bi-file-' + type);
+    if (!fileInput || !fileInput.files[0]) { alert('Please select a file first.'); return; }
+
+    const btn = document.getElementById('bi-btn-' + type);
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Processing...';
+    biSetStatus(type, 'processing');
+
+    const formData = new FormData();
+    formData.append('brand', biCurrentBrand);
+    formData.append('docType', type);
+    formData.append('document', fileInput.files[0]);
+
+    try {
+const r = await fetch('/api/v1/brand-intel/upload', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') },
+    body: formData
+});
+const j = await r.json();
+if (j.success) {
+    biSetStatus(type, 'active', j.data);
+    biShowExtracted(type, j.data);
+    btn.innerHTML = '<i class="fas fa-check"></i> Uploaded Successfully';
+    setTimeout(() => {
+btn.innerHTML = '<i class="fas fa-upload"></i> Upload & Extract';
+btn.disabled = false;
+    }, 3000);
+} else {
+    throw new Error(j.error || 'Upload failed');
+}
+    } catch(e) {
+alert('Upload failed: ' + e.message);
+biSetStatus(type, 'none');
+btn.disabled = false;
+btn.innerHTML = '<i class="fas fa-upload"></i> Upload & Extract';
+    }
+}
+
+function biSetStatus(type, status, data) {
+    const chip = document.getElementById('bi-status-' + type);
+    if (!chip) return;
+    chip.className = 'bi-status-chip ' + status;
+    const labels = { none: 'Not uploaded', processing: 'Processing...', active: 'Active' };
+    const icons = { none: 'fa-circle', processing: 'fa-circle-notch fa-spin', active: 'fa-check-circle' };
+    chip.innerHTML = '<i class="fas ' + (icons[status]||'fa-circle') + '" style="font-size:' + (status==='processing'?'11px':'7px') + '"></i> ' + (labels[status]||status);
+    const card = document.getElementById('bi-card-' + type);
+    if (card) {
+card.classList.toggle('active', status === 'active');
+    }
+}
+
+function biShowExtracted(type, data) {
+    const el = document.getElementById('bi-extracted-' + type);
+    if (!el || !data) return;
+    let html = '';
+    if (type === 'financials' && data.intelligence) {
+const i = data.intelligence;
+html = '<strong>Extracted:</strong> ' + [i.period, i.revenue, i.units, i.change].filter(Boolean).join(' · ');
+    } else if (type === 'personnel' && data.intelligence) {
+const people = data.intelligence.keyPersonnel || [];
+html = '<strong>Board members extracted:</strong> ' + people.slice(0,3).join(', ') + (people.length > 3 ? ' +' + (people.length-3) + ' more' : '');
+    } else if (type === 'profile' && data.intelligence) {
+const i = data.intelligence;
+html = '<strong>Extracted:</strong> Founded ' + (i.founded||'?') + ' · ' + (i.headquarters||'') + ' · CEO: ' + (i.ceo||'');
+    }
+    if (html) { el.innerHTML = html; el.classList.add('show'); }
+}
+
+// Stock ticker search
+async function biTickerSearch(query) {
+    clearTimeout(biTickerSearchTimeout);
+    const resultsEl = document.getElementById('bi-ticker-results');
+    if (!query || query.length < 2) { if(resultsEl) resultsEl.innerHTML = ''; return; }
+
+    biTickerSearchTimeout = setTimeout(async () => {
+try {
+    const r = await fetch('https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=' + encodeURIComponent(query) + '&apikey=' + BI_API_KEY);
+    const j = await r.json();
+    const matches = (j.bestMatches || []).filter(m => m['3. type'] === 'Equity').slice(0, 6);
+    if (!resultsEl) return;
+    if (!matches.length) { resultsEl.innerHTML = '<div style="padding:6px;color:var(--text-secondary);font-size:12px">No results found</div>'; return; }
+    resultsEl.innerHTML = matches.map(m => `
+<div class="bi-ticker-result" onclick="biSelectTicker('${m['1. symbol']}','${m['2. name']}','${m['4. region']}')">
+    <span class="symbol">${m['1. symbol']}</span>
+    <span>${m['2. name'].substring(0,30)}</span>
+    <span class="exchange">${m['4. region']}</span>
+</div>`).join('');
+} catch(e) { if(resultsEl) resultsEl.innerHTML = '<div style="padding:6px;color:var(--text-secondary);font-size:12px">Search unavailable</div>'; }
+    }, 400);
+}
+
+function biSelectTicker(symbol, name, exchange) {
+    biSelectedTicker = { symbol, name, exchange };
+    document.getElementById('bi-ticker-value').value = symbol;
+    document.getElementById('bi-ticker-exchange').value = exchange;
+    const sel = document.getElementById('bi-selected-ticker');
+    if (sel) {
+sel.style.display = 'block';
+sel.innerHTML = '<i class="fas fa-check-circle"></i> ' + symbol + ' · ' + name + ' · ' + exchange;
+    }
+    const results = document.getElementById('bi-ticker-results');
+    if (results) results.innerHTML = '';
+    const search = document.getElementById('bi-ticker-search');
+    if (search) search.value = symbol;
+    const btn = document.getElementById('bi-btn-stock');
+    if (btn) btn.disabled = false;
+}
+
+async function biSaveTicker() {
+    if (!biCurrentBrand || !biSelectedTicker) return;
+    const btn = document.getElementById('bi-btn-stock');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Saving...';
+    try {
+const r = await fetch('/api/v1/brand-intel/ticker', {
+    method: 'POST',
+    headers: {
+'Content-Type': 'application/json',
+'Authorization': 'Bearer ' + (localStorage.getItem('token') || '')
+    },
+    body: JSON.stringify({ brand: biCurrentBrand, ...biSelectedTicker })
+});
+const j = await r.json();
+if (j.success) {
+    biSetStatus('stock', 'active');
+    btn.innerHTML = '<i class="fas fa-check"></i> Saved';
+    setTimeout(() => {
+btn.innerHTML = '<i class="fas fa-save"></i> Save Ticker';
+btn.disabled = false;
+    }, 2000);
+}
+    } catch(e) {
+btn.disabled = false;
+btn.innerHTML = '<i class="fas fa-save"></i> Save Ticker';
+    }
+}
+</script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

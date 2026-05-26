@@ -41,6 +41,7 @@ const vaultAccessSchema = new mongoose.Schema({
   failedAttempts:    { type: Number, default: 0 },
   lockedAt:          { type: Date },          // set when failedAttempts >= MAX
   lastAccessedAt:    { type: Date },
+  signedNdaPdfPath:  { type: String, default: null },
 
 }, {
   timestamps: true,

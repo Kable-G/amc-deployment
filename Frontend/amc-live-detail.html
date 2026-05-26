@@ -1,0 +1,3039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Media Live — AutoMediaCenter</title>
+
+    <script type="module">
+        import { protectPage } from "./auth.js";
+        protectPage("media_user");
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,32..144,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./components/shell/v6_5-shell.css">
+
+    <style>
+        /* ══════════════════════════════════════════════════════════
+           AMC CORPORATE PALETTE + TYPOGRAPHY (spec v1.0)
+        ══════════════════════════════════════════════════════════ */
+        :root {
+            --amc-blue:   #3b82f6;
+            --amc-purple: #7c3aed;
+            --amc-green:  #16a34a;
+            --amc-slate:  #475569;
+            --amc-header-h: 56px;
+            --amc-rail-w: 72px;
+            --bg-primary:    #f3f4f6;
+            --bg-secondary:  #ffffff;
+            --bg-tertiary:   #f9fafb;
+            --text-primary:  #1e293b;
+            --text-secondary:#64748b;
+            --text-headings: #0f172a;
+            --border-primary:#e2e8f0;
+            --accent-primary:#3b82f6;
+            --accent-rgb: 59,130,246;
+        }
+        body.dark-mode {
+            --bg-primary:    #0f1419;
+            --bg-secondary:  #1a1f2e;
+            --bg-tertiary:   #161b26;
+            --text-primary:  #e2e8f0;
+            --text-secondary:#64748b;
+            --text-headings: #f1f5f9;
+            --border-primary:#2d3748;
+            --accent-primary:#60a5fa;
+            --accent-rgb: 96,165,250;
+        }
+        body.dark-mode { background: var(--bg-primary) !important; color: var(--text-primary) !important; }
+        body.dark-mode .mobile-main { background: var(--bg-primary) !important; }
+        #amcShellHeader { position: fixed; left: 0; top: 0; right: 0; z-index: 1000; }
+        /* Hide shell mobile sidebar/filters on live detail page — not used here */
+        .mobile-sidebar { display: none !important; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* ══════════════════════════════════════════════════════════
+           PAGE BASE
+        ══════════════════════════════════════════════════════════ */
+        .ld-page {
+            padding-top: var(--amc-header-h);
+            min-height: 100vh;
+            background: var(--bg-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        /* padding-top override only — shell handles padding-left via mobile-main */
+        .ld-page.mobile-main { padding-top: var(--amc-header-h) !important; padding-right: 24px; padding-bottom: 40px; }
+        /* Match shell's mobile-main padding-left injection exactly */
+        @media (min-width: 1100px) {
+            .ld-page:not(.ld-fullscreen) { padding-left: calc(32px + var(--amc-rail-w, 72px)) !important; }
+        }
+        @media (min-width: 1366px) {
+            .ld-page:not(.ld-fullscreen) { padding-left: calc(40px + var(--amc-rail-w, 72px)) !important; }
+        }
+
+        /* ── MID VIEW (was "Full View") ──────────────────────────────────── */
+        .ld-page.ld-fullscreen {
+            position: fixed;
+            top: var(--amc-header-h, 56px);
+            left: var(--amc-rail-w, 72px);
+            right: 0; bottom: 0;
+            z-index: 500;
+            padding: 0 !important;
+            min-height: unset;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-primary);
+        }
+        .ld-page.ld-fullscreen .ld-back           { display: none; }
+        .ld-page.ld-fullscreen .ld-info-bar        { padding: 8px 16px; border-bottom: 1px solid var(--border-primary); }
+        .ld-page.ld-fullscreen .ld-toolbar         { padding: 6px 16px; border-bottom: 1px solid var(--border-primary); }
+        .ld-page.ld-fullscreen .ld-main-row        { flex: 1; overflow: hidden; align-items: stretch; min-height: 0; }
+        .ld-page.ld-fullscreen .ld-video-col       { max-width: unset; flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; }
+        .ld-page.ld-fullscreen .ld-player-wrap     { flex: 1; padding-top: 0; aspect-ratio: unset; }
+        .ld-page.ld-fullscreen .ld-player-inner    { position: relative; width: 100%; height: 100%; }
+        .ld-page.ld-fullscreen .ld-tools-col       { height: calc(100% - 12px); overflow: hidden; width: 340px; flex-shrink: 0; transition: width 0.2s ease; margin-top: 12px; }
+        .ld-page.ld-fullscreen .ld-tools-col.collapsed { width: 0; border-left: none; overflow: hidden; }
+
+        /* Sidebar collapse toggle — only visible in fullscreen mode */
+        .ld-fs-sidebar-toggle {
+            display: none;
+            position: absolute;
+            right: 340px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px; height: 40px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-right: none;
+            border-radius: 4px 0 0 4px;
+            align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text-secondary);
+            font-size: 9px; z-index: 10;
+            transition: all 0.2s;
+        }
+        .ld-fs-sidebar-toggle:hover { color: var(--accent-primary); }
+        .ld-fs-sidebar-toggle.collapsed { right: 0; border-radius: 0 4px 4px 0; border-right: 1px solid var(--border-primary); border-left: none; }
+        .ld-page.ld-fullscreen .ld-fs-sidebar-toggle { display: flex; }
+        .ld-page.ld-fullscreen .ld-main-row { position: relative; }
+
+        /* Full-screen toggle button */
+        .ld-btn-fullscreen-toggle { }
+        .ld-page.ld-fullscreen .ld-btn-fullscreen-toggle i::before { content: "\f066"; } /* fa-compress */
+
+        /* Back nav */
+        .ld-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 0 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            width: fit-content;
+            transition: color 0.15s;
+        }
+        .ld-back:hover { color: var(--accent-primary); }
+        .ld-back i { font-size: 10px; }
+
+        /* ══════════════════════════════════════════════════════════
+           MAIN ROW — video col + tools col
+        ══════════════════════════════════════════════════════════ */
+        .ld-main-row {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        /* ── VIDEO COLUMN ── */
+        .ld-video-col {
+            flex: 1;
+            min-width: 0;
+            max-width: 820px;
+            padding: 0 16px 24px 0;
+        }
+
+        /* ── TOOLS COLUMN ── */
+        .ld-tools-col {
+            width: 380px;
+            flex-shrink: 0;
+            border-left: 1px solid var(--border-primary);
+            background: var(--bg-secondary);
+            display: flex;
+            flex-direction: column;
+            align-self: flex-start;
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           VIDEO PLAYER
+        ══════════════════════════════════════════════════════════ */
+        .ld-player-wrap {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .ld-player-inner {
+            position: absolute;
+            inset: 0;
+        }
+        .ld-video {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .ld-video.playing {
+            opacity: 1;
+        }
+
+        /* Placeholder states */
+        .ld-placeholder {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 16px; color: #fff;
+            z-index: 1;
+        }
+        .ld-placeholder.upcoming  { background: linear-gradient(135deg, #1e1b4b, #312e81); }
+
+        /* All countdown phases stay purple — only Go Live triggers green */
+        .ld-placeholder.upcoming.phase-starting,
+        .ld-placeholder.upcoming.phase-urgent,
+        .ld-placeholder.upcoming.phase-amber,
+        .ld-placeholder.upcoming.phase-red    { background: linear-gradient(135deg, #1e1b4b, #312e81); }
+
+        /* Final 10s — subtle pulse on the purple */
+        .ld-placeholder.upcoming.phase-pulse  { animation: ldBgPulse 0.7s ease-in-out infinite alternate; }
+        @keyframes ldBgPulse {
+            from { background: linear-gradient(135deg, #1e1b4b, #312e81); }
+            to   { background: linear-gradient(135deg, #13103a, #1e1b60); }
+        }
+
+        .ld-placeholder.live      { background: linear-gradient(135deg, #052e16, #14532d); }
+        .ld-placeholder.recording { background: linear-gradient(135deg, #0c1322, #1e293b); }
+
+        /* Countdown */
+        .ld-countdown { text-align: center; }
+        .ld-countdown-eyebrow {
+            font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+            text-transform: uppercase; color: rgba(255,255,255,0.55);
+            margin-bottom: 8px;
+        }
+        .ld-countdown-timer {
+            font-size: clamp(28px, 4.5vw, 52px);
+            font-weight: 800; font-variation-settings: 'opsz' 42;
+            letter-spacing: -0.04em; color: #fff; line-height: 1;
+        }
+        .ld-countdown-sub {
+            font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.55);
+            margin-top: 10px; line-height: 1.5;
+        }
+
+        /* ── Broadcaster countdown overlay (preview mode) ──────────────── */
+        .ld-bc-countdown-overlay {
+            display: none;
+            position: absolute;
+            top: 16px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.72);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 10px 20px;
+            z-index: 20;
+            text-align: center;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .ld-bc-countdown-overlay.visible { display: block; }
+        .ld-bc-overlay-label {
+            font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+            text-transform: uppercase; color: #a78bfa; margin-bottom: 2px;
+        }
+        .ld-bc-overlay-timer {
+            font-size: 22px; font-weight: 700; color: #fff;
+            font-variant-numeric: tabular-nums; letter-spacing: 0.02em;
+        }
+        .ld-bc-overlay-sub {
+            font-size: 10px; color: #94a3b8; margin-top: 2px;
+        }
+        .ld-starting {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .ld-starting-eyebrow {
+            font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+            text-transform: uppercase; color: rgba(255,255,255,0.55);
+            margin-bottom: 20px;
+        }
+        .ld-starting-dots {
+            display: flex; gap: 10px; justify-content: center;
+            margin-bottom: 20px;
+        }
+        .ld-starting-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            animation: ldStartingPulse 1.4s ease-in-out infinite;
+        }
+        .ld-starting-dot:nth-child(2) { animation-delay: 0.2s; }
+        .ld-starting-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes ldStartingPulse {
+            0%, 80%, 100% { opacity: 0.2; transform: scale(0.7); }
+            40%           { opacity: 1;   transform: scale(1); }
+        }
+        .ld-starting-label {
+            font-size: clamp(18px, 2.5vw, 26px);
+            font-weight: 800; font-variation-settings: 'opsz' 42;
+            letter-spacing: -0.03em; color: #fff; line-height: 1;
+        }
+        .ld-starting-sub {
+            font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.55);
+            margin-top: 10px; line-height: 1.5;
+        }
+
+        /* Urgent countdown — final 5 minutes */
+        .ld-urgent {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .ld-urgent-eyebrow {
+            font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+            text-transform: uppercase; color: rgba(255,255,255,0.55);
+            margin-bottom: 12px;
+        }
+        .ld-urgent-timer {
+            font-size: clamp(52px, 8vw, 96px);
+            font-weight: 800; font-variation-settings: 'opsz' 42;
+            letter-spacing: -0.04em; line-height: 1;
+            color: #fff;
+        }
+        .ld-urgent-sub {
+            font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.55);
+            margin-top: 14px; line-height: 1.5;
+        }
+
+        /* Light mode */
+        body:not(.dark-mode) .ld-placeholder.upcoming  { background: linear-gradient(135deg, #1e1b4b, #312e81); }
+        body:not(.dark-mode) .ld-placeholder.upcoming.phase-starting,
+        body:not(.dark-mode) .ld-placeholder.upcoming.phase-urgent,
+        body:not(.dark-mode) .ld-placeholder.upcoming.phase-amber,
+        body:not(.dark-mode) .ld-placeholder.upcoming.phase-red { background: linear-gradient(135deg, #1e1b4b, #312e81); }
+        body:not(.dark-mode) .ld-placeholder.live      { background: linear-gradient(135deg, #052e16, #14532d); }
+        body:not(.dark-mode) .ld-placeholder.recording { background: linear-gradient(135deg, #0c1322, #1e293b); }
+
+        /* Placeholder icon */
+        .ld-ph-icon { font-size: 48px; opacity: 0.45; }
+        .ld-ph-text { font-size: 15px; font-weight: 400; color: rgba(255,255,255,0.65); }
+
+        /* Mobile landscape back button — inside player, only visible in landscape ≤767px */
+        .ld-mobile-back {
+            display: none;
+            position: absolute;
+            top: 10px; left: 10px;
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            color: rgba(255,255,255,0.85);
+            font-size: 12px;
+            align-items: center; justify-content: center;
+            z-index: 25;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .ld-mobile-back:hover { background: rgba(0,0,0,0.7); color: #fff; }
+        @media (max-height: 500px) and (orientation: landscape) {
+            .ld-mobile-back { display: flex; }
+        }
+
+        /* Overlays */
+        .ld-live-badge {
+            position: absolute; top: 12px; left: 12px;
+            display: flex; align-items: center; gap: 5px;
+            background: rgba(22,163,74,0.88); color: #fff;
+            font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+            text-transform: uppercase; padding: 4px 10px;
+            border-radius: 20px; backdrop-filter: blur(4px);
+        }
+        .ld-live-dot {
+            width: 6px; height: 6px; background: #fff; border-radius: 50%;
+            animation: ldPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes ldPulse {
+            0%,100% { opacity:1; transform:scale(1); }
+            50%      { opacity:0.35; transform:scale(0.65); }
+        }
+        .ld-viewer-badge {
+            position: absolute; top: 12px; right: 12px;
+            display: flex; align-items: center; gap: 5px;
+            background: rgba(0,0,0,0.52); color: #4ade80;
+            font-size: 11px; font-weight: 600;
+            padding: 4px 10px; border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Recording scrubber */
+        .ld-scrubber-wrap {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            padding: 0 12px 10px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.72));
+        }
+        .ld-scrubber {
+            width: 100%; height: 3px; -webkit-appearance: none; appearance: none;
+            background: rgba(255,255,255,0.28); border-radius: 2px;
+            outline: none; cursor: pointer;
+        }
+        .ld-scrubber::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 12px; height: 12px;
+            border-radius: 50%; background: #fff; cursor: pointer;
+        }
+        .ld-scrubber-controls {
+            display: flex; align-items: center; gap: 10px; margin-top: 6px;
+        }
+        .ld-ctrl-btn {
+            background: none; border: none; color: rgba(255,255,255,0.85);
+            font-size: 16px; cursor: pointer; padding: 0; line-height: 1;
+            transition: color 0.1s;
+        }
+        .ld-ctrl-btn:hover { color: #fff; }
+        .ld-ctrl-btn.sm { font-size: 13px; color: rgba(255,255,255,0.6); }
+        .ld-time-disp {
+            font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.8);
+            font-variant-numeric: tabular-nums;
+        }
+        .ld-spacer { flex: 1; }
+
+        /* ══════════════════════════════════════════════════════════
+           EVENT INFO BAR
+        ══════════════════════════════════════════════════════════ */
+        .ld-info-bar {
+            margin-top: 12px;
+            display: flex; align-items: flex-start;
+            justify-content: space-between; gap: 12px;
+        }
+        .ld-event-left { flex: 1; min-width: 0; }
+        .ld-brand {
+            font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+            text-transform: uppercase; color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .ld-title {
+            font-size: 20px; font-weight: 700;
+            font-variation-settings: 'opsz' 20;
+            letter-spacing: -0.02em; line-height: 1.25;
+            color: var(--text-headings); margin-bottom: 4px;
+        }
+        .ld-subtitle-text {
+            font-size: 13px; font-weight: 300;
+            color: var(--text-secondary); line-height: 1.5;
+        }
+        .ld-status-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 20px;
+            font-size: 11px; font-weight: 600; white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .ld-status-chip.upcoming  { background:rgba(124,58,237,0.10); color:#7c3aed; border:1px solid rgba(124,58,237,0.25); }
+        .ld-status-chip.live      { background:rgba(22,163,74,0.10);  color:#16a34a; border:1px solid rgba(22,163,74,0.25); }
+        .ld-status-chip.recording { background:rgba(71,85,105,0.10);  color:#475569; border:1px solid rgba(71,85,105,0.25); }
+        body.dark-mode .ld-status-chip.upcoming  { background:rgba(167,139,250,0.12); color:#a78bfa; border-color:rgba(167,139,250,0.25); }
+        body.dark-mode .ld-status-chip.live      { background:rgba(74,222,128,0.12);  color:#4ade80; border-color:rgba(74,222,128,0.25); }
+        body.dark-mode .ld-status-chip.recording { background:rgba(148,163,184,0.12); color:#94a3b8; border-color:rgba(148,163,184,0.25); }
+
+        /* ══════════════════════════════════════════════════════════
+           ACTION TOOLBAR
+        ══════════════════════════════════════════════════════════ */
+        /* ── VIEW TOGGLES — shown on any device with a fine pointer (mouse/trackpad) ── */
+        .ld-view-toggles {
+            display: none; /* hidden by default */
+            align-items: center; gap: 2px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-primary);
+            border-radius: 8px; padding: 3px;
+        }
+        @media (any-pointer: fine) {
+            .ld-view-toggles { display: flex; }
+        }
+        /* Standalone fullscreen button — visible only on pure touch devices (no mouse/trackpad) */
+        .ld-btn-fs-standalone { display: none; }
+        @media (pointer: coarse) and (min-width: 768px) {
+            .ld-btn-fs-standalone { display: inline-flex; }
+        }
+        @media (any-pointer: fine) {
+            .ld-btn-fs-standalone { display: none !important; } /* hide if device has a trackpad */
+        }
+        .ld-view-btn {
+            width: 30px; height: 28px; border-radius: 6px; border: none;
+            background: transparent; color: var(--text-secondary);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 12px; transition: all 0.15s;
+        }
+        .ld-view-btn:hover { color: var(--text-primary); background: var(--bg-secondary); }
+        .ld-view-btn.active { background: var(--accent-primary); color: #fff; }
+
+        .ld-toolbar {
+            margin-top: 10px; display: flex;
+            align-items: center; gap: 8px; flex-wrap: wrap;
+        }
+        .ld-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 13px; border-radius: 8px;
+            font-family: inherit; font-size: 13px; font-weight: 500;
+            cursor: pointer; border: 1px solid var(--border-primary);
+            background: var(--bg-secondary); color: var(--text-primary);
+            transition: all 0.15s; text-decoration: none;
+        }
+        .ld-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+        .ld-btn i { font-size: 12px; }
+        .ld-btn.primary { background: var(--accent-primary); color:#fff; border-color:var(--accent-primary); }
+        .ld-btn.primary:hover { background: #2563eb; border-color:#2563eb; color:#fff; }
+        body.dark-mode .ld-btn { background: var(--bg-tertiary); }
+
+        /* ══════════════════════════════════════════════════════════
+           HOW AUTOMEDIASTREAM WORKS — matches vault exactly
+        ══════════════════════════════════════════════════════════ */
+        .ld-hiw {
+            margin-top: 48px;
+            margin-bottom: 48px;
+            max-width: 1200px;
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 36px 40px 40px;
+            box-sizing: border-box;
+        }
+        .ld-page.ld-fullscreen .ld-hiw { display: none; }
+        .ld-hiw-header { margin-bottom: 32px; }
+        .ld-hiw-title {
+            font-size: 20px; font-weight: 700; letter-spacing: -0.02em;
+            color: var(--text-headings); margin: 0 0 6px 0;
+        }
+        .ld-hiw-sub {
+            font-size: 14px; font-weight: 300; color: var(--text-secondary);
+            margin: 0; line-height: 1.55;
+        }
+        .ld-hiw-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+        }
+        .ld-hiw-step { display: flex; flex-direction: column; gap: 0; }
+        .ld-hiw-num {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--amc-blue, #3b82f6);
+            color: #fff; font-size: 15px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            margin-bottom: 16px;
+        }
+        .ld-hiw-step-title {
+            font-size: 14px; font-weight: 600; color: var(--text-headings);
+            margin-bottom: 6px;
+        }
+        .ld-hiw-step-desc {
+            font-size: 13px; font-weight: 400; color: var(--text-secondary);
+            line-height: 1.55;
+        }
+        @media (max-width: 900px) {
+            .ld-hiw-steps { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        }
+        @media (max-width: 560px) {
+            .ld-hiw-steps { grid-template-columns: 1fr; gap: 20px; }
+            .ld-hiw { padding: 24px 20px 28px; }
+        }
+        .ld-moments { margin-top: 16px; }
+        .ld-moments-label {
+            font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+            text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px;
+        }
+        .ld-moments-track {
+            display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+        .ld-moments-track::-webkit-scrollbar { display: none; }
+        .ld-moment-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 11px; border-radius: 20px; font-size: 12px;
+            font-weight: 500; white-space: nowrap; cursor: pointer;
+            background: var(--bg-secondary); border: 1px solid var(--border-primary);
+            color: var(--text-primary); transition: all 0.15s; flex-shrink: 0;
+        }
+        .ld-moment-chip:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+        .ld-moment-ts { font-size: 11px; font-weight: 600; color: var(--accent-primary); font-variant-numeric: tabular-nums; }
+        body.dark-mode .ld-moment-chip { background: var(--bg-tertiary); }
+
+        /* ══════════════════════════════════════════════════════════
+           TOOLS PANEL — TABS
+        ══════════════════════════════════════════════════════════ */
+        .ld-tabs-bar {
+            display: flex; border-bottom: 1px solid var(--border-primary);
+            overflow-x: auto; scrollbar-width: none; flex-shrink: 0;
+        }
+        .ld-tabs-bar::-webkit-scrollbar { display: none; }
+        .ld-tab-btn {
+            display: flex; align-items: center; gap: 6px;
+            padding: 12px 16px; font-family: inherit;
+            font-size: 13px; font-weight: 500; color: var(--text-secondary);
+            background: none; border: none; border-bottom: 2px solid transparent;
+            cursor: pointer; transition: all 0.15s; white-space: nowrap;
+            margin-bottom: -1px;
+        }
+        .ld-tab-btn:hover { color: var(--text-primary); }
+        .ld-tab-btn.active { color: var(--accent-primary); border-bottom-color: var(--accent-primary); font-weight: 600; }
+        .ld-tab-btn i { font-size: 12px; }
+
+        .ld-tab-body { flex: 1; overflow-y: auto; scrollbar-width: thin; }
+        .ld-tab-pane { display: none; padding: 16px; }
+        .ld-tab-pane.active { display: block; }
+
+        /* ── NOTES ── */
+        .ld-notes-textarea {
+            width: 100%; min-height: 76px; padding: 10px 12px;
+            border: 1px solid var(--border-primary); border-radius: 8px;
+            font-family: inherit; font-size: 13px; line-height: 1.5;
+            background: var(--bg-tertiary); color: var(--text-primary);
+            resize: none; overflow: hidden; transition: border-color 0.15s;
+            box-sizing: border-box;
+        }
+        .ld-notes-textarea:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),0.10); }
+        .ld-notes-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+        .ld-ts-pill {
+            font-size: 11px; font-weight: 600; color: var(--accent-primary);
+            background: rgba(var(--accent-rgb),0.08);
+            border: 1px solid rgba(var(--accent-rgb),0.20);
+            padding: 3px 8px; border-radius: 6px; font-variant-numeric: tabular-nums;
+        }
+        .ld-divider { height: 1px; background: var(--border-primary); margin: 14px 0; }
+        .ld-section-label {
+            font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+            text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px;
+        }
+        .ld-note-item {
+            padding: 8px 0; border-bottom: 1px solid var(--border-primary);
+            font-size: 13px; line-height: 1.5; color: var(--text-primary);
+        }
+        .ld-note-item:last-child { border-bottom: none; }
+        .ld-note-ts {
+            font-weight: 600; color: var(--accent-primary); cursor: pointer;
+            margin-right: 5px; font-variant-numeric: tabular-nums;
+        }
+        .ld-note-ts:hover { text-decoration: underline; }
+
+        /* ── TRANSCRIPT ── */
+        .ld-tr-entry { display: flex; gap: 10px; margin-bottom: 12px; font-size: 13px; line-height: 1.55; }
+        .ld-tr-ts { font-size: 11px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; padding-top: 1px; min-width: 36px; font-variant-numeric: tabular-nums; }
+        .ld-tr-speaker { font-weight: 600; color: var(--text-headings); margin-right: 4px; }
+        .ld-tr-text { color: var(--text-primary); }
+        .ld-tr-empty { text-align: center; padding: 32px 16px; color: var(--text-secondary); font-size: 13px; }
+        .ld-tr-empty i { font-size: 22px; opacity: 0.35; display: block; margin-bottom: 8px; }
+
+        /* ── ASSETS ── */
+        .ld-asset-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 10px; border-radius: 8px;
+            border: 1px solid var(--border-primary);
+            background: var(--bg-tertiary); margin-bottom: 6px;
+            cursor: pointer; text-decoration: none; transition: all 0.15s;
+        }
+        .ld-asset-item:hover { border-color: var(--accent-primary); background: rgba(var(--accent-rgb),0.04); }
+        .ld-asset-icon {
+            width: 32px; height: 32px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+        }
+        .ai-pdf { background:rgba(239,68,68,0.10); color:#ef4444; }
+        .ai-img { background:rgba(59,130,246,0.10); color:#3b82f6; }
+        .ai-zip { background:rgba(124,58,237,0.10); color:#7c3aed; }
+        .ai-doc { background:rgba(22,163,74,0.10);  color:#16a34a; }
+        .ld-asset-meta { flex: 1; min-width: 0; }
+        .ld-asset-name { font-size: 13px; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ld-asset-size { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+        .ld-asset-dl { color: var(--text-secondary); font-size: 12px; flex-shrink: 0; }
+        .ld-asset-item:hover .ld-asset-dl { color: var(--accent-primary); }
+        .ld-assets-gap { height: 14px; }
+
+        /* ── INFO ── */
+        .ld-embargo {
+            display: flex; align-items: flex-start; gap: 8px;
+            padding: 10px 12px; border-radius: 8px;
+            background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15);
+            font-size: 13px; color: #dc2626; margin-bottom: 14px; line-height: 1.5;
+        }
+        body.dark-mode .ld-embargo { background:rgba(239,68,68,0.09); color:#f87171; border-color:rgba(239,68,68,0.2); }
+        .ld-embargo i { font-size: 11px; flex-shrink: 0; margin-top: 2px; }
+        .ld-info-row { display: flex; gap: 8px; margin-bottom: 10px; font-size: 13px; }
+        .ld-info-lbl { font-weight: 600; color: var(--text-secondary); min-width: 80px; flex-shrink: 0; }
+        .ld-info-val { color: var(--text-primary); line-height: 1.5; }
+        .ld-info-ref { font-family: monospace; font-size: 12px; }
+
+        /* ══════════════════════════════════════════════════════════
+           PC LAYOUT ≥1100px (hover+pointer:fine)
+        ══════════════════════════════════════════════════════════ */
+        /* Match vault content left position — only on devices with mouse/trackpad, not pure tablets */
+        @media (min-width: 1100px) and (any-pointer: fine) {
+            .ld-page:not(.ld-fullscreen) { padding-left: calc(112px + 261px) !important; }
+        }
+
+        @media (min-width: 1100px) and (any-pointer: fine) {
+            .ld-back { padding: 12px 0 10px; }
+            .ld-main-row {
+                height: calc(100vh - var(--amc-header-h) - 12px);
+            }
+            .ld-video-col {
+                padding: 0 20px 20px 0;
+                overflow-y: auto; height: 100%; scrollbar-width: thin;
+            }
+            .ld-tools-col { height: 100%; overflow: hidden; }
+            .ld-tab-body { height: calc(100% - 46px); }
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           TABLET LANDSCAPE 768–1099px landscape
+        ══════════════════════════════════════════════════════════ */
+        @media (min-width: 768px) and (max-width: 1099px) and (orientation: landscape) {
+            .ld-main-row { flex-direction: column; }
+            .ld-video-col { width: 100%; padding: 12px 16px 0; }
+            .ld-tools-col {
+                width: 100%; border-left: none;
+                border-top: 1px solid var(--border-primary);
+                height: 360px;
+                margin-top: 0;
+            }
+            /* Show moments inline with tools below video */
+            .ld-moments { display: none; } /* moved to below-video row */
+            .ld-below-video {
+                display: flex; border-top: 1px solid var(--border-primary);
+            }
+            .ld-moments-aside {
+                width: 240px; flex-shrink: 0; padding: 14px 12px;
+                border-right: 1px solid var(--border-primary);
+            }
+            .ld-moments-aside .ld-moments-track {
+                flex-direction: column; gap: 6px;
+                overflow-y: auto; max-height: 280px; overflow-x: visible;
+            }
+            .ld-moments-aside .ld-moment-chip { width: 100%; }
+            .ld-tools-aside { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           LARGE TABLET ≥1100px touch devices (iPad Pro etc)
+           Side-by-side layout like desktop but tighter padding
+        ══════════════════════════════════════════════════════════ */
+        @media (min-width: 1100px) and (pointer: coarse) {
+            .ld-page:not(.ld-fullscreen) { padding-left: calc(20px + var(--amc-rail-w, 72px)) !important; padding-right: 16px !important; }
+            .ld-video-col { max-width: unset; padding: 0 16px 20px 0; }
+            .ld-tools-col { width: 340px; }
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           TABLET PORTRAIT 768–1099px portrait
+        ══════════════════════════════════════════════════════════ */
+        @media (min-width: 768px) and (max-width: 1099px) and (orientation: portrait) {
+            .ld-main-row { flex-direction: column; }
+            .ld-video-col { width: 100%; padding: 12px 16px 0; }
+            .ld-tools-col {
+                width: 100%; border-left: none;
+                border-top: 1px solid var(--border-primary);
+                min-height: 400px;
+                margin-top: 0;
+            }
+            .ld-title { font-size: 18px; }
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           MOBILE LANDSCAPE ≤767px landscape
+           Enterprise pattern: immersive video, header hidden
+        ══════════════════════════════════════════════════════════ */
+        @media (max-height: 500px) and (orientation: landscape) {
+            /* Force-hide shell header, sidebar, icon rail — target actual rendered classes */
+            #amcShellHeader,
+            #amcShellSidebar,
+            .mobile-header,
+            .mobile-sidebar,
+            .icon-rail,
+            .shell-header,
+            .shell-sidebar,
+            .shell-rail,
+            .mobile-hamburger { 
+                display: none !important; 
+                height: 0 !important; 
+                overflow: hidden !important;
+                visibility: hidden !important;
+                position: absolute !important;
+                top: -9999px !important;
+            }
+            .ld-page.mobile-main {
+                padding: 0 !important;
+                margin: 0 !important;
+                min-height: 100vh;
+            }
+            .ld-back { display: none; }
+            .ld-main-row {
+                flex-direction: row;
+                height: 100vh;
+                overflow: hidden;
+            }
+            .ld-video-col {
+                flex: 1;
+                padding: 0;
+                max-width: unset;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            .ld-player-wrap {
+                flex: 1;
+                padding-top: 0;
+                aspect-ratio: unset;
+                border-radius: 0;
+            }
+            .ld-player-inner { position: relative; width: 100%; height: 100%; }
+            .ld-info-bar { display: none; }
+            .ld-toolbar { display: none; }
+            .ld-broadcast-bar { display: none !important; }
+            .ld-tools-col { display: none; }
+            .ld-hiw { display: none; }
+            .ld-moments { display: none; }
+            .ld-tab-btn { padding: 10px 10px; font-size: 12px; }
+            .ld-view-toggles { display: none; }
+            /* Ensure page sits above any shell overlays/drawers/filters */
+            .ld-page { position: relative; z-index: 9999; }
+            /* Hide shell navigation drawer and filter panels */
+            .shell-nav-drawer,
+            .shell-filter-panel,
+            .shell-mobile-drawer,
+            [class*="drawer"],
+            [class*="filter-panel"] {
+                display: none !important;
+            }
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           MOBILE PORTRAIT ≤767px portrait
+           Fully stacked, sticky tab bar
+        ══════════════════════════════════════════════════════════ */
+        @media (max-width: 767px) and (orientation: portrait) {
+            .ld-page.mobile-main { padding-left: 12px !important; padding-right: 12px !important; }
+            .ld-back { padding: 10px 0 6px; }
+            .ld-main-row { flex-direction: column; }
+            .ld-video-col { padding: 0; width: 100%; max-width: 100%; }
+            .ld-player-wrap { border-radius: 8px; }
+            .ld-title { font-size: 16px; }
+            .ld-subtitle-text { font-size: 12px; }
+            /* Hide standalone fullscreen button on phones — no need */
+            .ld-btn-fs-standalone { display: none !important; }
+            .ld-toolbar { margin-bottom: 12px; }
+            .ld-tools-col {
+                width: 100%; border-left: none;
+                border-top: 1px solid var(--border-primary);
+                min-height: 420px;
+                margin-top: 0;
+            }
+            .ld-tabs-bar {
+                position: sticky; top: var(--amc-header-h);
+                z-index: 100; background: var(--bg-secondary);
+            }
+            .ld-tab-btn { flex: 1; justify-content: center; padding: 12px 8px; font-size: 12px; }
+            .ld-tab-body { overflow-y: visible; height: auto; }
+            .ld-hiw { margin-top: 32px; margin-bottom: 32px; padding: 24px 20px 28px; }
+        }
+
+        /* Below-video aside (tablet landscape only) */
+        .ld-below-video { display: none; }
+
+        /* ══════════════════════════════════════════════════════════
+           MEDIA STREAM CONTROL PANEL
+        ══════════════════════════════════════════════════════════ */
+        .ld-broadcast-bar {
+            display: none;
+            flex-direction: column;
+            background: #0a0f1a;
+            border: 1px solid rgba(245,158,11,0.35);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+        .ld-broadcast-bar.visible { display: flex; }
+
+        /* ── Collapsed header — always visible ── */
+        .ld-bc-header {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            user-select: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .ld-bc-header:hover { background: rgba(255,255,255,0.02); }
+        .ld-bc-header.expanded { border-bottom-color: rgba(245,158,11,0.2); }
+
+        .ld-bc-title {
+            font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+            text-transform: uppercase; color: #94a3b8;
+        }
+        .ld-bc-status {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 11px; font-weight: 700;
+        }
+        .ld-bc-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #475569;
+        }
+        .ld-bc-dot.waiting  { background: #475569; }
+        .ld-bc-dot.ready    { background: #f59e0b; animation: ldPulse 1.2s ease-in-out infinite; }
+        .ld-bc-dot.live     { background: #22c55e; animation: ldPulse 1.2s ease-in-out infinite; }
+        .ld-bc-status-text  { color: #94a3b8; }
+        .ld-bc-status-text.ready { color: #f59e0b; }
+        .ld-bc-status-text.live  { color: #22c55e; }
+
+        .ld-bc-spacer { flex: 1; }
+        .ld-bc-chevron {
+            color: #475569; font-size: 11px;
+            transition: transform 0.2s;
+        }
+        .ld-bc-chevron.open { transform: rotate(180deg); }
+
+        /* Primary actions always in header */
+        .ld-btn-golive {
+            padding: 7px 18px;
+            background: #16a34a; color: #fff;
+            border: none; border-radius: 6px;
+            font-size: 12px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; gap: 6px;
+            transition: background 0.2s; white-space: nowrap;
+        }
+        .ld-btn-golive:hover    { background: #15803d; }
+        .ld-btn-golive:disabled { background: #1e293b; color: #475569; cursor: not-allowed; border: 1px solid #334155; }
+        .ld-btn-stopstream {
+            padding: 7px 18px;
+            background: transparent; color: #ef4444;
+            border: 1px solid rgba(239,68,68,0.4); border-radius: 6px;
+            font-size: 12px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; gap: 6px;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .ld-btn-stopstream:hover { background: rgba(239,68,68,0.1); border-color: #ef4444; }
+
+        /* ── Expanded panel ── */
+        .ld-bc-panel {
+            display: none;
+            padding: 16px;
+            gap: 16px;
+            flex-direction: column;
+        }
+        .ld-bc-panel.open { display: flex; }
+
+        /* Stats row */
+        .ld-bc-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .ld-bc-stat {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+        .ld-bc-stat-label {
+            font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+            text-transform: uppercase; color: #475569; margin-bottom: 4px;
+        }
+        .ld-bc-stat-value {
+            font-size: 16px; font-weight: 700; color: #e2e8f0;
+            font-variant-numeric: tabular-nums;
+        }
+        .ld-bc-stat-sub {
+            font-size: 10px; color: #475569; margin-top: 2px;
+        }
+        .ld-bc-stat-value.good    { color: #22c55e; }
+        .ld-bc-stat-value.warning { color: #f59e0b; }
+        .ld-bc-stat-value.error   { color: #ef4444; }
+
+        /* Stream settings row */
+        .ld-bc-settings {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .ld-bc-field {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+        .ld-bc-field-label {
+            font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+            text-transform: uppercase; color: #475569; margin-bottom: 6px;
+        }
+        .ld-bc-field-row {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .ld-bc-field-value {
+            flex: 1; font-size: 12px; font-weight: 600;
+            font-family: monospace; color: #e2e8f0;
+            word-break: break-all;
+        }
+        .ld-bc-field-value.masked { letter-spacing: 0.08em; color: #64748b; }
+        .ld-bc-icon-btn {
+            padding: 4px 8px;
+            border-radius: 5px; font-size: 11px;
+            cursor: pointer; white-space: nowrap; flex-shrink: 0;
+            transition: all 0.15s;
+        }
+        .ld-bc-icon-btn.reveal { border: 1px solid rgba(251,191,36,0.3); background: transparent; color: #f59e0b; }
+        .ld-bc-icon-btn.reveal:hover { background: rgba(251,191,36,0.08); }
+        .ld-bc-icon-btn.copy   { border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #64748b; }
+        .ld-bc-icon-btn.copy:hover   { color: #e2e8f0; }
+        .ld-bc-icon-btn.copy:disabled { opacity: 0.3; cursor: not-allowed; }
+        .ld-bc-icon-btn.reset  { border: 1px solid rgba(239,68,68,0.3); background: transparent; color: #ef4444; }
+        .ld-bc-icon-btn.reset:hover  { background: rgba(239,68,68,0.08); }
+        .ld-bc-warn {
+            font-size: 10px; color: #f59e0b; margin-top: 5px;
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        /* Ready placeholder — private preview state */
+        .ld-placeholder.ready {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+        }
+        body.dark-mode .ld-tools-col { background: var(--bg-secondary); }
+        body.dark-mode .ld-tabs-bar  { background: var(--bg-secondary); }
+        body.dark-mode .ld-tab-body  { background: var(--bg-secondary); }
+        body.dark-mode .ld-notes-textarea { background: var(--bg-tertiary); }
+        body.dark-mode .ld-asset-item { background: var(--bg-tertiary); }
+    </style>
+</head>
+<body>
+
+<div id="amcShellHeader"></div>
+<div id="amcShellSidebar"></div>
+<div id="amcShellFooter" style="display:none"></div>
+
+<div class="ld-page mobile-main" id="ldPage">
+
+    <!-- ═══════════════════════════════════════════════════
+         MAIN ROW
+    ═══════════════════════════════════════════════════ -->
+    <div class="ld-main-row" id="ldMainRow">
+
+        <!-- Sidebar collapse toggle — only visible in full-screen mode -->
+        <button class="ld-fs-sidebar-toggle" id="ldFsSidebarToggle" title="Toggle sidebar">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <!-- VIDEO COLUMN -->
+        <div class="ld-video-col">
+
+        <a href="automedialive.html" class="ld-back" id="ldBack">
+            <i class="fas fa-chevron-left"></i> Back to Media Live
+        </a>
+
+        <!-- MEDIA STREAM CONTROL PANEL — admin roles only -->
+        <div class="ld-broadcast-bar" id="ldBroadcastBar">
+
+            <!-- Collapsed header — always visible -->
+            <div class="ld-bc-header" id="ldBcHeader">
+                <div class="ld-bc-status">
+                    <span class="ld-bc-dot waiting" id="ldBcDot"></span>
+                    <span class="ld-bc-status-text" id="ldBcStatusText">Waiting for encoder</span>
+                </div>
+                <span style="color:#334155;font-size:10px;margin:0 4px;">|</span>
+                <span class="ld-bc-title">Media Stream Control Panel</span>
+                <span class="ld-bc-spacer"></span>
+                <button class="ld-btn-golive" id="ldBtnGoLive" disabled>
+                    <i class="fas fa-circle-play"></i> Go Live
+                </button>
+                <button class="ld-btn-stopstream" id="ldBtnStopStream" style="display:none">
+                    <i class="fas fa-stop-circle"></i> End Stream
+                </button>
+                <button class="ld-bc-icon-btn" id="ldBtnCountdownOverlay" title="Toggle countdown overlay" style="display:none;margin-right:4px;">
+                    <i class="fas fa-clock"></i>
+                </button>
+                <i class="fas fa-chevron-down ld-bc-chevron" id="ldBcChevron"></i>
+            </div>
+
+            <!-- Expandable panel -->
+            <div class="ld-bc-panel" id="ldBcPanel">
+
+                <!-- Stats row -->
+                <div class="ld-bc-stats">
+                    <div class="ld-bc-stat">
+                        <div class="ld-bc-stat-label">Viewers</div>
+                        <div class="ld-bc-stat-value" id="ldBcViewers">—</div>
+                        <div class="ld-bc-stat-sub">Live connections</div>
+                    </div>
+                    <div class="ld-bc-stat">
+                        <div class="ld-bc-stat-label">Duration</div>
+                        <div class="ld-bc-stat-value" id="ldBcDuration">—</div>
+                        <div class="ld-bc-stat-sub">Time streaming</div>
+                    </div>
+                    <div class="ld-bc-stat">
+                        <div class="ld-bc-stat-label">Bitrate</div>
+                        <div class="ld-bc-stat-value" id="ldBcBitrate">—</div>
+                        <div class="ld-bc-stat-sub" id="ldBcBitrateSub">kbps</div>
+                    </div>
+                    <div class="ld-bc-stat">
+                        <div class="ld-bc-stat-label">Video</div>
+                        <div class="ld-bc-stat-value" id="ldBcResolution">—</div>
+                        <div class="ld-bc-stat-sub" id="ldBcCodec">H264</div>
+                    </div>
+                </div>
+
+                <!-- Settings row -->
+                <div class="ld-bc-settings">
+                    <!-- Stream Key -->
+                    <div class="ld-bc-field">
+                        <div class="ld-bc-field-label">
+                            Stream Key
+                            <span style="color:#f59e0b;margin-left:6px;text-transform:none;letter-spacing:0;font-weight:400;">Never share publicly</span>
+                        </div>
+                        <div class="ld-bc-field-row">
+                            <span class="ld-bc-field-value masked" id="ldBroadcastKey">••••••••••••••••</span>
+                            <button class="ld-bc-icon-btn reveal" id="ldBtnRevealKey" title="Reveal key"><i class="fas fa-eye"></i></button>
+                            <button class="ld-bc-icon-btn copy" id="ldBtnCopyKey" title="Copy key" disabled><i class="fas fa-copy"></i></button>
+                            <button class="ld-bc-icon-btn reset" id="ldBtnResetKey" title="Reset key — old key stops working immediately"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                        <div class="ld-bc-warn"><i class="fas fa-info-circle"></i> Reveal before copying. Reset invalidates old key immediately.</div>
+                    </div>
+                    <!-- RTMPS Server -->
+                    <div class="ld-bc-field">
+                        <div class="ld-bc-field-label">RTMPS Server <span style="color:#22c55e;margin-left:6px;text-transform:none;letter-spacing:0;font-weight:400;">Encrypted</span></div>
+                        <div class="ld-bc-field-row">
+                            <span class="ld-bc-field-value" id="ldBcRtmpUrl">rtmps://—</span>
+                            <button class="ld-bc-icon-btn copy" id="ldBtnCopyRtmp" title="Copy RTMPS URL"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <div class="ld-bc-warn" style="color:#22c55e;"><i class="fas fa-lock"></i> Share with your broadcast team only</div>
+                    </div>
+                </div>
+
+            </div><!-- /ld-bc-panel -->
+        </div><!-- /ld-broadcast-bar -->
+
+            <!-- Player -->
+            <div class="ld-player-wrap" id="ldPlayerWrap">
+                <div class="ld-player-inner" id="ldPlayerInner">
+
+                    <!-- Mobile landscape back button — returns to portrait -->
+                    <a href="automedialive.html" class="ld-mobile-back" title="Back to Media Live">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+
+                    <!-- Broadcaster countdown overlay (visible in preview mode when toggled) -->
+                    <div class="ld-bc-countdown-overlay" id="ldBcCountdownOverlay">
+                        <div class="ld-bc-overlay-label">Time to Go Live</div>
+                        <div class="ld-bc-overlay-timer" id="ldBcOverlayTimer">—</div>
+                        <div class="ld-bc-overlay-sub" id="ldBcOverlaySub"></div>
+                    </div>
+
+                    <video class="ld-video" id="ldVideo" controls playsinline></video>
+
+                    <!-- Upcoming placeholder -->
+                    <div class="ld-placeholder upcoming" id="ldPhUpcoming">
+                        <!-- Countdown — shown outside early-live window -->
+                        <div class="ld-countdown" id="ldCountdownBlock">
+                            <div class="ld-countdown-eyebrow">Stream begins in</div>
+                            <div class="ld-countdown-timer" id="ldTimer">—</div>
+                            <div class="ld-countdown-sub" id="ldCountdownDate"></div>
+                        </div>
+                    <!-- Starting shortly — shown inside early-live window, > 5 mins -->
+                        <div class="ld-starting" id="ldStartingBlock" style="display:none">
+                            <div class="ld-starting-eyebrow">Stream starting soon</div>
+                            <div class="ld-starting-dots">
+                                <span class="ld-starting-dot"></span>
+                                <span class="ld-starting-dot"></span>
+                                <span class="ld-starting-dot"></span>
+                            </div>
+                            <div class="ld-starting-label" id="ldStartingTime"></div>
+                            <div class="ld-starting-sub" id="ldStartingSub">You're in early — stream will begin at the scheduled time</div>
+                        </div>
+                        <!-- Urgent countdown — final 5 minutes -->
+                        <div class="ld-urgent" id="ldUrgentBlock" style="display:none">
+                            <div class="ld-urgent-eyebrow">Stream begins in</div>
+                            <div class="ld-urgent-timer" id="ldUrgentTimer">05:00</div>
+                            <div class="ld-urgent-sub" id="ldUrgentSub"></div>
+                        </div>
+                    </div>
+
+                    <!-- Live placeholder -->
+                    <div class="ld-placeholder live" id="ldPhLive" style="display:none">
+                        <i class="fas fa-circle-play ld-ph-icon"></i>
+                        <div class="ld-ph-text">Stream is live — connecting...</div>
+                    </div>
+
+                    <!-- Ready placeholder — broadcaster preview, not yet public -->
+                    <div class="ld-placeholder ready" id="ldPhReady" style="display:none">
+                        <i class="fas fa-satellite-dish ld-ph-icon" style="color:#f59e0b;opacity:0.7;"></i>
+                        <div class="ld-ph-text">Encoder connected — preview only</div>
+                        <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:6px;">Click Go Live when ready to broadcast</div>
+                    </div>
+
+                    <!-- Recording placeholder -->
+                    <div class="ld-placeholder recording" id="ldPhRecording" style="display:none;cursor:pointer;" onclick="var v=document.getElementById('ldVideo');if(v&&v.readyState>=2){v.play();this.style.display='none';v.classList.add('playing');}">
+                        <i class="fas fa-play-circle ld-ph-icon"></i>
+                        <div class="ld-ph-text">Click to replay</div>
+                    </div>
+
+                    <!-- Live badge -->
+                    <div class="ld-live-badge" id="ldLiveBadge" style="display:none">
+                        <span class="ld-live-dot"></span> LIVE
+                    </div>
+
+                    <!-- Viewer count -->
+                    <div class="ld-viewer-badge" id="ldViewerBadge" style="display:none">
+                        <i class="fas fa-eye"></i> <span id="ldViewers">1250</span> viewers
+                    </div>
+
+                    <!-- Scrubber (recording) -->
+                    <div class="ld-scrubber-wrap" id="ldScrubberWrap" style="display:none">
+                        <input type="range" class="ld-scrubber" id="ldScrubber" min="0" max="100" value="0">
+                        <div class="ld-scrubber-controls">
+                            <button class="ld-ctrl-btn" id="ldPlayBtn"><i class="fas fa-play"></i></button>
+                            <span class="ld-time-disp" id="ldTimeDisp">0:00 / 1:24:32</span>
+                            <span class="ld-spacer"></span>
+                            <button class="ld-ctrl-btn sm"><i class="fas fa-volume-up"></i></button>
+                            <button class="ld-ctrl-btn sm" onclick="document.getElementById('ldPlayerWrap').requestFullscreen()">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div><!-- /ld-player-wrap -->
+
+            <!-- Info bar -->
+            <div class="ld-info-bar">
+                <div class="ld-event-left">
+                    <div class="ld-brand" id="ldBrand"></div>
+                    <h1 class="ld-title" id="ldTitle"></h1>
+
+                </div>
+                <div class="ld-status-chip upcoming" id="ldStatusChip">
+                    <i class="fas fa-clock" style="font-size:9px;"></i>
+                    <span id="ldStatusLabel">Upcoming</span>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="ld-toolbar">
+                <button class="ld-btn" id="ldBtnScreenshot" style="display:none">
+                    <i class="fas fa-camera"></i> Capture Frame
+                </button>
+                <button class="ld-btn" id="ldBtnDownload" style="display:none">
+                    <i class="fas fa-download"></i> Download Replay
+                </button>
+                <span class="ld-spacer"></span>
+                <!-- Three view toggles -->
+                <div class="ld-view-toggles" id="ldViewToggles">
+                    <button class="ld-view-btn active" id="ldViewRegular" title="Regular view" onclick="setLdView('regular',this)">
+                        <i class="fas fa-window-maximize"></i>
+                    </button>
+                    <button class="ld-view-btn" id="ldViewMid" title="Mid view — expanded workspace" onclick="setLdView('mid',this)">
+                        <i class="fas fa-columns"></i>
+                    </button>
+                    <button class="ld-view-btn" id="ldViewFull" title="Full screen — video only" onclick="document.getElementById('ldPlayerWrap').requestFullscreen()">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+                <!-- Standalone fullscreen for tablets — view toggles hidden on touch -->
+                <button class="ld-btn ld-btn-fs-standalone" onclick="document.getElementById('ldPlayerWrap').requestFullscreen()" title="Full screen">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <a href="automedialive.html" class="ld-btn" style="margin-left:8px;">
+                    <i class="fas fa-th-large"></i> All Events
+                </a>
+            </div>
+
+
+
+        </div><!-- /ld-video-col -->
+
+
+
+        <!-- TOOLS COLUMN -->
+        <div class="ld-tools-col" id="ldToolsCol">
+
+            <div class="ld-tabs-bar">
+                <button class="ld-tab-btn active" onclick="switchTab('notes',this)">
+                    <i class="fas fa-pen"></i> Notes
+                </button>
+                <button class="ld-tab-btn" onclick="switchTab('info',this)">
+                    <i class="fas fa-info-circle"></i> Info
+                </button>
+            </div>
+
+            <div class="ld-tab-body">
+
+                <!-- NOTES TAB -->
+                <div class="ld-tab-pane active" id="tab-notes">
+                    <textarea class="ld-notes-textarea" id="ldNotesInput"
+                        placeholder="Type your notes here — press Add Note to timestamp them..."
+                        rows="3"></textarea>
+                    <div class="ld-notes-row">
+                        <span class="ld-ts-pill" id="ldCurrentTs">0:00</span>
+                        <button class="ld-btn primary" onclick="addNote()"><i class="fas fa-plus"></i> Add Note</button>
+                        <button class="ld-btn" onclick="document.getElementById('ldNotesInput').value='';autoResizeTextarea(document.getElementById('ldNotesInput'))">Clear</button>
+                    </div>
+                    <div class="ld-divider"></div>
+                    <div class="ld-section-label">Your Notes</div>
+                    <div id="ldNotesList"></div>
+                    <div class="ld-divider"></div>
+                    <button class="ld-btn" onclick="downloadNotes()"><i class="fas fa-download"></i> Download Notes</button>
+                </div>
+
+                <!-- INFO TAB — populated from real event data -->
+                <div class="ld-tab-pane" id="tab-info">
+                    <div id="ldInfoContent">
+                        <div class="ld-info-row"><span class="ld-info-lbl">Brand</span><span class="ld-info-val" id="ldInfoBrand">—</span></div>
+                        <div class="ld-info-row"><span class="ld-info-lbl">Company</span><span class="ld-info-val" id="ldInfoCompany">—</span></div>
+                        <div class="ld-info-row"><span class="ld-info-lbl">Scheduled</span><span class="ld-info-val" id="ldInfoScheduled">—</span></div>
+                        <div class="ld-info-row"><span class="ld-info-lbl">Early access</span><span class="ld-info-val" id="ldInfoEarly">—</span></div>
+                        <div class="ld-info-row"><span class="ld-info-lbl">Language</span><span class="ld-info-val" id="ldInfoLang">—</span></div>
+                        <div class="ld-divider"></div>
+                        <div id="ldInfoDesc" style="font-size:13px;font-weight:300;color:var(--text-secondary);line-height:1.6;display:none;"></div>
+                    </div>
+                </div>
+
+            </div><!-- /ld-tab-body -->
+        </div><!-- /ld-tools-col -->
+
+    </div><!-- /ld-main-row -->
+
+    <!-- ═══════════════════════════════════════════════════
+         HOW AUTOMEDIASTREAM WORKS
+    ═══════════════════════════════════════════════════ -->
+    <div class="ld-hiw">
+        <div class="ld-hiw-header">
+            <h2 class="ld-hiw-title">How AutoMediaStream Works</h2>
+            <p class="ld-hiw-sub">Everything you need to access your live stream content, in four steps.</p>
+        </div>
+        <div class="ld-hiw-steps">
+            <div class="ld-hiw-step">
+                <div class="ld-hiw-num">1</div>
+                <div class="ld-hiw-step-title">Check the Countdown</div>
+                <div class="ld-hiw-step-desc">The countdown shows exactly when the stream is scheduled to go live. You'll be able to join the early access window before the official start.</div>
+            </div>
+            <div class="ld-hiw-step">
+                <div class="ld-hiw-num">2</div>
+                <div class="ld-hiw-step-title">Stream Goes Live</div>
+                <div class="ld-hiw-step-desc">At the scheduled time the stream will go live. Use the view toggle buttons in the toolbar to switch between regular, mid and full screen formats.</div>
+            </div>
+            <div class="ld-hiw-step">
+                <div class="ld-hiw-num">3</div>
+                <div class="ld-hiw-step-title">Watch and Take Notes</div>
+                <div class="ld-hiw-step-desc">The Notes tab allows you to add timestamped observations as the stream plays. Notes can be downloaded after the stream ends.</div>
+            </div>
+            <div class="ld-hiw-step">
+                <div class="ld-hiw-num">4</div>
+                <div class="ld-hiw-step-title">Access the Replay</div>
+                <div class="ld-hiw-step-desc">Once the stream ends it moves to Archive on the Media Live page. Use the All Events button to return to the main menu. You can replay it at any time.</div>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /ld-page -->
+
+<!-- Shell -->
+<script src="./components/shell/v6_5-shell.js"></script>
+<script src="./components/shell/v6_5-shell-loader.js"></script>
+<script>
+loadV65Shell({ basePath: './components/shell' });
+(function(){
+    const t = localStorage.getItem('amcTheme') || localStorage.getItem('theme');
+    if (t === 'dark') document.body.classList.add('dark-mode');
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   LIVE DETAIL CONTROLLER
+══════════════════════════════════════════════════════════ */
+const params     = new URLSearchParams(window.location.search);
+const eventId    = params.get('id')     || 'demo';
+const eventTime  = params.get('time')   || new Date(Date.now() + 90 * 60000).toISOString();
+const earlyMins  = parseInt(params.get('early') || '15');
+const forceState = params.get('status'); // upcoming | live | recording
+
+function getState() {
+    const now   = Date.now();
+    const start = new Date(window._eventTimeOverride || eventTime).getTime();
+    const ARCHIVE_AFTER_MS = 4 * 3600000;
+    const end   = start + ARCHIVE_AFTER_MS;
+
+    // Time-based logic once we have real event data from API
+    if (window._eventTimeOverride) {
+        if (now > end)    return 'recording';
+        if (now >= start) return 'live';
+        return 'upcoming';
+    }
+
+    // Before API data loads — use forceState param or time estimate
+    if (forceState) return forceState;
+    if (now >= start && now < end) return 'live';
+    if (now >= end)  return 'recording';
+    return 'upcoming';
+}
+
+// DB-driven state — overrides time logic for ready/live/recording
+function getDbState(dbStatus) {
+    if (dbStatus === 'ready')     return 'ready';
+    if (dbStatus === 'live')      return 'live';
+    if (dbStatus === 'recording') return 'recording';
+    return null; // fall through to time-based
+}
+
+let state = getState();
+let playing = false;
+let streamSecs = 0;
+
+function applyState(s) {
+    const show = (id, v) => { const el = document.getElementById(id); if(el) el.style.display = v ? '' : 'none'; };
+    // Hide loading spinner
+    show('ldPhLoading',   false);
+    show('ldPhUpcoming',  s === 'upcoming' && window._dbStatus !== 'ready');
+    show('ldPhReady',     s === 'ready');
+    show('ldPhLive',      s === 'live');
+    show('ldPhRecording', s === 'recording');
+    show('ldLiveBadge',   s === 'live');
+    show('ldViewerBadge', s === 'live');
+    show('ldScrubberWrap',s === 'recording');
+    show('ldBtnScreenshot',s === 'live' || s === 'recording');
+    show('ldBtnDownload', s === 'recording');
+    show('ldMoments',     s !== 'upcoming');
+
+    const chip  = document.getElementById('ldStatusChip');
+    const label = document.getElementById('ldStatusLabel');
+    if (chip) {
+        chip.className = 'ld-status-chip ' + s;
+        const labels = { upcoming:'Upcoming', ready:'Preview', live:'Live Now', recording:'Archive' };
+        if (label) label.textContent = labels[s] || s;
+    }
+
+    // Update broadcaster control panel
+    const dot      = document.getElementById('ldBcDot');
+    const statusTxt= document.getElementById('ldBcStatusText');
+    const btnGo    = document.getElementById('ldBtnGoLive');
+    const btnStop  = document.getElementById('ldBtnStopStream');
+
+    if (dot && document.getElementById('ldBroadcastBar')?.classList.contains('visible')) {
+        if (s === 'ready') {
+            dot.className = 'ld-bc-dot ready';
+            if (statusTxt) { statusTxt.className = 'ld-bc-status-text ready'; statusTxt.textContent = 'Preview — not yet public'; }
+            if (btnGo)  { btnGo.style.display = ''; btnGo.disabled = false; }
+            if (btnStop){ btnStop.style.display = 'none'; }
+        } else if (s === 'live') {
+            dot.className = 'ld-bc-dot live';
+            if (statusTxt) { statusTxt.className = 'ld-bc-status-text live'; statusTxt.textContent = 'Live — broadcasting to journalists'; }
+            if (btnGo)  { btnGo.style.display = 'none'; }
+            if (btnStop){ btnStop.style.display = ''; }
+        } else if (s === 'upcoming') {
+            dot.className = 'ld-bc-dot waiting';
+            if (statusTxt) { statusTxt.className = 'ld-bc-status-text'; statusTxt.textContent = 'Waiting for encoder'; }
+            if (btnGo)  { btnGo.style.display = ''; btnGo.disabled = true; }
+            if (btnStop){ btnStop.style.display = 'none'; }
+        } else if (s === 'recording') {
+            dot.className = 'ld-bc-dot waiting';
+            if (statusTxt) { statusTxt.className = 'ld-bc-status-text'; statusTxt.textContent = 'Stream ended — archived'; }
+            if (btnGo)  { btnGo.style.display = 'none'; }
+            if (btnStop){ btnStop.style.display = 'none'; }
+        }
+    }
+
+    if (s === 'upcoming') {
+        // Ensure video never covers the countdown — UNLESS we're in preview mode
+        if (window._dbStatus !== 'ready') {
+            const vid = document.getElementById('ldVideo');
+            if (vid) { vid.classList.remove('playing'); if (hlsInstance) { try { hlsInstance.destroy(); } catch(e){} hlsInstance = null; } }
+        }
+        startCountdown();
+    }
+    if (s === 'live') startViewerSim();
+    if (s === 'recording') loadRecording();
+}
+
+// ── Tab switcher
+function switchTab(id, btn) {
+    document.querySelectorAll('.ld-tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.ld-tab-btn').forEach(b => b.classList.remove('active'));
+    const pane = document.getElementById('tab-' + id);
+    if (pane) pane.classList.add('active');
+    if (btn)  btn.classList.add('active');
+}
+
+// ── Countdown
+let countdownInt;
+function startCountdown() {
+    const dateEl         = document.getElementById('ldCountdownDate');
+    const countdownBlock = document.getElementById('ldCountdownBlock');
+    const startingBlock  = document.getElementById('ldStartingBlock');
+    const startingTime   = document.getElementById('ldStartingTime');
+    // NOTE: start/earlyMs are recalculated each tick() using window globals
+    // so they always reflect the latest API data
+    function getStart()   { return new Date(window._eventTimeOverride || eventTime).getTime(); }
+    function getEarlyMs() { return (window._earlyAccessMins || earlyMins) * 60000; }
+    const start   = getStart();
+    const earlyMs = getEarlyMs();
+
+    // Date display — updated when API data arrives via separate call
+    function updateDateDisplay() {
+        const d = new Date(window._eventTimeOverride || eventTime);
+        const tz = window._eventTimezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const timeStr = d.toLocaleDateString('en-GB', {
+                day: 'numeric', month: 'short', year: 'numeric', timeZone: tz
+            }) + ' · ' + d.toLocaleTimeString('en-GB', {
+                hour: '2-digit', minute: '2-digit', timeZone: tz, timeZoneName: 'short'
+            });
+        if (dateEl) dateEl.textContent = timeStr;
+        if (startingTime) startingTime.textContent = timeStr;
+    }
+    updateDateDisplay();
+
+    // ── Audio chimes via Web Audio API ─────────────────────────────────────
+    let audioCtx = null;
+    let chime60Fired = false;
+    let chime10Fired = false;
+
+    function getAudioCtx() {
+        if (window._audioCtxUnlocked) return window._audioCtxUnlocked;
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioCtx.resume().catch(() => {});
+        return audioCtx;
+    }
+
+    function playChime(type) {
+        try {
+            const ctx = getAudioCtx();
+            const tones = type === '60s'
+                ? [{ freq: 880, dur: 0.3, delay: 0 }]
+                : [{ freq: 1046, dur: 0.18, delay: 0 }, { freq: 1046, dur: 0.18, delay: 0.22 }, { freq: 1318, dur: 0.35, delay: 0.44 }];
+
+            tones.forEach(({ freq, dur, delay }) => {
+                const osc  = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                const t = ctx.currentTime + delay;
+                gain.gain.setValueAtTime(0, t);
+                gain.gain.linearRampToValueAtTime(0.25, t + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+                osc.start(t);
+                osc.stop(t + dur + 0.05);
+            });
+        } catch(e) { /* audio not available */ }
+    }
+
+    function tick() {
+        const now        = Date.now();
+        // Always recalculate from latest API data in case it arrived after startCountdown() was called
+        const _start    = getStart();
+        const _earlyMs  = getEarlyMs();
+        const remToEarly = (_start - _earlyMs) - now;
+        const remToStart = _start - now;
+
+        // Only flip at actual start time if DB already confirms live/recording
+        // Otherwise stay in upcoming/starting-soon until broadcaster clicks Go Live
+        if (remToStart <= 0) {
+            const dbState = getDbState(window._dbStatus);
+            if (dbState === 'live' || dbState === 'recording') {
+                clearInterval(countdownInt);
+                state = dbState;
+                applyState(state);
+                return;
+            }
+            // DB not yet live — stay in starting-soon, keep ticking (API poll will flip us)
+        }
+
+        const countdownBlock = document.getElementById('ldCountdownBlock');
+        const startingBlock  = document.getElementById('ldStartingBlock');
+        const urgentBlock    = document.getElementById('ldUrgentBlock');
+        const urgentTimer    = document.getElementById('ldUrgentTimer');
+        const startingSub    = document.getElementById('ldStartingSub');
+        const urgentSub      = document.getElementById('ldUrgentSub');
+
+        const URGENT_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+
+        // Nuclear fix: if tick() is running, ldPhUpcoming MUST be visible
+        const _phU = document.getElementById('ldPhUpcoming');
+        if (_phU && _phU.style.display === 'none') {
+            _phU.style.display = '';
+        }
+
+        if (remToStart <= 0) {
+            // ── Past start time — waiting for broadcaster to click Go Live
+            if (countdownBlock) countdownBlock.style.display = 'none';
+            if (startingBlock)  startingBlock.style.display  = 'flex';
+            if (urgentBlock)    urgentBlock.style.display    = 'none';
+            if (startingSub) startingSub.textContent = 'Stream is starting — please wait';
+
+        } else if (remToEarly > 0) {
+            // ── Phase 1: Outside early window — countdown to ACTUAL start time
+            const _phU1 = document.getElementById('ldPhUpcoming');
+            if (_phU1) _phU1.classList.remove('phase-starting','phase-urgent','phase-amber','phase-red','phase-pulse');
+            if (countdownBlock) countdownBlock.style.display = 'block';
+            if (startingBlock)  startingBlock.style.display  = 'none';
+            if (urgentBlock)    urgentBlock.style.display    = 'none';
+
+            const totalSecs = Math.floor(remToStart / 1000);
+            const d = Math.floor(totalSecs / 86400);
+            const h = Math.floor((totalSecs % 86400) / 3600);
+            const m = Math.floor((totalSecs % 3600) / 60);
+            const s = totalSecs % 60;
+            const timerEl = document.getElementById('ldTimer');
+            if (timerEl) {
+                if (d > 0) {
+                    timerEl.textContent = `${d}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m`;
+                } else {
+                    timerEl.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                }
+            }
+
+        } else if (remToStart > URGENT_THRESHOLD) {
+            // ── Phase 2: Inside early window, > 5 mins — amber "starting soon"
+            const phUpcoming = document.getElementById('ldPhUpcoming');
+            if (phUpcoming) { phUpcoming.classList.remove('phase-urgent','phase-amber','phase-red','phase-pulse'); phUpcoming.classList.add('phase-starting'); }
+            if (countdownBlock) countdownBlock.style.display = 'none';
+            if (startingBlock)  startingBlock.style.display  = 'flex';
+            if (phUpcoming && phUpcoming.style.display === 'none') phUpcoming.style.display = '';
+            if (urgentBlock)    urgentBlock.style.display    = 'none';
+            const minsLeft = Math.ceil(remToStart / 60000);
+            if (startingSub) {
+                startingSub.textContent = `Stream starts in ${minsLeft} minute${minsLeft !== 1 ? 's' : ''}`;
+            }
+
+        } else {
+            // ── Phase 3: Final 5 minutes — urgent countdown
+            if (countdownBlock) countdownBlock.style.display = 'none';
+            if (startingBlock)  startingBlock.style.display  = 'none';
+            if (urgentBlock)    urgentBlock.style.display    = 'flex';
+
+            const secsLeft = Math.ceil(remToStart / 1000);
+            const m = Math.floor(secsLeft / 60);
+            const s = secsLeft % 60;
+            const timeStr = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+            if (urgentTimer) {
+                urgentTimer.textContent = timeStr;
+            }
+            // Background colour progression — text always white
+            const _phU3 = document.getElementById('ldPhUpcoming');
+            if (_phU3) {
+                _phU3.classList.remove('phase-starting','phase-urgent','phase-amber','phase-red','phase-pulse');
+                if (secsLeft <= 10) {
+                    _phU3.classList.add('phase-red','phase-pulse');
+                } else if (secsLeft <= 30) {
+                    _phU3.classList.add('phase-red');
+                } else if (secsLeft <= 120) {
+                    _phU3.classList.add('phase-amber');
+                } else {
+                    _phU3.classList.add('phase-urgent');
+                }
+            }
+            if (urgentSub) {
+                urgentSub.textContent = secsLeft <= 30
+                    ? 'Stream is about to begin'
+                    : 'Get ready — stream begins shortly';
+            }
+
+            // ── Audio chimes
+            if (secsLeft <= 60 && !chime60Fired) {
+                chime60Fired = true;
+                playChime('60s');
+            }
+            if (secsLeft <= 10 && !chime10Fired) {
+                chime10Fired = true;
+                playChime('10s');
+            }
+        }
+    }
+
+    tick();
+    clearInterval(countdownInt);
+    countdownInt = setInterval(tick, 1000);
+}
+
+// ── Viewer count simulation
+function startViewerSim() {
+    const el = document.getElementById('ldViewers');
+    let count = 1250;
+    setInterval(() => {
+        count = Math.max(600, count + Math.floor(Math.random()*12) - 5);
+        if(el) el.textContent = count;
+    }, 8000);
+}
+
+// ── Current timestamp badge (live)
+setInterval(() => {
+    if (state === 'live') {
+        streamSecs++;
+        const m = Math.floor(streamSecs/60);
+        const s = streamSecs % 60;
+        const el = document.getElementById('ldCurrentTs');
+        if(el) el.textContent = m + ':' + String(s).padStart(2,'0');
+    }
+}, 1000);
+
+// ── Recording / Replay ───────────────────────────────────────────────────────
+let _recordingMp4Url = null;
+
+function loadRecording() {
+    const token   = localStorage.getItem('token') || localStorage.getItem('authToken');
+    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
+
+    // Fetch recording URLs from API
+    fetch(API_BASE + '/api/v1/live/events/' + eventId + '/recording', {
+        headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(r => r.json())
+    .then(json => {
+        if (!json.success || !json.data) return;
+        const { hlsUrl, mp4Url } = json.data;
+        _recordingMp4Url = mp4Url;
+
+        // Load HLS VOD into player
+        if (hlsUrl) {
+            const video = document.getElementById('ldVideo');
+            if (!video) return;
+
+            const hidePh = () => {
+                const ph = document.getElementById('ldPhRecording');
+                if (ph) ph.style.display = 'none';
+                video.classList.add('playing');
+            };
+
+            if (window.Hls && Hls.isSupported()) {
+                if (window._replayHls) { try { window._replayHls.destroy(); } catch(e){} }
+                const hls = new Hls();
+                window._replayHls = hls;
+                hls.loadSource(hlsUrl);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    hidePh();
+                    initScrubber(video);
+                });
+                hls.on(Hls.Events.ERROR, (e, d) => {
+                    if (d.fatal) console.warn('[HLS VOD] Fatal:', d);
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = hlsUrl;
+                video.addEventListener('canplay', () => { hidePh(); initScrubber(video); }, { once: true });
+            }
+        }
+    })
+    .catch(e => console.warn('[Recording] Fetch failed:', e));
+}
+
+function initScrubber(video) {
+    const scrubber = document.getElementById('ldScrubber');
+    const timeDisp = document.getElementById('ldTimeDisp');
+    const playBtn  = document.getElementById('ldPlayBtn');
+    if (!scrubber || !video) return;
+
+    function fmtTime(secs) {
+        const h = Math.floor(secs / 3600);
+        const m = Math.floor((secs % 3600) / 60);
+        const s = Math.floor(secs % 60);
+        if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        return `${m}:${String(s).padStart(2,'0')}`;
+    }
+
+    // Update scrubber range when duration is known
+    video.addEventListener('loadedmetadata', function() {
+        scrubber.max = Math.floor(video.duration);
+        if (timeDisp) timeDisp.textContent = '0:00 / ' + fmtTime(video.duration);
+    });
+
+    // Update scrubber + time display as video plays
+    video.addEventListener('timeupdate', function() {
+        if (!_scrubbing) {
+            scrubber.value = Math.floor(video.currentTime);
+            if (timeDisp) timeDisp.textContent = fmtTime(video.currentTime) + ' / ' + fmtTime(video.duration || 0);
+        }
+        // Update the timestamp pill for notes
+        const tsEl = document.getElementById('ldCurrentTs');
+        if (tsEl) {
+            const m = Math.floor(video.currentTime / 60);
+            const s = Math.floor(video.currentTime % 60);
+            tsEl.textContent = m + ':' + String(s).padStart(2,'0');
+        }
+    });
+
+    // Scrubber interaction
+    let _scrubbing = false;
+    scrubber.addEventListener('mousedown', () => { _scrubbing = true; });
+    scrubber.addEventListener('touchstart', () => { _scrubbing = true; });
+    scrubber.addEventListener('input', function() {
+        video.currentTime = Number(this.value);
+        if (timeDisp) timeDisp.textContent = fmtTime(Number(this.value)) + ' / ' + fmtTime(video.duration || 0);
+    });
+    scrubber.addEventListener('mouseup', () => { _scrubbing = false; });
+    scrubber.addEventListener('touchend', () => { _scrubbing = false; });
+    scrubber.addEventListener('change', function() {
+        _scrubbing = false;
+        video.currentTime = Number(this.value);
+    });
+
+    // Play/pause — override the existing listener
+    if (playBtn) {
+        playBtn.replaceWith(playBtn.cloneNode(true)); // remove old listeners
+        const newPlayBtn = document.getElementById('ldPlayBtn');
+        newPlayBtn?.addEventListener('click', function() {
+            if (video.paused) {
+                video.play();
+                this.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                video.pause();
+                this.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        });
+    }
+
+    // Video ended — reset play button
+    video.addEventListener('ended', function() {
+        const btn = document.getElementById('ldPlayBtn');
+        if (btn) btn.innerHTML = '<i class="fas fa-play"></i>';
+    });
+}
+
+// ── Download Replay button — serves MP4
+document.getElementById('ldBtnDownload')?.addEventListener('click', function() {
+    if (_recordingMp4Url) {
+        const title = (document.getElementById('ldTitle')?.textContent || 'Stream')
+            .replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').substring(0, 60);
+        const a = document.createElement('a');
+        a.href = _recordingMp4Url;
+        a.download = title + '-replay.mp4';
+        a.click();
+    } else {
+        const toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid rgba(239,68,68,0.4);color:#f87171;padding:12px 20px;border-radius:8px;font-size:12px;font-weight:600;z-index:99999;';
+        toast.innerHTML = '<i class="fas fa-exclamation-triangle"></i>&nbsp; No recording available for download';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+});
+
+// ── Add timestamped note
+function addNote() {
+    const input = document.getElementById('ldNotesInput');
+    const ts    = document.getElementById('ldCurrentTs');
+    const list  = document.getElementById('ldNotesList');
+    const text  = input.value.trim();
+    if (!text) return;
+    const tsVal = ts ? ts.textContent : '0:00';
+    const div = document.createElement('div');
+    div.className = 'ld-note-item';
+    div.innerHTML = `<span class="ld-note-ts">[${tsVal}]</span>${text.replace(/</g,'&lt;')}`;
+    list.prepend(div);
+    input.value = '';
+}
+
+// ── Download notes
+function downloadNotes() {
+    const title = document.getElementById('ldTitle')?.textContent || 'Stream';
+    let text = `AutoMediaCenter — Stream Notes\nEvent: ${title}\n\n`;
+    document.querySelectorAll('#ldNotesList .ld-note-item').forEach(e => {
+        text += e.textContent.trim() + '\n';
+    });
+    const blob = new Blob([text], {type:'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'stream-notes.txt';
+    a.click();
+}
+
+// ── Seek to timestamp
+function seekTo(seconds) {
+    const video = document.getElementById('ldVideo');
+    if (video && video.readyState >= 2) video.currentTime = seconds;
+}
+
+// ── Play/pause toggle
+document.getElementById('ldPlayBtn')?.addEventListener('click', function() {
+    playing = !playing;
+    this.innerHTML = playing ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+    const video = document.getElementById('ldVideo');
+    if (video) playing ? video.play() : video.pause();
+});
+
+// ── Auto-resize textarea ──────────────────────────────────────────────────────
+function autoResizeTextarea(el) {
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+}
+document.getElementById('ldNotesInput')?.addEventListener('input', function() {
+    autoResizeTextarea(this);
+});
+
+// ── Capture Frame — grabs current video frame as PNG download ─────────────────
+document.getElementById('ldBtnScreenshot')?.addEventListener('click', function() {
+    const video = document.getElementById('ldVideo');
+    if (!video || video.readyState < 2 || video.videoWidth === 0) {
+        // Video not ready — show brief toast
+        const toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid rgba(239,68,68,0.4);color:#f87171;padding:12px 20px;border-radius:8px;font-size:12px;font-weight:600;z-index:99999;';
+        toast.innerHTML = '<i class="fas fa-exclamation-triangle"></i>&nbsp; No video frame available yet';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+        return;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    // Build filename: EventTitle_HH-MM-SS.png
+    const title = (document.getElementById('ldTitle')?.textContent || 'Stream')
+        .replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').substring(0, 60);
+    const m = Math.floor(streamSecs / 60);
+    const s = streamSecs % 60;
+    const ts = String(m).padStart(2,'0') + '-' + String(s).padStart(2,'0');
+    const filename = title + '_' + ts + '.png';
+
+    canvas.toBlob(function(blob) {
+        if (!blob) return;
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+
+        // Success toast
+        const toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid rgba(22,163,74,0.4);color:#4ade80;padding:12px 20px;border-radius:8px;font-size:12px;font-weight:600;z-index:99999;';
+        toast.innerHTML = '<i class="fas fa-check"></i>&nbsp; Frame captured — ' + filename;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }, 'image/png');
+});
+
+// ── Three-view system ─────────────────────────────────────────────────────────
+(function() {
+    const ldPage     = document.querySelector('.ld-page');
+    const toolsCol   = document.getElementById('ldToolsCol');
+    const sidebarBtn = document.getElementById('ldFsSidebarToggle');
+    let currentView  = 'regular';
+    let sidebarOpen  = true;
+
+    function updateSidebarToggle() {
+        if (!sidebarBtn) return;
+        sidebarBtn.style.right = sidebarOpen ? '340px' : '0';
+        sidebarBtn.classList.toggle('collapsed', !sidebarOpen);
+        sidebarBtn.innerHTML = sidebarOpen
+            ? '<i class="fas fa-chevron-right"></i>'
+            : '<i class="fas fa-chevron-left"></i>';
+    }
+
+    function applyView(view) {
+        currentView = view;
+        const videoCol = document.querySelector('.ld-video-col');
+        const backLink = document.getElementById('ldBack');
+        const isMid = view === 'mid';
+
+        ldPage?.classList.toggle('ld-fullscreen', isMid);
+        ldPage?.classList.remove('ld-midview');
+
+        if (backLink) backLink.style.display = isMid ? 'none' : '';
+        if (videoCol) videoCol.style.maxWidth = isMid ? 'unset' : '820px';
+
+        // Update active button — only regular and mid toggle
+        document.getElementById('ldViewRegular')?.classList.toggle('active', view === 'regular');
+        document.getElementById('ldViewMid')?.classList.toggle('active', view === 'mid');
+
+        // Sidebar toggle only visible in mid view
+        if (sidebarBtn) sidebarBtn.style.display = isMid ? 'flex' : 'none';
+
+        if (isMid) {
+            sidebarOpen = true;
+            toolsCol?.classList.remove('collapsed');
+            updateSidebarToggle();
+            if (toolsCol) toolsCol.style.marginTop = '';
+        } else {
+            alignToolsCol();
+        }
+
+        window.scrollTo(0, 0);
+    }
+
+    // Expose globally for onclick handlers
+    window.setLdView = function(view) { applyView(view); };
+
+    // Sidebar toggle (mid view only)
+    sidebarBtn?.addEventListener('click', function() {
+        sidebarOpen = !sidebarOpen;
+        toolsCol?.classList.toggle('collapsed', !sidebarOpen);
+        updateSidebarToggle();
+    });
+
+    // ESC exits mid view back to regular
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && currentView === 'mid') applyView('regular');
+    });
+
+    // Default: regular
+    applyView('regular');
+})();
+
+// ── Align tools column with player top ───────────────────────────────────────
+// Uses margin-top so the border-left and background start at the player level.
+// Called from DOMContentLoaded and after API fetch restores visibility.
+function alignToolsCol() {
+    const back  = document.getElementById('ldBack');
+    const tools = document.getElementById('ldToolsCol');
+    if (!back || !tools) return;
+    if (window.innerWidth < 1100) { tools.style.marginTop = ''; return; }
+    if (back.offsetHeight === 0) { tools.style.marginTop = ''; return; }
+    tools.style.marginTop = back.offsetHeight + 'px';
+}
+window.addEventListener('resize', alignToolsCol);
+
+// ── Mobile landscape immersive mode ──────────────────────────────────────────
+// Injects styles via JS to override shell CSS that loads after page styles.
+// Enterprise pattern: video fills screen in landscape, header/nav hidden.
+(function() {
+    let immersiveStyle = null;
+    const IMMERSIVE_CSS = `
+        .mobile-header, #amcShellHeader, #amcShellSidebar,
+        .icon-rail, .mobile-sidebar, .mobile-nav-drawer,
+        .mobile-hamburger, [class*="shell-"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+            position: absolute !important;
+            top: -9999px !important;
+            pointer-events: none !important;
+        }
+        .ld-page.mobile-main {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .ld-page .ld-back { display: none !important; }
+        .ld-page .ld-main-row {
+            flex-direction: row !important;
+            height: 100vh !important;
+            overflow: hidden !important;
+        }
+        .ld-page .ld-video-col {
+            flex: 1 !important;
+            padding: 0 !important;
+            max-width: unset !important;
+            height: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
+        }
+        .ld-page .ld-player-wrap {
+            flex: 1 !important;
+            padding-top: 0 !important;
+            aspect-ratio: unset !important;
+            border-radius: 0 !important;
+        }
+        .ld-page .ld-player-inner {
+            position: relative !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .ld-page .ld-info-bar,
+        .ld-page .ld-toolbar,
+        .ld-page .ld-broadcast-bar,
+        .ld-page .ld-hiw,
+        .ld-page .ld-view-toggles,
+        .ld-page .ld-tools-col { display: none !important; }
+    `;
+
+    function checkOrientation() {
+        // Phone landscape = touch device + short viewport height (phones have ≤500px height in landscape)
+        // This avoids catching tablets (700px+ height) or small laptops
+        const isPhoneLandscape = window.innerWidth > window.innerHeight &&
+            window.innerHeight <= 500 &&
+            ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
+        if (isPhoneLandscape && !immersiveStyle) {
+            immersiveStyle = document.createElement('style');
+            immersiveStyle.id = 'ldImmersiveLandscape';
+            immersiveStyle.textContent = IMMERSIVE_CSS;
+            document.head.appendChild(immersiveStyle);
+        } else if (!isPhoneLandscape && immersiveStyle) {
+            immersiveStyle.remove();
+            immersiveStyle = null;
+        }
+    }
+
+    checkOrientation();
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', () => setTimeout(checkOrientation, 100));
+})();
+
+// ══════════════════════════════════════════════════════════
+//  BROADCASTER CONTROL ROOM — self-contained, no shared state
+// ══════════════════════════════════════════════════════════
+function launchControlRoom(ev, token, API_BASE) {
+    // Inject control room CSS — AMC Typography Spec v1.0, always dark
+    const style = document.createElement('style');
+    style.textContent = `
+    .cr-wrap {
+        position: fixed;
+        top: var(--amc-header-h, 56px); left: var(--amc-rail-w, 72px);
+        right: 0; bottom: 0; z-index: 500;
+        background: #0a0f1a;
+        display: flex; flex-direction: column;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        overflow: hidden; color: #e2e8f0;
+    }
+    .cr-header {
+        display: flex; align-items: center; gap: 12px;
+        padding: 0 20px; height: 48px;
+        background: #0f172a; border-bottom: 1px solid #1e293b; flex-shrink: 0;
+    }
+    .cr-header-title {
+        font-size: 14px; font-weight: 600; color: #f1f5f9; flex: 1;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        letter-spacing: -0.01em;
+    }
+    .cr-header-sep { width: 1px; height: 20px; background: #1e293b; flex-shrink: 0; }
+    .cr-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; flex-shrink: 0; transition: all 0.3s; }
+    .cr-status-dot.ready { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.5); }
+    .cr-status-dot.live  { background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.6); animation: crLivePulse 1.5s ease-in-out infinite; }
+    @keyframes crLivePulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .cr-status-text { font-size: 12px; font-weight: 500; color: #64748b; white-space: nowrap; }
+    .cr-status-text.ready { color: #f59e0b; }
+    .cr-status-text.live  { color: #22c55e; font-weight: 600; }
+    .cr-btn-golive {
+        padding: 7px 18px; border-radius: 6px; border: none; cursor: pointer;
+        background: #16a34a; color: #fff; font-size: 13px; font-weight: 600;
+        font-family: inherit; letter-spacing: 0.01em; transition: all 0.15s;
+        display: inline-flex; align-items: center; gap: 6px;
+    }
+    .cr-btn-golive:hover:not(:disabled) { background: #15803d; }
+    .cr-btn-golive:disabled { background: #1e293b; color: #334155; cursor: not-allowed; }
+    .cr-btn-end {
+        padding: 7px 14px; border-radius: 6px;
+        border: 1px solid rgba(239,68,68,0.4); cursor: pointer;
+        background: rgba(239,68,68,0.08); color: #f87171;
+        font-size: 12px; font-weight: 600; font-family: inherit;
+        display: none; align-items: center; gap: 6px; transition: all 0.15s;
+    }
+    .cr-btn-end:hover { background: rgba(239,68,68,0.15); border-color: #ef4444; }
+    .cr-rec-indicator { display: none; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #22c55e; letter-spacing: 0.03em; }
+    .cr-rec-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; animation: crRecPulse 1s ease-in-out infinite; }
+    @keyframes crRecPulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+    .cr-body { display: flex; flex: 1; overflow: hidden; position: relative; }
+    .cr-player-col { flex: 1; display: flex; flex-direction: column; background: #000; overflow: hidden; }
+    .cr-video-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; flex-shrink: 0; }
+    .cr-video { width: 100%; height: 100%; object-fit: contain; display: none; }
+    .cr-waiting {
+        position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 12px;
+    }
+    .cr-waiting i { font-size: 40px; color: #1e293b; }
+    .cr-waiting-title { font-size: 15px; font-weight: 600; color: #475569; letter-spacing: -0.01em; }
+    .cr-waiting-sub { font-size: 13px; font-weight: 400; color: #334155; text-align: center; line-height: 1.55; max-width: 280px; }
+    .cr-countdown-overlay {
+        position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+        background: rgba(0,0,0,0.65); backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+        padding: 10px 20px; text-align: center; pointer-events: none;
+        z-index: 10; display: none; white-space: nowrap; min-width: 160px;
+    }
+    .cr-countdown-overlay.show { display: block; }
+    .cr-ov-timer {
+        font-size: 28px; font-weight: 800; color: #fff;
+        font-variation-settings: 'opsz' 28;
+        letter-spacing: -0.04em; font-variant-numeric: tabular-nums; line-height: 1;
+    }
+    .cr-ov-sub { font-size: 11px; font-weight: 300; color: rgba(255,255,255,0.5); margin-top: 3px; }
+    /* Sidebar */
+    .cr-sidebar {
+        width: 288px; flex-shrink: 0;
+        background: #0f172a; border-left: 1px solid #1e293b;
+        display: flex; flex-direction: column; overflow: hidden;
+        transition: width 0.2s ease;
+    }
+    .cr-sidebar.collapsed { width: 0; border-left: none; }
+    .cr-sidebar-inner { flex: 1; overflow-y: auto; }
+    .cr-sidebar-toggle {
+        position: absolute; right: 288px; top: 50%; transform: translateY(-50%);
+        width: 18px; height: 40px; background: #0f172a;
+        border: 1px solid #1e293b; border-right: none;
+        border-radius: 4px 0 0 4px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; color: #334155; font-size: 9px;
+        transition: all 0.2s; z-index: 10;
+    }
+    .cr-sidebar-toggle:hover { color: #64748b; }
+    .cr-sidebar-toggle.collapsed { right: 0; border-radius: 0 4px 4px 0; border-right: 1px solid #1e293b; border-left: none; }
+    /* Sections — AMC Typography Spec v1.0 */
+    .cr-section { padding: 14px 16px; border-bottom: 1px solid #1e293b; }
+    .cr-section-title {
+        font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+        color: #64748b; margin-bottom: 12px;
+    }
+    .cr-countdown-display { text-align: center; padding: 8px 0 4px; }
+    .cr-cd-timer {
+        font-size: 32px; font-weight: 800; font-variation-settings: 'opsz' 32;
+        color: #f8fafc; font-variant-numeric: tabular-nums;
+        letter-spacing: -0.04em; line-height: 1;
+    }
+    .cr-cd-sub { font-size: 12px; font-weight: 300; color: #64748b; margin-top: 6px; line-height: 1.55; }
+    .cr-cd-past { color: #22c55e; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+    .cr-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .cr-stat { background: #0a0f1a; border-radius: 6px; padding: 8px 10px; border: 1px solid #1e293b; }
+    .cr-stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #64748b; }
+    .cr-stat-value { font-size: 17px; font-weight: 700; color: #f1f5f9; margin-top: 3px; font-variant-numeric: tabular-nums; }
+    .cr-stat-value.good    { color: #22c55e; }
+    .cr-stat-value.warning { color: #f59e0b; }
+    .cr-stat-value.error   { color: #ef4444; }
+    .cr-field-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #64748b; margin-bottom: 5px; }
+    .cr-field-row { display: flex; align-items: center; gap: 6px; background: #0a0f1a; border: 1px solid #1e293b; border-radius: 6px; padding: 7px 10px; }
+    .cr-field-value { font-size: 12px; color: #94a3b8; font-family: monospace; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cr-icon-btn { width: 26px; height: 26px; border-radius: 4px; border: 1px solid #1e293b; background: #0f172a; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; transition: all 0.15s; }
+    .cr-icon-btn:hover { color: #e2e8f0; border-color: #334155; }
+    .cr-warn { font-size: 10px; font-weight: 400; color: #475569; margin-top: 5px; line-height: 1.4; }
+    .cr-warn.amber { color: rgba(245,158,11,0.7); }
+    .cr-toggle-overlay { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 10px; border-radius: 6px; background: #0a0f1a; border: 1px solid #1e293b; font-size: 12px; font-weight: 500; color: #475569; transition: all 0.15s; user-select: none; }
+    .cr-toggle-overlay:hover { color: #64748b; border-color: #334155; }
+    .cr-toggle-overlay.active { border-color: rgba(124,58,237,0.4); color: #a78bfa; background: rgba(124,58,237,0.06); }
+    .cr-info-text { font-size: 11px; font-weight: 400; color: #475569; line-height: 1.55; }
+    .cr-info-text strong { color: #64748b; font-weight: 600; }
+    /* End stream confirmation modal */
+    .cr-modal-backdrop { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; }
+    .cr-modal { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 28px; max-width: 380px; width: 90%; box-shadow: 0 24px 64px rgba(0,0,0,0.6); }
+    .cr-modal-title { font-size: 17px; font-weight: 700; color: #f1f5f9; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .cr-modal-body { font-size: 13px; font-weight: 400; color: #64748b; line-height: 1.55; margin-bottom: 24px; }
+    .cr-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .cr-modal-cancel { padding: 8px 16px; border-radius: 6px; border: 1px solid #1e293b; background: transparent; color: #64748b; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; }
+    .cr-modal-cancel:hover { border-color: #334155; color: #94a3b8; }
+    .cr-modal-confirm { padding: 8px 16px; border-radius: 6px; border: none; background: #ef4444; color: #fff; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
+    .cr-modal-confirm:hover { background: #dc2626; }
+    `;
+    document.head.appendChild(style);
+
+    // Build control room HTML
+    const host = window.location.hostname;
+    const isLocal = host === 'localhost' || host === '127.0.0.1';
+    const rtmpUrl = (isLocal ? 'rtmp://' : 'rtmps://') + host + '/live';
+    const maskedKey = ev.streamKey ? ev.streamKey.substring(0, 6) + '••••••••••••' : '—';
+    const hlsUrl = ev.hlsUrl || (ev.streamKey ? `/hls/live/${ev.streamKey}/index.m3u8` : null);
+
+    // Format scheduled time
+    const tz = ev.timezone || 'UTC';
+    const scheduledStr = new Date(ev.eventDateTime).toLocaleString('en-GB', {
+        weekday:'short', day:'numeric', month:'short', year:'numeric',
+        hour:'2-digit', minute:'2-digit', timeZone: tz, timeZoneName:'short'
+    });
+
+    const cr = document.createElement('div');
+    cr.className = 'cr-wrap';
+    cr.id = 'crWrap';
+    cr.innerHTML = `
+        <div class="cr-header">
+            <span class="cr-status-dot" id="crDot"></span>
+            <span class="cr-status-text" id="crStatusText">Waiting for encoder</span>
+            <span class="cr-header-sep"></span>
+            <span class="cr-header-title">${ev.title || 'Untitled'}</span>
+            <button class="cr-btn-golive" id="crBtnGoLive" disabled><i class="fas fa-circle-play"></i> Go Live</button>
+            <button class="cr-btn-end" id="crBtnEnd"><i class="fas fa-stop-circle"></i> End Stream</button>
+            <div class="cr-rec-indicator" id="crRecIndicator">
+                <span class="cr-rec-dot"></span> LIVE <span id="crRecDuration">00:00</span>
+            </div>
+        </div>
+        <div class="cr-body">
+            <div class="cr-player-col">
+                <div class="cr-video-wrap" id="crVideoWrap">
+                    <video class="cr-video" id="crVideo" controls playsinline></video>
+                    <div class="cr-waiting" id="crWaiting">
+                        <i class="fas fa-satellite-dish"></i>
+                        <div class="cr-waiting-title">Waiting for encoder</div>
+                        <div class="cr-waiting-sub">Start streaming in OBS using the credentials in the panel.<br>Preview will appear here automatically.</div>
+                    </div>
+                    <div class="cr-countdown-overlay" id="crCountdownOverlay">
+                        <div class="cr-ov-timer" id="crOverlayTimer">—</div>
+                        <div class="cr-ov-sub" id="crOverlaySub"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar toggle -->
+            <button class="cr-sidebar-toggle" id="crSidebarToggle" title="Toggle panel"><i class="fas fa-chevron-right"></i></button>
+
+            <div class="cr-sidebar" id="crSidebar">
+                <div class="cr-sidebar-inner">
+
+                <!-- Countdown -->
+                <div class="cr-section">
+                    <div class="cr-section-title">Countdown to Start</div>
+                    <div class="cr-countdown-display">
+                        <div class="cr-cd-timer" id="crCdTimer">—</div>
+                        <div class="cr-cd-sub" id="crCdSub">${scheduledStr}</div>
+                    </div>
+                    <div style="margin-top:12px;">
+                        <div class="cr-toggle-overlay" id="crToggleOverlay">
+                            <i class="fas fa-clock"></i> Show countdown on preview
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="cr-section">
+                    <div class="cr-section-title">Stream Health</div>
+                    <div class="cr-stats-grid">
+                        <div class="cr-stat"><div class="cr-stat-label">Viewers</div><div class="cr-stat-value" id="crViewers">—</div></div>
+                        <div class="cr-stat"><div class="cr-stat-label">Duration</div><div class="cr-stat-value" id="crDuration">—</div></div>
+                        <div class="cr-stat"><div class="cr-stat-label">Bitrate</div><div class="cr-stat-value" id="crBitrate">—</div></div>
+                        <div class="cr-stat"><div class="cr-stat-label">Video</div><div class="cr-stat-value" id="crResolution">—</div></div>
+                    </div>
+                </div>
+
+                <!-- Stream credentials -->
+                <div class="cr-section">
+                    <div class="cr-section-title">Stream Credentials</div>
+                    <div style="margin-bottom:12px;">
+                        <div class="cr-field-label">RTMP${isLocal ? '' : 'S'} Server</div>
+                        <div class="cr-field-row">
+                            <span class="cr-field-value" id="crRtmpUrl">${rtmpUrl}</span>
+                            <button class="cr-icon-btn" id="crBtnCopyRtmp" title="Copy"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="cr-field-label">Stream Key <span style="color:rgba(245,158,11,0.7);text-transform:none;letter-spacing:0;font-weight:400;font-size:10px;">Never share publicly</span></div>
+                        <div class="cr-field-row">
+                            <span class="cr-field-value" id="crKeyVal">${maskedKey}</span>
+                            <button class="cr-icon-btn" id="crBtnReveal" title="Reveal"><i class="fas fa-eye"></i></button>
+                            <button class="cr-icon-btn" id="crBtnCopyKey" title="Copy" disabled><i class="fas fa-copy"></i></button>
+                            <button class="cr-icon-btn" id="crBtnReset" title="Reset key"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                        <div class="cr-warn"><i class="fas fa-info-circle"></i> Reveal before copying. Reset invalidates old key immediately.</div>
+                    </div>
+                </div>
+
+                <!-- Event info -->
+                <div class="cr-section">
+                    <div class="cr-section-title">Event Details</div>
+                    <div class="cr-info-text">
+                        <strong>Scheduled:</strong> ${scheduledStr}<br>
+                        <strong>Early window:</strong> ${ev.earlyAccessMins || 15} mins before start<br>
+                        <strong>Trigger:</strong> ${ev.startTrigger === 'manual' ? 'Manual — you control Go Live' : ev.startTrigger || 'Manual'}
+                    </div>
+                </div>
+
+                <!-- Latency notice -->
+                <div class="cr-section">
+                    <div style="display:flex;gap:8px;align-items:flex-start;">
+                        <i class="fas fa-info-circle" style="color:#334155;margin-top:1px;flex-shrink:0;font-size:11px;"></i>
+                        <div class="cr-info-text">
+                            Preview is <strong>15–30s delayed</strong> due to HLS buffering. All viewers see the same delay. Click Go Live at or after the scheduled start time.
+                        </div>
+                    </div>
+                </div>
+
+                </div><!-- /cr-sidebar-inner -->
+            </div><!-- /cr-sidebar -->
+        </div>
+
+        <!-- End stream confirmation modal -->
+        <div class="cr-modal-backdrop" id="crModalBackdrop" style="display:none">
+            <div class="cr-modal">
+                <div class="cr-modal-title">End the stream?</div>
+                <div class="cr-modal-body">This will stop the broadcast and move the event to Archive. All viewers will lose access to the live stream. This cannot be undone.</div>
+                <div class="cr-modal-actions">
+                    <button class="cr-modal-cancel" id="crModalCancel">Cancel</button>
+                    <button class="cr-modal-confirm" id="crModalConfirm"><i class="fas fa-stop-circle"></i> End Stream</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(cr);
+
+    // ── State ────────────────────────────────────────────────────────────────
+    let crState = 'upcoming'; // upcoming | ready | live | recording
+    let crHls = null;
+    let crStreamKey = ev.streamKey || null;
+    let crKeyRevealed = false;
+    let crOverlayActive = false;
+    let crPrevBytes = 0, crPrevBytesTime = 0;
+
+    function crSetStatus(s) {
+        crState = s;
+        const dot  = document.getElementById('crDot');
+        const txt  = document.getElementById('crStatusText');
+        const btnGo = document.getElementById('crBtnGoLive');
+        const btnEnd = document.getElementById('crBtnEnd');
+        if (s === 'upcoming') {
+            if (dot) { dot.className = 'cr-status-dot'; }
+            if (txt) { txt.className = 'cr-status-text'; txt.textContent = 'Waiting for encoder'; }
+            if (btnGo) { btnGo.disabled = true; btnGo.style.display = ''; btnGo.innerHTML = '<i class="fas fa-circle-play"></i> Go Live'; }
+            if (btnEnd) btnEnd.style.display = 'none';
+        } else if (s === 'ready') {
+            if (dot) { dot.className = 'cr-status-dot ready'; }
+            if (txt) { txt.className = 'cr-status-text ready'; txt.textContent = 'Preview — encoder connected, not yet public'; }
+            if (btnGo) { btnGo.disabled = false; btnGo.style.display = ''; }
+            if (btnEnd) btnEnd.style.display = 'none';
+            document.getElementById('crWaiting')?.setAttribute('style','display:none');
+            crLoadHls();
+        } else if (s === 'live') {
+            if (dot) { dot.className = 'cr-status-dot live'; }
+            if (txt) { txt.className = 'cr-status-text live'; txt.textContent = 'Live — stream is public'; }
+            if (btnGo) { btnGo.style.display = 'none'; }
+            if (btnEnd) { btnEnd.style.display = 'inline-flex'; }
+            // Show REC indicator and start duration counter
+            const recEl = document.getElementById('crRecIndicator');
+            if (recEl) recEl.style.display = 'flex';
+            let recSecs = 0;
+            setInterval(() => {
+                recSecs++;
+                const h = Math.floor(recSecs/3600);
+                const m = Math.floor((recSecs%3600)/60);
+                const s = recSecs%60;
+                const dur = document.getElementById('crRecDuration');
+                if (dur) dur.textContent = h > 0
+                    ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+                    : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            }, 1000);
+            // Hide countdown overlay when live
+            document.getElementById('crCountdownOverlay')?.classList.remove('show');
+        } else if (s === 'recording') {
+            if (dot) { dot.className = 'cr-status-dot'; }
+            if (txt) { txt.className = 'cr-status-text'; txt.textContent = 'Stream ended — archived'; }
+            if (btnGo) btnGo.style.display = 'none';
+            if (btnEnd) btnEnd.style.display = 'none';
+            const recEl = document.getElementById('crRecIndicator');
+            if (recEl) recEl.style.display = 'none';
+        }
+    }
+
+    function crLoadHls() {
+        if (!hlsUrl) return;
+        const video = document.getElementById('crVideo');
+        if (!video) return;
+        if (crHls) { try { crHls.destroy(); } catch(e){} crHls = null; }
+        video.style.display = 'block';
+        if (window.Hls && Hls.isSupported()) {
+            crHls = new Hls({ liveSyncDurationCount: 3 });
+            crHls.loadSource(hlsUrl);
+            crHls.attachMedia(video);
+            crHls.on(Hls.Events.MANIFEST_PARSED, () => { video.play().catch(()=>{}); });
+            crHls.on(Hls.Events.ERROR, (e, d) => {
+                if (d.fatal && d.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                    // Retry after 5s — encoder may not have segments yet
+                    setTimeout(() => { if (crState === 'ready') crLoadHls(); }, 5000);
+                }
+            });
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = hlsUrl; video.play().catch(()=>{});
+        }
+    }
+
+    // ── Countdown sidebar ────────────────────────────────────────────────────
+    function crTickCountdown() {
+        const start = new Date(ev.eventDateTime).getTime();
+        const rem   = start - Date.now();
+        const timerEl = document.getElementById('crCdTimer');
+        const subEl   = document.getElementById('crCdSub');
+        const overlayTimer = document.getElementById('crOverlayTimer');
+        const overlaySub   = document.getElementById('crOverlaySub');
+
+        let timerText, subText;
+        if (rem <= 0) {
+            const pastSecs = Math.abs(Math.floor(rem / 1000));
+            const pm = Math.floor(pastSecs / 60), ps = pastSecs % 60;
+            timerText = `+${String(pm).padStart(2,'0')}:${String(ps).padStart(2,'0')}`;
+            subText   = crState === 'live' ? 'Stream is live' : 'Past scheduled start — click Go Live';
+            if (timerEl) { timerEl.className = 'cr-cd-timer cr-cd-past'; timerEl.textContent = timerText; }
+        } else {
+            const ts = Math.floor(rem / 1000);
+            const d  = Math.floor(ts / 86400);
+            const h  = Math.floor((ts % 86400) / 3600);
+            const m  = Math.floor((ts % 3600) / 60);
+            const s  = ts % 60;
+            timerText = d > 0
+                ? `${d}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m`
+                : `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            subText = 'until scheduled start';
+            if (timerEl) { timerEl.className = 'cr-cd-timer'; timerEl.textContent = timerText; }
+        }
+
+        if (subEl) subEl.textContent = subText;
+        if (overlayTimer) overlayTimer.textContent = timerText;
+        if (overlaySub)   overlaySub.textContent   = subText;
+    }
+    crTickCountdown();
+    setInterval(crTickCountdown, 1000);
+
+    // ── API poll — every 15s ─────────────────────────────────────────────────
+    let crPollInterval = null;
+    function crStartPoll() {
+        if (crPollInterval) return;
+        crPollInterval = setInterval(async () => {
+            if (crState === 'recording') { clearInterval(crPollInterval); return; }
+            try {
+                const res  = await fetch(API_BASE + '/api/v1/live/events/' + ev._id, { headers: { 'Authorization': 'Bearer ' + token } });
+                const json = await res.json();
+                if (!json.success) return;
+                const dbStatus = json.data.status;
+                if (dbStatus === 'ready'     && crState !== 'ready')     crSetStatus('ready');
+                if (dbStatus === 'live'      && crState !== 'live')      crSetStatus('live');
+                if (dbStatus === 'recording' && crState !== 'recording') crSetStatus('recording');
+                if (dbStatus === 'upcoming'  && crState === 'ready') {
+                    // OBS disconnected
+                    crSetStatus('upcoming');
+                    if (crHls) { try { crHls.destroy(); } catch(e){} crHls = null; }
+                    const video = document.getElementById('crVideo');
+                    if (video) video.style.display = 'none';
+                    document.getElementById('crWaiting')?.removeAttribute('style');
+                }
+            } catch(e) {}
+        }, 15000);
+    }
+
+    // ── Stats poll ───────────────────────────────────────────────────────────
+    function fmtDur(secs) {
+        const h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60), s = secs%60;
+        if (h > 0) return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+    async function crPollStats() {
+        if (!crStreamKey) return;
+        try {
+            const res  = await fetch(API_BASE + '/api/v1/stream-stats/' + crStreamKey, { headers: { 'Authorization': 'Bearer ' + token } });
+            const data = await res.json();
+            const vEl  = document.getElementById('crViewers');
+            const dEl  = document.getElementById('crDuration');
+            const bEl  = document.getElementById('crBitrate');
+            const rEl  = document.getElementById('crResolution');
+            if (vEl) vEl.textContent = data.connected ? String(data.viewerCount || 0) : '—';
+            if (dEl) dEl.textContent = data.connected ? fmtDur(data.durationSecs || 0) : '—';
+            if (data.connected && crPrevBytes > 0 && data.totalBytes > crPrevBytes) {
+                const kbps = Math.round((data.totalBytes - crPrevBytes) * 8 / ((Date.now() - crPrevBytesTime) / 1000) / 1000);
+                if (bEl) { bEl.textContent = kbps.toLocaleString(); bEl.className = 'cr-stat-value ' + (kbps > 3000 ? 'good' : kbps > 1000 ? 'warning' : 'error'); }
+            }
+            if (data.connected) { crPrevBytes = data.totalBytes; crPrevBytesTime = Date.now(); }
+            if (data.video && rEl) { rEl.textContent = data.video.width + 'p'; rEl.className = 'cr-stat-value good'; }
+        } catch(e) {}
+    }
+    setTimeout(crPollStats, 2000);
+    setInterval(crPollStats, 8000);
+
+    // ── Wire up buttons ──────────────────────────────────────────────────────
+
+    // Go Live
+    document.getElementById('crBtnGoLive')?.addEventListener('click', async function() {
+        this.disabled = true; this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Going Live...';
+        try {
+            const res  = await fetch(API_BASE + '/api/v1/live/events/' + ev._id + '/status', {
+                method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ status: 'live' })
+            });
+            const json = await res.json();
+            if (json.success) { crSetStatus('live'); }
+            else { this.disabled = false; this.innerHTML = '<i class="fas fa-circle-play"></i> Go Live'; }
+        } catch(e) { this.disabled = false; this.innerHTML = '<i class="fas fa-circle-play"></i> Go Live'; }
+    });
+
+    // ── Sidebar toggle
+    const sidebarToggle = document.getElementById('crSidebarToggle');
+    const crSidebarEl = document.getElementById('crSidebar');
+    let sidebarOpen = true;
+    if (sidebarToggle) {
+        sidebarToggle.style.right = '288px';
+        sidebarToggle.addEventListener('click', function() {
+            sidebarOpen = !sidebarOpen;
+            crSidebarEl?.classList.toggle('collapsed', !sidebarOpen);
+            this.classList.toggle('collapsed', !sidebarOpen);
+            this.innerHTML = sidebarOpen ? '<i class="fas fa-chevron-right"></i>' : '<i class="fas fa-chevron-left"></i>';
+            this.style.right = sidebarOpen ? '288px' : '0';
+        });
+    }
+
+    // ── End Stream — modal confirmation
+    document.getElementById('crBtnEnd')?.addEventListener('click', function() {
+        const backdrop = document.getElementById('crModalBackdrop');
+        if (backdrop) backdrop.style.display = 'flex';
+    });
+    document.getElementById('crModalCancel')?.addEventListener('click', function() {
+        const backdrop = document.getElementById('crModalBackdrop');
+        if (backdrop) backdrop.style.display = 'none';
+    });
+    document.getElementById('crModalConfirm')?.addEventListener('click', async function() {
+        this.disabled = true; this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ending...';
+        try {
+            await fetch(API_BASE + '/api/v1/live/events/' + ev._id + '/status', {
+                method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ status: 'recording' })
+            });
+            crSetStatus('recording');
+        } catch(e) { alert('Network error — please try again'); }
+        const backdrop = document.getElementById('crModalBackdrop');
+        if (backdrop) backdrop.style.display = 'none';
+        this.disabled = false; this.innerHTML = '<i class="fas fa-stop-circle"></i> End Stream';
+    });
+
+    // Countdown overlay toggle
+    document.getElementById('crToggleOverlay')?.addEventListener('click', function() {
+        crOverlayActive = !crOverlayActive;
+        this.classList.toggle('active', crOverlayActive);
+        this.innerHTML = crOverlayActive
+            ? '<i class="fas fa-clock"></i> Hide countdown overlay'
+            : '<i class="fas fa-clock"></i> Show countdown on preview';
+        document.getElementById('crCountdownOverlay')?.classList.toggle('show', crOverlayActive);
+    });
+
+    // Copy RTMP
+    document.getElementById('crBtnCopyRtmp')?.addEventListener('click', function() {
+        navigator.clipboard.writeText(rtmpUrl).then(() => {
+            this.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => { this.innerHTML = '<i class="fas fa-copy"></i>'; }, 2000);
+        });
+    });
+
+    // Reveal/copy/reset key
+    const keyEl   = document.getElementById('crKeyVal');
+    const revBtn  = document.getElementById('crBtnReveal');
+    const copyBtn = document.getElementById('crBtnCopyKey');
+    const resetBtn= document.getElementById('crBtnReset');
+
+    revBtn?.addEventListener('click', function() {
+        crKeyRevealed = !crKeyRevealed;
+        if (keyEl) keyEl.textContent = crKeyRevealed ? (crStreamKey || '—') : maskedKey;
+        if (copyBtn) copyBtn.disabled = !crKeyRevealed;
+        this.innerHTML = crKeyRevealed ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+    });
+    copyBtn?.addEventListener('click', function() {
+        if (!crKeyRevealed || !crStreamKey) return;
+        navigator.clipboard.writeText(crStreamKey).then(() => {
+            this.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => { this.innerHTML = '<i class="fas fa-copy"></i>'; }, 2000);
+        });
+    });
+    resetBtn?.addEventListener('click', async function() {
+        if (!confirm('Reset stream key? The old key stops working immediately.')) return;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; this.disabled = true;
+        try {
+            const res  = await fetch(API_BASE + '/api/v1/live/events/' + ev._id + '/reset-key', {
+                method: 'POST', headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await res.json();
+            if (data.success) {
+                crStreamKey = data.newStreamKey; crKeyRevealed = true;
+                if (keyEl) keyEl.textContent = crStreamKey;
+                if (copyBtn) copyBtn.disabled = false;
+                if (revBtn) revBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                this.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => { this.innerHTML = '<i class="fas fa-sync-alt"></i>'; this.disabled = false; }, 2000);
+                const toast = document.createElement('div');
+                toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid rgba(251,191,36,0.4);color:#fbbf24;padding:12px 20px;border-radius:8px;font-size:12px;font-weight:600;z-index:99999;';
+                toast.innerHTML = '<i class="fas fa-key"></i>&nbsp; New key generated — update OBS before streaming';
+                document.body.appendChild(toast); setTimeout(() => toast.remove(), 5000);
+            } else { alert('Failed: ' + (data.error || 'Unknown')); this.innerHTML = '<i class="fas fa-sync-alt"></i>'; this.disabled = false; }
+        } catch(e) { alert('Network error'); this.innerHTML = '<i class="fas fa-sync-alt"></i>'; this.disabled = false; }
+    });
+
+    // ── Start — set initial state from DB status then begin polling ──────────
+    if (ev.status === 'ready')     crSetStatus('ready');
+    else if (ev.status === 'live') crSetStatus('live');
+    else if (ev.status === 'recording') crSetStatus('recording');
+    else crSetStatus('upcoming');
+
+    crStartPoll();
+}
+
+// ── DOMContentLoaded ─────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    const token    = localStorage.getItem('token') || localStorage.getItem('authToken');
+    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
+
+    // Get user role immediately from token — before any API call
+    let userRole = null;
+    try {
+        const p = JSON.parse(atob(token.split('.')[1]));
+        userRole = p.role || (p.user && p.user.role);
+    } catch(e) {}
+
+    // ── Prevent flash of journalist view for admin roles ──────────────────────
+    // Hide journalist page immediately — will be revealed if user is NOT the creator,
+    // or replaced by control room if they ARE. platform_admin always gets control room.
+    const ldPage = document.querySelector('.ld-page');
+    if ((userRole === 'client_admin' || userRole === 'platform_admin') && ldPage) {
+        ldPage.style.visibility = 'hidden';
+    }
+
+    // ── Unlock Web Audio on first user gesture (browser requirement)
+    let _audioUnlocked = false;
+    function unlockAudio() {
+        if (_audioUnlocked) return;
+        _audioUnlocked = true;
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const buf = ctx.createBuffer(1, 1, 22050);
+        const src = ctx.createBufferSource();
+        src.buffer = buf; src.connect(ctx.destination); src.start(0);
+        ctx.resume().catch(() => {});
+        window._audioCtxUnlocked = ctx;
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('touchstart', unlockAudio);
+    }
+    document.addEventListener('click', unlockAudio);
+    document.addEventListener('touchstart', unlockAudio);
+
+    // ── Apply state — only immediately if no real eventId (demo mode)
+    if (!eventId || eventId === 'demo') { applyState(state); requestAnimationFrame(alignToolsCol); }
+
+    // ── HLS loader
+    let hlsInstance = null;
+    function loadHlsStream(hlsUrl, isPrivatePreview) {
+        const video = document.getElementById('ldVideo');
+        if (!video || !hlsUrl) return;
+        const hidePh = () => {
+            const ph = document.getElementById(isPrivatePreview ? 'ldPhReady' : 'ldPhLive');
+            if (ph) ph.style.display = 'none';
+            video.classList.add('playing');
+        };
+        if (hlsInstance) { try { hlsInstance.destroy(); } catch(e){} hlsInstance = null; }
+        if (window.Hls && Hls.isSupported()) {
+            hlsInstance = new Hls({ liveSyncDurationCount: 3 });
+            hlsInstance.loadSource(hlsUrl);
+            hlsInstance.attachMedia(video);
+            hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => { hidePh(); video.play().catch(()=>{}); });
+            hlsInstance.on(Hls.Events.ERROR, (e, d) => { if (d.fatal) console.warn('[HLS] Fatal:', d); });
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = hlsUrl; video.addEventListener('canplay', hidePh, { once:true }); video.play().catch(()=>{});
+        }
+    }
+
+    let eventHlsUrl = null;
+    let isCreator   = false;
+
+    // ── Fetch real event data
+    if (eventId && eventId !== 'demo' && token) {
+        fetch(API_BASE + '/api/v1/live/events/' + eventId, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(r => r.json())
+        .then(json => {
+            if (!json.success || !json.data) return;
+            const ev = json.data;
+
+            // Populate UI
+            const t = document.getElementById('ldTitle'); if (t) t.textContent = ev.title || '';
+            const b = document.getElementById('ldBrand'); if (b) b.textContent = ev.brand || '';
+            document.title = (ev.title || 'Media Live') + ' — AutoMediaCenter';
+
+            if (ev.eventDateTime)   window._eventTimeOverride = ev.eventDateTime;
+            if (ev.timezone)        window._eventTimezone     = ev.timezone;
+            if (ev.earlyAccessMins) window._earlyAccessMins   = ev.earlyAccessMins;
+
+            eventHlsUrl = ev.hlsUrl || (ev.streamKey ? '/hls/live/' + ev.streamKey + '/index.m3u8' : null);
+            if (ev.streamKey) initKeyManagement(ev.streamKey);
+
+            // ── DUAL PATH: determine if broadcaster or journalist ──────────────
+            // Broadcaster = platform_admin OR (client_admin AND same company as event)
+            const userClientId = (() => { try { const p = JSON.parse(atob(token.split('.')[1])); return p.clientId || p.client_id || (p.user && p.user.clientId); } catch(e) { return null; } })();
+            isCreator = userRole === 'platform_admin' ||
+                        (userRole === 'client_admin' && userClientId && userClientId === ev.clientId?.toString());
+
+            if (isCreator) {
+                // ── BROADCASTER PATH: inject control room, abandon journalist view ──
+                launchControlRoom(ev, token, API_BASE);
+                return; // don't run journalist state machine
+            }
+
+            // ── JOURNALIST PATH: existing state machine runs unchanged ────────
+            // Restore visibility — was hidden to prevent flash while determining path
+            if (ldPage) ldPage.style.visibility = '';
+            // Align tools column now that page is visible and back link has layout
+            requestAnimationFrame(alignToolsCol);
+
+            // ── Populate Info tab with real event data ────────────────────────
+            const tz = ev.timezone || 'UTC';
+            const scheduledFormatted = new Date(ev.eventDateTime).toLocaleString('en-GB', {
+                weekday:'short', day:'numeric', month:'short', year:'numeric',
+                hour:'2-digit', minute:'2-digit', timeZone: tz, timeZoneName:'short'
+            });
+            const setInfo = (id, val) => { const el = document.getElementById(id); if (el && val) el.textContent = val; };
+            setInfo('ldInfoBrand',    ev.brand    || '—');
+            setInfo('ldInfoCompany',  ev.company  || ev.brand || '—');
+            setInfo('ldInfoScheduled', scheduledFormatted);
+            setInfo('ldInfoEarly',    (ev.earlyAccessMins || 15) + ' mins before start');
+            setInfo('ldInfoLang',     ev.primaryLanguage || 'English');
+            if (ev.description) {
+                const descEl = document.getElementById('ldInfoDesc');
+                if (descEl) { descEl.textContent = ev.description; descEl.style.display = ''; }
+            }
+
+            // Re-evaluate state with real event data
+            // NOTE: 'ready' means encoder connected but not yet public
+            // Journalists still see the countdown — only the broadcaster bar changes
+            window._dbStatus = ev.status;
+            const dbState  = getDbState(ev.status);
+            const newState = dbState === 'ready' ? 'upcoming' : (dbState || getState());
+            if (newState !== state) {
+                state = newState;
+                applyState(state);
+            } else if (state === 'upcoming') {
+                startCountdown(); // restart with correct event time
+            }
+
+            // Broadcaster sees private preview when ready — but don't load stream if journalist countdown is showing
+            if (dbState === 'ready' && isCreator && eventHlsUrl && state !== 'upcoming') loadHlsStream(eventHlsUrl, true);
+            if (state === 'live' && eventHlsUrl) loadHlsStream(eventHlsUrl, false);
+
+            // Start API poll immediately — need to detect encoder connection at any time
+            startApiPoll();
+        })
+        .catch(e => {
+            console.warn('[LiveDetail] API fetch failed:', e);
+            if (ldPage) ldPage.style.visibility = ''; // restore on error
+            applyState(state); // fallback — show with URL params
+            requestAnimationFrame(alignToolsCol);
+        });
+    } else {
+        applyState(state); // no real eventId
+    }
+
+    // ── Poll time-based transitions every 30s
+    setInterval(() => {
+        if (state === 'upcoming') {
+            const next = getState();
+            if (next !== state) { state = next; applyState(state); }
+        }
+    }, 30000);
+
+    // ── Poll API every 15s for DB status changes
+    let apiPollInterval = null;
+    function startApiPoll() {
+        if (apiPollInterval) return;
+        apiPollInterval = setInterval(async () => {
+            if (state === 'live' || state === 'recording') { clearInterval(apiPollInterval); return; }
+            try {
+                const res = await fetch(API_BASE + '/api/v1/live/events/' + eventId, { headers: { 'Authorization': 'Bearer ' + token } });
+                const json = await res.json();
+                if (json.success && json.data) {
+                    window._dbStatus = json.data.status;
+                    const dbState = getDbState(json.data.status);
+                    // ready = encoder connected but not public — don't change journalist view
+                    const ns = dbState === 'ready' ? null : dbState;
+                    if (ns && ns !== state) {
+                        state = ns; applyState(state);
+                        if (state === 'live' && eventHlsUrl) loadHlsStream(eventHlsUrl, false);
+                    }
+                    // Broadcaster sees private preview when ready
+                    // ONLY load HLS if broadcaster bar is visible — never for journalists
+                    if (dbState === 'ready' && isCreator && eventHlsUrl) {
+                        const dot = document.getElementById('ldBcDot');
+                        const txt = document.getElementById('ldBcStatusText');
+                        const btnGo = document.getElementById('ldBtnGoLive');
+                        if (dot) dot.className = 'ld-bc-dot ready';
+                        if (txt) { txt.className = 'ld-bc-status-text ready'; txt.textContent = 'Preview — encoder connected, not yet public'; }
+                        if (btnGo) { btnGo.style.display = ''; btnGo.disabled = false; }
+                        const overlayToggleBtn = document.getElementById('ldBtnCountdownOverlay');
+                        if (overlayToggleBtn) overlayToggleBtn.style.display = '';
+                        loadHlsStream(eventHlsUrl, true);
+                    }
+                }
+            } catch(e) {}
+        }, 15000);
+    }
+
+    // startApiPoll is called from inside the fetch .then() once we have real event time
+
+    // ── Control panel collapse toggle
+    const bcHeader = document.getElementById('ldBcHeader');
+    const bcPanel  = document.getElementById('ldBcPanel');
+    const bcChevron= document.getElementById('ldBcChevron');
+    if (bcHeader) {
+        bcHeader.addEventListener('click', function(e) {
+            if (e.target.closest('button')) return;
+            const open = bcPanel.classList.toggle('open');
+            bcHeader.classList.toggle('expanded', open);
+            if (bcChevron) bcChevron.classList.toggle('open', open);
+        });
+    }
+
+    // ── Stats polling — real data from NMS every 8 seconds
+    let _streamKey = null;  // set by initKeyManagement when event loads
+    let _keyRevealed = false;
+    let _prevBytes = 0, _prevBytesTime = 0;
+
+    function fmtDur(secs) {
+        const h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60), s = secs%60;
+        if (h > 0) return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+        return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    }
+
+    async function pollStreamStats() {
+        if (!isCreator || !_streamKey) return;
+        try {
+            const res = await fetch(API_BASE + '/api/v1/stream-stats/' + _streamKey, { headers: { 'Authorization': 'Bearer ' + token } });
+            const data = await res.json();
+            const viewersEl  = document.getElementById('ldBcViewers');
+            const durationEl = document.getElementById('ldBcDuration');
+            const bitrateEl  = document.getElementById('ldBcBitrate');
+            const bitrateSub = document.getElementById('ldBcBitrateSub');
+            const resEl      = document.getElementById('ldBcResolution');
+            const codecEl    = document.getElementById('ldBcCodec');
+            const dot        = document.getElementById('ldBcDot');
+            const statusTxt  = document.getElementById('ldBcStatusText');
+
+            if (!data.connected) {
+                if (dot && state !== 'live') dot.className = 'ld-bc-dot waiting';
+                if (viewersEl) viewersEl.textContent = '0';
+                if (bitrateEl) { bitrateEl.textContent = '—'; bitrateEl.className = 'ld-bc-stat-value'; }
+                return;
+            }
+            if (dot) dot.className = state === 'live' ? 'ld-bc-dot live' : 'ld-bc-dot ready';
+            if (statusTxt && state === 'ready') { statusTxt.className = 'ld-bc-status-text ready'; statusTxt.textContent = 'Preview — encoder connected, not yet public'; }
+            if (viewersEl) viewersEl.textContent = String(data.viewerCount || 0);
+            if (durationEl) durationEl.textContent = fmtDur(data.durationSecs || 0);
+            const now2 = Date.now();
+            if (_prevBytes > 0 && data.totalBytes > _prevBytes) {
+                const kbps = Math.round((data.totalBytes - _prevBytes) * 8 / ((now2 - _prevBytesTime) / 1000) / 1000);
+                if (bitrateEl) { bitrateEl.textContent = kbps.toLocaleString(); bitrateEl.className = 'ld-bc-stat-value ' + (kbps > 3000 ? 'good' : kbps > 1000 ? 'warning' : 'error'); }
+                if (bitrateSub) bitrateSub.textContent = 'kbps';
+            }
+            _prevBytes = data.totalBytes; _prevBytesTime = now2;
+            if (data.video) {
+                if (resEl) { resEl.textContent = data.video.width + 'p'; resEl.className = 'ld-bc-stat-value good'; }
+                if (codecEl) codecEl.textContent = data.video.codec + ' ' + (data.video.fps || '') + 'fps';
+            }
+        } catch(e) {}
+    }
+
+    // Stats poll started inside fetch .then() after isCreator is confirmed
+
+    // ── Go Live button
+    // ── Countdown overlay toggle (broadcaster preview mode)
+    const overlayBtn = document.getElementById('ldBtnCountdownOverlay');
+    const countdownOverlay = document.getElementById('ldBcCountdownOverlay');
+    let overlayActive = false;
+    if (overlayBtn) {
+        overlayBtn.addEventListener('click', function() {
+            overlayActive = !overlayActive;
+            if (countdownOverlay) countdownOverlay.classList.toggle('visible', overlayActive);
+            this.style.color = overlayActive ? '#a78bfa' : '';
+            this.title = overlayActive ? 'Hide countdown overlay' : 'Show countdown overlay';
+        });
+    }
+    // Update overlay timer every second (reuses tick data)
+    setInterval(function() {
+        if (!overlayActive || !countdownOverlay) return;
+        const timerEl = document.getElementById('ldBcOverlayTimer');
+        const subEl   = document.getElementById('ldBcOverlaySub');
+        const start   = new Date(window._eventTimeOverride || eventTime).getTime();
+        const now     = Date.now();
+        const rem     = start - now;
+        if (rem <= 0) {
+            if (timerEl) timerEl.textContent = 'Go Live Now';
+            if (subEl)   subEl.textContent   = 'Click Go Live when ready';
+        } else {
+            const ts  = Math.floor(rem / 1000);
+            const d   = Math.floor(ts / 86400);
+            const h   = Math.floor((ts % 86400) / 3600);
+            const m   = Math.floor((ts % 3600) / 60);
+            const s   = ts % 60;
+            if (d > 0) {
+                if (timerEl) timerEl.textContent = `${d}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m`;
+            } else {
+                if (timerEl) timerEl.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            }
+            if (subEl) subEl.textContent = 'until scheduled start';
+        }
+    }, 1000);
+
+    document.getElementById('ldBtnGoLive') && document.getElementById('ldBtnGoLive').addEventListener('click', async function() {
+        this.disabled = true; this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Going Live...';
+        try {
+            const res = await fetch(API_BASE + '/api/v1/live/events/' + eventId + '/status', {
+                method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ status: 'live' })
+            });
+            const json = await res.json();
+            if (json.success) { state = 'live'; applyState('live'); if (eventHlsUrl) loadHlsStream(eventHlsUrl, false); }
+            else { this.disabled = false; this.innerHTML = '<i class="fas fa-circle-play"></i> Go Live'; }
+        } catch(e) { this.disabled = false; this.innerHTML = '<i class="fas fa-circle-play"></i> Go Live'; }
+    });
+
+    // ── End Stream button
+    document.getElementById('ldBtnStopStream') && document.getElementById('ldBtnStopStream').addEventListener('click', async function() {
+        if (!confirm('End the stream? This will move the event to Archive for all viewers.')) return;
+        try {
+            await fetch(API_BASE + '/api/v1/live/events/' + eventId + '/status', {
+                method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ status: 'recording' })
+            });
+            state = 'recording'; applyState('recording');
+        } catch(e) {}
+    });
+
+    // ── Stream key management
+    function initKeyManagement(key) {
+        _streamKey = key;
+        const keyEl    = document.getElementById('ldBroadcastKey');
+        const revealBtn= document.getElementById('ldBtnRevealKey');
+        const copyBtn  = document.getElementById('ldBtnCopyKey');
+        const resetBtn = document.getElementById('ldBtnResetKey');
+        if (!keyEl || !revealBtn) return;
+        const masked = key.substring(0, 6) + '••••••••••••';
+        keyEl.textContent = masked;
+        revealBtn.addEventListener('click', function() {
+            _keyRevealed = !_keyRevealed;
+            keyEl.textContent = _keyRevealed ? _streamKey : masked;
+            if (copyBtn) copyBtn.disabled = !_keyRevealed;
+            this.innerHTML = _keyRevealed ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+        });
+        copyBtn && copyBtn.addEventListener('click', function() {
+            if (!_keyRevealed || !_streamKey) return;
+            navigator.clipboard.writeText(_streamKey).then(() => { this.innerHTML = '<i class="fas fa-check"></i>'; setTimeout(() => { this.innerHTML = '<i class="fas fa-copy"></i>'; }, 2000); });
+        });
+        resetBtn && resetBtn.addEventListener('click', async function() {
+            if (!confirm('Reset stream key? The old key stops working immediately.')) return;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; this.disabled = true;
+            try {
+                const res = await fetch(API_BASE + '/api/v1/live/events/' + eventId + '/reset-key', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } });
+                const data = await res.json();
+                if (data.success) {
+                    _streamKey = data.newStreamKey; _keyRevealed = true;
+                    keyEl.textContent = _streamKey; if (copyBtn) copyBtn.disabled = false;
+                    if (revealBtn) revealBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                    this.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => { this.innerHTML = '<i class="fas fa-sync-alt"></i>'; this.disabled = false; }, 2000);
+                    const toast = document.createElement('div');
+                    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid rgba(251,191,36,0.4);color:#fbbf24;padding:12px 20px;border-radius:8px;font-size:12px;font-weight:600;z-index:99999;';
+                    toast.innerHTML = '<i class="fas fa-key"></i>&nbsp; New key generated — update OBS before streaming';
+                    document.body.appendChild(toast); setTimeout(() => toast.remove(), 5000);
+                } else { alert('Failed: ' + (data.error||'Unknown')); this.innerHTML = '<i class="fas fa-sync-alt"></i>'; this.disabled = false; }
+            } catch(e) { alert('Network error'); this.innerHTML = '<i class="fas fa-sync-alt"></i>'; this.disabled = false; }
+        });
+    }
+    // ── Final alignment safety net — runs after fonts load
+    document.fonts?.ready?.then(() => requestAnimationFrame(alignToolsCol));
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script>window.addEventListener('pageshow', e => { if(e.persisted) window.location.reload(); });</script>
+<script src="/amc-notifications.js"></script>
+</body>
+</html>

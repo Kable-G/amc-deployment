@@ -42,6 +42,7 @@ const vaultRoutes = require('./routes/vaultRoutes.js');
 const vaultAccessRoutes = require('./routes/vaultAccessRoutes.js'); // Journalist access flow: my-vaults, nda-sign, unlock
 const notificationRoutes = require('./routes/notificationRoutes.js'); // In-app notification bell
 const radarRoutes = require('./routes/radarRoutes.js');
+const liveRoutes  = require('./routes/liveRoutes.js');
 // const analyticsRoutes = require('./routes/analytics.routes.js'); // DISABLED - Using amcAnalytics.routes.js instead
 const amcAnalyticsRoutes = require('./routes/amcAnalytics.routes.js');
 const downloadRoutes = require('./routes/downloadRoutes.js');
@@ -108,6 +109,7 @@ const connectDB = async () => {
     
     console.log('✅ MongoDB Connected successfully using Atlas!');
     // Start the server immediately after DB connection to bypass blocking issues
+
     const PORT = process.env.PORT || 5000;
     console.log('About to start listening on port', PORT);
     app.listen(PORT, '0.0.0.0', () => {
@@ -115,6 +117,147 @@ const connectDB = async () => {
       console.log(`API base URL is http://localhost:${PORT}/api/v1/`);
       console.log('✅ REAL AUTHENTICATION ENABLED - Full JWT-based authentication active');
     });
+    try {
+      const NodeMediaServer = require('node-media-server');
+      const ffmpegPath = process.platform === 'win32'
+        ? 'C:/ffmpeg/bin/ffmpeg.exe'
+        : '/usr/bin/ffmpeg';
+      const nms = new NodeMediaServer({
+        rtmp: { port: 1935, chunk_size: 60000, gop_cache: true, ping: 30, ping_timeout: 60 },
+        http: { port: 8000, mediaroot: './media', allow_origin: '*' },
+        trans: {
+          ffmpeg: ffmpegPath,
+          tasks: [
+            { app: 'live', hls: true, hlsFlags: '[hls_time=2:hls_list_size=0:hls_flags=append_list]', hlsKeep: true, dash: false },
+            { app: 'live', mp4: true, mp4Flags: '[movflags=frag_keyframe+empty_moov]' }
+          ],
+        },
+      });
+      const LiveEvent = require('./models/LiveEvent');
+      nms.on('prePublish', async (id, StreamPath, args) => {
+        console.log('[NMS] Stream started:', StreamPath);
+        const streamKey = StreamPath.split('/').pop();
+        try {
+          const event = await LiveEvent.findOne({ streamKey }).lean();
+          if (!event) {
+            console.log(`[NMS] ⛔ Unknown stream key: ${streamKey} — rejected`);
+            const session = nms.getSession(id);
+            if (session) session.reject();
+            return;
+          }
+          if (event.status === 'recording' || event.status === 'cancelled') {
+            console.log(`[NMS] ⛔ Event "${event.title}" is ${event.status} — rejected`);
+            const session = nms.getSession(id);
+            if (session) session.reject();
+            return;
+          }
+          // If already live, accept reconnection — don't change status
+          if (event.status === 'live') {
+            console.log(`[NMS] ✅ OBS reconnected during LIVE broadcast "${event.title}" — status stays LIVE`);
+            return;
+          }
+          // Otherwise flip to ready (private preview)
+          await LiveEvent.findByIdAndUpdate(event._id, { status: 'ready' });
+          const start = new Date(event.eventDateTime);
+          const minsUntil = Math.ceil((start - Date.now()) / 60000);
+          console.log(`[NMS] ✅ Stream accepted — "${event.title}" set to READY (private preview). ${minsUntil > 0 ? minsUntil + ' mins until start' : 'Start time passed'}`);
+        } catch(err) {
+          console.error('[NMS] prePublish check error:', err.message);
+        }
+      });
+      nms.on('donePublish', async (id, StreamPath) => {
+        console.log('[NMS] Stream ended:', StreamPath);
+        const streamKey = StreamPath.split('/').pop();
+        try {
+          const event = await LiveEvent.findOne({ streamKey }).lean();
+          if (event) {
+            // ── Key principle: only the End Stream button archives an event.
+            // OBS disconnect during 'live' keeps status as 'live' — broadcaster can reconnect.
+            // OBS disconnect during 'ready' (private preview) flips back to 'upcoming'.
+            // If status is already 'recording' (End Stream was clicked), save recording paths.
+            if (event.status === 'ready') {
+              await LiveEvent.findByIdAndUpdate(event._id, { status: 'upcoming' });
+              console.log(`[NMS] ✅ Preview ended — "${event.title}" set back to upcoming (OBS disconnected during preview)`);
+            } else if (event.status === 'recording') {
+              // End Stream was already clicked — save recording paths
+              const update = {};
+              update.recordingHlsUrl = `/hls/live/${streamKey}/index.m3u8`;
+              const fs = require('fs');
+              const mp4Dir = path.join(__dirname, 'media', 'live', streamKey);
+              try {
+                const files = fs.readdirSync(mp4Dir).filter(f => f.endsWith('.mp4')).sort();
+                if (files.length > 0) {
+                  const latestMp4 = files[files.length - 1];
+                  update.recordingMp4Url = `/hls/live/${streamKey}/${latestMp4}`;
+                  console.log(`[NMS] 📹 MP4 recording saved: ${update.recordingMp4Url}`);
+                }
+              } catch(fsErr) {
+                console.warn(`[NMS] ⚠️ Could not find MP4 in ${mp4Dir}:`, fsErr.message);
+              }
+              update.streamEndedAt = new Date();
+              await LiveEvent.findByIdAndUpdate(event._id, update);
+              console.log(`[NMS] ✅ Recording paths saved for "${event.title}"`);
+            } else if (event.status === 'live') {
+              // OBS disconnected during live broadcast — DO NOT archive
+              // Broadcaster can reconnect, status stays 'live'
+              console.log(`[NMS] ⚠️ OBS disconnected during LIVE broadcast "${event.title}" — status stays LIVE, awaiting reconnect`);
+            }
+          }
+        } catch(err) {
+          console.error('[NMS] donePublish error:', err.message);
+        }
+      });
+      nms.run();
+      console.log('✅ RTMP ingest started on port 1935 — HLS output on http://localhost:8000/live/{streamKey}/index.m3u8');
+    } catch(e) {
+      console.warn('⚠️  node-media-server not available:', e.message);
+    }
+
+    // ── Stream reminder cron — runs every minute ──────────────────────────
+    try {
+      const LiveReminder = require('./models/LiveReminder');
+      const Notification = require('./models/Notification');
+
+      cron.schedule('* * * * *', async () => {
+        const now = new Date();
+        try {
+          const due = await LiveReminder.find({ fireAt: { $lte: now }, fired: false });
+          if (!due.length) return;
+
+          for (const reminder of due) {
+            const messages = {
+              '24h':      `Tomorrow: "${reminder.streamTitle}" by ${reminder.streamBrand} — stream starts in 24 hours`,
+              '1h':       `"${reminder.streamTitle}" by ${reminder.streamBrand} starts in 1 hour`,
+              'starting': `"${reminder.streamTitle}" by ${reminder.streamBrand} is starting shortly — join now`,
+            };
+
+            await Notification.create({
+              userId:           reminder.userId,
+              type:             'stream_reminder',
+              read:             false,
+              streamEventId:    reminder.eventId,
+              streamTitle:      reminder.streamTitle,
+              streamBrand:      reminder.streamBrand,
+              streamStartTime:  reminder.streamStartTime,
+              streamTimezone:   reminder.streamTimezone,
+              streamReminderType: reminder.type,
+              message:          messages[reminder.type],
+              actionUrl:        `/amc-live-detail.html?id=${reminder.eventId}`,
+              // Required existing fields — set to placeholder for stream reminders
+              vaultTitle:       reminder.streamTitle,
+            });
+
+            await LiveReminder.findByIdAndUpdate(reminder._id, { fired: true });
+            console.log(`[StreamReminder] Fired ${reminder.type} reminder for "${reminder.streamTitle}" → user ${reminder.userId}`);
+          }
+        } catch(err) {
+          console.error('[StreamReminder] Cron error:', err.message);
+        }
+      });
+      console.log('✅ Stream reminder cron scheduled (every minute)');
+    } catch(e) {
+      console.warn('⚠️  Stream reminder cron failed to start:', e.message);
+    }
 
     cron.schedule('* * * * *', async () => { // Your existing cron job logic
         console.log('ARCHIVE TASK: Running scheduled task to archive old Radar Alerts...');
@@ -257,13 +400,17 @@ console.log('🔧 Mounting API routes...');
 app.use('/api/v1/auth', authRoutes); // REAL AUTH - PROPER AUTHENTICATION
 app.use('/api/v1/admin', adminRoutes); // ADMIN MANAGEMENT - Platform admin only
 app.use('/api/v1/events', eventsRoutes);
+const brandIntelRoutes2 = require('./routes/brandIntelligence.routes');
+app.use('/api/v1/brand-intel', brandIntelRoutes2);
 app.use('/api/v1/center', centerRoutes);
 app.use('/api/v1/vault', vaultRoutes);
 app.use('/api/v1/vault', vaultAccessRoutes); // Journalist access flow: my-vaults, nda-sign, unlock
 app.use('/api/v1/notifications', notificationRoutes); // In-app notification bell
 app.use('/api/v1/radar', radarRoutes);
+app.use('/api/v1/live',  liveRoutes);
 // app.use('/api/v1/analytics', analyticsRoutes); // DISABLED - Using amcAnalytics.routes.js instead
 app.use('/api/v1/amc-analytics', amcAnalyticsRoutes);
+
 app.use('/api/v1/downloads', downloadRoutes); // NEW: Comprehensive download tracking routes
 app.use('/api/v1/zip', zipDownloadRoutes); // NEW: ZIP download functionality
 
@@ -284,6 +431,42 @@ console.log('✅ Client admin company-scoped routes mounted');
 console.log('✅ Asset management routes mounted with company isolation');
 
 // Add a catch-all API route to debug missing routes
+// ── NMS stats proxy — serves stream data to broadcaster panel
+// Must be registered BEFORE the catch-all API 404 handler
+const { authenticate: authMW } = require('./middleware/authMiddleware');
+app.get('/api/v1/stream-stats/:streamKey', authMW, async (req, res) => {
+    try {
+        const http = require('http');
+        const options = { hostname: 'localhost', port: 8000, path: '/api/streams', method: 'GET' };
+        const request = http.request(options, (nmsRes) => {
+            let data = '';
+            nmsRes.on('data', chunk => data += chunk);
+            nmsRes.on('end', () => {
+                try {
+                    const streams = JSON.parse(data);
+                    const streamKey = req.params.streamKey;
+                    const streamData = streams?.live?.[streamKey];
+                    if (!streamData) return res.json({ success: true, connected: false });
+                    const pub = streamData.publisher;
+                    const subscribers = streamData.subscribers || [];
+                    const viewerCount = subscribers.filter(s => s.protocol === 'http' || s.protocol === 'ws').length;
+                    const connectedAt = pub?.connectCreated ? new Date(pub.connectCreated) : null;
+                    const durationSecs = connectedAt ? Math.floor((Date.now() - connectedAt.getTime()) / 1000) : 0;
+                    res.json({
+                        success: true, connected: !!pub, viewerCount, durationSecs,
+                        connectedAt: pub?.connectCreated,
+                        totalBytes: pub?.bytes || 0,
+                        video: pub?.video || null,
+                        audio: pub?.audio || null,
+                    });
+                } catch(e) { res.json({ success: true, connected: false }); }
+            });
+        });
+        request.on('error', () => res.json({ success: true, connected: false }));
+        request.end();
+    } catch(err) { res.json({ success: true, connected: false }); }
+});
+
 app.use('/api/*', (req, res) => {
   console.log('❌ Unmatched API route:', req.method, req.originalUrl);
   console.log('❌ Request headers:', req.headers);
@@ -410,6 +593,14 @@ app.use(express.static(path.join(__dirname, 'Frontend'), {
 // ✅ ONLY serve specific public assets that Frontend/ doesn't have
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+
+// HLS media proxy — serves node-media-server output through port 5000 (avoids CORS)
+app.use('/hls', express.static(path.join(__dirname, 'media'), {
+  setHeaders: (res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'no-cache');
+  }
+}));
 
 // (optional) ensure direct file route works:
 app.get('/amc-analytics-saved.html', (req, res) => {

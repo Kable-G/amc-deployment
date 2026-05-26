@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AutoMediaCenter — Manage Media Vaults</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,32..144,800;1,14..32,300;1,14..32,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link rel="stylesheet" href="./components/shell/v6_5-shell.css">
+<style>
+
+/* ── Shell layout bridge ── */
+html, body { height: 100%; height: 100dvh; margin: 0; padding: 0; }
+body { overflow: hidden; }
+
+#amcShellHeader  { position: fixed; left: 0; top: 0; right: 0; z-index: 1000; }
+#amcShellSidebar { position: fixed; left: 0; top: 0; z-index: 999; }
+#amcShellFooter  { display: none !important; }
+
+.vault-page-wrap {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  padding-top: var(--amc-header-h, 56px);
+  box-sizing: border-box;
+}
+.vmain {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 28px 32px 48px;
+}
+
+/* ── AMC Typography v1.0 ── */
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+.amc-page-title {
+  font-size: 42px !important;
+  font-weight: 800 !important;
+  font-variation-settings: 'opsz' 42;
+  letter-spacing: -0.04em !important;
+  line-height: 1.05 !important;
+  margin: 0 0 8px 0 !important;
+  color: #0f172a;
+}
+body.dark-mode .amc-page-title { color: #f8fafc !important; }
+
+.amc-page-subtitle {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 1.55 !important;
+  margin: 0 0 20px 0 !important;
+  color: #4b5563;
+}
+body.dark-mode .amc-page-subtitle { color: #94a3b8 !important; }
+
+/* ── Teaser thumbnail ── */
+.vault-table td.cell--teaser { width: 80px; padding: 6px 8px; }
+.vault-table td.cell--teaser .thumb {
+  display: flex; align-items: center; justify-content: center;
+  width: 64px; height: 44px; border-radius: 6px; overflow: hidden;
+  background: #f1f5f9; flex-shrink: 0;
+}
+body.dark-mode .vault-table td.cell--teaser .thumb { background: #1e293b; }
+.vault-thumb-lock svg { display: block; }
+
+/* ── Kebab ── */
+.kebab-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 6px; border: none;
+  background: transparent; color: #2563eb; cursor: pointer;
+  font-size: 16px; transition: background 0.15s, color 0.15s;
+}
+.kebab-btn:hover { background: rgba(37,99,235,0.08); color: #1d4ed8; }
+body.dark-mode .kebab-btn { color: #60a5fa; }
+body.dark-mode .kebab-btn:hover { background: rgba(96,165,250,0.12); color: #93c5fd; }
+
+.kebab-float {
+  position: fixed;
+  min-width: 175px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 24px -4px rgba(0,0,0,0.18), 0 2px 8px -2px rgba(0,0,0,0.10);
+  border-radius: 8px;
+  padding: 4px;
+  pointer-events: auto !important;
+  z-index: 99999 !important;
+}
+body.dark-mode .kebab-float {
+  background: #1e293b; border-color: #334155;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3), 0 10px 24px -4px rgba(0,0,0,0.4);
+}
+.kebab-item {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; text-align: left; background: transparent; border: none;
+  color: #374151; padding: 8px 10px; border-radius: 5px; cursor: pointer;
+  font-size: 13.5px; font-weight: 500; transition: background 0.12s, color 0.12s;
+}
+body.dark-mode .kebab-item { color: #e2e8f0; }
+.kebab-item::before {
+  content: ''; display: inline-block; width: 6px; height: 6px;
+  border-radius: 50%; flex-shrink: 0;
+}
+.kebab-item[data-action="view"]::before     { background: #10b981; }
+.kebab-item[data-action="edit"]::before     { background: #3b82f6; }
+.kebab-item[data-action="signatories"]::before { background: #0ea5e9; }
+.kebab-item[data-action="archive"]::before  { background: #8b5cf6; }
+.kebab-item[data-action="delete"]::before   { background: #ef4444; }
+.kebab-item:hover { background: #f9fafb; color: #111827; }
+body.dark-mode .kebab-item:hover { background: rgba(255,255,255,0.06); color: #f1f5f9; }
+.kebab-item[data-action="delete"]:hover { color: #ef4444; }
+body.dark-mode .kebab-item[data-action="delete"]:hover { color: #f87171; }
+.kebab-item + .kebab-item { margin-top: 1px; }
+
+/* ── Buttons ── */
+.btn {
+  padding: 10px 18px; font-size: 0.95em; border: 1px solid transparent;
+  border-radius: 5px; cursor: pointer; transition: all 0.2s ease;
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 500;
+}
+.btn i { margin-right: 6px; }
+.btn-primary { background-color: var(--accent-primary); color: #fff; }
+.btn-secondary { background-color: var(--bg-tertiary); color: var(--text-primary); }
+.btn-danger { background-color: #dc3545; color: #fff; }
+.btn-sm { padding: 5px 10px; font-size: 0.85em; }
+
+/* ── Controls bar ── */
+.controls-section {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 12px 0;
+}
+.controls-left { display: flex; gap: 12px; align-items: center; }
+.controls-right .btn {
+  font-size: .95rem; padding: 0 18px; font-weight: 500;
+  height: 38px; display: inline-flex; align-items: center; justify-content: center;
+  box-sizing: border-box; border-radius: 8px; text-decoration: none; border: none; cursor: pointer;
+}
+.btn-primary { background: var(--accent-primary); color: white; }
+.btn-primary:hover { background: var(--accent-hover, #0056b3); }
+.btn i { margin-right: 0.5rem; }
+
+/* ── Search ── */
+.search-container { position: relative; display: flex; align-items: center; }
+.search-input {
+  padding: 0 16px 0 40px; border: 1px solid var(--border-primary);
+  border-radius: 8px; font-size: .95rem;
+  background: var(--bg-primary); color: var(--text-primary);
+  width: 300px; transition: border-color .2s ease, box-shadow .2s ease;
+  height: 40px; box-sizing: border-box; line-height: 40px;
+}
+.search-input:focus {
+  outline: none; border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(13,110,253,.1);
+}
+.search-input.has-value { border-color: #16a34a; }
+.search-input.has-value:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,.1); }
+body.dark-mode .search-input.has-value { border-color: #22c55e; }
+body.dark-mode .search-input { background: var(--bg-secondary); border-color: var(--border-primary); color: var(--text-primary); }
+body.dark-mode .search-input:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px rgba(63,145,255,.1); }
+.search-input::placeholder { color: var(--text-secondary); }
+.search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--text-secondary); pointer-events: none; font-size: 0.875rem; z-index: 1;
+}
+
+/* ── Table header bar ── */
+.radar-table-title-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; background: #f1f5f9; border-bottom: 1px solid #d1d5db;
+}
+body.dark-mode .radar-table-title-bar { background: rgba(255,255,255,0.06); border-bottom-color: #374151; }
+.radar-table-title {
+  font-family: Inter, system-ui, -apple-system, sans-serif !important;
+  font-size: 13.5px !important; font-weight: 700 !important;
+  line-height: 1.2 !important; color: #1e293b !important;
+  letter-spacing: -0.01em !important; text-transform: none !important;
+}
+body.dark-mode .radar-table-title { color: #f1f5f9 !important; }
+.radar-table-count {
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-size: 13px; font-weight: 500; color: #6b7280;
+}
+body.dark-mode .radar-table-count { color: #94a3b8; }
+.radar-table-count span {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #eff6ff; color: #2563eb; border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 10px; padding: 1px 8px; font-size: 12px; font-weight: 600; margin-left: 4px;
+}
+body.dark-mode .radar-table-count span {
+  background: rgba(59,130,246,0.12); color: #93c5fd; border-color: rgba(59,130,246,0.25);
+}
+body.dark-mode #searchResultsText { color: #94a3b8; }
+body.dark-mode #searchResultsPill {
+  background: rgba(59,130,246,0.12) !important; color: #93c5fd !important;
+  border-color: rgba(59,130,246,0.25) !important;
+}
+body.dark-mode #searchResultsClear { color: #93c5fd !important; }
+
+/* ── Status pills ── */
+.status-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  letter-spacing: .2px; white-space: nowrap; height: 24px; text-align: center;
+  border: 1px solid transparent;
+}
+.status--active    { background: rgba(34,197,94,0.1);   color: #16a34a; border-color: rgba(34,197,94,0.2); }
+.status--expired   { background: rgba(239,68,68,0.1);   color: #dc2626; border-color: rgba(239,68,68,0.2); }
+.status--archived  { background: rgba(147,51,234,0.1);  color: #9333ea; border-color: rgba(147,51,234,0.2); }
+.status--draft     { background: rgba(251,191,36,0.1);  color: #d97706; border-color: rgba(251,191,36,0.2); }
+.status--scheduled { background: rgba(59,130,246,0.1);  color: #2563eb; border-color: rgba(59,130,246,0.2); }
+.status--unknown   { background: rgba(107,114,128,0.1); color: #6b7280; border-color: rgba(107,114,128,0.2); }
+body.dark-mode .status--active    { background: rgba(34,197,94,0.15);   color: #4ade80; }
+body.dark-mode .status--expired   { background: rgba(239,68,68,0.15);   color: #f87171; }
+body.dark-mode .status--archived  { background: rgba(147,51,234,0.15);  color: #a855f7; }
+body.dark-mode .status--draft     { background: rgba(251,191,36,0.15);  color: #fbbf24; }
+body.dark-mode .status--scheduled { background: rgba(59,130,246,0.15);  color: #60a5fa; }
+body.dark-mode .status--unknown   { background: rgba(107,114,128,0.15); color: #9ca3af; }
+
+/* ── Access count pill ── */
+.access-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  border-radius: 999px; padding: 0 10px; height: 22px;
+  font-size: 11.5px; font-weight: 600; white-space: nowrap;
+  border: 1px solid transparent;
+}
+.access-pill--none    { background: rgba(245,158,11,0.1);  color: #b45309; border-color: rgba(245,158,11,0.25); }
+.access-pill--some    { background: rgba(37,99,235,0.1);   color: #2563eb; border-color: rgba(37,99,235,0.25); }
+.access-pill--all     { background: rgba(5,150,105,0.1);   color: #047857; border-color: rgba(5,150,105,0.25); }
+body.dark-mode .access-pill--none { background: rgba(245,158,11,0.15);  color: #fbbf24;  border-color: rgba(245,158,11,0.3); }
+body.dark-mode .access-pill--some { background: rgba(59,130,246,0.15);  color: #60a5fa;  border-color: rgba(59,130,246,0.3); }
+body.dark-mode .access-pill--all  { background: rgba(16,185,129,0.15);  color: #34d399;  border-color: rgba(16,185,129,0.3); }
+
+/* ── Sent To pill (journalist count) ── */
+.journalists-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(14,165,233,0.08); color: #0369a1;
+  border: 1px solid rgba(14,165,233,0.2); border-radius: 999px;
+  padding: 0 9px; height: 22px; font-size: 11.5px; font-weight: 600;
+  white-space: nowrap;
+}
+body.dark-mode .journalists-pill {
+  background: rgba(56,189,248,0.1); color: #38bdf8; border-color: rgba(56,189,248,0.2);
+}
+
+/* ── Email column ── */
+.col-sender { color: #2563eb !important; font-weight: 500; }
+body.dark-mode .col-sender { color: #60a5fa !important; }
+
+/* ── Manage Vaults table ── */
+.manage-vaults .amc-card { border-radius: 10px; border: 1px solid #d1d5db; overflow: hidden; }
+body.dark-mode .manage-vaults .amc-card { background: var(--bg-secondary) !important; border-color: #374151 !important; }
+.manage-vaults .amc-table {
+  border-collapse: collapse; width: 100%; display: table !important;
+}
+.manage-vaults .amc-table thead { display: table-header-group !important; }
+.manage-vaults .amc-table tbody { display: table-row-group !important; }
+.manage-vaults .amc-table th,
+.manage-vaults .amc-table td {
+  border-bottom: 1px solid #d1d5db; border-right: 1px solid #e5e7eb; padding: 10px 12px;
+}
+.manage-vaults .amc-table th:last-child,
+.manage-vaults .amc-table td:last-child { border-right: none; }
+.manage-vaults .amc-table thead th {
+  border-bottom: 2px solid #9ca3af;
+  font-size: 13px !important; font-weight: 600 !important;
+  font-family: Inter, system-ui, -apple-system, sans-serif !important;
+  color: #374151 !important; text-transform: none !important; letter-spacing: 0 !important;
+  background: #f8fafc;
+}
+body.dark-mode .manage-vaults .amc-table thead th {
+  background: rgba(255,255,255,0.04) !important; color: #e2e8f0 !important;
+  border-bottom-color: #4b5563 !important;
+}
+body.dark-mode .manage-vaults .amc-table th,
+body.dark-mode .manage-vaults .amc-table td {
+  border-bottom-color: #2d3748; border-right-color: #1e293b;
+}
+.manage-vaults .amc-table tbody tr:nth-child(even) td { background: rgba(0,0,0,0.045); }
+body.dark-mode .manage-vaults .amc-table tbody tr:nth-child(even) td { background: rgba(255,255,255,0.022); }
+.manage-vaults .amc-table tbody tr { transition: background 0.12s ease; }
+.manage-vaults .amc-table tbody tr:hover td { background: rgba(59,130,246,0.10) !important; cursor: pointer; }
+body.dark-mode .manage-vaults .amc-table tbody tr:hover td { background: rgba(59,130,246,0.09) !important; }
+
+/* ── Truncate ── */
+.vault-table .col-title .truncate,
+.vault-table .col-brand .truncate {
+  display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.vault-table .col-title .truncate { max-width: 280px; }
+.vault-table .col-brand .truncate { max-width: 130px; }
+
+/* ── Pagination ── */
+.pagination-controls { display: flex; justify-content: center; align-items: center; gap: 10px; }
+.card-footer {
+  padding: 15px 20px; background: #f8fafc; border-top: 1px solid #d1d5db;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; font-weight: 600; color: #6b7280;
+}
+body.dark-mode .card-footer { background: rgba(255,255,255,0.03); border-top-color: #2d3748; color: #94a3b8; }
+
+/* ── Sortable column headers ── */
+.manage-vaults .amc-table thead th.sortable { cursor: pointer; user-select: none; position: relative; padding-right: 22px; }
+.manage-vaults .amc-table thead th.sortable:hover { color: #111827 !important; }
+body.dark-mode .manage-vaults .amc-table thead th.sortable:hover { color: #f8fafc !important; }
+.sort-arrow { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 10px; color: #9ca3af; transition: color 0.15s; }
+th.sortable.asc .sort-arrow, th.sortable.desc .sort-arrow { color: #2563eb; }
+body.dark-mode th.sortable.asc .sort-arrow, body.dark-mode th.sortable.desc .sort-arrow { color: #60a5fa; }
+
+/* ── Row left-edge status colour bar ── */
+.manage-vaults .amc-table tbody tr td:first-child { position: relative; }
+.manage-vaults .amc-table tbody tr td:first-child::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+.manage-vaults .amc-table tbody tr[data-status="active"] td:first-child::before    { background: #16a34a; }
+.manage-vaults .amc-table tbody tr[data-status="scheduled"] td:first-child::before { background: #3b82f6; }
+.manage-vaults .amc-table tbody tr[data-status="expired"] td:first-child::before   { background: #ef4444; }
+.manage-vaults .amc-table tbody tr[data-status="archived"] td:first-child::before  { background: #9ca3af; }
+.manage-vaults .amc-table tbody tr[data-status="draft"] td:first-child::before     { background: #f59e0b; }
+
+/* ── Checkbox column ── */
+.manage-vaults .amc-table .cell--check { width: 40px; text-align: center; padding: 10px 6px; }
+.manage-vaults .amc-table .cell--check input[type="checkbox"] { width: 16px; height: 16px; accent-color: #3b82f6; cursor: pointer; margin: 0; -webkit-appearance: auto; appearance: auto; }
+body.dark-mode .manage-vaults .amc-table .cell--check input[type="checkbox"] { accent-color: #60a5fa; }
+
+/* ── Bulk action bar ── */
+.bulk-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 9998; background: #1e293b; color: #f1f5f9; padding: 12px 24px; box-shadow: 0 -4px 16px rgba(0,0,0,0.25); align-items: center; justify-content: space-between; font-size: 13.5px; font-weight: 500; animation: bulkSlideUp 0.2s ease-out; }
+@keyframes bulkSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.bulk-bar.visible { display: flex; }
+.bulk-bar-left { display: flex; align-items: center; gap: 12px; }
+.bulk-bar-right { display: flex; gap: 8px; }
+.bulk-bar .btn { font-size: 13px; padding: 6px 16px; border-radius: 6px; }
+.bulk-bar .btn-cancel-bulk { background: transparent; color: #94a3b8; border: 1px solid #475569; }
+.bulk-bar .btn-cancel-bulk:hover { color: #f1f5f9; border-color: #64748b; }
+.bulk-bar .btn-danger { background: #ef4444; color: #fff; border: none; }
+.bulk-bar .btn-danger:hover { background: #dc2626; }
+
+/* ── Export CSV button ── */
+.btn-export { background: transparent; color: #6b7280; border: 1px solid #d1d5db; font-size: 13px; padding: 0 14px; height: 38px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; transition: all 0.15s; }
+.btn-export:hover { background: #f9fafb; color: #374151; border-color: #9ca3af; }
+body.dark-mode .btn-export { color: #94a3b8; border-color: #475569; }
+body.dark-mode .btn-export:hover { background: rgba(255,255,255,0.04); color: #e2e8f0; border-color: #64748b; }
+
+/* ── Modals ── */
+.detail-modal-backdrop,
+.confirm-modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  display: none; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.3s; z-index: 10050 !important;
+}
+.detail-modal-backdrop.open,
+.confirm-modal-backdrop.open { display: flex; opacity: 1; }
+.detail-modal,
+.confirm-modal {
+  background: var(--bg-secondary); border-radius: 8px;
+  border: 1px solid var(--border-primary);
+  transform: scale(0.95); transition: transform 0.3s; z-index: 10051 !important;
+}
+.detail-modal-backdrop.open .detail-modal,
+.confirm-modal-backdrop.open .confirm-modal { transform: scale(1); }
+.detail-modal {
+  width: 780px; max-width: 92vw; max-height: 82vh; min-height: 420px;
+  display: flex; flex-direction: column;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #ffffff; border-radius: 12px;
+}
+body.dark-mode .detail-modal { background: #1e2535; }
+.confirm-modal { max-width: 450px; }
+.detail-modal-header,
+.confirm-modal-header {
+  padding: 20px 24px 16px; border-bottom: 1px solid #e5e7eb;
+  background: transparent; display: flex; flex-direction: column; gap: 0;
+}
+body.dark-mode .detail-modal-header,
+body.dark-mode .confirm-modal-header { border-bottom-color: #374151; }
+.detail-modal-body {
+  padding: 24px; overflow-y: auto; flex: 1;
+  font-size: 13.5px; line-height: 1.65; color: #374151;
+}
+body.dark-mode .detail-modal-body { color: #cbd5e1; }
+.confirm-modal-body { padding: 25px 20px; text-align: center; }
+.detail-modal-footer,
+.confirm-modal-footer {
+  padding: 16px 24px; border-top: 1px solid #e5e7eb;
+  background: transparent; display: flex; justify-content: flex-end; gap: 10px;
+}
+.detail-modal-close-btn,
+.confirm-modal-close-btn {
+  width: 28px; height: 28px; border-radius: 6px;
+  border: 1.5px solid rgba(59,130,246,0.45); background: transparent;
+  color: #6b7280; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s; flex-shrink: 0;
+}
+.detail-modal-close-btn:hover,
+.confirm-modal-close-btn:hover { background: rgba(59,130,246,0.08); border-color: #3b82f6; color: #2563eb; }
+body.dark-mode .detail-modal-close-btn,
+body.dark-mode .confirm-modal-close-btn { border-color: rgba(99,160,255,0.4); color: #94a3b8; }
+body.dark-mode .detail-modal-close-btn:hover,
+body.dark-mode .confirm-modal-close-btn:hover { background: rgba(59,130,246,0.12); border-color: #60a5fa; color: #93c5fd; }
+
+/* Modal detail rows */
+.modal-detail-row { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px solid #f3f4f6; align-items: flex-start; }
+body.dark-mode .modal-detail-row { border-bottom-color: #1e293b; }
+.modal-detail-row:last-child { border-bottom: none; }
+.modal-detail-label { font-size: 11px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: .5px; min-width: 130px; padding-top: 2px; }
+body.dark-mode .modal-detail-label { color: #64748b; }
+.modal-detail-value { font-size: 13.5px; font-weight: 500; color: #111827; }
+body.dark-mode .modal-detail-value { color: #e2e8f0; }
+
+/* Quick view header */
+.amc-quick-view-top-line { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 8px; }
+.amc-quick-view-meta { font-size: 12.5px; color: #6b7280; font-weight: 500; }
+body.dark-mode .amc-quick-view-meta { color: #94a3b8; }
+
+/* ── Mobile card list ── */
+.mobile-vault-list { display: none !important; }
+
+/* ── Signatories Modal ── */
+.sig-modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  display: none; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.3s; z-index: 10050;
+}
+.sig-modal-backdrop.open { display: flex; opacity: 1; }
+.sig-modal {
+  background: #ffffff; border-radius: 12px;
+  width: 900px; max-width: 95vw; max-height: 85vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+  z-index: 10051; transform: scale(0.95); transition: transform 0.3s;
+}
+.sig-modal-backdrop.open .sig-modal { transform: scale(1); }
+body.dark-mode .sig-modal { background: #1e2535; }
+
+.sig-modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+body.dark-mode .sig-modal-header { border-bottom-color: #374151; }
+.sig-modal-title { font-size: 17px; font-weight: 700; color: #0f172a; margin: 0 0 4px; }
+body.dark-mode .sig-modal-title { color: #f1f5f9; }
+.sig-modal-subtitle { font-size: 13px; color: #6b7280; margin: 0; }
+body.dark-mode .sig-modal-subtitle { color: #94a3b8; }
+
+.sig-modal-body { padding: 0; overflow-y: auto; flex: 1; }
+
+/* Signatory table */
+.sig-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sig-table thead th {
+  padding: 10px 16px; text-align: left; font-size: 11.5px; font-weight: 600;
+  color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;
+  background: rgba(0,0,0,0.03); border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+body.dark-mode .sig-table thead th {
+  background: rgba(255,255,255,0.03); border-bottom-color: #374151; color: #64748b;
+}
+.sig-table tbody td {
+  padding: 12px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;
+}
+body.dark-mode .sig-table tbody td { border-bottom-color: #1e293b; }
+.sig-table tbody tr:last-child td { border-bottom: none; }
+.sig-table tbody tr:hover td { background: rgba(59,130,246,0.04); }
+body.dark-mode .sig-table tbody tr:hover td { background: rgba(59,130,246,0.07); }
+
+/* Status badges */
+.sig-status {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600;
+  white-space: nowrap;
+}
+.sig-status--signed   { background: rgba(5,150,105,0.1);  color: #047857; border: 1px solid rgba(5,150,105,0.2); }
+.sig-status--pending  { background: rgba(245,158,11,0.1); color: #b45309; border: 1px solid rgba(245,158,11,0.2); }
+.sig-status--accessed { background: rgba(37,99,235,0.1);  color: #1d4ed8; border: 1px solid rgba(37,99,235,0.2); }
+body.dark-mode .sig-status--signed   { background: rgba(16,185,129,0.12); color: #34d399; border-color: rgba(16,185,129,0.25); }
+body.dark-mode .sig-status--pending  { background: rgba(245,158,11,0.12); color: #fbbf24; border-color: rgba(245,158,11,0.25); }
+body.dark-mode .sig-status--accessed { background: rgba(59,130,246,0.12); color: #60a5fa; border-color: rgba(59,130,246,0.25); }
+
+/* Download NDA button */
+.btn-dl-nda {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 500;
+  background: rgba(37,99,235,0.08); color: #2563eb;
+  border: 1px solid rgba(37,99,235,0.2); cursor: pointer; text-decoration: none;
+  transition: background 0.15s;
+}
+.btn-dl-nda:hover { background: rgba(37,99,235,0.15); }
+body.dark-mode .btn-dl-nda { background: rgba(59,130,246,0.1); color: #60a5fa; border-color: rgba(59,130,246,0.25); }
+body.dark-mode .btn-dl-nda:hover { background: rgba(59,130,246,0.2); }
+
+/* Empty state */
+.sig-empty {
+  padding: 48px 24px; text-align: center; color: #94a3b8;
+}
+.sig-empty i { font-size: 32px; margin-bottom: 12px; display: block; opacity: 0.4; }
+.sig-empty p { margin: 0; font-size: 13px; }
+
+.sig-modal-footer {
+  padding: 14px 24px; border-top: 1px solid #e5e7eb;
+  display: flex; justify-content: space-between; align-items: center;
+}
+body.dark-mode .sig-modal-footer { border-top-color: #374151; }
+.sig-summary { font-size: 12.5px; color: #6b7280; }
+body.dark-mode .sig-summary { color: #94a3b8; }
+.sig-summary strong { color: #0f172a; }
+body.dark-mode .sig-summary strong { color: #e2e8f0; }
+
+@media (max-width: 767px) {
+  .sig-modal { max-width: 100vw; max-height: 100vh; border-radius: 0; }
+  .sig-table thead th, .sig-table tbody td { padding: 8px 10px; font-size: 12px; }
+}
+#backToTop {
+  position: fixed; bottom: 28px; right: 28px; width: 40px; height: 40px;
+  border-radius: 50%; background: #3b82f6; color: #ffffff; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+  box-shadow: 0 4px 12px rgba(59,130,246,0.35), 0 2px 4px rgba(0,0,0,0.12);
+  opacity: 1; transform: translateY(0);
+  transition: opacity 0.25s ease, transform 0.25s ease, background 0.15s ease;
+  pointer-events: auto; z-index: 99998;
+}
+#backToTop:hover { background: #2563eb; transform: translateY(-2px); }
+#backToTop:active { transform: translateY(0); background: #1d4ed8; }
+body.dark-mode #backToTop { background: #3b82f6; }
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — TABLET (768–1024px)
+══════════════════════════════════════════ */
+@media (max-width: 1024px) and (min-width: 768px) {
+  .vmain { padding: 20px 16px 40px; }
+  .manage-vaults .amc-table th,
+  .manage-vaults .amc-table td { padding: 8px 8px !important; font-size: 12px !important; }
+  .vault-table td.cell--teaser { width: 60px; padding: 6px 6px; }
+  .vault-table td.cell--teaser .thumb { width: 52px; height: 36px; }
+  .vault-table td.cell--teaser .thumb img { width: 52px !important; height: 36px !important; }
+  .vault-table .col-title .truncate { max-width: 180px; }
+  .vault-table .col-brand .truncate { max-width: 90px; }
+  .manage-vaults .amc-card { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .manage-vaults .amc-table { min-width: 760px; }
+  .amc-page-title { font-size: 28px !important; letter-spacing: -0.03em !important; }
+  .cell--check { display: none !important; }
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — MOBILE (<768px)
+   Table hidden, card list shown
+══════════════════════════════════════════ */
+@media (max-width: 767px) {
+  .vmain { padding: 16px 12px 80px; background: #f1f5f9; }
+  body.dark-mode .vmain { background: transparent; }
+  .manage-vaults .amc-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+  body.dark-mode .manage-vaults .amc-card { background: var(--bg-secondary); border-color: var(--border-primary); }
+  .amc-page-title { font-size: 26px !important; letter-spacing: -0.03em !important; font-variation-settings: 'opsz' 28 !important; }
+  .amc-page-subtitle { font-size: 13px !important; }
+
+  /* Hide the desktop table */
+  .manage-vaults .amc-table,
+  .manage-vaults .amc-table thead,
+  .manage-vaults .amc-table tbody,
+  .manage-vaults .amc-table tfoot { display: none !important; }
+
+  .manage-vaults .card-footer { padding: 10px 12px; font-size: 12px; }
+
+  /* Mobile card list */
+  .mobile-vault-list {
+    display: flex !important; flex-direction: column; gap: 0;
+  }
+  .mobile-vault-card {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 12px; border-bottom: 1px solid #e5e7eb;
+    cursor: pointer; transition: background 0.12s;
+    position: relative; background: transparent; min-height: 90px;
+  }
+  .mobile-vault-card:nth-child(even) { background: rgba(0,0,0,0.045); }
+  .mobile-vault-card:hover  { background: rgba(59,130,246,0.10) !important; }
+  .mobile-vault-card:active { background: rgba(59,130,246,0.14) !important; }
+  .mobile-vault-card:last-child { border-bottom: none; }
+  body.dark-mode .mobile-vault-card { border-bottom-color: #2d3748; }
+  body.dark-mode .mobile-vault-card:nth-child(even) { background: rgba(255,255,255,0.022); }
+  body.dark-mode .mobile-vault-card:hover { background: rgba(59,130,246,0.09) !important; }
+
+  .mobile-vault-thumb {
+    flex-shrink: 0; width: 60px; height: 42px;
+    border-radius: 6px; overflow: hidden; background: #f3f4f6; margin-top: 2px;
+  }
+  body.dark-mode .mobile-vault-thumb { background: #1e2535; }
+  .mobile-vault-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .mobile-vault-thumb-placeholder {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    color: #9ca3af; font-size: 18px;
+  }
+
+  .mobile-vault-body {
+    flex: 1; min-width: 0; padding-right: 28px;
+    display: flex; flex-direction: column; justify-content: flex-start;
+  }
+  .mobile-vault-title {
+    font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.4;
+    color: #0f172a; display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+    height: calc(13.5px * 1.4 * 2); margin-bottom: 5px; flex-shrink: 0;
+  }
+  body.dark-mode .mobile-vault-title { color: #f1f5f9; }
+  .mobile-vault-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 3px; }
+  .mobile-vault-brand { font-size: 12px; font-weight: 500; color: #6b7280; }
+  body.dark-mode .mobile-vault-brand { color: #94a3b8; }
+  .mobile-vault-date { font-size: 11px; font-weight: 400; color: #9ca3af; }
+  body.dark-mode .mobile-vault-date { color: #64748b; }
+  .mobile-vault-meta .status-pill { font-size: 10px !important; height: 18px !important; padding: 0 7px !important; }
+
+  .mobile-vault-kebab {
+    position: absolute; top: 4px; right: 2px; width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: transparent; color: #2563eb;
+    font-size: 15px; cursor: pointer; border-radius: 8px; transition: background 0.12s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mobile-vault-kebab:hover,
+  .mobile-vault-kebab:active { background: rgba(37,99,235,0.08); color: #1d4ed8; }
+  body.dark-mode .mobile-vault-kebab { color: #60a5fa; }
+  body.dark-mode .mobile-vault-kebab:hover,
+  body.dark-mode .mobile-vault-kebab:active { background: rgba(96,165,250,0.12); color: #93c5fd; }
+
+  .manage-vaults .card-header { padding: 12px 12px 10px 12px !important; }
+  .search-input { max-width: 100% !important; width: 100% !important; }
+  .page-controls-row, .page-controls, .page-header-row { flex-wrap: wrap; gap: 8px; }
+  a[href*="AssetDBmenu"], .btn-upload-new, .page-actions .btn-primary {
+    white-space: nowrap !important; font-size: 12.5px !important; padding: 0 12px !important;
+  }
+  .cell--check { display: none !important; }
+  .bulk-bar { display: none !important; }
+  .btn-export { display: none; }
+
+  #backToTop { bottom: 72px; right: 16px; width: 36px; height: 36px; font-size: 14px; }
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    .detail-modal-backdrop, .confirm-modal-backdrop { align-items: flex-start; overflow-y: auto; padding: 12px 16px 24px; }
+    .detail-modal, .confirm-modal { max-height: none; width: 100%; max-width: 680px; margin: auto; }
+    .detail-modal-body { overflow-y: visible; }
+  }
+}
+
+/* ── Landscape mobile ── */
+@media (max-width: 900px) and (orientation: landscape) {
+  .manage-vaults .amc-table,
+  .manage-vaults .amc-table-wrap { display: none !important; }
+  .mobile-vault-list { display: flex !important; flex-direction: column !important; gap: 0 !important; padding: 0 !important; }
+  .mobile-vault-card:nth-child(even) { background: rgba(0,0,0,0.025) !important; }
+  body.dark-mode .mobile-vault-card:nth-child(even) { background: rgba(255,255,255,0.04) !important; }
+  .mobile-vault-card {
+    display: flex !important; flex-direction: row !important; align-items: stretch !important;
+    gap: 0 !important; padding: 0 !important; border-bottom: 1px solid #e5e7eb !important;
+    border-radius: 0 !important; min-height: 100px !important; position: relative;
+  }
+  .mobile-vault-thumb {
+    width: 90px !important; height: 66px !important; flex-shrink: 0 !important;
+    align-self: center !important; margin: 10px 0 10px 10px !important;
+    border-radius: 6px !important; overflow: hidden !important;
+  }
+  .mobile-vault-thumb img { width: 90px !important; height: 66px !important; object-fit: cover !important; }
+  .mobile-vault-body {
+    flex: 1 !important; min-width: 0 !important; padding: 10px 90px 10px 14px !important;
+    display: flex !important; flex-direction: column !important; justify-content: center !important; gap: 3px !important;
+  }
+  .mobile-vault-title {
+    font-size: 13px !important; font-weight: 600 !important; line-height: 1.35 !important;
+    display: -webkit-box !important; -webkit-line-clamp: 2 !important; -webkit-box-orient: vertical !important;
+    overflow: hidden !important; height: calc(13px * 1.35 * 2) !important; margin-bottom: 3px !important;
+  }
+  .mobile-vault-meta { display: block !important; }
+  .mobile-vault-brand { font-size: 11.5px !important; font-weight: 500 !important; color: #6b7280 !important; display: block !important; }
+  body.dark-mode .mobile-vault-brand { color: #94a3b8 !important; }
+  .mobile-vault-date { font-size: 11px !important; color: #9ca3af !important; }
+  .status-pill[style*="position:absolute"] { position: absolute !important; bottom: 8px !important; right: 6px !important; top: auto !important; font-size: 10px !important; padding: 2px 8px !important; }
+  .mobile-vault-kebab { position: absolute !important; top: 0 !important; right: 0 !important; width: 44px !important; height: 44px !important; }
+  .vmain { padding: 0 0 60px !important; }
+  .amc-page-header { padding: 6px 14px 4px !important; }
+  .amc-page-title { font-size: 26px !important; font-weight: 800 !important; letter-spacing: -0.03em !important; line-height: 1.1 !important; font-variation-settings: 'opsz' 28 !important; }
+  .amc-page-subtitle { font-size: 13px !important; display: block !important; margin-top: 2px !important; margin-bottom: 4px !important; }
+  .amc-page__tools { padding: 0 14px 6px !important; }
+  #searchResultsRow { padding-left: 14px !important; padding-right: 14px !important; }
+  .manage-vaults .amc-card { border-radius: 0 !important; box-shadow: none !important; }
+  .pagination-bar, .pagination-wrap, .card-footer { font-size: 12px !important; padding: 10px 14px !important; }
+}
+
+</style>
+</head>
+<body>
+
+<div id="amcShellHeader"></div>
+<div id="amcShellSidebar"></div>
+
+<div class="vault-page-wrap">
+  <main class="vmain mobile-main" id="vmainScroll">
+    <div class="amc-page manage-vaults">
+
+      <header class="amc-page-header">
+        <h1 class="amc-page-title">Manage Media Vaults</h1>
+        <p class="amc-page-subtitle">View, edit or delete Media Vaults</p>
+      </header>
+
+      <div class="amc-page__tools">
+        <div class="controls-section">
+          <div class="controls-left">
+            <div class="search-container">
+              <input type="text" id="filterSearch" placeholder="Search Media Vaults..." class="search-input" />
+              <i class="fas fa-search search-icon"></i>
+            </div>
+          </div>
+          <div class="controls-right">
+            <button class="btn-export" id="exportCsvBtn" title="Export to CSV"><i class="fas fa-download"></i> Export</button>
+            <a href="AssetDBmenu1.6.html?formType=vault" class="btn btn-primary" style="white-space:nowrap;">
+              <i class="fas fa-plus"></i> New Vault
+            </a>
+          </div>
+        </div>
+        <!-- Hidden filter inputs wired to apply button -->
+        <div style="display:none;">
+          <input type="text" id="filterBrand" value="">
+          <select id="filterStatus"><option value="" selected></option></select>
+          <button id="applyFilters"></button>
+          <button id="clearFilters"></button>
+        </div>
+      </div>
+
+      <div id="searchResultsRow" style="display:none;margin:0 0 10px 0;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span id="searchResultsText" style="font-size:13px;font-weight:500;color:#6b7280;"></span>
+        <span id="searchResultsPill" style="display:inline-flex;align-items:center;gap:5px;background:#eff6ff;color:#2563eb;border:1px solid rgba(59,130,246,0.25);border-radius:20px;padding:2px 10px 2px 10px;font-size:12.5px;font-weight:600;">
+          <span id="searchResultsTerm"></span>
+          <button id="searchResultsClear" style="background:none;border:none;color:#2563eb;cursor:pointer;font-size:13px;line-height:1;padding:0 0 0 2px;display:flex;align-items:center;" aria-label="Clear search">×</button>
+        </span>
+      </div>
+
+      <div class="amc-page__body">
+        <div class="amc-card" style="margin-top:12px;">
+          <div class="radar-table-title-bar">
+            <span class="radar-table-title">Your Media Vaults</span>
+            <span class="radar-table-count">Total: <span id="totalVaults">0</span></span>
+          </div>
+
+          <!-- Desktop table -->
+          <table class="amc-table table-lined vault-table" style="table-layout:fixed;width:100%;">
+            <colgroup>
+              <col class="cell--check" style="width:40px;">
+              <col style="width:80px;"><!-- Teaser -->
+              <col style="width:22%;"><!-- Title -->
+              <col style="width:12%;"><!-- Brand -->
+              <col style="width:8%;"><!-- Status -->
+              <col style="width:14%;"><!-- Sent By -->
+              <col style="width:7%;"><!-- Sent To -->
+              <col style="width:12%;"><!-- Posted On -->
+              <col style="width:12%;"><!-- Opened On -->
+              <col style="width:72px;"><!-- Actions -->
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="cell--check"><input type="checkbox" id="selectAll" title="Select all"></th>
+                <th class="cell--teaser" style="text-align:left;">Teaser</th>
+                <th class="sortable" data-sort="title" style="text-align:left;">Title <span class="sort-arrow">↕</span></th>
+                <th class="sortable" data-sort="brand" style="text-align:left;">Brand <span class="sort-arrow">↕</span></th>
+                <th class="sortable" data-sort="status" style="text-align:center;">Status <span class="sort-arrow">↕</span></th>
+                <th class="sortable" data-sort="sentBy" style="text-align:left;">Sent By <span class="sort-arrow">↕</span></th>
+                <th style="text-align:center;">Sent To</th>
+                <th class="sortable" data-sort="createdAt" style="text-align:left;">Posted On <span class="sort-arrow">↕</span></th>
+                <th style="text-align:center;">Access</th>
+                <th class="cell--actions" style="text-align:center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="vaultsTableBody"></tbody>
+          </table>
+
+          <div class="card-footer">
+            <span id="paginationSummary"></span>
+            <div class="pagination-controls">
+              <button class="btn btn-secondary btn-sm" id="prevPageButton" disabled><i class="fas fa-chevron-left"></i></button>
+              <span id="pageInfo">Page 1 of 1</span>
+              <button class="btn btn-secondary btn-sm" id="nextPageButton" disabled><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="amcShellFooter"></div>
+
+<!-- Vault Detail Modal -->
+<div class="detail-modal-backdrop" id="vaultDetailModalBackdrop">
+  <div class="detail-modal">
+    <div class="detail-modal-header amc-quick-view-header">
+      <div class="amc-quick-view-top-line">
+        <div class="amc-quick-view-meta">
+          <span id="vaultDetailModalBrand"></span> | <span id="vaultDetailModalDate"></span>
+        </div>
+        <button class="detail-modal-close-btn" aria-label="Close">×</button>
+      </div>
+      <h3 id="vaultDetailModalTitle" style="margin:0;font-size:17px;font-weight:700;color:#0f172a;"></h3>
+    </div>
+    <div class="detail-modal-body">
+      <div id="vaultDetailContent">
+        <p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading vault details...</p>
+      </div>
+    </div>
+    <div class="detail-modal-footer">
+      <button class="btn btn-secondary detail-modal-close-btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="confirm-modal-backdrop" id="deleteConfirmModalBackdrop">
+  <div class="confirm-modal">
+    <div class="confirm-modal-header">
+      <h3 style="margin:0;font-size:16px;font-weight:700;">Confirm Deletion</h3>
+    </div>
+    <div class="confirm-modal-body">
+      <p id="deleteConfirmModalText">Are you sure?</p>
+    </div>
+    <div class="confirm-modal-footer">
+      <button class="btn btn-secondary" id="deleteConfirmCancel">Cancel</button>
+      <button class="btn btn-danger" id="deleteConfirmButton">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Archive Modal -->
+<div class="confirm-modal-backdrop" id="archiveConfirmModalBackdrop">
+  <div class="confirm-modal">
+    <div class="confirm-modal-header">
+      <h3 style="margin:0;font-size:16px;font-weight:700;">Archive Vault</h3>
+    </div>
+    <div class="confirm-modal-body">
+      <p id="archiveConfirmModalText">Are you sure?</p>
+    </div>
+    <div class="confirm-modal-footer">
+      <button class="btn btn-secondary" id="archiveConfirmCancel">Cancel</button>
+      <button class="btn btn-primary" id="archiveConfirmButton">Yes, Archive</button>
+    </div>
+  </div>
+</div>
+
+<!-- Signatories Modal -->
+<div class="sig-modal-backdrop" id="signatoriesModalBackdrop">
+  <div class="sig-modal">
+    <div class="sig-modal-header">
+      <div>
+        <h3 class="sig-modal-title" id="sigModalTitle">Signatories</h3>
+        <p class="sig-modal-subtitle" id="sigModalSubtitle">NDA signing status for this vault</p>
+      </div>
+      <button class="detail-modal-close-btn" id="sigModalClose" aria-label="Close">×</button>
+    </div>
+    <div class="sig-modal-body" id="sigModalBody">
+      <div class="sig-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading signatories…</p></div>
+    </div>
+    <div class="sig-modal-footer">
+      <span class="sig-summary" id="sigSummary"></span>
+      <button class="btn btn-secondary btn-sm" id="sigModalCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="bulk-bar" id="bulkBar"><div class="bulk-bar-left"><span id="bulkCount">0 selected</span></div><div class="bulk-bar-right"><button class="btn btn-cancel-bulk" id="bulkDeselectBtn">Deselect All</button><button class="btn btn-danger" id="bulkDeleteBtn"><i class="fas fa-trash"></i> Delete Selected</button></div></div>
+
+<div id="kebab-portal" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  let token = localStorage.getItem('token') || localStorage.getItem('authToken');
+  let userString = localStorage.getItem('user') || localStorage.getItem('currentUser');
+  let user = null;
+
+  if (userString) {
+    try { user = JSON.parse(userString); } catch(e) { user = { email: 'User', role: 'client_admin' }; }
+  }
+  if (!user) user = { email: 'User', role: 'client_admin' };
+
+  if (!token) {
+    alert('Please log in to access this page');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // ── DOM refs ──
+  const vaultsTableBody        = document.getElementById('vaultsTableBody');
+  const prevPageButton         = document.getElementById('prevPageButton');
+  const nextPageButton         = document.getElementById('nextPageButton');
+  const pageInfo               = document.getElementById('pageInfo');
+  const totalVaultsEl          = document.getElementById('totalVaults');
+  const paginationSummary      = document.getElementById('paginationSummary');
+  const applyFiltersButton     = document.getElementById('applyFilters');
+  const clearFiltersButton     = document.getElementById('clearFilters');
+  const filterSearchInput      = document.getElementById('filterSearch');
+  const filterBrandInput       = document.getElementById('filterBrand');
+  const filterStatusInput      = document.getElementById('filterStatus');
+
+  const vaultDetailModalBackdrop   = document.getElementById('vaultDetailModalBackdrop');
+  const vaultDetailModalTitle      = document.getElementById('vaultDetailModalTitle');
+  const vaultDetailModalBrand      = document.getElementById('vaultDetailModalBrand');
+  const vaultDetailModalDate       = document.getElementById('vaultDetailModalDate');
+  const vaultDetailContent         = document.getElementById('vaultDetailContent');
+
+  const deleteConfirmModalBackdrop = document.getElementById('deleteConfirmModalBackdrop');
+  const deleteConfirmModalText     = document.getElementById('deleteConfirmModalText');
+  const deleteConfirmButton        = document.getElementById('deleteConfirmButton');
+  const archiveConfirmModalBackdrop = document.getElementById('archiveConfirmModalBackdrop');
+  const archiveConfirmModalText    = document.getElementById('archiveConfirmModalText');
+  const archiveConfirmButton       = document.getElementById('archiveConfirmButton');
+
+  // ── State ──
+  let currentPage = 1;
+  let totalPages  = 1;
+  let totalItems  = 0;
+  const limitPerPage = 10;
+
+  // ── Date formatter ──
+  function formatDate(dateStr, timeStr) {
+    if (!dateStr) return 'N/A';
+    try {
+      let d;
+      if (timeStr && /^\d{2}:\d{2}$/.test(timeStr)) {
+        // Combine date + time — treat as local time (strip Z, append time)
+        const datePart = new Date(dateStr).toISOString().split('T')[0];
+        d = new Date(`${datePart}T${timeStr}:00`);
+      } else {
+        d = new Date(dateStr);
+      }
+      if (isNaN(d)) return 'N/A';
+      return d.toLocaleString('en-GB', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+      });
+    } catch(e) { return 'N/A'; }
+  }
+
+  // Expose for back-to-top
+  window._amcCurrentPage = () => currentPage;
+  window._amcGoToPage1   = () => { if (typeof fetchMyVaults === 'function') fetchMyVaults(1); };
+
+  // ── Status helper ──
+  function resolveStatus(vault) {
+    const s = (vault.status || '').toLowerCase();
+    if (s === 'archived') return { label: 'Archived', cls: 'status--archived' };
+    if (s === 'expired')  return { label: 'Expired',  cls: 'status--expired' };
+    if (s === 'draft')    return { label: 'Draft',    cls: 'status--draft' };
+    if (s === 'active') {
+      // Check if availability date is in the future → Scheduled
+      if (vault.availabilityDate) {
+        const opens = new Date(vault.availabilityDate);
+        if (!isNaN(opens) && opens > new Date()) {
+          return { label: 'Scheduled', cls: 'status--scheduled' };
+        }
+      }
+      return { label: 'Active', cls: 'status--active' };
+    }
+    return { label: vault.status || 'Unknown', cls: 'status--unknown' };
+  }
+
+  // ── Fetch ──
+  async function fetchMyVaults(page = 1, search = '', brand = '', status = '') {
+    vaultsTableBody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:20px;">Loading… <i class="fas fa-spinner fa-spin"></i></td></tr>`;
+
+    const params = new URLSearchParams({
+      page, limit: limitPerPage,
+      ...(search ? { title: search } : {}),
+      ...(brand  ? { brand }         : {}),
+      ...(status ? { status }        : {})
+    });
+
+    try {
+      const res    = await fetch(`/api/v1/vault/admin/vaults?${params}`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || `HTTP ${res.status}`);
+
+      // API may return array or paginated object
+      let vaults   = [];
+      let apiTotal = 0;
+      let apiPages = 1;
+      let apiPage  = 1;
+
+      // Admin endpoint always returns paginated object
+      vaults   = result.data.vaults   || [];
+      apiTotal = result.data.totalItems ?? vaults.length;
+      apiPages = result.data.totalPages ?? 1;
+      apiPage  = result.data.currentPage ?? page;
+
+      currentPage = apiPage;
+      totalPages  = apiPages;
+      totalItems  = apiTotal;
+
+      if (totalVaultsEl) totalVaultsEl.textContent = totalItems;
+
+      // Search results row
+      const searchVal   = filterSearchInput ? filterSearchInput.value.trim() : '';
+      const resultsRow  = document.getElementById('searchResultsRow');
+      const resultsText = document.getElementById('searchResultsText');
+      const resultsTerm = document.getElementById('searchResultsTerm');
+      if (resultsRow && resultsText && resultsTerm) {
+        if (searchVal) {
+          resultsText.textContent = `${apiTotal} result${apiTotal !== 1 ? 's' : ''} for`;
+          resultsTerm.textContent = searchVal;
+          resultsRow.style.display = 'flex';
+        } else {
+          resultsRow.style.display = 'none';
+        }
+      }
+
+      renderVaultsTable(vaults);
+      updatePaginationControls();
+
+      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+
+    } catch (err) {
+      console.error('[MANAGE_VAULT] fetch error:', err);
+      vaultsTableBody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--color-danger);padding:20px;">Error: ${err.message}<br><small>Check browser console for details</small></td></tr>`;
+    }
+  }
+
+  // ── Render table ──
+  function renderVaultsTable(vaults) {
+    vaultsTableBody.innerHTML = '';
+
+    if (!vaults.length) {
+      vaultsTableBody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:32px;color:#6b7280;">No vaults found.</td></tr>`;
+      renderMobileCards([]);
+      return;
+    }
+
+    vaults.forEach(vault => {
+      const uuid  = vault.uuid || vault._id;
+      const title = vault.title || 'Untitled Vault';
+      const brand = vault.brand || vault.companyName || '—';
+      const { label: statusLabel, cls: statusCls } = resolveStatus(vault);
+
+      // Teaser — grey padlock SVG (vaults don't use teaser images)
+      const teaserHtml = `<span class="thumb vault-thumb-lock">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 44" width="64" height="44">
+          <rect width="64" height="44" rx="6" fill="transparent"/>
+          <rect x="21" y="23" width="22" height="14" rx="3" fill="#94a3b8"/>
+          <path d="M25 23v-5a7 7 0 0 1 14 0v5" fill="none" stroke="#94a3b8" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="32" cy="29.5" r="2" fill="#f1f5f9"/>
+          <rect x="31" y="30.5" width="2" height="3.5" rx="1" fill="#f1f5f9"/>
+        </svg>
+      </span>`;
+
+      // Sent By — populated user email from admin endpoint
+      const sentBy = vault.sentBy || '—';
+
+      // Sent To — invitedCount from admin endpoint
+      const journalistCount = vault.invitedCount ?? (Array.isArray(vault.invitedUsers) ? vault.invitedUsers.length : 0);
+      const sentToHtml = `<span class="journalists-pill"><i class="fas fa-user" style="font-size:9px;"></i>${journalistCount}</span>`;
+
+      // Posted On — when the vault was created/published
+      const postedOn = vault.createdAt ? formatDate(vault.createdAt) : '—';
+
+      // Access count — how many journalists have opened vs total invited
+      const accessCount   = vault.accessCount ?? 0;
+      const invitedCount  = vault.invitedCount ?? (Array.isArray(vault.invitedUsers) ? vault.invitedUsers.length : 0);
+      let accessCls = 'access-pill--none';
+      if (invitedCount > 0 && accessCount >= invitedCount) accessCls = 'access-pill--all';
+      else if (accessCount > 0) accessCls = 'access-pill--some';
+      const accessHtml = `<span class="access-pill ${accessCls}">${accessCount} of ${invitedCount} opened</span>`;
+
+      const sanitizedTitle = title.replace(/"/g, '&quot;');
+
+      const row = `<tr data-id="${uuid}" data-status="${statusLabel.toLowerCase()}">
+        <td class="cell--check"><input type="checkbox" class="row-check" data-uuid="${uuid}"></td>
+        <td class="cell--teaser">${teaserHtml}</td>
+        <td class="col-title"><span class="truncate">${title}</span></td>
+        <td class="col-brand"><span class="truncate">${brand}</span></td>
+        <td class="col-status" style="text-align:center;"><span class="status-pill ${statusCls}">${statusLabel}</span></td>
+        <td class="col-sender">${sentBy}</td>
+        <td style="text-align:center;">${sentToHtml}</td>
+        <td class="col-posted">${postedOn}</td>
+        <td style="text-align:center;">${accessHtml}</td>
+        <td class="col-actions" style="text-align:center;">
+          <div class="kebab-wrap">
+            <button class="kebab-btn" aria-haspopup="true" aria-expanded="false" aria-controls="vmenu-${uuid}">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
+            <div id="vmenu-${uuid}" class="kebab-menu" role="menu" hidden>
+              <button type="button" class="kebab-item" data-action="view"        data-uuid="${uuid}" data-title="${sanitizedTitle}">View</button>
+              <button type="button" class="kebab-item" data-action="edit"        data-uuid="${uuid}" data-title="${sanitizedTitle}">Edit</button>
+              <button type="button" class="kebab-item" data-action="signatories" data-uuid="${uuid}" data-title="${sanitizedTitle}">Signatories</button>
+              <button type="button" class="kebab-item" data-action="archive"     data-uuid="${uuid}" data-title="${sanitizedTitle}">Archive</button>
+              <button type="button" class="kebab-item" data-action="delete"      data-uuid="${uuid}" data-title="${sanitizedTitle}">Delete</button>
+            </div>
+          </div>
+        </td>
+      </tr>`;
+      vaultsTableBody.insertAdjacentHTML('beforeend', row);
+
+      // Wire row click to open view modal (excluding actions cell)
+      const insertedRow = vaultsTableBody.lastElementChild;
+      insertedRow.addEventListener('click', e => {
+        if (e.target.closest('.kebab-wrap') || e.target.closest('.kebab-btn') || e.target.closest('.cell--check')) return;
+        openVaultDetailModal(uuid, title, vault);
+      });
+    });
+
+    renderMobileCards(vaults);
+  }
+
+  // ── Render mobile cards ──
+  function renderMobileCards(vaults) {
+    const existing = document.getElementById('mobileVaultList');
+    if (existing) existing.remove();
+
+    const card = document.querySelector('.manage-vaults .amc-card');
+    if (!card) return;
+
+    const list = document.createElement('div');
+    list.className = 'mobile-vault-list';
+    list.id = 'mobileVaultList';
+    list.style.display = 'none';
+
+    vaults.forEach(vault => {
+      const uuid  = vault.uuid || vault._id;
+      const title = vault.title || 'Untitled Vault';
+      const brand = vault.brand || vault.companyName || '—';
+      const { label: statusLabel, cls: statusCls } = resolveStatus(vault);
+      const teaserPath = vault.teaserImage?.path || vault.teaserImage || null;
+      const postedOn   = vault.createdAt ? new Date(vault.createdAt).toLocaleString('en-GB', {
+        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+      }) : '';
+
+      const thumbHtml = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:6px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 42" width="48" height="34">
+          <rect x="14" y="20" width="32" height="16" rx="3" fill="#94a3b8"/>
+          <path d="M19 20v-6a11 11 0 0 1 22 0v6" fill="none" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="30" cy="27" r="2.5" fill="#f1f5f9"/>
+          <rect x="28.75" y="28.5" width="2.5" height="4" rx="1.25" fill="#f1f5f9"/>
+        </svg>
+      </div>`;
+
+      const item = document.createElement('div');
+      item.className = 'mobile-vault-card';
+      item.dataset.uuid = uuid;
+      item.innerHTML = `
+        <div class="mobile-vault-thumb">${thumbHtml}</div>
+        <div class="mobile-vault-body">
+          <div class="mobile-vault-title">${title}</div>
+          <div class="mobile-vault-meta">
+            ${brand !== '—' ? `<span class="mobile-vault-brand">${brand}</span>` : ''}
+          </div>
+          ${statusLabel ? `<span class="status-pill ${statusCls}" style="position:absolute;bottom:8px;right:8px;font-size:10px;padding:2px 8px;">${statusLabel}</span>` : ''}
+          ${postedOn ? `<div class="mobile-vault-date">${postedOn}</div>` : ''}
+        </div>
+        <button class="mobile-vault-kebab kebab-btn" aria-label="Actions" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>`;
+
+      item.querySelector('.mobile-vault-body').addEventListener('click', () => openVaultDetailModal(uuid, title, vault));
+      item.querySelector('.mobile-vault-thumb').addEventListener('click', () => openVaultDetailModal(uuid, title, vault));
+
+      item.querySelector('.mobile-vault-kebab').addEventListener('click', e => {
+        e.stopPropagation();
+        e.preventDefault();
+        closeAllKebabs();
+        if (e.currentTarget.dataset.open === 'true') { delete e.currentTarget.dataset.open; return; }
+
+        const float = document.createElement('div');
+        float.id = 'mobile-kebab-float';
+        float.className = 'kebab-float';
+        float.style.cssText = 'position:fixed;z-index:99999;pointer-events:auto;';
+        float.innerHTML = `
+          <button type="button" class="kebab-item" data-action="view"        data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}">View</button>
+          <button type="button" class="kebab-item" data-action="edit"        data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}">Edit</button>
+          <button type="button" class="kebab-item" data-action="signatories" data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}">Signatories</button>
+          <button type="button" class="kebab-item" data-action="archive"     data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}">Archive</button>
+          <button type="button" class="kebab-item" data-action="delete"      data-uuid="${uuid}" data-title="${title.replace(/"/g,'&quot;')}">Delete</button>`;
+        document.body.appendChild(float);
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        float.style.top   = (rect.bottom + 4) + 'px';
+        float.style.right = (window.innerWidth - rect.right) + 'px';
+        e.currentTarget.dataset.open = 'true';
+
+        float.querySelectorAll('.kebab-item').forEach(btn => {
+          btn.addEventListener('click', ev => {
+            ev.stopPropagation();
+            handleKebabAction(btn.dataset.action, btn.dataset.uuid, btn.dataset.title);
+            closeAllKebabs();
+          });
+        });
+      });
+
+      list.appendChild(item);
+    });
+
+    const bar = card.querySelector('.radar-table-title-bar') || card.querySelector('.card-header');
+    if (bar && bar.nextSibling) { card.insertBefore(list, bar.nextSibling); }
+    else { card.appendChild(list); }
+  }
+
+  // ── Vault detail modal ──
+  async function openVaultDetailModal(uuid, title, vaultData) {
+    vaultDetailModalTitle.textContent = title;
+    vaultDetailModalBrand.textContent = vaultData?.brand || vaultData?.companyName || '—';
+    vaultDetailModalDate.textContent  = vaultData?.createdAt ? formatDate(vaultData.createdAt) : '—';
+    vaultDetailContent.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+    vaultDetailModalBackdrop.classList.add('open');
+
+    try {
+      const res    = await fetch(`/api/v1/vault/admin/vaults?page=1&limit=1&search=${encodeURIComponent(uuid)}`, { headers: { 'Authorization': `Bearer ${token}` } });
+      const result = await res.json();
+      const v      = result.data?.vaults?.[0] || vaultData;
+
+      const journalistCount = v.invitedCount ?? (Array.isArray(v.invitedUsers) ? v.invitedUsers.length : 0);
+      const accessCount     = v.accessCount ?? 0;
+      const { label: statusLabel, cls: statusCls } = resolveStatus(v);
+
+      vaultDetailContent.innerHTML = `
+        <div class="modal-detail-row"><span class="modal-detail-label">Status</span><span class="modal-detail-value"><span class="status-pill ${statusCls}">${statusLabel}</span></span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">Brand</span><span class="modal-detail-value">${v.brand || v.companyName || '—'}</span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">Posted On</span><span class="modal-detail-value">${v.createdAt ? formatDate(v.createdAt) : '—'}</span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">Available From</span><span class="modal-detail-value">${v.availabilityDate ? formatDate(v.availabilityDate, v.availabilityTime) : '—'}</span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">Embargo Until</span><span class="modal-detail-value">${v.embargoUntil ? formatDate(v.embargoUntil) : '—'}</span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">Journalists Invited</span><span class="modal-detail-value">${journalistCount}</span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">Access</span><span class="modal-detail-value">${accessCount} of ${journalistCount} opened</span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">NDA Required</span><span class="modal-detail-value">${v.requireNDA ? 'Yes' : 'No'}</span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">Assets</span><span class="modal-detail-value">${v.assetCounts?.images ?? 0} images · ${v.assetCounts?.videos ?? 0} videos · ${v.assetCounts?.docs ?? 0} docs</span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">Created</span><span class="modal-detail-value">${v.createdAt ? formatDate(v.createdAt) : '—'}</span></div>
+      `;
+    } catch(err) {
+      // Fall back to table row data
+      const v = vaultData || {};
+      const journalistCount = v.invitedCount ?? (Array.isArray(v.invitedUsers) ? v.invitedUsers.length : 0);
+      const accessCount     = v.accessCount ?? 0;
+      const { label: statusLabel, cls: statusCls } = resolveStatus(v);
+      vaultDetailContent.innerHTML = `
+        <div class="modal-detail-row"><span class="modal-detail-label">Status</span><span class="modal-detail-value"><span class="status-pill ${statusCls}">${statusLabel}</span></span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">Brand</span><span class="modal-detail-value">${v.brand || v.companyName || '—'}</span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">Posted On</span><span class="modal-detail-value">${v.createdAt ? formatDate(v.createdAt) : '—'}</span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">Journalists Invited</span><span class="modal-detail-value">${journalistCount}</span></div>
+        <div class="modal-detail-row"><span class="modal-detail-label">Access</span><span class="modal-detail-value">${accessCount} of ${journalistCount} opened</span></div>
+      `;
+    }
+  }
+
+  // ── Delete vault ──
+  async function deleteVault(uuid) {
+    try {
+      const res    = await fetch(`/api/v1/vault/${uuid}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Delete failed');
+      fetchMyVaults(currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value);
+    } catch(err) {
+      alert(`Error deleting vault: ${err.message}`);
+    }
+  }
+
+  // ── Archive vault ──
+  async function archiveVault(uuid) {
+    try {
+      const res    = await fetch(`/api/v1/vault/${uuid}/archive`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}` } });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Archive failed');
+      fetchMyVaults(currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value);
+    } catch(err) {
+      alert(`Error archiving vault: ${err.message}`);
+    }
+  }
+
+  // ── Kebab action handler ──
+  function handleKebabAction(act, uuid, title) {
+    if (act === 'view') {
+      openVaultDetailModal(uuid, title, null);
+    } else if (act === 'edit') {
+      window.location.href = `AssetDBmenu1.6.html?formType=vault&editVaultUUID=${uuid}`;
+    } else if (act === 'signatories') {
+      openSignatoriesModal(uuid, title);
+    } else if (act === 'archive') {
+      archiveConfirmModalText.innerHTML = `Archive vault:<br><strong>"${title}"</strong>?<br><br>It will no longer be accessible to journalists.`;
+      archiveConfirmModalBackdrop.classList.add('open');
+      archiveConfirmButton.onclick = () => {
+        archiveConfirmModalBackdrop.classList.remove('open');
+        archiveVault(uuid);
+      };
+    } else if (act === 'delete') {
+      deleteConfirmModalText.innerHTML = `Permanently delete vault:<br><strong>"${title}"</strong>?<br><br>This action cannot be undone.`;
+      deleteConfirmModalBackdrop.classList.add('open');
+      deleteConfirmButton.onclick = () => {
+        deleteConfirmModalBackdrop.classList.remove('open');
+        deleteVault(uuid);
+      };
+    }
+  }
+
+  // ── Signatories modal ──
+  const signatoriesModalBackdrop = document.getElementById('signatoriesModalBackdrop');
+  const sigModalTitle            = document.getElementById('sigModalTitle');
+  const sigModalSubtitle         = document.getElementById('sigModalSubtitle');
+  const sigModalBody             = document.getElementById('sigModalBody');
+  const sigSummary               = document.getElementById('sigSummary');
+
+  async function openSignatoriesModal(vaultId, vaultTitle) {
+    sigModalTitle.textContent    = 'Signatories';
+    sigModalSubtitle.textContent = vaultTitle;
+    sigModalBody.innerHTML       = '<div class="sig-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading signatories…</p></div>';
+    sigSummary.innerHTML         = '';
+    signatoriesModalBackdrop.classList.add('open');
+
+    try {
+      const res    = await fetch(`/api/v1/vault/${vaultId}/signatories`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to load signatories');
+      renderSignatoriesTable(result.data, vaultId);
+    } catch(err) {
+      sigModalBody.innerHTML = `<div class="sig-empty"><i class="fas fa-exclamation-circle"></i><p>Could not load signatories: ${err.message}</p></div>`;
+    }
+  }
+
+  function renderSignatoriesTable(data, vaultId) {
+    const { invitedUsers, signatories } = data;
+    const totalInvited = invitedUsers.length;
+    const totalSigned  = signatories.filter(s => s.signed).length;
+    const totalAccessed = signatories.filter(s => s.accessed).length;
+
+    sigSummary.innerHTML = `<strong>${totalSigned}</strong> of <strong>${totalInvited}</strong> signed · <strong>${totalAccessed}</strong> accessed`;
+
+    if (!totalInvited) {
+      sigModalBody.innerHTML = '<div class="sig-empty"><i class="fas fa-users"></i><p>No journalists were invited to this vault.</p></div>';
+      return;
+    }
+
+    // Build rows — one per invited email
+    const rows = invitedUsers.map(email => {
+      const rec = signatories.find(s => s.email === email) || null;
+      const signed   = rec && rec.signed;
+      const accessed = rec && rec.accessed;
+
+      const statusHtml = signed
+        ? `<span class="sig-status sig-status--signed"><i class="fas fa-check-circle" style="font-size:10px;"></i> Signed</span>`
+        : `<span class="sig-status sig-status--pending"><i class="fas fa-clock" style="font-size:10px;"></i> Pending</span>`;
+
+      const accessedHtml = accessed
+        ? `<span class="sig-status sig-status--accessed"><i class="fas fa-folder-open" style="font-size:10px;"></i> Accessed</span>`
+        : `<span style="color:#9ca3af;font-size:12px;">—</span>`;
+
+      const signedAt = rec?.signedAt
+        ? new Date(rec.signedAt).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+        : '—';
+
+      const lastAccessed = rec?.lastAccessedAt
+        ? new Date(rec.lastAccessedAt).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+        : '—';
+
+      const ndaBtn = (signed && rec?.signedNdaPdfPath)
+        ? `<a href="/${rec.signedNdaPdfPath}" target="_blank" class="btn-dl-nda"><i class="fas fa-file-pdf"></i> Download</a>`
+        : (signed ? `<span style="color:#9ca3af;font-size:12px;">Generating…</span>` : `<span style="color:#9ca3af;font-size:12px;">—</span>`);
+
+      const sigName = rec?.signatureName || '—';
+      const sigIp   = rec?.signingIp || '—';
+
+      return `<tr>
+        <td style="color:#2563eb;font-weight:500;">${email}</td>
+        <td>${statusHtml}</td>
+        <td style="font-size:12px;color:#64748b;">${sigName}</td>
+        <td style="font-size:12px;color:#64748b;">${signedAt}</td>
+        <td>${accessedHtml}</td>
+        <td style="font-size:12px;color:#64748b;">${lastAccessed}</td>
+        <td style="font-size:12px;color:#94a3b8;">${sigIp}</td>
+        <td>${ndaBtn}</td>
+      </tr>`;
+    }).join('');
+
+    sigModalBody.innerHTML = `
+      <table class="sig-table">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>NDA Status</th>
+            <th>Signed Name</th>
+            <th>Signed At</th>
+            <th>Vault Access</th>
+            <th>Last Accessed</th>
+            <th>IP Address</th>
+            <th>Signed NDA</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  // Signatories modal close handlers
+  document.getElementById('sigModalClose').addEventListener('click', () => signatoriesModalBackdrop.classList.remove('open'));
+  document.getElementById('sigModalCloseBtn').addEventListener('click', () => signatoriesModalBackdrop.classList.remove('open'));
+  signatoriesModalBackdrop.addEventListener('click', e => { if (e.target === signatoriesModalBackdrop) signatoriesModalBackdrop.classList.remove('open'); });
+
+  // ── Pagination ──
+  function updatePaginationControls() {
+    const hasRows = document.querySelectorAll('#vaultsTableBody tr[data-id]').length > 0;
+    if (totalItems === 0 && !hasRows) {
+      if (pageInfo) pageInfo.textContent = 'Page 0 of 0';
+      if (paginationSummary) paginationSummary.textContent = 'Showing 0-0 of 0';
+      if (prevPageButton) prevPageButton.disabled = true;
+      if (nextPageButton) nextPageButton.disabled = true;
+      return;
+    }
+    if (pageInfo) pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    const start = (currentPage - 1) * limitPerPage + 1;
+    const end   = Math.min(currentPage * limitPerPage, totalItems);
+    if (paginationSummary) paginationSummary.textContent = `Showing ${start}-${end} of ${totalItems}`;
+    if (prevPageButton) prevPageButton.disabled = currentPage <= 1;
+    if (nextPageButton) nextPageButton.disabled = currentPage >= totalPages;
+  }
+
+  // ── Kebab portal ──
+  const portal = document.getElementById('kebab-portal');
+
+  function closeAllKebabs() {
+    portal.innerHTML = '';
+    const mf = document.getElementById('mobile-kebab-float');
+    if (mf) mf.remove();
+    document.querySelectorAll('[data-open="true"]').forEach(b => delete b.dataset.open);
+    document.querySelectorAll('.kebab-btn[aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded','false'));
+  }
+
+  // Desktop kebab open
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.kebab-btn');
+    if (!btn) return;
+    const cell       = btn.closest('.kebab-wrap') || btn.parentElement;
+    const inlineMenu = cell?.querySelector('.kebab-menu');
+    if (!inlineMenu) return;
+
+    const r = btn.getBoundingClientRect();
+    closeAllKebabs();
+
+    const float = inlineMenu.cloneNode(true);
+    float.classList.remove('kebab-menu');
+    float.classList.add('kebab-float');
+    float.hidden = false;
+
+    const w    = 190;
+    let left   = r.right + 8;
+    let top    = r.top + r.height + 6;
+    if (left + w > window.innerWidth - 8) left = r.left - w - 8;
+    float.style.left = left + 'px';
+    float.style.top  = top  + 'px';
+
+    float.querySelectorAll('.kebab-item').forEach((b, i) => {
+      const src = inlineMenu.querySelectorAll('.kebab-item')[i];
+      if (src) [...src.attributes].forEach(a => { if (a.name.startsWith('data-')) b.setAttribute(a.name, a.value); });
+    });
+
+    portal.appendChild(float);
+    btn.setAttribute('aria-expanded','true');
+    e.stopPropagation();
+  });
+
+  // Action dispatch from portal
+  document.addEventListener('click', e => {
+    const item = e.target.closest('.kebab-float .kebab-item, #kebab-portal .kebab-item');
+    if (!item) return;
+    handleKebabAction(item.dataset.action, item.dataset.uuid, item.dataset.title || 'this vault');
+    closeAllKebabs();
+  });
+
+  // Close kebab on outside click / ESC / resize / scroll
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#kebab-portal') && !e.target.closest('.kebab-float') &&
+        !e.target.closest('.kebab-btn') && !e.target.closest('.mobile-vault-kebab')) {
+      closeAllKebabs();
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAllKebabs(); vaultDetailModalBackdrop.classList.remove('open'); deleteConfirmModalBackdrop.classList.remove('open'); archiveConfirmModalBackdrop.classList.remove('open'); signatoriesModalBackdrop.classList.remove('open'); } });
+  window.addEventListener('resize', closeAllKebabs);
+  window.addEventListener('scroll', closeAllKebabs, true);
+
+  // ── Modal close handlers ──
+  document.querySelectorAll('.detail-modal-close-btn').forEach(btn => btn.addEventListener('click', () => vaultDetailModalBackdrop.classList.remove('open')));
+  vaultDetailModalBackdrop.addEventListener('click', e => { if (e.target === vaultDetailModalBackdrop) vaultDetailModalBackdrop.classList.remove('open'); });
+  document.getElementById('deleteConfirmCancel').addEventListener('click', () => deleteConfirmModalBackdrop.classList.remove('open'));
+  document.getElementById('archiveConfirmCancel').addEventListener('click', () => archiveConfirmModalBackdrop.classList.remove('open'));
+
+  // ── Filter / search wiring ──
+  applyFiltersButton.addEventListener('click', () => {
+    currentPage = 1;
+    fetchMyVaults(currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value);
+  });
+  clearFiltersButton.addEventListener('click', () => {
+    filterSearchInput.value = ''; filterBrandInput.value = ''; filterStatusInput.value = '';
+    currentPage = 1; fetchMyVaults(currentPage);
+  });
+
+  prevPageButton.addEventListener('click', () => { if (currentPage > 1) fetchMyVaults(--currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value); });
+  nextPageButton.addEventListener('click', () => { if (currentPage < totalPages) fetchMyVaults(++currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value); });
+
+  // ── Bulk select ──
+  let selectedUuids = new Set();
+
+  document.getElementById('selectAll').addEventListener('change', e => {
+    const checked = e.target.checked;
+    document.querySelectorAll('.row-check').forEach(cb => { cb.checked = checked; if (checked) selectedUuids.add(cb.dataset.uuid); else selectedUuids.delete(cb.dataset.uuid); });
+    updateBulkBar();
+  });
+  vaultsTableBody.addEventListener('change', e => {
+    if (!e.target.classList.contains('row-check')) return;
+    if (e.target.checked) selectedUuids.add(e.target.dataset.uuid); else selectedUuids.delete(e.target.dataset.uuid);
+    document.getElementById('selectAll').checked = document.querySelectorAll('.row-check:checked').length === document.querySelectorAll('.row-check').length;
+    updateBulkBar();
+  });
+  function updateBulkBar() {
+    const bar = document.getElementById('bulkBar');
+    document.getElementById('bulkCount').textContent = `${selectedUuids.size} selected`;
+    bar.classList.toggle('visible', selectedUuids.size > 0);
+  }
+  document.getElementById('bulkDeselectBtn').addEventListener('click', () => {
+    selectedUuids.clear(); document.querySelectorAll('.row-check').forEach(cb => cb.checked = false);
+    document.getElementById('selectAll').checked = false; updateBulkBar();
+  });
+  document.getElementById('bulkDeleteBtn').addEventListener('click', async () => {
+    if (!selectedUuids.size) return;
+    if (!confirm(`Delete ${selectedUuids.size} vault(s)? This cannot be undone.`)) return;
+    for (const uuid of [...selectedUuids]) {
+      try { await fetch(`/api/v1/vault/${uuid}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); } catch(e) {}
+    }
+    selectedUuids.clear();
+    fetchMyVaults(currentPage, filterSearchInput.value.trim(), filterBrandInput.value.trim(), filterStatusInput.value);
+  });
+
+  // ── Column sorting ──
+  let vaultSortField = null;
+  let vaultSortDir = 'asc';
+
+  document.querySelectorAll('.manage-vaults .amc-table thead th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const field = th.dataset.sort;
+      if (vaultSortField === field) { vaultSortDir = vaultSortDir === 'asc' ? 'desc' : 'asc'; }
+      else { vaultSortField = field; vaultSortDir = 'asc'; }
+      document.querySelectorAll('.manage-vaults th.sortable').forEach(h => { h.classList.remove('asc','desc'); h.querySelector('.sort-arrow').textContent = '↕'; });
+      th.classList.add(vaultSortDir);
+      th.querySelector('.sort-arrow').textContent = vaultSortDir === 'asc' ? '↑' : '↓';
+      // Sort existing rows client-side
+      const rows = Array.from(vaultsTableBody.querySelectorAll('tr[data-id]'));
+      rows.sort((a, b) => {
+        let colIdx;
+        if (field === 'title')     colIdx = 2;
+        else if (field === 'brand')    colIdx = 3;
+        else if (field === 'status')   colIdx = 4;
+        else if (field === 'sentBy')   colIdx = 5;
+        else if (field === 'createdAt') colIdx = 7;
+        else return 0;
+        let va = (a.children[colIdx]?.textContent || '').trim().toLowerCase();
+        let vb = (b.children[colIdx]?.textContent || '').trim().toLowerCase();
+        if (va < vb) return vaultSortDir === 'asc' ? -1 : 1;
+        if (va > vb) return vaultSortDir === 'asc' ? 1 : -1;
+        return 0;
+      });
+      rows.forEach(r => vaultsTableBody.appendChild(r));
+    });
+  });
+
+  // ── Export CSV ──
+  document.getElementById('exportCsvBtn').addEventListener('click', () => {
+    const rows = [['Title','Brand','Status','Sent By','Posted On']];
+    document.querySelectorAll('#vaultsTableBody tr[data-id]').forEach(tr => {
+      const cells = tr.querySelectorAll('td');
+      rows.push([
+        (cells[2]?.textContent || '').trim(),
+        (cells[3]?.textContent || '').trim(),
+        (cells[4]?.textContent || '').trim(),
+        (cells[5]?.textContent || '').trim(),
+        (cells[7]?.textContent || '').trim(),
+      ]);
+    });
+    const csv = rows.map(r => r.map(c => `"${(c+'').replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const u = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = u; a.download = `media-vaults-${new Date().toISOString().split('T')[0]}.csv`; a.click();
+    URL.revokeObjectURL(u);
+  });
+
+  // ── Initial load ──
+  setTimeout(() => fetchMyVaults(), 200);
+});
+</script>
+
+<script>
+/* ── Search debounce + clear ── */
+document.addEventListener('DOMContentLoaded', function() {
+  const input    = document.getElementById('filterSearch');
+  const applyBtn = document.getElementById('applyFilters');
+  if (!input) return;
+
+  const updateBorder = () => input.classList.toggle('has-value', input.value.trim().length > 0);
+  input.addEventListener('input', updateBorder);
+  input.addEventListener('change', updateBorder);
+
+  const clearPillBtn = document.getElementById('searchResultsClear');
+  if (clearPillBtn) {
+    clearPillBtn.addEventListener('click', () => {
+      input.value = ''; input.classList.remove('has-value');
+      if (applyBtn) applyBtn.click();
+      input.focus();
+    });
+  }
+
+  let debounceTimer = null;
+  const performSearch = () => { if (applyBtn) applyBtn.click(); };
+  input.addEventListener('input', () => { clearTimeout(debounceTimer); debounceTimer = setTimeout(performSearch, 400); });
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') performSearch();
+    if (e.key === 'Escape') { input.value = ''; performSearch(); }
+  });
+});
+
+/* ── Back to top + logo reset ── */
+document.addEventListener('DOMContentLoaded', function() {
+  const vmain = document.getElementById('vmainScroll');
+  const btn = document.createElement('button');
+  btn.id = 'backToTop'; btn.title = 'Back to top';
+  btn.setAttribute('aria-label', 'Back to top');
+  btn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+  document.body.appendChild(btn);
+  btn.onclick = () => { if (vmain) vmain.scrollTo({ top: 0, behavior: 'smooth' }); document.documentElement.scrollTo({ top: 0, behavior: 'smooth' }); };
+
+  function wireLogoBtn() {
+    const logo = document.getElementById('mobileLogo');
+    if (logo && !logo.dataset.wired) {
+      logo.dataset.wired = '1'; logo.style.cursor = 'pointer';
+      logo.onclick = e => { e.stopPropagation(); if (vmain) vmain.scrollTo({ top: 0, behavior: 'smooth' }); if (typeof window._amcGoToPage1 === 'function') window._amcGoToPage1(); };
+    } else if (!logo) { setTimeout(wireLogoBtn, 300); }
+  }
+  setTimeout(wireLogoBtn, 500);
+  setTimeout(wireLogoBtn, 1500);
+});
+
+/* ── Mobile browser chrome collapse ── */
+(function() {
+  function nudgeChrome() {
+    if (!('ontouchstart' in window)) return;
+    if (document.documentElement.scrollTop === 0) {
+      window.scrollTo(0, 1);
+      setTimeout(() => window.scrollTo(0, 0), 50);
+    }
+  }
+  window.addEventListener('load', () => setTimeout(nudgeChrome, 300));
+  document.addEventListener('focusout', () => setTimeout(nudgeChrome, 400), { passive: true });
+})();
+</script>
+
+<script src="./components/shell/v6_5-shell.js"></script>
+<script src="./components/shell/v6_5-shell-loader.js"></script>
+<script>
+loadV65Shell({ basePath: './components/shell' });
+(function() {
+  const stored = localStorage.getItem('amcTheme') || localStorage.getItem('theme');
+  if (stored === 'dark') document.body.classList.add('dark-mode');
+})();
+</script>
+
+<script>
+window.addEventListener('pageshow', (e) => { if (e.persisted) window.location.reload(); });
+</script>
+
+<script src="/amc-notifications.js"></script>
+</body>
+</html>
+
+
+
+
+
+

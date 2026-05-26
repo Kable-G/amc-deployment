@@ -48,7 +48,7 @@
 
 /* keep body under the fixed header */
 body {
-  padding-top: var(--amc-header-height);
+  /* padding-top: var(--amc-header-height); — removed: header offset handled by #amcShellHeader fixed positioning */
 }
 
 /* ---------- Main content rail (sits beside the sidebar) ---------- */
@@ -57,6 +57,12 @@ body {
   padding: var(--amc-page-padding-y) var(--amc-page-padding-x);
   margin-left: var(--amc-sidebar-expanded);
   transition: margin-left 200ms ease, padding 200ms ease;
+}
+@media (max-width: 768px) {
+  .amc-content {
+    padding: 0;
+    margin-left: 0;
+  }
 }
 
 /* when the sidebar component collapses the shell toggles this class */

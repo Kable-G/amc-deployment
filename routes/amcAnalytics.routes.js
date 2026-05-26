@@ -18,6 +18,8 @@ const CenterRelease = require('../models/CenterRelease');
 const User = require('../models/User');
 const Client = require('../models/Client');
 const mongoose = require('mongoose');
+const Anthropic = require('@anthropic-ai/sdk');
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // Helper function to get date range filter
 function getDateRangeFilter(days) {
@@ -2450,6 +2452,153 @@ router.get('/download-volume', auth, enforceNoOverride, async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Server error fetching download volume'
+    });
+  }
+});
+
+// AMC AI Agent - Anthropic-powered intelligence agent
+router.post('/ai-agent/query', auth, async (req, res) => {
+  try {
+    const { query, context, agent } = req.body;
+
+    if (!query && !context) {
+      return res.status(400).json({
+        success: false,
+        error: 'query or context required'
+      });
+    }
+
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.warn('⚠️  AMC AI Agent: ANTHROPIC_API_KEY not set in .env');
+      return res.status(503).json({
+        success: false,
+        error: 'AI agent not configured — ANTHROPIC_API_KEY missing from .env'
+      });
+    }
+
+    console.log(`🤖 AMC AI Agent: agent=${agent || 'launch'} user=${req.user?.email || 'unknown'}`);
+
+    const systemPrompts = {
+      launch: `You are the AMC Launch Investigator, a specialist agent for automotive communications intelligence on the AutoMediaCenter platform.
+You analyse why specific media releases over- or under-performed.
+You have access to: download counts, journalist activity, geographic spread, asset format mix, timing data, and engagement rates.
+Respond with:
+1) **Verdict** — one sentence: over or underperformed and by how much
+2) **Root Causes** — 3-5 specific factors drawn from the data provided
+3) **Comparison** — how this compares to the platform context given
+4) **Recommended Actions** — concrete next steps with priority order
+Be direct. Reference specific numbers from the data. Use **bold** for section headers.`,
+
+      timing: `You are the AMC Timing Intelligence agent, specialist in automotive media release embargo strategy.
+You analyse journalist activity heatmap data and historical patterns to recommend optimal embargo lift timing.
+Respond with:
+1) **Optimal Window** — specific day and time (include timezone)
+2) **Data Rationale** — what in the provided data supports this recommendation
+3) **Market Considerations** — any market-specific factors
+4) **What to Avoid** — specific timing risks
+Give exact times. Automotive press operates on tight editorial cycles.`,
+
+      journalist: `You are the AMC Journalist Relations agent, specialist in media relationship intelligence for automotive communications directors.
+You analyse journalist engagement patterns from the AutoMediaCenter platform.
+Respond with:
+1) **VIP Tier** — who warrants personal briefings and advance notice
+2) **At-Risk Relationships** — patterns suggesting download-but-no-publish behaviour
+3) **Emerging Contacts** — journalists increasing engagement worth cultivating
+4) **Outreach Recommendations** — specific actions for specific account types
+Focus on actionable relationship intelligence.`,
+
+      gap: `You are the AMC Coverage Gap Analyst, specialist in identifying media outreach failures and missed opportunities for automotive communications.
+Respond with:
+1) **Primary Gaps** — ranked by impact, with evidence from the data
+2) **Root Hypothesis** — why each gap exists
+3) **Target Actions** — specific journalists, outlets, or markets to address
+4) **Timeline** — quick wins (this week) vs strategic fixes (next quarter)
+Be analytical. Prioritise gaps by business impact.`,
+
+      exec: `You are the AMC Executive Brief Generator for automotive communications directors and their leadership teams.
+Format your response as a structured executive brief:
+
+**EXECUTIVE SUMMARY**
+[3 sentences maximum]
+
+**KEY WINS**
+[Bullet points with specific numbers]
+
+**RISKS & CONCERNS**
+[Bullet points requiring attention]
+
+**RECOMMENDED ACTIONS**
+[Numbered list, prioritised by urgency]
+
+**FORWARD LOOK**
+[1-2 sentences on what to watch next period]
+
+Write for C-suite. No filler.`
+    };
+
+    let selectedSystem;
+    if (agent === 'brand') {
+        selectedSystem = `You are a brand intelligence researcher providing factual, publicly available information about automotive companies to professional journalists. Provide accurate information based on your knowledge, clearly noting approximate dates. For financial data use the most recently publicly reported figures you know, stating the period. Format as clean JSON when requested. If you do not know specific figures, provide your best estimate clearly marked as approximate.`;
+    } else {
+        selectedSystem = systemPrompts[agent] || systemPrompts.launch;
+    }
+
+    // Brand agent uses web search for live data
+    const createParams = {
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2048,
+      system: selectedSystem,
+      messages: [
+        {
+          role: 'user',
+          content: context || query
+        }
+      ]
+    };
+    // web search disabled for speed
+
+    const message = await anthropic.messages.create(createParams);
+
+    const responseText = message.content?.filter(c => c.type === 'text').map(c => c.text).join('\n') || 'Analysis complete.';
+
+    console.log(`✅ AMC AI Agent: response generated (${message.usage?.input_tokens}in + ${message.usage?.output_tokens}out tokens)`);
+
+    res.json({
+      success: true,
+      response: responseText,
+      agent: agent || 'launch',
+      usage: {
+        inputTokens:  message.usage?.input_tokens,
+        outputTokens: message.usage?.output_tokens
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ AMC AI Agent error:', error.message);
+
+    if (error.status === 401) {
+      return res.status(503).json({
+        success: false,
+        error: 'AI agent authentication failed — check ANTHROPIC_API_KEY in .env'
+      });
+    }
+    if (error.status === 429) {
+      return res.status(429).json({
+        success: false,
+        error: 'AI agent rate limited — try again in a moment'
+      });
+    }
+    if (error.status === 529) {
+      return res.status(503).json({
+        success: false,
+        error: 'Anthropic API overloaded — try again shortly'
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      error: 'Server error from AI agent',
+      details: error.message
     });
   }
 });

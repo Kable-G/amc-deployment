@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.95.1",
     "@sendgrid/mail": "^8.1.6",
     "archiver": "^7.0.1",
     "axios": "^1.12.2",
@@ -32,6 +33,7 @@
     "pdf-parse": "^1.1.1",
     "pdf.js-extract": "^0.2.1",
     "pdf2html": "^4.4.0",
+    "pdfkit": "^0.18.0",
     "rate-limit-mongo": "^2.3.2",
     "ua-parser-js": "^2.0.5",
     "unpdf": "^1.1.0",

@@ -4,8 +4,12 @@ const express = require('express');
 const router = express.Router();
 const { authenticate } = require('../middleware/authMiddleware');
 const VaultAsset = require('../models/VaultAsset');
+const VaultAccess     = require('../models/VaultAccess');
+const VaultMagicLink  = require('../models/VaultMagicLink');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const crypto = require('crypto');
+const jwt    = require('jsonwebtoken');
 const { z } = require('zod');
 const multer = require('multer');
 const path = require('path');
@@ -35,15 +39,32 @@ function fmtEmbargoEmail(dateStr, tz) {
     return `${formatted} ${tzLabel}`;
 }
 
+
+// ── Generate or retrieve magic link token for journalist ─────
+async function getOrCreateMagicLink(userId, vaultId, vaultAssetUUID, email) {
+  // Check for existing active token
+  let existing = await VaultMagicLink.findOne({
+    userId, vaultId, status: 'active', expiresAt: { $gt: new Date() }
+  });
+  if (existing) return existing.token;
+  // Generate new token
+  const token = crypto.randomBytes(32).toString('hex');
+  await VaultMagicLink.create({ token, vaultId, vaultAssetUUID, userId, email });
+  return token;
+}
+
 // ── Send Media Vault invitation email ────────────────────────
-async function sendVaultInvitationEmail({ toEmail, toName, senderCompany, vaultTitle, embargoUntil, timezone, vaultId }) {
+async function sendVaultInvitationEmail({ toEmail, toName, senderCompany, vaultTitle, embargoUntil, timezone, vaultId, magicToken }) {
     if (!process.env.SMTP_USER) {
         console.warn('[VAULT INVITE] SMTP not configured — skipping invitation email');
         return false;
     }
 
     const embargoStr  = fmtEmbargoEmail(embargoUntil, timezone);
-    const vaultUrl    = `${process.env.APP_URL || 'https://automediaaenter.com'}/automediavault.html`;
+    const baseUrl     = process.env.APP_URL || 'http://44.200.25.168:5000';
+    const vaultUrl    = magicToken
+      ? `${baseUrl}/api/v1/vault/access?token=${magicToken}`
+      : `${baseUrl}/automediavault.html`;
     const recipientName = toName ? `Hi ${toName.split(' ')[0]},` : 'Hi,';
     const senderLabel = senderCompany || 'A media client';
 
@@ -57,9 +78,9 @@ async function sendVaultInvitationEmail({ toEmail, toName, senderCompany, vaultT
       <table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07);">
 
         <!-- Header -->
-        <tr><td style="background:#1e293b;padding:28px 36px;">
-          <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;">AutoMediaCenter</p>
-          <p style="margin:8px 0 0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.02em;">You have been sent a Media Vault</p>
+        <tr><td style="background:#0f172a;padding:24px 32px;">
+          <p style="margin:0;font-size:12px;font-weight:600;letter-spacing:0.06em;color:#64748b;">AutoMediaCenter</p>
+          <p style="margin:6px 0 0;font-size:22px;font-weight:800;color:#f8fafc;letter-spacing:-0.02em;">You have been sent a Media Vault</p>
         </td></tr>
 
         <!-- Body -->
@@ -77,7 +98,7 @@ async function sendVaultInvitationEmail({ toEmail, toName, senderCompany, vaultT
               <table cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="padding-right:8px;font-size:13px;color:#dc2626;">⚠</td>
-                  <td style="font-size:13px;font-weight:600;color:#dc2626;">Do not publish before: ${embargoStr}</td>
+                  <td style="font-size:13px;font-weight:600;color:#dc2626;">Embargo: ${embargoStr}</td>
                 </tr>
               </table>
             </td></tr>
@@ -101,8 +122,8 @@ async function sendVaultInvitationEmail({ toEmail, toName, senderCompany, vaultT
 
           <!-- Security notice -->
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;margin-bottom:8px;">
-            <tr><td style="padding:14px 18px;font-size:12px;color:#92400e;line-height:1.6;">
-              <strong>Security notice:</strong> All downloads from this Media Vault are watermarked with your journalist identity, IP address, date and time. Access is logged and forms part of an immutable audit record. The embargo date and time above is legally binding under the NDA you will sign.
+            <tr><td style="padding:14px 18px;font-size:12px;color:#1e40af;line-height:1.6;">
+              All downloads from this Media Vault are watermarked with your journalist identity. The embargo date is legally binding under the NDA you will sign.
             </td></tr>
           </table>
         </td></tr>
@@ -125,7 +146,7 @@ async function sendVaultInvitationEmail({ toEmail, toName, senderCompany, vaultT
 
     try {
         await mailer.sendMail({
-            from:    `"${FROM_NAME}" <${process.env.SMTP_USER}>`,
+            from:    `"${FROM_NAME}" <noreply@automediacenter.com>`,
             to:      toEmail,
             subject: `You have been sent a Media Vault by ${senderLabel}`,
             html,
@@ -154,6 +175,7 @@ const createVaultAssetSchema = z.object({
     requireNDA: z.preprocess(val => String(val).toLowerCase() === 'true' || String(val).toLowerCase() === 'yes', z.boolean()).optional().default(false),
     notifyClientOnAccess: z.preprocess(val => String(val).toLowerCase() === 'true', z.boolean()).optional().default(false),
     notifyClientOnDownload: z.preprocess(val => String(val).toLowerCase() === 'true', z.boolean()).optional().default(false),
+    notifyClientOnNda: z.preprocess(val => String(val).toLowerCase() === 'true', z.boolean()).optional().default(false),
     watermark: z.preprocess(val => String(val).toLowerCase() === 'true', z.boolean()).optional().default(false),
     geoLock: z.preprocess(val => String(val).toLowerCase() === 'true', z.boolean()).optional().default(false),
     requireMfaOnAccess: z.preprocess(val => String(val).toLowerCase() === 'true', z.boolean()).optional().default(false),
@@ -297,6 +319,7 @@ router.post('/assets', handleVaultMulterUpload, authenticate, async (req, res) =
             teaserImage: teaserImageInfo, ndaDocument: ndaDocumentInfo,
             notifyClientOnAccess: validatedTextData.notifyClientOnAccess,
             notifyClientOnDownload: validatedTextData.notifyClientOnDownload,
+            notifyClientOnNda: validatedTextData.notifyClientOnNda,
             vaultExpirationDays: validatedTextData.vaultExpirationDays,
             watermarkEnabled: validatedTextData.watermark,
             geoLockEnabled: validatedTextData.geoLock,
@@ -361,6 +384,24 @@ router.post('/assets', handleVaultMulterUpload, authenticate, async (req, res) =
                     }
                 } catch (e) { /* non-fatal */ }
 
+                // Generate magic link token for this journalist
+                let magicToken = null;
+                try {
+                  const journalistUser = await User.findOne({ email: email.toLowerCase() }).select('_id').lean();
+                  if (journalistUser) {
+                    magicToken = await getOrCreateMagicLink(
+                      journalistUser._id,
+                      newVaultAsset._id,
+                      newVaultAsset.vaultAssetUUID,
+                      email
+                    );
+                    console.log('[MAGIC LINK] ✅ Token generated for', email);
+                  } else {
+                    console.warn('[MAGIC LINK] ⚠️ No user found for', email, '— sending without magic link');
+                  }
+                } catch(mlErr) {
+                  console.error('[MAGIC LINK] ❌ Failed to generate token:', mlErr.message);
+                }
                 return sendVaultInvitationEmail({
                     toEmail:      email,
                     toName,
@@ -368,7 +409,8 @@ router.post('/assets', handleVaultMulterUpload, authenticate, async (req, res) =
                     vaultTitle:   newVaultAsset.title,
                     embargoUntil: newVaultAsset.embargoUntil,
                     timezone:     newVaultAsset.availabilityTimezone,
-                    vaultId:      newVaultAsset._id
+                    vaultId:      newVaultAsset._id,
+                    magicToken,
                 });
             });
 
@@ -412,6 +454,338 @@ router.post('/assets', handleVaultMulterUpload, authenticate, async (req, res) =
         }
         res.status(500).json({ success: false, error: 'Server error while processing vault asset.' });
     }
+});
+
+// ─────────────────────────────────────────────────────────────
+// GET /api/v1/vault/admin/vaults
+// Admin-facing vault list for Manage Media Vaults page.
+// Returns full VaultAsset documents with populated user email,
+// invitedUsers count, availabilityDate, status, createdAt.
+// Roles: client_admin, platform_admin
+// ─────────────────────────────────────────────────────────────
+router.get('/admin/vaults', authenticate, async (req, res) => {
+    try {
+        const userId   = req.user.id;
+        const userRole = req.user.role || '';
+        const mongoose = require('mongoose');
+        const userObjectId = mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : userId;
+
+        // Role gate — only admins
+        if (!['client_admin', 'platform_admin'].includes(userRole)) {
+            return res.status(403).json({ success: false, error: 'Insufficient permissions' });
+        }
+
+        const page   = Math.max(1, parseInt(req.query.page)  || 1);
+        const limit  = Math.min(50, parseInt(req.query.limit) || 10);
+        const skip   = (page - 1) * limit;
+        const search = (req.query.title || req.query.search || '').trim();
+        const brand  = (req.query.brand  || '').trim();
+        const status = (req.query.status || '').trim();
+
+        // Build query
+        const query = {};
+        if (userRole === 'client_admin') query.user = userObjectId; // client_admin sees only their own
+        if (status) query.status = status;
+        if (brand)  query.$or = [{ brand: new RegExp(brand, 'i') }, { companyName: new RegExp(brand, 'i') }];
+        if (search) {
+            const searchRx = new RegExp(search, 'i');
+            if (query.$or) {
+                // Combine brand + search with AND
+                query.$and = [
+                    { $or: query.$or },
+                    { $or: [{ title: searchRx }, { brand: searchRx }, { companyName: searchRx }] }
+                ];
+                delete query.$or;
+            } else {
+                query.$or = [{ title: searchRx }, { brand: searchRx }, { companyName: searchRx }];
+            }
+        }
+
+        const [vaults, totalItems] = await Promise.all([
+            VaultAsset.find(query)
+                .populate('user', 'email firstName lastName')
+                .select('vaultAssetUUID title brand companyName status availabilityDate availabilityTime availabilityTimezone embargoUntil requireNDA invitedUsers teaserImage images videos vaultReleaseDocs supplementaryDocs vaultExpirationDays createdAt updatedAt firstAccessedAt')
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+            VaultAsset.countDocuments(query)
+        ]);
+
+        // Fetch access counts for all returned vaults in one query
+        const vaultIds = vaults.map(v => v._id);
+        const accessCounts = await VaultAccess.aggregate([
+            { $match: { vaultId: { $in: vaultIds }, accessGranted: true } },
+            { $group: { _id: '$vaultId', count: { $sum: 1 }, firstAccess: { $min: '$accessGrantedAt' } } }
+        ]);
+        const accessCountMap = {};
+        const firstAccessMap = {};
+        accessCounts.forEach(a => {
+            accessCountMap[a._id.toString()] = a.count;
+            firstAccessMap[a._id.toString()] = a.firstAccess || null;
+        });
+
+        const totalPages = Math.ceil(totalItems / limit) || 1;
+
+        // Shape response
+        const data = vaults.map(v => ({
+            _id:             v._id,
+            uuid:            v.vaultAssetUUID,
+            title:           v.title,
+            brand:           v.brand || v.companyName || null,
+            companyName:     v.companyName || null,
+            status:          v.status || 'unknown',
+            sentBy:          v.user?.email || null,
+            invitedUsers:    v.invitedUsers || [],
+            invitedCount:    (v.invitedUsers || []).length,
+            accessCount:     accessCountMap[v._id.toString()] || 0,
+            availabilityDate: v.availabilityDate || null,
+            availabilityTime: v.availabilityTime || null,
+            timezone:        v.availabilityTimezone || 'Europe/Berlin',
+            embargoUntil:    v.embargoUntil || null,
+            requireNDA:      v.requireNDA || false,
+            teaserImage:     v.teaserImage?.path || null,
+            assetCounts: {
+                docs:   (v.vaultReleaseDocs || []).length + (v.supplementaryDocs || []).length,
+                images: (v.images || []).length,
+                videos: (v.videos || []).length,
+            },
+            vaultExpirationDays: v.vaultExpirationDays || null,
+            firstAccessedAt: firstAccessMap[v._id.toString()] || v.firstAccessedAt || null,
+            createdAt:       v.createdAt,
+            updatedAt:       v.updatedAt,
+        }));
+
+        res.json({
+            success: true,
+            data: {
+                vaults: data,
+                totalItems,
+                totalPages,
+                currentPage: page,
+            }
+        });
+
+    } catch (err) {
+        console.error('[VAULT] GET /admin/vaults error:', err);
+        res.status(500).json({ success: false, error: 'Failed to load vaults' });
+    }
+});
+
+// ─────────────────────────────────────────────────────────────
+// PATCH /api/v1/vault/:vaultId/archive
+// Soft-archive a vault — sets status to 'archived'.
+// Roles: client_admin (own vaults only), platform_admin (all)
+// ─────────────────────────────────────────────────────────────
+router.patch('/:vaultId/archive', authenticate, async (req, res) => {
+    try {
+        const userId   = req.user.id;
+        const userRole = req.user.role || '';
+        const { vaultId } = req.params;
+
+        if (!['client_admin', 'platform_admin'].includes(userRole)) {
+            return res.status(403).json({ success: false, error: 'Insufficient permissions' });
+        }
+
+        const query = { _id: vaultId };
+        if (userRole === 'client_admin') query.user = userId;
+
+        const vault = await VaultAsset.findOneAndUpdate(
+            query,
+            { $set: { status: 'archived' } },
+            { new: true }
+        );
+
+        if (!vault) return res.status(404).json({ success: false, error: 'Vault not found or access denied' });
+
+        res.json({ success: true, message: 'Vault archived successfully' });
+
+    } catch (err) {
+        console.error('[VAULT] PATCH /:vaultId/archive error:', err);
+        res.status(500).json({ success: false, error: 'Failed to archive vault' });
+    }
+});
+
+// ─────────────────────────────────────────────────────────────
+// DELETE /api/v1/vault/:vaultId
+// Hard-delete a vault and its files.
+// Roles: client_admin (own vaults only), platform_admin (all)
+// ─────────────────────────────────────────────────────────────
+router.delete('/:vaultId', authenticate, async (req, res) => {
+    try {
+        const userId   = req.user.id;
+        const userRole = req.user.role || '';
+        const { vaultId } = req.params;
+
+        if (!['client_admin', 'platform_admin'].includes(userRole)) {
+            return res.status(403).json({ success: false, error: 'Insufficient permissions' });
+        }
+
+        const query = { _id: vaultId };
+        if (userRole === 'client_admin') query.user = userId;
+
+        const vault = await VaultAsset.findOne(query);
+        if (!vault) return res.status(404).json({ success: false, error: 'Vault not found or access denied' });
+
+        // Collect all file paths for cleanup
+        const filePaths = [];
+        const addPath = f => { if (f?.path) filePaths.push(path.join(__dirname, '..', 'public', f.path)); };
+        addPath(vault.teaserImage);
+        addPath(vault.ndaDocument);
+        (vault.images || []).forEach(addPath);
+        (vault.videos || []).forEach(addPath);
+        (vault.vaultReleaseDocs || []).forEach(addPath);
+        (vault.supplementaryDocs || []).forEach(addPath);
+
+        await VaultAsset.deleteOne({ _id: vaultId });
+        await cleanupFiles(filePaths, 'Vault hard-delete');
+
+        res.json({ success: true, message: 'Vault deleted successfully' });
+
+    } catch (err) {
+        console.error('[VAULT] DELETE /:vaultId error:', err);
+        res.status(500).json({ success: false, error: 'Failed to delete vault' });
+    }
+});
+
+
+// ─────────────────────────────────────────────────────────────
+// GET /api/v1/vault/:vaultId/signatories
+// Returns all invited journalists with their NDA signing status.
+// Roles: client_admin, platform_admin
+// ─────────────────────────────────────────────────────────────
+router.get('/:vaultId/signatories', authenticate, async (req, res) => {
+  try {
+    const userId   = req.user.id;
+    const userRole = req.user.role || '';
+    const { vaultId } = req.params;
+    const mongoose = require('mongoose');
+    const userObjectId = mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : userId;
+
+    if (!['client_admin', 'platform_admin'].includes(userRole)) {
+      return res.status(403).json({ success: false, error: 'Insufficient permissions' });
+    }
+
+    // Fetch vault — check ownership for client_admin
+    // Support both MongoDB _id and vaultAssetUUID
+    const isUUID = vaultId.includes('-');
+    const query = isUUID ? { vaultAssetUUID: vaultId } : { _id: vaultId };
+    if (userRole === 'client_admin') query.user = userObjectId;
+    const vault = await VaultAsset.findOne(query).select('_id title invitedUsers').lean();
+    const resolvedVaultId = vault ? String(vault._id) : vaultId;
+    if (!vault) return res.status(404).json({ success: false, error: 'Vault not found or access denied' });
+
+    const invitedUsers = vault.invitedUsers || [];
+
+    // Fetch all VaultAccess records for this vault
+    const accessRecords = await VaultAccess.find({ vaultId: resolvedVaultId })
+      .populate('userId', 'email firstName lastName name')
+      .select('userId signatureName signedAt signingIp signingDevice accessGranted accessGrantedAt lastAccessedAt signedNdaPdfPath')
+      .lean();
+
+    // Build signatory records keyed by email
+    const sigMap = {};
+    accessRecords.forEach(rec => {
+      const email = rec.userId?.email;
+      if (!email) return;
+      sigMap[email] = {
+        email,
+        signed:          !!rec.signedAt,
+        signatureName:   rec.signatureName || null,
+        signedAt:        rec.signedAt || null,
+        signingIp:       rec.signingIp || null,
+        signingDevice:   rec.signingDevice || null,
+        accessed:        !!rec.accessGranted,
+        accessGrantedAt: rec.accessGrantedAt || null,
+        lastAccessedAt:  rec.lastAccessedAt || null,
+        signedNdaPdfPath: rec.signedNdaPdfPath || null,
+      };
+    });
+
+    // Shape response — one entry per invited email
+    const signatories = invitedUsers.map(email => sigMap[email] || {
+      email,
+      signed:          false,
+      signatureName:   null,
+      signedAt:        null,
+      signingIp:       null,
+      signingDevice:   null,
+      accessed:        false,
+      accessGrantedAt: null,
+      lastAccessedAt:  null,
+      signedNdaPdfPath: null,
+    });
+
+    res.json({
+      success: true,
+      data: {
+        vaultId,
+        vaultTitle:   vault.title,
+        invitedUsers,
+        signatories,
+        summary: {
+          totalInvited: invitedUsers.length,
+          totalSigned:  signatories.filter(s => s.signed).length,
+          totalAccessed: signatories.filter(s => s.accessed).length,
+        }
+      }
+    });
+
+  } catch (err) {
+    console.error('[VAULT] GET /signatories error:', err);
+    res.status(500).json({ success: false, error: 'Failed to load signatories' });
+  }
+});
+
+
+// ─────────────────────────────────────────────────────────────
+// GET /api/v1/vault/access?token=xyz
+// Magic link — authenticates journalist and redirects to their vault
+// ─────────────────────────────────────────────────────────────
+router.get('/access', async (req, res) => {
+  const { token } = req.query;
+  const baseUrl = process.env.APP_URL || 'http://44.200.25.168:5000';
+
+  if (!token) {
+    return res.redirect(`${baseUrl}/automediavault.html?error=missing_token`);
+  }
+
+  try {
+    const magicLink = await VaultMagicLink.findValid(token);
+    if (!magicLink) {
+      return res.redirect(`${baseUrl}/automediavault.html?error=invalid_token`);
+    }
+
+    // Fetch the journalist user
+    const User = require('../models/User');
+    const user = await User.findById(magicLink.userId).select('email role firstName lastName name').lean();
+    if (!user) {
+      return res.redirect(`${baseUrl}/automediavault.html?error=user_not_found`);
+    }
+
+    // Issue a JWT for this journalist
+    const jwtSecret = process.env.JWT_SECRET || process.env.ACCESS_TOKEN_SECRET;
+    const jwtToken = jwt.sign(
+      { id: user._id.toString(), email: user.email, role: user.role },
+      jwtSecret,
+      { expiresIn: '7d' }
+    );
+
+    // Mark token as used (but keep active for re-use within 30 days)
+    await VaultMagicLink.findByIdAndUpdate(magicLink._id, {
+      $set: { usedAt: new Date() }
+    });
+
+    console.log(`[MAGIC LINK] ✅ Journalist ${user.email} authenticated via magic link for vault ${magicLink.vaultAssetUUID}`);
+
+    // Redirect to vault page with JWT and vault UUID as URL params
+    // The frontend will read these, store the JWT, and open the specific vault
+    res.redirect(`${baseUrl}/automediavault.html?magic_token=${jwtToken}&vault=${magicLink.vaultAssetUUID}`);
+
+  } catch (err) {
+    console.error('[MAGIC LINK] Error:', err.message);
+    res.redirect(`${baseUrl}/automediavault.html?error=server_error`);
+  }
 });
 
 // --- Helper Function for File Cleanup ---

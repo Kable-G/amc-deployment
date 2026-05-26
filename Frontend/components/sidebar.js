@@ -157,7 +157,7 @@ class AMCSidebar {
           },
           {
             label: "Manage Live Events",
-            href: "manage_live.html",
+            href: "manage_streams.html",
             icon: "fas fa-flag-checkered",
             roles: ["client_admin", "platform_admin"],
             badge: null

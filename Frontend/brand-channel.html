@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Channel — AutoMediaCenter</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,32..144,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./components/shell/v6_5-shell.css">
+<script src="./components/shell/v6_5-shell.js"></script>
+<script src="./components/shell/v6_5-shell-loader.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════════
+   BRAND CHANNEL — Design tokens matching AMC v6.5
+   ═══════════════════════════════════════════════ */
+:root {
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r: 8px;
+  --r-lg: 12px;
+  --gap: 16px;
+  --ease: cubic-bezier(0.16,1,0.3,1);
+  --amc-rail-w: 72px;
+}
+
+/* Rail offset — matches all other pages */
+@media(min-width:1100px){.mobile-main{padding-left:calc(32px + var(--amc-rail-w)) !important}}
+@media(min-width:1366px){.mobile-main{padding-left:calc(40px + var(--amc-rail-w)) !important}}
+
+.bc-page {
+  font-family: var(--font);
+  padding: 0.75rem 2rem 2rem 0.5rem;
+}
+@media(max-width:1199px){.bc-page{padding:1.75rem 1.5rem 1.75rem 0.5rem}}
+@media(max-width:960px) {.bc-page{padding:1.5rem 1.25rem 1.5rem 0.75rem}}
+@media(max-width:700px) {.bc-page{padding:1.25rem 1rem}}
+
+/* ── Back nav ── */
+.bc-back {
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:13px; font-weight:500; color:var(--text-secondary);
+  text-decoration:none; margin-bottom:20px;
+  transition:color 120ms;
+}
+.bc-back:hover{color:var(--accent-primary)}
+
+/* ── Brand hero ── */
+.bc-hero {
+  background:var(--bg-secondary);
+  border:1px solid var(--border-primary);
+  border-radius:var(--r-lg);
+  padding:24px 28px;
+  margin-bottom:var(--gap);
+  display:flex; align-items:center; justify-content:space-between;
+  gap:20px; flex-wrap:wrap;
+  animation:bc-up 350ms var(--ease) both;
+}
+@keyframes bc-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.bc-hero-left{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.bc-brand-badge {
+  background:#2a2a2a; color:#fff;
+  padding:8px 18px; border-radius:6px;
+  font-size:13px; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.07em;
+  flex-shrink:0;
+}
+body.dark-mode .bc-brand-badge{background:#1e293b;border:1px solid rgba(255,255,255,0.1)}
+.bc-hero-title {
+  font-size:clamp(22px,3vw,32px); font-weight:800;
+  font-variation-settings:'opsz' 32; letter-spacing:-0.03em;
+  color:var(--text-headings); margin:0 0 4px;
+}
+.bc-hero-sub{font-size:13px;color:var(--text-secondary);margin:0}
+
+.bc-hero-stats{display:flex;gap:28px;flex-wrap:wrap;flex-shrink:0}
+.bc-hero-stat{text-align:center}
+.bc-hero-stat-val{font-size:22px;font-weight:800;letter-spacing:-0.02em;color:var(--text-headings);font-variant-numeric:tabular-nums;display:block}
+.bc-hero-stat-lbl{font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary);display:block;margin-top:2px}
+
+/* ── Intelligence cards ── */
+.bc-intel-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:var(--gap);
+  margin-bottom:28px;
+}
+@media(max-width:900px){.bc-intel-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.bc-intel-grid{grid-template-columns:1fr 1fr}}
+
+.bc-intel-card {
+  background:var(--bg-secondary);
+  border:1px solid var(--border-primary);
+  border-radius:var(--r-lg);
+  padding:18px 20px;
+  cursor:pointer;
+  transition:border-color 180ms var(--ease), transform 180ms var(--ease), box-shadow 180ms var(--ease);
+  animation:bc-up 400ms var(--ease) both;
+  position:relative; overflow:hidden;
+}
+.bc-intel-card:nth-child(1){animation-delay:0ms}
+.bc-intel-card:nth-child(2){animation-delay:40ms}
+.bc-intel-card:nth-child(3){animation-delay:80ms}
+.bc-intel-card:nth-child(4){animation-delay:120ms}
+.bc-intel-card::before{ display:none; }
+.bc-intel-card:hover{
+  border-color:var(--accent-primary);
+  transform:translateY(-2px);
+  box-shadow:0 0 0 2px rgba(59,130,246,0.15);
+}
+.bc-intel-card.active{
+  border-color:var(--accent-primary);
+  box-shadow:0 0 0 2px rgba(59,130,246,0.2);
+}
+
+.bc-intel-icon {
+  width:36px; height:36px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:15px; margin-bottom:12px;
+  background:rgba(59,130,246,0.08); color:var(--accent-primary);
+}
+.bc-intel-card:nth-child(2) .bc-intel-icon{background:rgba(168,85,247,0.08);color:#a855f7}
+.bc-intel-card:nth-child(3) .bc-intel-icon{background:rgba(16,185,129,0.08);color:#10b981}
+.bc-intel-card:nth-child(4) .bc-intel-icon{background:rgba(245,158,11,0.08);color:#f59e0b}
+
+.bc-intel-label {
+  font-size:10px; font-weight:700; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--text-secondary); margin-bottom:4px;
+}
+.bc-intel-value {
+  font-size:16px; font-weight:700; color:var(--text-headings);
+  line-height:1.3;
+}
+.bc-intel-sub {
+  font-size:11px; color:var(--text-secondary); margin-top:3px;
+}
+.bc-intel-loading {
+  font-size:12px; color:var(--text-secondary);
+  display:flex; align-items:center; gap:6px; margin-top:4px;
+}
+.bc-intel-loading i{animation:bc-spin 0.7s linear infinite;font-size:10px}
+@keyframes bc-spin{to{transform:rotate(360deg)}}
+
+/* ── Intel panel (expanded content) ── */
+.bc-panel {
+  background:var(--bg-secondary);
+  border:1px solid var(--border-primary);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  margin-bottom:28px;
+  animation:bc-up 300ms var(--ease) both;
+  display:none;
+}
+.bc-panel.open{display:block}
+.bc-panel-hd {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 18px; border-bottom:1px solid var(--border-primary);
+  background:rgba(59,130,246,0.03);
+}
+.bc-panel-title {
+  font-size:13px; font-weight:700; color:var(--text-headings);
+  display:flex; align-items:center; gap:8px;
+}
+.bc-panel-close {
+  width:26px; height:26px; border-radius:5px;
+  border:1px solid var(--border-primary); background:transparent;
+  color:var(--text-secondary); display:flex; align-items:center;
+  justify-content:center; cursor:pointer; font-size:11px; transition:all 120ms;
+}
+.bc-panel-close:hover{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:#ef4444}
+.bc-panel-body{padding:20px 24px}
+
+/* Panel content layout */
+.bc-profile-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:16px;
+}
+@media(max-width:600px){.bc-profile-grid{grid-template-columns:1fr}}
+.bc-profile-item{}
+.bc-profile-lbl {
+  font-size:10px; font-weight:700; letter-spacing:0.07em;
+  text-transform:uppercase; color:var(--text-secondary); margin-bottom:3px;
+}
+.bc-profile-val{font-size:13px;font-weight:500;color:var(--text-primary);line-height:1.5}
+
+.bc-personnel-list{display:flex;flex-direction:column;gap:10px}
+.bc-person {
+  padding:10px 14px; background:var(--bg-tertiary);
+  border:1px solid var(--border-primary); border-radius:var(--r);
+}
+.bc-person-name{font-size:13px;font-weight:600;color:var(--text-headings)}
+.bc-person-role{font-size:11px;color:var(--text-secondary);margin-top:2px}
+
+.bc-financials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:600px){.bc-financials-grid{grid-template-columns:1fr 1fr}}
+.bc-fin-card{
+  background:var(--bg-tertiary); border:1px solid var(--border-primary);
+  border-radius:var(--r); padding:12px 14px;
+}
+.bc-fin-val{font-size:20px;font-weight:800;letter-spacing:-0.02em;color:var(--text-headings);font-variant-numeric:tabular-nums}
+.bc-fin-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);margin-top:3px}
+.bc-fin-note{font-size:12px;color:var(--text-secondary);line-height:1.6;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-primary)}
+
+/* Stock card */
+.bc-stock-main{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.bc-stock-price{font-size:36px;font-weight:800;letter-spacing:-0.03em;color:var(--text-headings);font-variant-numeric:tabular-nums}
+.bc-stock-change{font-size:14px;font-weight:600;padding:3px 10px;border-radius:6px}
+.bc-stock-change.pos{background:rgba(16,185,129,0.1);color:#10b981}
+.bc-stock-change.neg{background:rgba(239,68,68,0.1);color:#ef4444}
+.bc-stock-change.neu{background:var(--bg-tertiary);color:var(--text-secondary)}
+.bc-stock-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bc-stock-meta-item{background:var(--bg-tertiary);border:1px solid var(--border-primary);border-radius:var(--r);padding:10px 12px}
+.bc-stock-meta-val{font-size:15px;font-weight:700;color:var(--text-headings);font-variant-numeric:tabular-nums}
+.bc-stock-meta-lbl{font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-top:2px}
+.bc-stock-ticker{font-size:11px;color:var(--text-secondary);margin-top:12px}
+.bc-stock-unlisted{
+  padding:20px; text-align:center;
+  font-size:13px; color:var(--text-secondary); font-style:italic;
+}
+
+/* AI loading state */
+.bc-ai-loading{
+  display:flex; align-items:center; justify-content:center;
+  gap:10px; padding:32px; color:var(--text-secondary); font-size:13px;
+}
+.bc-ai-loading i{animation:bc-spin 0.7s linear infinite;color:var(--accent-primary)}
+
+/* ── Divider ── */
+.bc-divider {
+  display:flex; align-items:center; gap:14px;
+  margin:28px 0 20px;
+}
+.bc-divider-text {
+  font-size:10px; font-weight:700; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--text-secondary); white-space:nowrap;
+}
+.bc-divider::after{content:'';flex:1;height:1px;background:var(--border-primary)}
+.bc-divider-count {
+  font-size:11px; color:var(--text-secondary);
+  white-space:nowrap; flex-shrink:0;
+}
+
+/* ── Release grid ── */
+.bc-grid {
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:20px;
+  margin-bottom:28px;
+}
+@media(max-width:1400px){.bc-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:1100px){.bc-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px) {.bc-grid{grid-template-columns:repeat(2,1fr);gap:14px}}
+@media(max-width:480px) {.bc-grid{grid-template-columns:1fr;gap:12px}}
+
+/* Release card — identical to main page */
+.release-card {
+  background:var(--bg-secondary);
+  border:1px solid var(--border-card);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  display:flex; flex-direction:column;
+  transition:border-color 150ms, transform 150ms;
+  cursor:pointer;
+  animation:bc-up 400ms var(--ease) both;
+}
+.release-card:hover{
+  border-color:var(--accent-primary);
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(59,130,246,0.12);
+}
+.card-image {
+  position:relative; aspect-ratio:16/9;
+  background:var(--bg-tertiary); overflow:hidden;
+}
+.card-image img {
+  width:100%; height:100%; object-fit:cover;
+  transition:transform 300ms var(--ease);
+}
+.release-card:hover .card-image img{transform:scale(1.03)}
+.card-image-placeholder {
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--bg-tertiary); color:var(--text-secondary); font-size:28px;
+}
+.brand-band {
+  background:#2a2a2a; color:#fff;
+  padding:5px 10px; font-size:11px;
+  font-weight:600; text-transform:uppercase; letter-spacing:0.05em;
+  cursor:pointer;
+}
+body.dark-mode .brand-band{background:#1e293b}
+.brand-band:hover{background:var(--accent-primary) !important}
+.card-content{
+  padding:12px 14px; background:var(--bg-tertiary);
+  display:flex; flex-direction:column; flex:1;
+}
+.card-title{
+  font-size:14px; font-weight:600; color:var(--text-headings);
+  margin-bottom:10px; line-height:1.4;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+  overflow:hidden; min-height:58px;
+  text-decoration:none;
+}
+.card-title:hover{color:var(--accent-primary)}
+.card-meta{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-top:auto; gap:8px; flex-wrap:wrap;
+}
+.card-assets{display:flex;gap:6px;align-items:center}
+.asset-icon{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--text-secondary)}
+.asset-icon i{font-size:11px}
+.card-date{font-size:11px;color:var(--text-secondary);text-align:right;line-height:1.4}
+.card-date .time-part{display:block;font-size:10px;opacity:0.75}
+
+/* ── Load more ── */
+.bc-load-more {
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  padding:16px; margin-bottom:20px;
+}
+.bc-load-btn {
+  padding:10px 28px; border-radius:var(--r);
+  border:1px solid var(--border-primary);
+  background:var(--bg-secondary); color:var(--text-primary);
+  font-family:var(--font); font-size:13px; font-weight:500;
+  cursor:pointer; transition:all 150ms;
+  display:flex; align-items:center; gap:7px;
+}
+.bc-load-btn:hover{border-color:var(--accent-primary);color:var(--accent-primary)}
+.bc-load-btn:disabled{opacity:0.4;cursor:not-allowed}
+.bc-page-info{font-size:12px;color:var(--text-secondary)}
+
+/* ── Empty / error states ── */
+.bc-empty {
+  text-align:center; padding:60px 20px;
+  color:var(--text-secondary); font-size:14px;
+}
+.bc-empty i{font-size:36px;margin-bottom:12px;display:block;opacity:0.3}
+
+/* ── Page loader ── */
+#bcLoader{
+  position:fixed;inset:0;background:var(--bg-primary);z-index:3000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  transition:opacity 0.35s,visibility 0.35s;
+}
+#bcLoader.gone{opacity:0;visibility:hidden;pointer-events:none}
+.bc-ring{width:28px;height:28px;border-radius:50%;border:2px solid var(--border-primary);border-top-color:var(--accent-primary);animation:bc-spin 0.7s linear infinite}
+#bcLoader p{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-secondary)}
+
+/* Dark mode card fixes */
+body.dark-mode .release-card{background:#1a1f2e;border-color:#2d3748}
+body.dark-mode .card-content{background:#161b26}
+body.dark-mode .bc-intel-card,
+body.dark-mode .bc-hero,
+body.dark-mode .bc-panel{background:#1a1f2e;border-color:#2d3748}
+body.dark-mode .bc-intel-card.active{border-color:var(--accent-primary) !important;box-shadow:0 0 0 2px rgba(59,130,246,0.25) !important;}
+body.dark-mode .bc-intel-card:hover{border-color:rgba(59,130,246,0.5) !important;}
+body.dark-mode .bc-profile-item .bc-profile-val{color:#e2e8f0}
+body.dark-mode .bc-fin-card,
+body.dark-mode .bc-stock-meta-item,
+body.dark-mode .bc-person{background:#161b26;border-color:#2d3748}
+</style>
+</head>
+<body>
+<script>
+(function(){const t=localStorage.getItem('amcTheme');if(t!=='light')document.body.classList.add('dark-mode');})();
+</script>
+<script>
+window.API_BASE_URL='';
+function AMC_getToken(){const r=localStorage.getItem('token')||localStorage.getItem('authToken');if(!r)return null;return r.startsWith('Bearer ')?r.slice(7):r;}
+function authFetch(url,opts={}){const t=AMC_getToken();const h={...(opts.headers||{})};if(t)h.Authorization=`Bearer ${t}`;return fetch(url,{...opts,headers:h,credentials:'include'});}
+window.authFetch=authFetch;
+</script>
+
+<div id="bcLoader"><div class="bc-ring"></div><p>Loading</p></div>
+<div id="amcShellHeader"></div>
+<div id="amcShellSidebar"></div>
+<div id="amcShellFooter" style="display:none"></div>
+
+<main class="mobile-main" role="main">
+<div class="bc-page">
+
+  <!-- Back nav -->
+  <a href="automediacenter-mobile-v6.5.html" class="bc-back">
+    <i class="fas fa-arrow-left"></i> All Media Releases
+  </a>
+
+  <!-- Brand Hero -->
+  <div class="bc-hero">
+    <div class="bc-hero-left">
+      <div>
+        <h1 class="bc-hero-title" id="heroBrandTitle">Brand Channel</h1>
+      <p class="bc-hero-sub">Brand Intelligence</p>
+        
+      </div>
+    </div>
+    <div class="bc-hero-stats">
+      <div class="bc-hero-stat">
+        <span class="bc-hero-stat-val" id="heroReleaseCount">—</span>
+        <span class="bc-hero-stat-lbl">Releases</span>
+      </div>
+      <div class="bc-hero-stat">
+        <span class="bc-hero-stat-val" id="heroLatestDate">—</span>
+        <span class="bc-hero-stat-lbl">Latest Release</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Intelligence Cards -->
+  <div class="bc-intel-grid">
+    <div class="bc-intel-card" id="card-profile" onclick="togglePanel('profile')">
+      <div class="bc-intel-icon"><i class="fas fa-building"></i></div>
+      <div class="bc-intel-label">Company Profile</div>
+      <div class="bc-intel-value" id="val-profile">Click to load</div>
+    </div>
+    <div class="bc-intel-card" id="card-personnel" onclick="togglePanel('personnel')">
+      <div class="bc-intel-icon"><i class="fas fa-users"></i></div>
+      <div class="bc-intel-label">Key Personnel</div>
+      <div class="bc-intel-value" id="val-personnel">Click to load</div>
+    </div>
+    <div class="bc-intel-card" id="card-financials" onclick="togglePanel('financials')">
+      <div class="bc-intel-icon"><i class="fas fa-chart-line"></i></div>
+      <div class="bc-intel-label">Sales &amp; Financials</div>
+      <div class="bc-intel-value" id="val-financials">Click to load</div>
+    </div>
+    <div class="bc-intel-card" id="card-stock" onclick="togglePanel('stock')">
+      <div class="bc-intel-icon"><i class="fas fa-chart-bar"></i></div>
+      <div class="bc-intel-label">Stock Price</div>
+      <div class="bc-intel-value" id="val-stock">Click to load</div>
+    </div>
+  </div>
+
+  <!-- Intelligence Panel (expands below cards) -->
+  <div class="bc-panel" id="bc-panel">
+    <div class="bc-panel-hd">
+      <div class="bc-panel-title" id="panelTitle">
+        <i class="fas fa-building"></i>
+        <span id="panelTitleText">Company Profile</span>
+      </div>
+      <button class="bc-panel-close" onclick="closePanel()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="bc-panel-body" id="panelBody">
+      <div class="bc-ai-loading"><i class="fas fa-circle-notch"></i> Loading intelligence…</div>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="bc-divider">
+    <span class="bc-divider-text">Media Releases</span>
+    <span class="bc-divider-count" id="dividerCount"></span>
+  </div>
+
+  <!-- Release Grid -->
+  <div class="bc-grid" id="releaseGrid"></div>
+
+  <!-- Load More -->
+  <div class="bc-load-more" id="loadMoreWrap" style="display:none">
+    <button class="bc-load-btn" id="loadMoreBtn" onclick="loadMore()">
+      <i class="fas fa-plus"></i> Load More Releases
+    </button>
+    <span class="bc-page-info" id="pageInfo"></span>
+  </div>
+
+</div>
+</main>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════
+// BRAND CHANNEL ENGINE
+// ═══════════════════════════════════════════════
+
+const BASE = window.API_BASE_URL || '';
+let BRAND = '';
+let bcCurrentPage = 1;
+let totalReleases = 0;
+let hasMore = true;
+const PAGE_SIZE = 20;
+let panelState = null; // which panel is open
+let panelCache = {}; // cache AI responses
+
+// ── Stock ticker map — major automotive OEMs ──
+const STOCK_MAP = {
+  'BMW':            {symbol:'BMW.DE',  exchange:'XETRA',  name:'Bayerische Motoren Werke AG'},
+  'MERCEDES-BENZ':  {symbol:'MBG.DE',  exchange:'XETRA',  name:'Mercedes-Benz Group AG'},
+  'MERCEDES-BENZ GROUP': {symbol:'MBG.DE', exchange:'XETRA', name:'Mercedes-Benz Group AG'},
+  'VOLKSWAGEN':     {symbol:'VOW3.DE', exchange:'XETRA',  name:'Volkswagen AG'},
+  'VOLKSWAGEN GROUP':{symbol:'VOW3.DE',exchange:'XETRA',  name:'Volkswagen AG'},
+  'AUDI':           {symbol:'NSU.DE',  exchange:'XETRA',  name:'Audi AG'},
+  'PORSCHE':        {symbol:'P911.DE', exchange:'XETRA',  name:'Porsche AG'},
+  'STELLANTIS':     {symbol:'STLAM.MI',exchange:'Milan',  name:'Stellantis N.V.'},
+  'RENAULT':        {symbol:'RNO.PA',  exchange:'Euronext',name:'Renault SA'},
+  'VOLVO CARS':     {symbol:'VOLCAR-B.ST',exchange:'Nasdaq Stockholm',name:'Volvo Car AB'},
+  'NISSAN':         {symbol:'7201.T',  exchange:'TSE',    name:'Nissan Motor Co.'},
+  'TOYOTA':         {symbol:'7203.T',  exchange:'TSE',    name:'Toyota Motor Corp.'},
+  'HONDA':          {symbol:'7267.T',  exchange:'TSE',    name:'Honda Motor Co.'},
+  'HYUNDAI':        {symbol:'005380.KS',exchange:'KRX',   name:'Hyundai Motor Co.'},
+  'HYUNDAI MOTOR GROUP': {symbol:'005380.KS',exchange:'KRX',name:'Hyundai Motor Group'},
+  'MAZDA':          {symbol:'7261.T',  exchange:'TSE',    name:'Mazda Motor Corp.'},
+  'FORD':           {symbol:'F',       exchange:'NYSE',   name:'Ford Motor Company'},
+  'GENERAL MOTORS': {symbol:'GM',      exchange:'NYSE',   name:'General Motors Co.'},
+};
+
+// ── Boot ─────────────────────────────────────
+window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+  BRAND = decodeURIComponent(params.get('brand') || '').trim();
+
+  if (!BRAND) {
+    window.location.href = 'automediacenter-mobile-v6.5.html';
+    return;
+  }
+
+  // Set hero immediately
+  document.title = `${BRAND} — Brand Channel | AutoMediaCenter`;
+  document.getElementById('heroBrandTitle').textContent = BRAND;
+
+  // Prefill intel card subtitles
+  document.getElementById('val-profile').textContent = 'Company overview & background';
+  document.getElementById('val-personnel').textContent = 'Board & leadership team';
+  document.getElementById('val-financials').textContent = 'Latest results & figures';
+  document.getElementById('val-stock').textContent = loadStockPreview();
+
+  // Load releases
+  loadReleases(true);
+});
+
+function loadStockPreview() {
+  const key = BRAND.toUpperCase();
+  const ticker = STOCK_MAP[key];
+  if (ticker) return `${ticker.symbol} · ${ticker.exchange}`;
+  return 'Live price data';
+}
+
+// ── Load releases ─────────────────────────────
+async function loadReleases(reset = false) {
+  if (reset) {
+    bcCurrentPage = 1;
+    hasMore = true;
+    document.getElementById('releaseGrid').innerHTML = '';
+  }
+
+  const btn = document.getElementById('loadMoreBtn');
+  if (btn) btn.disabled = true;
+
+  try {
+    const token = AMC_getToken();
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const url = `${BASE}/api/v1/center/releases?brand=${encodeURIComponent(BRAND)}&page=${bcCurrentPage}&limit=${PAGE_SIZE}&status=published`;
+    const res = await fetch(url, { headers, credentials: 'include' });
+    const data = await res.json();
+
+    if (data.success && data.data) {
+      const releases = data.data.releases || data.data || [];
+      const pagination = data.data.pagination || {};
+      totalReleases = pagination.total || releases.length;
+
+      if (reset) {
+        // Update hero stats
+        document.getElementById('heroReleaseCount').textContent =
+          totalReleases > 999 ? (totalReleases/1000).toFixed(1)+'K' : totalReleases;
+        if (releases.length > 0) {
+          const latest = releases[0];
+          const d = new Date(latest.releaseDate || latest.updatedAt);
+          document.getElementById('heroLatestDate').textContent =
+            d.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+        }
+        document.getElementById('dividerCount').textContent =
+          `${totalReleases} release${totalReleases !== 1 ? 's' : ''}`;
+        // subtitle removed
+      }
+
+      renderReleases(releases);
+
+      hasMore = releases.length === PAGE_SIZE;
+      bcCurrentPage++;
+
+      const loadWrap = document.getElementById('loadMoreWrap');
+      const pageInfo = document.getElementById('pageInfo');
+      loadWrap.style.display = hasMore ? 'flex' : 'none';
+      const shown = Math.min(bcCurrentPage * PAGE_SIZE - PAGE_SIZE + releases.length, totalReleases);
+      if (pageInfo) pageInfo.textContent = `Showing ${shown} of ${totalReleases}`;
+
+    } else {
+      if (reset) showEmpty();
+    }
+  } catch (err) {
+    console.error('Brand Channel load error:', err);
+    if (reset) showEmpty();
+  } finally {
+    if (btn) btn.disabled = false;
+    document.getElementById('bcLoader')?.classList.add('gone');
+  }
+}
+
+function loadMore() { loadReleases(false); }
+
+// ── Render release cards ──────────────────────
+function renderReleases(releases) {
+  const grid = document.getElementById('releaseGrid');
+  releases.forEach((r, i) => {
+    const card = buildCard(r, i);
+    grid.appendChild(card);
+  });
+}
+
+function buildCard(r, i) {
+  const card = document.createElement('div');
+  card.className = 'release-card';
+  card.style.animationDelay = `${i * 30}ms`;
+
+  const imgUrl = r.cardTeaserImagePath
+    ? `${BASE}/${r.cardTeaserImagePath.replace(/^\//,'')}`
+    : null;
+
+  const date = new Date(r.releaseDate || r.updatedAt);
+  const dateStr = date.toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'});
+  const timeStr = r.releaseTime ? r.releaseTime.substring(0,5) : '';
+
+  const releaseUrl = `amc-release-detail.html?uuid=${r.uuid || r.releaseUUID}`;
+
+  card.innerHTML = `
+    <div class="card-image" onclick="window.location='${releaseUrl}'">
+      ${imgUrl
+        ? `<img src="${imgUrl}" alt="${escHtml(r.title||'')}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=card-image-placeholder><i class=fas fa-car></i></div>'">`
+        : `<div class="card-image-placeholder"><i class="fas fa-car"></i></div>`}
+    </div>
+    <div class="brand-band" onclick="event.stopPropagation()" title="${escHtml(r.brand||BRAND)}">${escHtml(r.brand||BRAND)}</div>
+    <div class="card-content">
+      <a class="card-title" href="${releaseUrl}">${escHtml(r.title||'Untitled Release')}</a>
+      <div class="card-meta">
+        <div class="card-assets">
+          ${assetIcon(r.releaseDocs,'file-alt')}
+          ${assetIcon(r.images,'image')}
+          ${assetIcon(r.videos,'video')}
+          ${assetIcon(r.supplementaryDocs,'folder')}
+        </div>
+        <div class="card-date">
+          <i class="far fa-calendar-alt"></i> ${dateStr}
+          ${timeStr ? `<span class="time-part">${timeStr} CET</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  return card;
+}
+
+function assetIcon(arr, icon) {
+  const n = Array.isArray(arr) ? arr.length : (arr || 0);
+  if (!n) return '';
+  return `<span class="asset-icon"><i class="fas fa-${icon}"></i>${n}</span>`;
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showEmpty() {
+  document.getElementById('releaseGrid').innerHTML =
+    `<div class="bc-empty" style="grid-column:1/-1">
+      <i class="fas fa-newspaper"></i>
+      No releases found for <strong>${escHtml(BRAND)}</strong>
+    </div>`;
+  document.getElementById('bcLoader')?.classList.add('gone');
+}
+
+// ══════════════════════════════════════════════
+// INTELLIGENCE PANELS — AI-powered on demand
+// ══════════════════════════════════════════════
+
+const PANEL_CONFIG = {
+  profile: {
+    title: 'Company Profile',
+    icon: 'fas fa-building',
+    prompt: (brand) => `Provide a structured company profile for ${brand} for a professional automotive journalist. Return ONLY valid JSON, no markdown, no explanation:
+{"founded":"year","headquarters":"city, country","ceo":"full name","group":"parent company if applicable","brands":"other brands owned if applicable","employees":"approximate number","production":"latest annual production volume","markets":"key markets","description":"2 sentence company overview"}`
+  },
+  personnel: {
+    title: 'Key Personnel',
+    icon: 'fas fa-users',
+    prompt: (brand) => `List the current key leadership at ${brand} for an automotive journalist. Return ONLY valid JSON array, no markdown:
+[{"name":"full name","role":"exact title","note":"one relevant fact"}]
+Include CEO, CFO, Chief Communications Officer, Head of Design, Head of R&D. Maximum 6 people. Use current 2025/2026 data.`
+  },
+  financials: {
+    title: 'Sales & Financials',
+    icon: 'fas fa-chart-line',
+    prompt: (brand) => `Provide the latest financial summary for ${brand} for a journalist. Return ONLY valid JSON, no markdown:
+{"period":"Q1 2026 or latest available","revenue":"value with currency","units":"vehicles sold","profit":"operating profit or net profit","change":"YoY change","highlight":"most important financial development in one sentence","source":"company earnings report date if known"}`
+  },
+  stock: {
+    title: 'Stock Price',
+    icon: 'fas fa-chart-bar',
+    prompt: null // handled separately
+  }
+};
+
+function togglePanel(type) {
+  const panel = document.getElementById('bc-panel');
+  const card = document.getElementById(`card-${type}`);
+
+  // If same panel already open, close it
+  if (panelState === type && panel.classList.contains('open')) {
+    closePanel();
+    return;
+  }
+
+  // Remove active from all cards
+  document.querySelectorAll('.bc-intel-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  panelState = type;
+
+  const cfg = PANEL_CONFIG[type];
+  const titleEl = document.getElementById('panelTitleText');
+  const iconEl = document.getElementById('panelTitle').querySelector('i');
+  titleEl.textContent = cfg.title;
+  iconEl.className = cfg.icon;
+
+  panel.classList.add('open');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Load content
+  if (panelCache[type]) {
+    renderPanel(type, panelCache[type]);
+  } else {
+    document.getElementById('panelBody').innerHTML =
+      `<div class="bc-ai-loading"><i class="fas fa-circle-notch"></i> Loading ${cfg.title.toLowerCase()}…</div>`;
+    if (type === 'stock') {
+      loadStock();
+    } else {
+      loadAIPanel(type);
+    }
+  }
+}
+
+function closePanel() {
+  document.getElementById('bc-panel').classList.remove('open');
+  document.querySelectorAll('.bc-intel-card').forEach(c => c.classList.remove('active'));
+  panelState = null;
+}
+
+// ── AI Panel Loader — MongoDB first, no AI fallback ──
+async function loadAIPanel(type) {
+  const body = document.getElementById('panelBody');
+  if (!body) return;
+
+  const h = {'Content-Type': 'application/json'};
+  const token = AMC_getToken();
+  if (token) h['Authorization'] = 'Bearer ' + token;
+  const opts = {headers: h, credentials: 'include'};
+
+  if (type === 'financials') {
+    try {
+      const r = await fetch(BASE + '/api/v1/center/brand-intelligence/' + encodeURIComponent(BRAND) + '/financials', opts);
+      const j = await r.json();
+      if (j.success && j.data && j.data.units) {
+        panelCache['financials'] = j.data;
+        renderPanel('financials', j.data);
+        return;
+      }
+    } catch(e) { console.warn('financials fetch error:', e); }
+    body.innerHTML = '<p style="padding:20px;font-size:13px;color:var(--text-secondary)">No financial data available yet for ' + escHtml(BRAND) + '. Upload a sales or financial release to populate this panel.</p>';
+    return;
+  }
+
+  if (type === 'personnel') {
+    body.innerHTML = '<div class="bc-ai-loading"><i class="fas fa-circle-notch" style="animation:bc-spin 0.7s linear infinite;color:var(--accent-primary)"></i> Loading board & leadership…</div>';
+    try {
+      const r = await fetch(BASE + '/api/v1/center/brand-intelligence/' + encodeURIComponent(BRAND) + '/personnel', opts);
+      const j = await r.json();
+      if (j.success && j.data && j.data.personnel && j.data.personnel.length) {
+        const pd = j.data.personnel.map(function(p) {
+          var parts = p.split(' - ');
+          return {name: parts[0].trim() || p, role: parts.slice(1).join(' - ').trim() || '', note: ''};
+        });
+        panelCache['personnel'] = pd;
+        renderPanel('personnel', pd);
+        return;
+      }
+    } catch(e) { console.warn('personnel fetch error:', e); }
+    body.innerHTML = '<p style="padding:20px;font-size:13px;color:var(--text-secondary)">Personnel data unavailable.</p>';
+    return;
+  }
+
+  if (type === 'profile') {
+    body.innerHTML = '<div class="bc-ai-loading"><i class="fas fa-circle-notch" style="animation:bc-spin 0.7s linear infinite;color:var(--accent-primary)"></i> Loading company profile…</div>';
+    try {
+      const r = await fetch(BASE + '/api/v1/center/brand-intelligence/' + encodeURIComponent(BRAND) + '/profile', opts);
+      const j = await r.json();
+      if (j.success && j.data) {
+        panelCache['profile'] = j.data;
+        renderPanel('profile', j.data);
+        if (!j.cached) console.log('Profile freshly generated and cached for 30 days');
+        return;
+      }
+    } catch(e) { console.warn('profile fetch error:', e); }
+    body.innerHTML = '<p style="padding:20px;font-size:13px;color:var(--text-secondary)">Profile data unavailable.</p>';
+    return;
+  }
+}
+
+
+// ── AI panel loader ───────────────────────────
+
+// ── Render panel content ──────────────────────
+function renderPanel(type, data) {
+  const body = document.getElementById('panelBody');
+
+  if (type === 'profile') {
+    body.innerHTML = `
+      <div class="bc-profile-grid">
+        ${profileRow('Founded', data.founded)}
+        ${profileRow('Headquarters', data.headquarters)}
+        
+        ${profileRow('Group / Parent', data.group || 'Independent')}
+        ${profileRow('Other Brands', data.brands || '—')}
+        ${profileRow('Employees', data.employees)}
+        ${profileRow('Annual Production', data.production)}
+        ${profileRow('Key Markets', data.markets)}
+      </div>
+      ${data.description ? `<p style="margin-top:16px;font-size:13px;color:var(--text-secondary);line-height:1.7;padding-top:16px;border-top:1px solid var(--border-primary)">${data.description}</p>` : ''}`;
+
+  } else if (type === 'personnel') {
+    const people = Array.isArray(data) ? data : [];
+    body.innerHTML = `<div class="bc-personnel-list">
+      ${people.map(p => `
+        <div class="bc-person">
+          <div class="bc-person-name">${escHtml(p.name)}</div>
+          <div class="bc-person-role">${escHtml(p.role)}</div>
+        </div>`).join('')}
+    </div>`;
+
+  } else if (type === 'financials') {
+    body.innerHTML = `
+      <div class="bc-financials-grid">
+        ${finCard(data.revenue, 'Revenue')}
+        ${finCard(data.units, 'Vehicles Sold')}
+        ${finCard(data.profit, 'Operating Profit')}
+      </div>
+      ${data.change ? `<div style="margin-bottom:10px;font-size:13px;font-weight:600;color:var(--text-headings)">YoY Change: <span style="color:${data.change.includes('-')?'#ef4444':'#10b981'}">${data.change}</span></div>` : ''}
+      ${data.highlight ? `<div class="bc-fin-note">${escHtml(data.highlight)}</div>` : ''}
+      <div style="font-size:11px;color:var(--text-secondary);margin-top:10px">
+        Period: ${escHtml(data.period||'Latest available')} ${data.source ? `· Source: ${escHtml(data.source)}` : ''}
+      </div>`;
+  }
+}
+
+function renderPanelFallback(type, text) {
+  document.getElementById('panelBody').innerHTML =
+    `<p style="font-size:13px;color:var(--text-secondary);line-height:1.7">${escHtml(text)}</p>`;
+}
+
+function profileRow(label, value) {
+  if (!value || value === 'undefined') return '';
+  return `<div class="bc-profile-item">
+    <div class="bc-profile-lbl">${label}</div>
+    <div class="bc-profile-val">${escHtml(String(value))}</div>
+  </div>`;
+}
+
+function finCard(val, label) {
+  return `<div class="bc-fin-card">
+    <div class="bc-fin-val">${escHtml(String(val||'—'))}</div>
+    <div class="bc-fin-lbl">${label}</div>
+  </div>`;
+}
+
+function getInitials(name) {
+  if (!name) return '?';
+  return name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+}
+
+// ── Stock panel ───────────────────────────────
+async function loadStock() {
+  const body = document.getElementById('panelBody');
+  let ticker = null;
+  try {
+    const r = await fetch(BASE+'/api/v1/brand-intel/ticker/'+encodeURIComponent(BRAND));
+    const j = await r.json();
+    if (j.success && j.data && j.data.symbol) ticker = j.data;
+  } catch(e) {}
+  if (!ticker) ticker = STOCK_MAP[BRAND.toUpperCase()] || null;
+
+  if (!ticker) {
+    panelCache['stock'] = 'unlisted';
+    body.innerHTML = `<div class="bc-stock-unlisted">
+      <i class="fas fa-lock" style="font-size:24px;margin-bottom:8px;display:block;opacity:0.3"></i>
+      <strong>${escHtml(BRAND)}</strong> is a private company and is not listed on a public stock exchange.
+    </div>`;
+    return;
+  }
+
+  // Use Yahoo Finance via a proxy-friendly approach
+  // Alpha Vantage free tier: 25 requests/day
+  const AV_KEY = '1E4EFVFR0EFAFK2Y';
+  // Alpha Vantage returns .DEX for XETRA but GLOBAL_QUOTE needs .DE
+  const cleanSymbol = ticker.symbol.replace(/\.DEX$/, '.DE');
+  const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${cleanSymbol}&apikey=${AV_KEY}`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    const quote = data['Global Quote'];
+
+    if (quote && quote['05. price']) {
+      const price = parseFloat(quote['05. price']).toFixed(2);
+      const change = parseFloat(quote['09. change']).toFixed(2);
+      const changePct = parseFloat(quote['10. change percent']).toFixed(2);
+      const high52 = parseFloat(quote['03. high']).toFixed(2);
+      const low52 = parseFloat(quote['04. low']).toFixed(2);
+      const vol = parseInt(quote['06. volume']).toLocaleString();
+      const isPos = change >= 0;
+
+      panelCache['stock'] = {price, change, changePct, high52, low52, vol, ticker};
+      body.innerHTML = `
+        <div class="bc-stock-main">
+          <div class="bc-stock-price">${
+            ticker.symbol.endsWith('.DE')||ticker.symbol.endsWith('.PA')||ticker.symbol.endsWith('.MI')||ticker.symbol.endsWith('.ST')||ticker.symbol.endsWith('.FRK') ? '€' :
+            ticker.symbol.endsWith('.T') ? '¥' :
+            ticker.symbol.endsWith('.KS') ? '₩' : '$'
+          }${price}</div>
+          <div class="bc-stock-change ${isPos?'pos':'neg'}">
+            ${isPos?'+':''}${change} (${isPos?'+':''}${changePct}%)
+          </div>
+        </div>
+        <div class="bc-stock-meta">
+          <div class="bc-stock-meta-item">
+            <div class="bc-stock-meta-val">${high52}</div>
+            <div class="bc-stock-meta-lbl">Day High</div>
+          </div>
+          <div class="bc-stock-meta-item">
+            <div class="bc-stock-meta-val">${low52}</div>
+            <div class="bc-stock-meta-lbl">Day Low</div>
+          </div>
+          <div class="bc-stock-meta-item">
+            <div class="bc-stock-meta-val">${vol}</div>
+            <div class="bc-stock-meta-lbl">Volume</div>
+          </div>
+        </div>
+        <div class="bc-stock-ticker">${ticker.symbol} · ${ticker.exchange} · ${ticker.name}</div>
+        <div style="font-size:10px;color:var(--text-secondary);margin-top:6px">Data from Alpha Vantage · Delayed 15–20 min · Updated ${new Date().toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'})} local time · Currency: ${ticker.symbol.endsWith('.DE')||ticker.symbol.endsWith('.PA')||ticker.symbol.endsWith('.MI')||ticker.symbol.endsWith('.ST')||ticker.symbol.endsWith('.FRK') ? 'EUR (€)' : ticker.symbol.endsWith('.T') ? 'JPY (¥)' : ticker.symbol.endsWith('.KS') ? 'KRW (₩)' : 'USD ($)'}</div>`;
+    } else {
+      throw new Error('No quote data');
+    }
+  } catch {
+    // Fallback — show ticker info without live price
+    body.innerHTML = `
+      <div class="bc-stock-main">
+        <div style="font-size:14px;font-weight:600;color:var(--text-headings)">${ticker.symbol}</div>
+        <div class="bc-stock-change neu">Price unavailable</div>
+      </div>
+      <div class="bc-stock-ticker">${ticker.symbol} · ${ticker.exchange} · ${ticker.name}</div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-top:8px;line-height:1.6">
+        Live stock data requires an <a href="https://www.alphavantage.co/support/#api-key" target="_blank" style="color:var(--accent-primary)">Alpha Vantage API key</a>. 
+        Add it to the STOCK_MAP configuration to enable real-time pricing.
+      </div>`;
+  }
+}
+
+// ── Shell ─────────────────────────────────────
+loadV65Shell({ basePath: './components/shell' });
+
+// Theme observer
+new MutationObserver(m => {
+  if (m.some(x => x.attributeName === 'class')) {
+    document.querySelectorAll('.brand-band').forEach(b => {
+      b.style.background = document.body.classList.contains('dark-mode') ? '#1e293b' : '#2a2a2a';
+    });
+  }
+}).observe(document.body, {attributes:true, attributeFilter:['class']});
+</script>
+<script>
+// Replace slow AI panel with fast MongoDB-first approach
+</script>
+</html>
