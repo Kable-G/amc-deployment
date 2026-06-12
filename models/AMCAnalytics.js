@@ -8,15 +8,23 @@ const amcInteractionSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: false,
+        default: null
     },
     userEmail: {
         type: String,
-        required: true
+        required: false,
+        default: null
     },
     sessionId: {
         type: String,
         required: true,
+        index: true
+    },
+    identityStatus: {
+        type: String,
+        enum: ['authenticated', 'anonymous'],
+        default: 'anonymous',
         index: true
     },
     
@@ -105,7 +113,8 @@ const amcInteractionSchema = new mongoose.Schema({
     },
     ipAddress: {
         type: String,
-        required: true
+        required: false,
+        default: null
     },
     referrer: {
         type: String,
@@ -152,6 +161,8 @@ amcInteractionSchema.index({ userId: 1, timestamp: -1 });
 amcInteractionSchema.index({ interactionType: 1, timestamp: -1 });
 amcInteractionSchema.index({ releaseId: 1, timestamp: -1 });
 amcInteractionSchema.index({ timestamp: -1 });
+// GDPR retention: auto-purge interaction telemetry after 24 months (matches dashboard notice)
+amcInteractionSchema.index({ timestamp: 1 }, { expireAfterSeconds: 63072000 });
 amcInteractionSchema.index({ userEmail: 1, timestamp: -1 });
 // sessionId index is defined in the schema field definition above
 

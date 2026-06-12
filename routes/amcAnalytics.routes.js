@@ -13,6 +13,7 @@ function pct(n, d) {
 function clamp01(x){ return Math.max(0, Math.min(1, x)); }
 const router = express.Router();
 const auth = require('../middleware/auth');        // Use real session-based auth
+const { optionalAuth } = require('../middleware/auth'); // analytics ingest: record anon + known
 const { AMCInteraction, MediaPickup, UserSession } = require('../models/AMCAnalytics');
 const CenterRelease = require('../models/CenterRelease');
 const User = require('../models/User');
@@ -1623,7 +1624,7 @@ router.get('/real-time-activity', auth, async (req, res) => {
 // @route   POST /api/v1/amc-analytics/track
 // @desc    Track single user interaction (called from frontend)
 // @access  Private
-router.post('/track', auth, async (req, res) => {
+router.post('/track', optionalAuth, async (req, res) => {
     try {
         const {
             interactionType,
@@ -1659,10 +1660,16 @@ router.post('/track', auth, async (req, res) => {
                 });
             }
 
+            // Anonymise IP for GDPR (Breyer): keep geo utility, drop identifying full IP.
+            const anonIp = (ipAddress || '').includes(':')
+                ? (ipAddress.split(':').slice(0,3).join(':') + '::')      // IPv6 → first 3 groups
+                : (ipAddress || '').replace(/\.\d+$/, '.0');             // IPv4 → zero last octet
+
             // Create interaction record
             const interaction = new AMCInteraction({
-                userId: req.user.id,
-            userEmail: req.user.email,
+                userId: req.user?.id || null,
+            userEmail: req.user?.email || null,
+            identityStatus: req.user?.id ? 'authenticated' : 'anonymous',
             sessionId: req.sessionID || `session_${Date.now()}_${Math.random()}`,
             interactionType,
             releaseId: releaseId || null,
@@ -1676,7 +1683,7 @@ router.post('/track', auth, async (req, res) => {
             filtersApplied: filtersApplied || {},
             sortBy: sortBy || null,
             userAgent,
-            ipAddress,
+            ipAddress: anonIp,
             referrer,
             country: geoData.country,
             region: geoData.region,
@@ -1684,8 +1691,8 @@ router.post('/track', auth, async (req, res) => {
             timeOnPage: timeOnPage || null,
             metadata: {
                 ...metadata,
-                clientId: req.user.clientId,
-                userRole: req.user.role
+                clientId: req.user?.clientId || null,
+                userRole: req.user?.role || 'anonymous'
             }
         });
         

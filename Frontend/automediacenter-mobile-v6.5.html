@@ -4638,32 +4638,32 @@ function navigateToRelease(releaseUuid) {
 // Exact configuration from desktop sidebar.js with mobile adaptations
 const mobileSidebarConfig = [
     {
-        section: "Core",
+        section: "Media Center",
         required: "media_user",
         items: [
             {
-                label: "AutoMediaCenter",
+                label: "Media Releases",
                 href: "automediacenter-mobile-v6.5.html",
                 icon: "fas fa-newspaper",
                 roles: ["media_user", "client_user", "client_admin", "platform_admin"],
                 enabled: true
             },
             {
-                label: "AutoMediaRadar",
+                label: "Media Alerts",
                 href: "newradarfe.html",
                 icon: "fas fa-satellite-dish",
                 roles: ["media_user", "client_user", "client_admin", "platform_admin"],
                 enabled: true
             },
             {
-                label: "AutoMediaLive",
+                label: "Media Streams",
                 href: "automedialive.html",
                 icon: "fas fa-video",
                 roles: ["media_user", "client_user", "client_admin", "platform_admin"],
                 enabled: true
             },
             {
-                label: "AutoMediaVault",
+                label: "Media Vaults",
                 href: "automediavault.html",
                 icon: "fas fa-lock",
                 roles: ["media_user", "client_user", "client_admin", "platform_admin"],
@@ -4672,7 +4672,7 @@ const mobileSidebarConfig = [
         ]
     },
     {
-        section: "Management",
+        section: "Publish",
         required: "client_user",
         items: [
             {
@@ -4690,28 +4690,28 @@ const mobileSidebarConfig = [
                 enabled: true
             },
             {
-                label: "Manage Releases",
+                label: "Edit Media Releases",
                 href: "manage_releases.html",
                 icon: "fas fa-folder-open",
                 roles: ["client_user", "client_admin", "platform_admin"],
                 enabled: true
             },
             {
-                label: "Radar History",
+                label: "Edit Media Alerts",
                 href: "radar_history_clean.html",
                 icon: "fas fa-history",
                 roles: ["client_user", "client_admin", "platform_admin"],
                 enabled: true
             },
             {
-                label: "Manage Live Events",
+                label: "Edit Media Streams",
                 href: "manage_live.html",
                 icon: "fas fa-flag-checkered",
                 roles: ["client_admin", "platform_admin"],
                 enabled: true
             },
             {
-                label: "Manage Vault Assets",
+                label: "Edit Media Vaults",
                 href: "manage_vault.html",
                 icon: "fas fa-lock",
                 roles: ["client_admin", "platform_admin"],
@@ -4731,7 +4731,7 @@ const mobileSidebarConfig = [
                 enabled: true
             },
             {
-                label: "AMC Analytics",
+                label: "AutoMediaAnalytics",
                 href: "amc-analytics.html",
                 icon: "fas fa-chart-bar",
                 roles: ["client_admin", "platform_admin"],
@@ -4856,7 +4856,7 @@ function renderMobileSidebar() {
     if (allowedSections.length === 0) {
         drawerContent.innerHTML = `
             <div class="drawer-header">
-                <span class="drawer-title">Navigation</span>
+                <span class="drawer-title">Workspaces</span>
             </div>
             <div class="drawer-section">
                 <div class="drawer-section-header">ACCESS RESTRICTED</div>
@@ -4903,7 +4903,7 @@ function renderMobileSidebar() {
     // ENTERPRISE: Add header with "Navigation" title
     drawerContent.innerHTML = `
         <div class="drawer-header">
-            <span class="drawer-title">Navigation</span>
+            <span class="drawer-title">Workspaces</span>
         </div>
         ${sectionsHTML}
     `;
@@ -5449,5 +5449,6 @@ console.log('✅ Scrollbar safety checks enabled');
 
 <script src="/amc-notifications.js"></script>
 <script src="journalist-tools-loader.js"></script>
+<script src="amc-analytics-tracker.js"></script>
 </body>
 </html>

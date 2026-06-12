@@ -93,3 +93,33 @@ module.exports = function(req, res, next) {
     return res.status(401).json({ error: 'Unauthorized: Invalid token.' });
   }
 };
+
+
+/**
+ * optionalAuth — same JWT logic as the default auth, but NEVER rejects.
+ * If a valid Bearer token is present, attaches req.user. Otherwise req.user = null
+ * and the request continues. Used for low-stakes analytics ingest so anonymous
+ * (e.g. magic-link) views are still recorded, flagged by userId === null.
+ */
+module.exports.optionalAuth = function(req, res, next) {
+  try {
+    const authHeader = req.header('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) { req.user = null; return next(); }
+    const token = authHeader.split(' ')[1];
+    if (!token) { req.user = null; return next(); }
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) { req.user = null; return next(); }
+    const decoded = jwt.verify(token, jwtSecret);
+    if (decoded.user && decoded.user.id && decoded.user.role) {
+      req.user = decoded.user;
+    } else if (decoded.userId && decoded.role) {
+      req.user = { id: decoded.userId, role: decoded.role, ...(decoded.clientId && { clientId: decoded.clientId }) };
+    } else {
+      req.user = null;
+    }
+    return next();
+  } catch (e) {
+    req.user = null;   // expired/invalid token → treat as anonymous, don't block
+    return next();
+  }
+};
