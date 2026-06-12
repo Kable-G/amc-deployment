@@ -62,10 +62,21 @@ function getDateRangeFilter(days) {
 }
 
 function parseDateRange(range) {
-  // If you already have a helper, use that instead.
-  if (!range || range === 'max') return {};
-  // (Optional) add your concrete logic for week/month, etc.
-  return {};
+  // Return {start, end} matching getDateRangeFilter's windows so asset-type
+  // counts move in lockstep with the rest of the dashboard.
+  const now = new Date();
+  const days = { '1':1, '7':7, '14':14, '30':30, '90':90 };
+  if (!range || range === 'max' || range === 'all') {
+    return { start: new Date('2020-01-01'), end: now };
+  }
+  if (range === 'ytd') {
+    return { start: new Date(now.getFullYear(), 0, 1), end: now };
+  }
+  if (days[range]) {
+    return { start: new Date(now.getTime() - days[range] * 24 * 60 * 60 * 1000), end: now };
+  }
+  // default: 30 days
+  return { start: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000), end: now };
 }
 
 // Helper function to get user filter based on role
@@ -338,12 +349,17 @@ router.get('/overview', auth, enforceNoOverride, async (req, res) => {
         const nowBerlin = moment().tz('Europe/Berlin').toDate();
 
         // 1) strict DB pending
-        const dbPendingCountPromise = CenterRelease.countDocuments({ ...releaseScope, status: 'pending' });
+        // Window releases by their embargo/publish date (releaseDate is a real Date).
+        // Reuse the same window start the download cards use, so all cards move together.
+        const releaseDateWindow = (dateFilter && dateFilter.timestamp)
+            ? { releaseDate: { $gte: dateFilter.timestamp.$gte, $lte: dateFilter.timestamp.$lte } }
+            : {};
+        const dbPendingCountPromise = CenterRelease.countDocuments({ ...releaseScope, ...releaseDateWindow, status: 'pending' });
 
         // 2) published with a future embargo (in Berlin)
         const embargoFutureCountPromise = (async () => {
           const embargoPipe = [
-            { $match: { ...releaseScope, status: 'published' } },
+            { $match: { ...releaseScope, ...releaseDateWindow, status: 'published' } },
             {
               $addFields: {
                 embargoDateTime: {
@@ -515,8 +531,8 @@ router.get('/overview', auth, enforceNoOverride, async (req, res) => {
             AMCInteraction.aggregate(totalPageViewsPipeline),
             AMCInteraction.aggregate(totalQuickViewsPipeline),
             AMCInteraction.aggregate(totalSearchesPipeline),
-            CenterRelease.countDocuments({ ...releaseScope, status: 'published' }).catch(err => { console.error('Error counting published releases:', err); return 0; }),
-            CenterRelease.countDocuments({ ...releaseScope, status: 'archived' }).catch(err => { console.error('Error counting archived releases:', err); return 0; }),
+            CenterRelease.countDocuments({ ...releaseScope, ...releaseDateWindow, status: 'published' }).catch(err => { console.error('Error counting published releases:', err); return 0; }),
+            CenterRelease.countDocuments({ ...releaseScope, ...releaseDateWindow, status: 'archived' }).catch(err => { console.error('Error counting archived releases:', err); return 0; }),
             dbPendingCountPromise,
             embargoFutureCountPromise
         ]);
