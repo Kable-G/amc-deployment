@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Release Detail - AutoMediaCenter Mobile</title>
     
     <!-- ========================================= -->
@@ -20,7 +20,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,32..144,800&display=swap" rel="stylesheet">
     
     <!-- PDF.js Library for Custom PDF Rendering -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -814,30 +814,35 @@
         .release-hero {
             background: var(--bg-secondary);
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
         }
         
         .release-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--text-headings);
-            line-height: 1.25; /* Reduced from 1.3 for better mobile density */
-            margin-bottom: 12px;
-            /* Clamp to max 3 lines */
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            font-variation-settings: 'opsz' 28;
+            letter-spacing: -0.03em;
+            line-height: 1.05;
+            margin: 0 0 12px 0;
+            display: block;
+            overflow: visible;
         }
+        body:not(.dark-mode) .release-title { color: #0f172a; }
+        body.dark-mode .release-title { color: #f8fafc; }
         
         .release-meta {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             font-size: 14px;
-            color: var(--text-secondary);
+            font-weight: 300;
+            color: #6b7280;
+        }
+        body.dark-mode .release-meta {
+            color: #64748b;
         }
         
         .meta-item {
@@ -847,8 +852,11 @@
         }
         
         .meta-item i {
-            font-size: 16px;
-            color: var(--accent-primary); /* Blue calendar icon - enterprise hygiene */
+            font-size: 14px;
+            color: #3b82f6;
+        }
+        body.dark-mode .meta-item i {
+            color: #3b82f6;
         }
         
         /* ===== HERO HEADER ROW (Brand + Controls) ===== */
@@ -861,36 +869,46 @@
         }
         
         .brand-badge {
-            background: var(--accent-primary);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 16px;
+            background: none;
+            color: #6b7280;
+            padding: 0;
+            border-radius: 0;
             font-size: 13px;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             display: inline-block;
-            margin-bottom: 0; /* Removed - row handles spacing now */
+            margin-bottom: 0;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .brand-badge:active {
+            opacity: 0.6;
+        }
+        body.dark-mode .brand-badge {
+            color: #94a3b8;
         }
         
         /* ===== DOWNLOAD BUTTONS ===== */
         .download-actions {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-bottom: 12px; /* Reduced from 20px for tighter spacing */
+            gap: 8px;
+            margin-bottom: 0;
         }
         
         .download-btn {
             width: 100%;
-            padding: 14px 20px;
+            padding: 12px 16px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             transition: all 0.2s;
         }
         
@@ -937,84 +955,58 @@
         /* ===== SEGMENTED ASSET CONTROL BAR ===== */
         .asset-segment-bar {
             display: flex;
-            background: #EEF1F5; /* Heavier neutral - light mode */
-            border: none; /* No border - contained feel */
-            border-radius: 8px;
-            overflow: hidden;
-            margin: 12px 0;
-            height: 50px;
-        }
-        
-        /* Dark mode segmented bar */
-        body.dark-mode .asset-segment-bar {
-            background: #2A3342; /* Raised from card surface */
+            gap: 16px;
+            margin: 0 0 16px 0;
+            padding: 12px 0 0 0;
+            border-top: 1px solid var(--border-primary);
         }
         
         .asset-segment {
-            flex: 1;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 8px;
-            background: transparent;
-            border-left: 1px solid rgba(0, 0, 0, 0.08); /* Visible divider - light mode */
+            gap: 6px;
             cursor: pointer;
-            transition: background 0.15s ease;
             user-select: none;
-        }
-        
-        /* Dark mode segment dividers */
-        body.dark-mode .asset-segment {
-            border-left: 1px solid rgba(255, 255, 255, 0.18); /* Translucent white divider */
-        }
-        
-        .asset-segment:first-child {
-            border-left: none;
+            padding: 0;
+            background: none;
+            border: none;
+            transition: opacity 0.15s ease;
         }
         
         .asset-segment:active {
-            background: rgba(59, 130, 246, 0.08); /* Subtle blue tint on press */
+            opacity: 0.6;
         }
         
         .asset-segment-icon {
-            font-size: 18px;
-            color: var(--accent-primary); /* AutoMediaCenter blue */
-            flex-shrink: 0;
+            font-size: 13px;
+            color: #3b82f6;
         }
-        
-        /* Dark mode icons */
         body.dark-mode .asset-segment-icon {
-            color: var(--accent-primary); /* Keep blue in dark mode */
+            color: #3b82f6;
         }
         
         .asset-segment-info {
             display: flex;
             align-items: baseline;
-            gap: 4px;
-            flex-shrink: 0;
+            gap: 3px;
         }
         
         .asset-segment-count {
-            font-size: 16px;
-            font-weight: 600; /* Semibold - INFORMATION */
-            color: #1F2937; /* Darker for contrast */
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-headings);
         }
-        
-        /* Dark mode count */
         body.dark-mode .asset-segment-count {
-            color: #F9FAFB;
+            color: #f8fafc;
         }
         
         .asset-segment-label {
-            font-size: 12px; /* Slightly smaller than body */
-            font-weight: 400; /* Regular - explanation */
-            color: #5F6B7A; /* Medium grey */
+            font-size: 12px;
+            font-weight: 400;
+            color: #6b7280;
         }
-        
-        /* Dark mode label */
         body.dark-mode .asset-segment-label {
-            color: #9CA3AF;
+            color: #94a3b8;
         }
         
         /* Old quick nav pills - REMOVED */
@@ -1124,10 +1116,12 @@
             width: 100vw;
             margin-left: -16px;
             margin-right: -16px;
-            margin-bottom: 16px; /* Add spacing after PDF section */
+            margin-bottom: 16px;
             padding: 0;
             background: white;
-            overflow: hidden;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: auto;
         }
         
         .pdf-viewer-container {
@@ -1213,6 +1207,46 @@
         
         .pdf-expand-btn i {
             transition: transform 0.3s ease;
+        }
+        
+        /* Secondary action: outlined button to open PDF in native viewer */
+        .pdf-open-native-wrapper {
+            width: 100%;
+            padding: 0 16px 16px;
+            display: flex;
+            justify-content: center;
+            background: transparent;
+        }
+        
+        .pdf-open-native-btn {
+            width: auto;
+            min-width: 200px;
+            max-width: 90%;
+            margin: 0 auto;
+            padding: 12px 24px;
+            background: white;
+            color: var(--accent-primary);
+            border: 1.5px solid var(--accent-primary);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        
+        .pdf-open-native-btn:active {
+            background: var(--accent-primary);
+            color: white;
+            transform: scale(0.98);
+        }
+        
+        body.dark-mode .pdf-open-native-btn {
+            background: transparent;
         }
         
         /* ===== IMAGE GALLERY ===== */
@@ -1429,7 +1463,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            touch-action: pan-x pan-y;
+            touch-action: auto;
         }
         
         .lightbox img {
@@ -2418,6 +2452,8 @@
             
             /* PDF wrapper - STATIC (unified scroll, no sticky) */
             .pdf-viewer-wrapper {
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
                 position: static; /* Not sticky - flows with page */
                 margin: 0;
                 width: 100%;
@@ -2447,8 +2483,10 @@
             }
             
             .release-title {
-                font-size: 15px;
-                line-height: 1.15;
+                font-size: 22px;
+                font-variation-settings: 'opsz' 22;
+                letter-spacing: -0.03em;
+                line-height: 1.1;
                 margin-bottom: 8px;
             }
             
@@ -3146,33 +3184,6 @@ body.dark-mode .sidebar-rail .rail-btn:not(.rail-btn-expand) svg {
     
     <script>
         console.log('✅ Mobile Release Detail v2.0 loaded');
-        console.log('================================================');
-        console.log('VERSION: DIAGNOSTIC-VERSION-DEC-21-2024');
-        console.log('🔴 RED BORDER + YELLOW BG on grid = Working!');
-        console.log('================================================');
-        
-        // DIAGNOSTIC BANNER
-        setTimeout(() => {
-            const banner = document.createElement('div');
-            banner.style.cssText = `
-                position: fixed;
-                top: 80px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: red;
-                color: white;
-                padding: 20px;
-                font-size: 18px;
-                font-weight: bold;
-                z-index: 99999;
-                border-radius: 8px;
-                text-align: center;
-            `;
-            banner.innerHTML = '🔴 DIAGNOSTIC VERSION LOADED<br>Tap grid to test - look for RED BORDER';
-            document.body.appendChild(banner);
-            
-            setTimeout(() => banner.remove(), 5000);
-        }, 1000);
         
         // ===== DISABLE SCROLL RESTORATION =====
         // Prevent browser from remembering scroll position on refresh
@@ -3638,6 +3649,14 @@ body.dark-mode .sidebar-rail .rail-btn:not(.rail-btn-expand) svg {
                                 <span>See Full Media Release</span>
                             </button>
                         </div>
+                        
+                        <!-- Open in native PDF viewer (full-screen reading, share, print) -->
+                        <div class="pdf-open-native-wrapper">
+                            <button class="pdf-open-native-btn" onclick="window.open('${pdfUrl}', '_blank', 'noopener,noreferrer')">
+                                <i class="fas fa-external-link-alt"></i>
+                                <span>Open PDF</span>
+                            </button>
+                        </div>
                     </div>
                 </div><!-- Close landscape-pdf-column -->
                 `;
@@ -3652,7 +3671,7 @@ body.dark-mode .sidebar-rail .rail-btn:not(.rail-btn-expand) svg {
                         <!-- Hero header row: brand + controls (enterprise alignment) -->
                         <div class="hero-header-row">
                             ${release.brand ? `
-                            <div class="brand-badge">${escapeHtml(release.brand)}</div>
+                            <a class="brand-badge" href="/brand-channel.html?brand=${encodeURIComponent(release.brand)}">${escapeHtml(release.brand)}</a>
                             ` : ''}
                             <!-- Chevron toggle will be inserted here by JavaScript -->
                         </div>
@@ -3664,15 +3683,6 @@ body.dark-mode .sidebar-rail .rail-btn:not(.rail-btn-expand) svg {
                                 <i class="far fa-calendar"></i>
                                 <span>${releaseDate}</span>
                             </div>
-                        </div>
-                        
-                        <!-- Download Buttons -->
-                        <div class="download-actions">
-                            ${mainPdfDoc ? `
-                            <button class="download-btn download-btn-primary" onclick="downloadPDF()">
-                                <i class="fas fa-file-pdf"></i> Download Media Release
-                            </button>
-                            ` : ''}
                         </div>
                         
                         <!-- Segmented Asset Control Bar -->
@@ -3708,8 +3718,13 @@ body.dark-mode .sidebar-rail .rail-btn:not(.rail-btn-expand) svg {
                         </div>
                         ` : ''}
                         
-                        <!-- Download All Assets -->
-                        <div class="download-actions">
+                        <!-- Download Actions -->
+                        <div class="download-actions" style="margin-top:12px;">
+                            ${mainPdfDoc ? `
+                            <button class="download-btn download-btn-primary" onclick="downloadPDF()">
+                                <i class="fas fa-file-pdf"></i> Download Media Release
+                            </button>
+                            ` : ''}
                             ${(imageCount + videoCount + totalDocs) > 0 ? `
                             <button class="download-btn download-btn-secondary" onclick="downloadAll()">
                                 <i class="fas fa-download"></i> Download All Assets (ZIP)
@@ -3798,7 +3813,11 @@ body.dark-mode .sidebar-rail .rail-btn:not(.rail-btn-expand) svg {
         let pdfDoc = null;
         let totalPages = 0;
         let isExpanded = false;
+        let userZoom = 1.0; // Pinch/double-tap zoom multiplier (1.0 = fit-to-width)
         const PREVIEW_PAGES = 3; // Show 3 pages initially
+        const MIN_ZOOM = 0.5;
+        const MAX_ZOOM = 3.0;
+        const DOUBLETAP_ZOOM = 2.0;
         
         // Initialize PDF.js rendering after page loads
         async function initializePDF() {
@@ -3831,6 +3850,9 @@ body.dark-mode .sidebar-rail .rail-btn:not(.rail-btn-expand) svg {
                 if (expandBtnWrapper && totalPages > PREVIEW_PAGES) {
                     expandBtnWrapper.style.display = 'flex';
                 }
+                
+                // Wire up pinch + double-tap gestures on the PDF viewer
+                // setupPdfTouchGestures(); // Disabled — using native browser zoom
                 
             } catch (error) {
                 console.error('Error loading PDF:', error);
@@ -3876,7 +3898,8 @@ body.dark-mode .sidebar-rail .rail-btn:not(.rail-btn-expand) svg {
                 const isLandscape = window.matchMedia('(orientation: landscape) and (max-width: 1024px)').matches;
                 const landscapeScaleBoost = isLandscape ? 1.15 : 1.0;
                 
-                const layoutScale = (containerWidth / viewport.width) * landscapeScaleBoost;
+                // Apply user pinch/double-tap zoom on top of layout scale
+                const layoutScale = (containerWidth / viewport.width) * landscapeScaleBoost * userZoom;
                 const layoutViewport = page.getViewport({ scale: layoutScale });
                 
                 // Actual backing store size (DPR)
@@ -3944,6 +3967,197 @@ body.dark-mode .sidebar-rail .rail-btn:not(.rail-btn-expand) svg {
             }
         }
         
+        // ===== TOUCH GESTURES FOR PDF VIEWER =====
+        // Pinch-to-zoom (continuous) and double-tap (toggle 1.0/2.0).
+        // No horizontal swipe — pages are stacked vertically, so swipe has no
+        // meaningful action. Vertical pan is the native page scroll; we never
+        // preventDefault single-finger vertical motion.
+        function setupPdfTouchGestures() {
+            const viewer = document.getElementById('pdfViewer');
+            if (!viewer) return;
+            if (viewer.dataset.touchGesturesBound === '1') return;
+            viewer.dataset.touchGesturesBound = '1';
+
+            const wrapper = viewer.closest('.pdf-viewer-wrapper') || viewer.parentElement;
+            const DOUBLETAP_GAP = 300;
+            const DOUBLETAP_MOVE = 30;
+
+            // State
+            let phase = 'idle'; // idle | pinching | panning | tap1
+            let pinchStartDist = 0;
+            let pinchStartZoom = 1.0;
+            let committedZoom = userZoom;
+            let panOrigin = null;
+            let panScrollOrigin = null;
+            let tap1 = null;
+            let rendering = false;
+
+            function dist(a, b) {
+                return Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+            }
+            function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+            async function applyZoom(newZoom) {
+                document.getElementById('amc-debug').textContent = 'APPLY zoom=' + newZoom.toFixed(2);
+                if (rendering) return;
+                rendering = true;
+                committedZoom = newZoom;
+                userZoom = newZoom;
+                try {
+                    const pagesToRender = (window.__AMC_PDF_FULL === true || isExpanded)
+                        ? totalPages : Math.min(PREVIEW_PAGES, totalPages);
+                    const baseWidth = wrapper.getBoundingClientRect().width || window.innerWidth;
+                    for (let p = 1; p <= pagesToRender; p++) {
+                        const canvas = document.getElementById('pdf-page-' + p);
+                        if (!canvas || !pdfDoc) continue;
+                        const page = await pdfDoc.getPage(p);
+                        const vp0 = page.getViewport({ scale: 1 });
+                        const isLandscape = window.matchMedia('(orientation: landscape) and (max-width: 1024px)').matches;
+                        const boost = isLandscape ? 1.15 : 1.0;
+                        const scale = (baseWidth / vp0.width) * boost * newZoom;
+                        const vp = page.getViewport({ scale });
+                        const dpr = window.devicePixelRatio || 1;
+                        canvas.width = Math.floor(vp.width * dpr);
+                        canvas.height = Math.floor(vp.height * dpr);
+                        canvas.style.width = Math.floor(vp.width) + 'px';
+                        canvas.style.height = Math.floor(vp.height) + 'px';
+                        const ctx = canvas.getContext('2d', { alpha: false });
+                        ctx.imageSmoothingEnabled = false;
+                        await page.render({
+                            canvasContext: ctx, viewport: vp,
+                            transform: [dpr, 0, 0, dpr, 0, 0]
+                        }).promise;
+                    }
+                    // Clear transform only after canvases are rendered at correct size
+                    viewer.style.transform = '';
+                    viewer.style.transformOrigin = '';
+                } catch(e) {
+                    console.warn('[AMC] zoom render failed', e);
+                    viewer.style.transform = '';
+                    viewer.style.transformOrigin = '';
+                } finally {
+                    rendering = false;
+                }
+            }
+
+            wrapper.addEventListener('touchstart', e => {
+                const tc = e.touches.length;
+                document.getElementById('amc-debug').textContent = 'START t=' + tc + ' phase=' + phase + ' zoom=' + committedZoom.toFixed(2);
+                if (tc === 2) {
+                    // Two fingers — start pinch (also catches transition from pan)
+                    phase = 'pinching';
+                    pinchStartDist = dist(e.touches[0], e.touches[1]);
+                    pinchStartZoom = committedZoom;
+                    e.preventDefault();
+                } else if (tc === 1) {
+                    if (committedZoom > 1.05) {
+                        // Already zoomed — single finger pans
+                        phase = 'panning';
+                        panOrigin = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                        panScrollOrigin = { x: window.scrollX, y: window.scrollY };
+                        e.preventDefault();
+                    } else {
+                        phase = 'tap1';
+                        tap1 = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now(), last: tap1 };
+                    }
+                }
+            }, { passive: false });
+
+            wrapper.addEventListener('touchmove', e => {
+                if (phase === 'pinching' && e.touches.length >= 2) {
+                    const d = dist(e.touches[0], e.touches[1]);
+                    const ratio = pinchStartDist > 0 ? d / pinchStartDist : 1;
+                    const preview = clamp(pinchStartZoom * ratio, MIN_ZOOM, MAX_ZOOM);
+                    // Live CSS scale — instant visual feedback
+                    viewer.style.transformOrigin = 'top center';
+                    viewer.style.transform = 'scale(' + (preview / committedZoom) + ')';
+                    e.preventDefault();
+                } else if (phase === 'panning' && e.touches.length === 1) {
+                    const dx = panOrigin.x - e.touches[0].clientX;
+                    const dy = panOrigin.y - e.touches[0].clientY;
+                    window.scrollTo(panScrollOrigin.x + dx, panScrollOrigin.y + dy);
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            wrapper.addEventListener('touchend', async e => {
+                const remaining = e.touches.length;
+                document.getElementById('amc-debug').textContent = 'END rem=' + remaining + ' phase=' + phase + ' zoom=' + committedZoom.toFixed(2);
+
+                if (phase === 'pinching') {
+                    if (remaining === 1) {
+                        // One finger still down — commit zoom and switch to pan
+                        const d = dist(e.changedTouches[0],
+                            remaining > 0 ? e.touches[0] : e.changedTouches[0]);
+                        const finalRatio = pinchStartDist > 0
+                            ? dist(
+                                { clientX: 0, clientY: 0 },
+                                { clientX: viewer.getBoundingClientRect().width * (parseFloat(viewer.style.transform.replace('scale(','')) || 1), clientY: 0 }
+                              )
+                            : 1;
+                        // Just use the visual scale from the transform
+                        const currentTransform = viewer.style.transform;
+                        const scaleMatch = currentTransform.match(/scale\(([^)]+)\)/);
+                        const visualScale = scaleMatch ? parseFloat(scaleMatch[1]) : 1;
+                        const newZoom = clamp(committedZoom * visualScale, MIN_ZOOM, MAX_ZOOM);
+                        // Switch to pan mode while re-rendering in background
+                        phase = 'panning';
+                        panOrigin = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                        panScrollOrigin = { x: window.scrollX, y: window.scrollY };
+                        if (Math.abs(newZoom - committedZoom) > 0.05) {
+                            applyZoom(newZoom); // fire and forget — don't await
+                        }
+                    } else {
+                        // All fingers lifted — commit zoom
+                        const currentTransform = viewer.style.transform;
+                        const scaleMatch = currentTransform.match(/scale\(([^)]+)\)/);
+                        const visualScale = scaleMatch ? parseFloat(scaleMatch[1]) : 1;
+                        const newZoom = clamp(committedZoom * visualScale, MIN_ZOOM, MAX_ZOOM);
+                        phase = 'idle';
+                        if (Math.abs(newZoom - committedZoom) > 0.05) {
+                            await applyZoom(newZoom);
+                        } else {
+                            viewer.style.transform = '';
+                            viewer.style.transformOrigin = '';
+                        }
+                    }
+                    return;
+                }
+
+                if (phase === 'panning') {
+                    if (remaining === 0) phase = 'idle';
+                    return;
+                }
+
+                if (phase === 'tap1' && e.changedTouches.length === 1 && remaining === 0) {
+                    const t = e.changedTouches[0];
+                    const dx = t.clientX - tap1.x;
+                    const dy = t.clientY - tap1.y;
+                    const dt = Date.now() - tap1.t;
+                    if (Math.abs(dx) < 12 && Math.abs(dy) < 12 && dt < 250) {
+                        const prev = tap1.last;
+                        if (prev && (Date.now() - prev.t) < DOUBLETAP_GAP
+                            && Math.abs(t.clientX - prev.x) < DOUBLETAP_MOVE
+                            && Math.abs(t.clientY - prev.y) < DOUBLETAP_MOVE) {
+                            // Double tap
+                            e.preventDefault();
+                            const newZoom = committedZoom < 1.5 ? 2.0 : 1.0;
+                            tap1 = null;
+                            await applyZoom(newZoom);
+                        }
+                    }
+                    phase = 'idle';
+                }
+            }, { passive: false });
+
+            wrapper.addEventListener('touchcancel', () => {
+                viewer.style.transform = '';
+                viewer.style.transformOrigin = '';
+                phase = 'idle';
+            });
+
+            console.log('✅ PDF touch gestures bound (pinch + double-tap)');
+        }
         
         // Render media sections
         function renderMediaSections(imageCount, videoCount, totalDocs, release, mainPdfDoc, suppDocs) {
@@ -4358,9 +4572,6 @@ function scrollToSection(sectionId) {
             const modal = document.getElementById('imageGridModal');
             const grid = document.getElementById('gridContent');
             
-            // DIAGNOSTIC ALERT
-            alert('🔴 DIAGNOSTIC: Grid modal opening! You should see RED BORDER and YELLOW BACKGROUND on grid!');
-            
             // Open grid modal
             modal.classList.add('active');
             document.body.classList.add('lightbox-open');
@@ -4379,7 +4590,6 @@ function scrollToSection(sectionId) {
             renderImageGrid();
             
             console.log('✅ Grid opened with forced reflow - spacing should now be 6px vertical');
-            console.log('🔴 DIAGNOSTIC: Check for RED BORDER and YELLOW BACKGROUND on grid');
         }
         
         function closeImageGrid() {
@@ -5123,6 +5333,7 @@ function scrollToSection(sectionId) {
 })();
 </script>
 
+<script src="amc-analytics-tracker.js"></script>
 </body>
 </html>
 
