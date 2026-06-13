@@ -50,8 +50,12 @@ const amcInteractionSchema = new mongoose.Schema({
             'page_visible',        // Page becomes visible
             'page_hidden',         // Page becomes hidden
             'scroll_depth',        // User scrolls to certain depth
+            'scroll_25_percent',   // Scroll depth milestone
+            'scroll_50_percent',   // Scroll depth milestone
+            'scroll_75_percent',   // Scroll depth milestone
             'time_on_page',        // Time tracking event
-            'page_exit'            // User exits page
+            'page_exit',           // User exits page
+            'page_unload'          // User leaves page (browser unload)
         ]
     },
     
