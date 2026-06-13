@@ -752,8 +752,43 @@ router.get('/overview', auth, enforceNoOverride, async (req, res) => {
         // Calculate conversion rate (downloads per page view)
         const conversionRate = totalPageViews > 0 ? ((totalDownloads / totalPageViews) * 100) : 0;
         
-        // Calculate average time to first download (mock data for now)
-        const avgTimeToDownload = '12m 3s'; // This would need session tracking to calculate properly
+        // Calculate REAL average time from embargo lift to first download, across releases with downloads in range.
+        let avgTimeToDownload = '—';
+        try {
+            const firstDlPipeline = [
+                { $match: { ...dateFilter, interactionType: 'asset_download', corrupted: { $ne: true }, releaseId: { $ne: null } } },
+                { $group: { _id: '$releaseId', firstDownload: { $min: '$timestamp' } } },
+                { $lookup: { from: 'centerreleases', localField: '_id', foreignField: '_id', as: 'rel' } },
+                { $unwind: '$rel' },
+                { $match: { 'rel.releaseDate': { $ne: null } } },
+                // embargo lift = releaseDate at the hour:minute in releaseTime (UTC approximation)
+                { $addFields: {
+                    embargoLift: {
+                        $dateAdd: {
+                            startDate: '$rel.releaseDate',
+                            unit: 'minute',
+                            amount: {
+                                $add: [
+                                    { $multiply: [ { $toInt: { $ifNull: [ { $arrayElemAt: [ { $split: [ { $ifNull: ['$rel.releaseTime','00:00'] }, ':' ] }, 0 ] }, 0 ] } }, 60 ] },
+                                    { $toInt: { $ifNull: [ { $arrayElemAt: [ { $split: [ { $ifNull: ['$rel.releaseTime','00:00'] }, ':' ] }, 1 ] }, 0 ] } }
+                                ]
+                            }
+                        }
+                    }
+                }},
+                { $addFields: { deltaMin: { $divide: [ { $subtract: ['$firstDownload', '$embargoLift'] }, 60000 ] } } },
+                // only count plausible positive deltas (download after lift)
+                { $match: { deltaMin: { $gte: 0 } } },
+                { $group: { _id: null, avgMin: { $avg: '$deltaMin' }, n: { $sum: 1 } } }
+            ];
+            const avgRes = await AMCInteraction.aggregate(firstDlPipeline);
+            if (avgRes[0] && avgRes[0].n > 0) {
+                const mins = avgRes[0].avgMin;
+                avgTimeToDownload = mins < 60 ? `${Math.round(mins)}m`
+                    : mins < 1440 ? `${(mins/60).toFixed(1)}h`
+                    : `${(mins/1440).toFixed(1)}d`;
+            }
+        } catch (e) { console.error('avgTimeToDownload calc failed:', e.message); avgTimeToDownload = '—'; }
         
         // Debug breakdown for pending releases calculation
         const debugBreakdown = {
