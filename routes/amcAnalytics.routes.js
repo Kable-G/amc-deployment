@@ -459,7 +459,7 @@ router.get('/overview', auth, enforceNoOverride, async (req, res) => {
 
         // Fix: Create release-ownership scoped pipelines for all interaction counts
         const totalDownloadsPipeline = [
-            { $match: { ...dateFilter, interactionType: 'asset_download' } },
+            { $match: { ...dateFilter, interactionType: 'asset_download', corrupted: { $ne: true } } },
             {
                 $lookup: {
                     from: 'centerreleases',
@@ -607,7 +607,7 @@ router.get('/overview', auth, enforceNoOverride, async (req, res) => {
         ];
 
         const prevDownloadsPipeline = [
-            { $match: { ...previousDateFilter, interactionType: 'asset_download' } },
+            { $match: { ...previousDateFilter, interactionType: 'asset_download', corrupted: { $ne: true } } },
             {
                 $lookup: {
                     from: 'centerreleases',
@@ -687,7 +687,7 @@ router.get('/overview', auth, enforceNoOverride, async (req, res) => {
         
         // Get top performing asset and release using release-ownership scoping
         const topAssetPipeline = [
-            { $match: { ...dateFilter, interactionType: 'asset_download' } },
+            { $match: { ...dateFilter, interactionType: 'asset_download', corrupted: { $ne: true } } },
             {
                 $lookup: {
                     from: 'centerreleases',
@@ -700,7 +700,7 @@ router.get('/overview', auth, enforceNoOverride, async (req, res) => {
         ];
 
         const topReleasePipeline = [
-            { $match: { ...dateFilter, interactionType: 'asset_download' } },
+            { $match: { ...dateFilter, interactionType: 'asset_download', corrupted: { $ne: true } } },
             {
                 $lookup: {
                     from: 'centerreleases',
@@ -841,7 +841,7 @@ router.get('/overview', auth, enforceNoOverride, async (req, res) => {
         // Fix: Use release-ownership scoping instead of getUserFilter
         const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
         const realtimeActivityPipeline = [
-            { $match: { interactionType: 'asset_download', timestamp: { $gte: fiveMinAgo } } },
+            { $match: { interactionType: 'asset_download', corrupted: { $ne: true }, timestamp: { $gte: fiveMinAgo } } },
             {
                 $lookup: {
                     from: 'centerreleases',
@@ -870,7 +870,7 @@ router.get('/overview', auth, enforceNoOverride, async (req, res) => {
         // 4) Asset utilization = (# unique assets downloaded) / (total assets available)
         // Fix: Use release-ownership scoping instead of getUserFilter
         const downloadedAssetPipeline = [
-            { $match: { ...dateFilter, interactionType: 'asset_download' } }, // Remove userFilter
+            { $match: { ...dateFilter, interactionType: 'asset_download', corrupted: { $ne: true } } }, // Remove userFilter
             {
                 $lookup: {
                     from: 'centerreleases',
@@ -925,7 +925,7 @@ router.get('/overview', auth, enforceNoOverride, async (req, res) => {
         // 5) Peak performance = hour of day with highest downloads in the selected range
         // Fix: Use release-ownership scoping instead of getUserFilter
         const peakHourPipeline = [
-            { $match: { ...dateFilter, interactionType: 'asset_download' } },
+            { $match: { ...dateFilter, interactionType: 'asset_download', corrupted: { $ne: true } } },
             {
                 $lookup: {
                     from: 'centerreleases',
@@ -959,7 +959,7 @@ router.get('/overview', auth, enforceNoOverride, async (req, res) => {
         // 6) Content freshness score = % of downloads from assets <= 14 days old
         // Fix: Use release-ownership scoping instead of getUserFilter
         const contentFreshnessPipeline = [
-            { $match: { ...dateFilter, interactionType: 'asset_download', releaseId: { $ne: null } } }, // Remove userFilter
+            { $match: { ...dateFilter, interactionType: 'asset_download', corrupted: { $ne: true }, releaseId: { $ne: null } } }, // Remove userFilter
             {
                 $lookup: {
                     from: 'centerreleases',
@@ -1050,7 +1050,7 @@ router.get('/downloads-over-time', auth, async (req, res) => {
         const { dateRange = '30', granularity = 'day' } = req.query;
         const dateFilter = getDateRangeFilter(dateRange);
         const userFilter = getUserFilter(req);
-        const combinedFilter = { ...dateFilter, ...userFilter, interactionType: 'asset_download' };
+        const combinedFilter = { ...dateFilter, ...userFilter, interactionType: 'asset_download', corrupted: { $ne: true } };
         
         let groupBy;
         switch (granularity) {
@@ -1129,7 +1129,7 @@ router.get('/downloads-by-asset-type', auth, async (req, res) => {
     const releasesColl = CenterRelease.collection.name; // e.g. 'centerreleases'
 
     // Base match on interaction docs
-    const baseMatch = { interactionType: 'asset_download' };
+    const baseMatch = { interactionType: 'asset_download', corrupted: { $ne: true } };
 
     // Allow either 'timestamp' or 'createdAt'
     if (start || end) {
@@ -1216,7 +1216,7 @@ router.get('/downloads-by-region', auth, async (req, res) => {
         const { dateRange = '30' } = req.query;
         const dateFilter = getDateRangeFilter(dateRange);
         const userFilter = getUserFilter(req);
-        const combinedFilter = { ...dateFilter, ...userFilter, interactionType: 'asset_download' };
+        const combinedFilter = { ...dateFilter, ...userFilter, interactionType: 'asset_download', corrupted: { $ne: true } };
         
         const downloadsByRegion = await AMCInteraction.aggregate([
             { $match: combinedFilter },
@@ -1300,7 +1300,7 @@ router.get('/hourly-heatmap', auth, async (req, res) => {
         const { dateRange = '30' } = req.query;
         const dateFilter = getDateRangeFilter(dateRange);
         const userFilter = getUserFilter(req);
-        const combinedFilter = { ...dateFilter, ...userFilter, interactionType: 'asset_download' };
+        const combinedFilter = { ...dateFilter, ...userFilter, interactionType: 'asset_download', corrupted: { $ne: true } };
         
         const heatmapData = await AMCInteraction.aggregate([
             { $match: combinedFilter },
@@ -1342,7 +1342,7 @@ router.get('/top-releases', auth, async (req, res) => {
         const { dateRange = '30', limit = 10 } = req.query;
         const dateFilter = getDateRangeFilter(dateRange);
         const userFilter = getUserFilter(req);
-        const combinedFilter = { ...dateFilter, ...userFilter, interactionType: 'asset_download' };
+        const combinedFilter = { ...dateFilter, ...userFilter, interactionType: 'asset_download', corrupted: { $ne: true } };
         
         const topReleases = await AMCInteraction.aggregate([
             { $match: { ...combinedFilter, releaseTitle: { $ne: null } } },
@@ -1408,7 +1408,7 @@ router.get('/release-detail/:releaseId', auth, async (req, res) => {
         const funnel = {};
         funnelAgg.forEach(r => { funnel[r._id] = r.n; });
 
-        const dlMatch = { ...base, interactionType: 'asset_download' };
+        const dlMatch = { ...base, interactionType: 'asset_download', corrupted: { $ne: true } };
 
         // Asset-type split + distinct assets
         const byType = await AMCInteraction.aggregate([
@@ -1488,7 +1488,7 @@ router.get('/top-assets', auth, async (req, res) => {
     const combinedFilter = {
       ...dateFilter,
       ...userFilter,
-      interactionType: 'asset_download',
+      interactionType: 'asset_download', corrupted: { $ne: true },
       assetName: { $ne: null }
     };
 
@@ -1542,7 +1542,7 @@ router.get('/top-users', auth, async (req, res) => {
         const { dateRange = '30', limit = 10 } = req.query;
         const dateFilter = getDateRangeFilter(dateRange);
         const userFilter = getUserFilter(req);
-        const combinedFilter = { ...dateFilter, ...userFilter, interactionType: 'asset_download' };
+        const combinedFilter = { ...dateFilter, ...userFilter, interactionType: 'asset_download', corrupted: { $ne: true } };
         
         const topUsers = await AMCInteraction.aggregate([
             { $match: combinedFilter },
@@ -1840,119 +1840,10 @@ function getAssetTypeFromFilename(filename, releaseContext = null) {
 // @desc    Update analytics data with real asset names from actual releases
 // @access  Private
 router.post('/update-with-real-assets', auth, async (req, res) => {
-    try {
-        console.log('🔄 Updating analytics with real asset names...');
-        
-        // Get real releases (remove strict asset requirement for now)
-        const releases = await CenterRelease.find({
-            status: 'published'
-        }).limit(50).lean();
-        
-        console.log(`📊 Found ${releases.length} releases with assets`);
-        
-        if (releases.length === 0) {
-            return res.json({
-                success: false,
-                message: 'No releases with assets found'
-            });
-        }
-        
-        // Collect all real assets (handle different asset structures)
-        const realAssets = [];
-        releases.forEach(release => {
-            // Check if release has assets array
-            if (release.assets && Array.isArray(release.assets) && release.assets.length > 0) {
-                release.assets.forEach(asset => {
-                    if (asset.filename || asset.originalName) {
-                        realAssets.push({
-                            filename: asset.filename || asset.originalName,
-                            releaseTitle: release.title || release.name,
-                            releaseId: release._id,
-                            assetId: asset._id
-                        });
-                    }
-                });
-            } else {
-                // If no assets, create a placeholder entry using the release title
-                realAssets.push({
-                    filename: `${(release.title || release.name || 'Unknown Release').replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
-                    releaseTitle: release.title || release.name,
-                    releaseId: release._id,
-                    assetId: null
-                });
-            }
-        });
-        
-        console.log(`📁 Found ${realAssets.length} real assets`);
-        
-        if (realAssets.length === 0) {
-            return res.json({
-                success: false,
-                message: 'No assets with filenames found'
-            });
-        }
-        
-        // Update existing download interactions with real asset names
-        const downloadInteractions = await AMCInteraction.find({
-            interactionType: 'asset_download'
-        });
-        
-        console.log(`📥 Found ${downloadInteractions.length} download interactions to update`);
-        
-        let updateCount = 0;
-        for (const interaction of downloadInteractions) {
-            // Pick a random real asset
-            const randomAsset = realAssets[Math.floor(Math.random() * realAssets.length)];
-            
-            // Update the interaction with real asset data
-            await AMCInteraction.updateOne(
-                { _id: interaction._id },
-                {
-                    $set: {
-                        assetName: randomAsset.filename,
-                        releaseTitle: randomAsset.releaseTitle,
-                        releaseId: randomAsset.releaseId,
-                        assetId: randomAsset.assetId,
-                        assetType: getAssetTypeFromFilename(randomAsset.filename, { isMediaRelease: true })
-                    }
-                }
-            );
-            updateCount++;
-        }
-        
-        console.log(`✅ Updated ${updateCount} download interactions with real asset names`);
-        
-        // Get some examples
-        const updatedInteractions = await AMCInteraction.find({
-            interactionType: 'asset_download'
-        }).limit(5);
-        
-        const examples = updatedInteractions.map(interaction => ({
-            assetName: interaction.assetName,
-            releaseTitle: interaction.releaseTitle,
-            assetType: interaction.assetType
-        }));
-        
-        res.json({
-            success: true,
-            message: `Updated ${updateCount} download interactions with real asset names`,
-            data: {
-                totalUpdated: updateCount,
-                totalRealAssets: realAssets.length,
-                totalReleases: releases.length,
-                examples: examples
-            }
-        });
-        
-    } catch (error) {
-        console.error('❌ Error updating analytics data:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error updating analytics data',
-            error: error.message
-        });
-    }
-});
+    // DISABLED 2026-06-13: this endpoint randomly reassigned every download's release/asset,
+    // corrupting attribution. Permanently disabled. Do not re-enable.
+    return res.status(410).json({ success:false, error:'Endpoint permanently disabled (data-integrity risk).' });
+})
 
 // @route   POST /api/v1/amc-analytics/sync-download-events
 // @desc    Sync download events to analytics interactions
@@ -2018,7 +1909,7 @@ router.post('/sync-download-events', auth, async (req, res) => {
                     userId: download.downloaderUserId,
                     userEmail: 'user@example.com', // We'll need to get this from user lookup
                     sessionId: `download_sync_${download._id}`,
-                    interactionType: 'asset_download',
+                    interactionType: 'asset_download', corrupted: { $ne: true },
                     releaseId: download.releaseId?._id || null,
                     releaseUuid: download.releaseId?.uuid || null,
                     releaseTitle: download.releaseId?.title || null,
@@ -2072,7 +1963,7 @@ router.get('/total-releases-count', auth, async (req, res) => {
         const { dateRange = '30' } = req.query;
         const dateFilter = getDateRangeFilter(dateRange);
         const userFilter = getUserFilter(req);
-        const combinedFilter = { ...dateFilter, ...userFilter, interactionType: 'asset_download' };
+        const combinedFilter = { ...dateFilter, ...userFilter, interactionType: 'asset_download', corrupted: { $ne: true } };
         
         // Get unique release titles from download interactions
         const uniqueReleases = await AMCInteraction.distinct('releaseTitle', {
@@ -2114,7 +2005,7 @@ router.get('/asset-type-count/:type', auth, enforceNoOverride, async (req, res) 
         const dateFilter = getDateRangeFilter(dateRange);
         const combinedFilter = {
             ...dateFilter,
-            interactionType: 'asset_download',
+            interactionType: 'asset_download', corrupted: { $ne: true },
             assetType: type
         };
         
@@ -2159,7 +2050,7 @@ router.get('/combined-media-downloads', auth, enforceNoOverride, async (req, res
         const dateFilter = getDateRangeFilter(dateRange);
         const combinedFilter = {
             ...dateFilter,
-            interactionType: 'asset_download',
+            interactionType: 'asset_download', corrupted: { $ne: true },
             assetType: { $in: ['image', 'video'] }
         };
         
@@ -2419,7 +2310,7 @@ router.get('/download-volume', auth, enforceNoOverride, async (req, res) => {
     // Base match: only date + "asset_download"
     const baseMatch = {
       ...(dateFilter || {}),
-      interactionType: 'asset_download'
+      interactionType: 'asset_download', corrupted: { $ne: true }
     };
 
     // --- Build aggregation pipeline ---
