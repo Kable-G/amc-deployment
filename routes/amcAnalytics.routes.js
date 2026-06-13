@@ -110,17 +110,32 @@ function enforceNoOverride(req, res, next) {
 }
 
 // Helper function to get geographic data from IP
+const geoip = require('geoip-lite');
+const REGION_BY_CONTINENT = { NA:'North America', EU:'Europe', AS:'Asia', SA:'South America', AF:'Africa', OC:'Oceania', AN:'Antarctica' };
+const COUNTRY_NAMES = { US:'United States', DE:'Germany', GB:'United Kingdom', FR:'France', JP:'Japan', CA:'Canada', IT:'Italy', ES:'Spain', CN:'China', IN:'India', BR:'Brazil', AU:'Australia', NL:'Netherlands', SE:'Sweden', CH:'Switzerland', AT:'Austria', BE:'Belgium', PL:'Poland', KR:'South Korea', MX:'Mexico' };
+
+// Resolve real geography from IP. Returns nulls (not fabricated values) when unknown,
+// so a missing/local/private IP is honestly "Unknown" rather than invented.
 async function getGeographicData(ipAddress) {
-    // For now, return mock data - you can integrate with a real IP geolocation service
-    const mockRegions = ['North America', 'Europe', 'Asia', 'South America'];
-    const mockCountries = ['USA', 'Germany', 'UK', 'France', 'Japan', 'Canada'];
-    const mockCities = ['New York', 'Berlin', 'London', 'Paris', 'Tokyo', 'Toronto'];
-    
-    return {
-        country: mockCountries[Math.floor(Math.random() * mockCountries.length)],
-        region: mockRegions[Math.floor(Math.random() * mockRegions.length)],
-        city: mockCities[Math.floor(Math.random() * mockCities.length)]
-    };
+    try {
+        if (!ipAddress || ipAddress === 'unknown') return { country: null, region: null, city: null };
+        // strip IPv6-mapped IPv4 prefix and any port
+        let ip = String(ipAddress).replace(/^::ffff:/, '').split(',')[0].trim();
+        // private/loopback ranges resolve to nothing real
+        if (/^(127\.|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|::1|fc|fd)/i.test(ip)) {
+            return { country: null, region: null, city: null };
+        }
+        const geo = geoip.lookup(ip);
+        if (!geo) return { country: null, region: null, city: null };
+        return {
+            country: COUNTRY_NAMES[geo.country] || geo.country || null,
+            region: REGION_BY_CONTINENT[geo.continent] || geo.continent || null,
+            city: geo.city || null
+        };
+    } catch (e) {
+        console.error('geoip lookup failed:', e.message);
+        return { country: null, region: null, city: null };
+    }
 }
 
 // @route   POST /api/v1/amc-analytics/track-batch
@@ -1364,6 +1379,101 @@ router.get('/top-releases', auth, async (req, res) => {
     } catch (error) {
         console.error('Error fetching top releases:', error);
         res.status(500).json({ success: false, error: 'Server error fetching top releases' });
+    }
+});
+
+// @route   GET /api/v1/amc-analytics/release-detail/:releaseId
+// @desc    Per-release drill-down: funnel, asset breakdown, geo, speed-to-download
+// @access  Private
+router.get('/release-detail/:releaseId', auth, async (req, res) => {
+    try {
+        const { releaseId } = req.params;
+        const { dateRange = '30' } = req.query;
+        const dateFilter = getDateRangeFilter(dateRange);
+        const userFilter = getUserFilter(req);
+
+        let relMatch;
+        if (mongoose.Types.ObjectId.isValid(releaseId)) {
+            relMatch = { $or: [ { releaseId: new mongoose.Types.ObjectId(releaseId) }, { releaseId: releaseId } ] };
+        } else {
+            relMatch = { releaseId: releaseId };
+        }
+        const base = { ...dateFilter, ...userFilter, ...relMatch };
+
+        // Funnel counts by interactionType
+        const funnelAgg = await AMCInteraction.aggregate([
+            { $match: base },
+            { $group: { _id: '$interactionType', n: { $sum: 1 } } }
+        ]);
+        const funnel = {};
+        funnelAgg.forEach(r => { funnel[r._id] = r.n; });
+
+        const dlMatch = { ...base, interactionType: 'asset_download' };
+
+        // Asset-type split + distinct assets
+        const byType = await AMCInteraction.aggregate([
+            { $match: dlMatch },
+            { $group: { _id: '$assetType', downloads: { $sum: 1 } } },
+            { $sort: { downloads: -1 } }
+        ]);
+        const topAssets = await AMCInteraction.aggregate([
+            { $match: dlMatch },
+            { $group: { _id: '$assetName', downloads: { $sum: 1 } } },
+            { $sort: { downloads: -1 } },
+            { $limit: 10 }
+        ]);
+
+        // Geographic spread
+        const byGeo = await AMCInteraction.aggregate([
+            { $match: dlMatch },
+            { $group: { _id: '$country', downloads: { $sum: 1 } } },
+            { $sort: { downloads: -1 } },
+            { $limit: 10 }
+        ]);
+
+        // Totals + timing
+        const totalDownloads = await AMCInteraction.countDocuments(dlMatch);
+        const uniqueUsers = (await AMCInteraction.distinct('userId', dlMatch)).filter(Boolean).length;
+        const firstDl = await AMCInteraction.find(dlMatch).sort({ timestamp: 1 }).limit(1).select('timestamp').lean();
+        const lastDl  = await AMCInteraction.find(dlMatch).sort({ timestamp: -1 }).limit(1).select('timestamp').lean();
+
+        // Release meta (title, embargo date) for speed-to-download
+        let release = null;
+        try {
+            const rid = mongoose.Types.ObjectId.isValid(releaseId) ? new mongoose.Types.ObjectId(releaseId) : releaseId;
+            release = await CenterRelease.findById(rid).select('title releaseTitle releaseDate releaseTime status').lean();
+        } catch (e) { /* title-keyed or missing release */ }
+
+        const distinctAssets = topAssets.length;
+
+        res.json({
+            success: true,
+            data: {
+                releaseId,
+                releaseTitle: release?.title || release?.releaseTitle || null,
+                embargo: release ? { date: release.releaseDate, time: release.releaseTime } : null,
+                totalDownloads,
+                uniqueUsers,
+                distinctAssets,
+                funnel: {
+                    releaseViews: funnel['release_view'] || 0,
+                    pageViews: funnel['page_view'] || 0,
+                    quickViews: funnel['asset_quick_view'] || 0,
+                    downloads: funnel['asset_download'] || 0
+                },
+                byType: byType.map(t => ({ assetType: t._id || 'other', downloads: t.downloads })),
+                topAssets: topAssets.map(a => ({ assetName: a._id || 'unknown', downloads: a.downloads })),
+                byGeo: byGeo.map(g => ({ country: g._id || 'Unknown', downloads: g.downloads })),
+                timing: {
+                    firstDownload: firstDl[0]?.timestamp || null,
+                    lastDownload: lastDl[0]?.timestamp || null
+                },
+                dateRange
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching release detail:', error);
+        res.status(500).json({ success: false, error: 'Server error fetching release detail' });
     }
 });
 

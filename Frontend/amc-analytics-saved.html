@@ -1353,7 +1353,7 @@ function renderReleasesTable(rows){
   const tb=$('tbodyReleases');if(!tb)return;
   const cls=['r1','r2','r3'];
   tb.innerHTML=rows.slice(0,10).map((r,i)=>`
-    <tr onclick="openModal('top-releases')">
+    <tr style="cursor:pointer" onclick="openReleaseDetail('${r.releaseId||''}', '${String(r.releaseTitle||'').replace(/['\\]/g,' ')}')">
       <td class="rank ${cls[i]||''}">${i+1}</td>
       <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.releaseTitle||''}">${r.releaseTitle||'Unknown Release'}</td>
       <td class="val">${A.fmt(r.downloads)}</td>
@@ -1935,6 +1935,77 @@ function openModal(type,initialTab='visual'){
   $('anPaneExplain').innerHTML=buildExplain(type,cfg);
 }
 window.openModal=openModal;
+
+// ── Per-release drill-down (reuses the #anModal shell) ──
+async function openReleaseDetail(releaseId, titleHint){
+  if(!releaseId){ openModal('top-releases'); return; }  // fallback if row lacks id
+  const B = (window.A&&A.BASE)||'';
+  const dr = (window.A&&A.range)||'max';
+  $('anModalTitle').textContent = titleHint || 'Release Detail';
+  $('anModal').classList.add('open');
+  setModalTab('visual');
+  const el=$('anPaneVisual');
+  el.innerHTML='<div style="padding:40px;text-align:center;color:var(--text-secondary);font-size:13px">Loading release intelligence…</div>';
+  try{
+    const r=await _safeAuthFetch(`${B}/api/v1/amc-analytics/release-detail/${releaseId}?dateRange=${dr}`);
+    const j=await r.json();
+    if(!j||!j.success){ el.innerHTML='<div style="padding:40px;text-align:center;color:var(--neg)">Could not load release detail.</div>'; return; }
+    el.innerHTML=renderReleaseDetail(j.data);
+  }catch(e){
+    console.error('release-detail',e);
+    el.innerHTML='<div style="padding:40px;text-align:center;color:var(--neg)">Error loading release detail.</div>';
+  }
+}
+window.openReleaseDetail=openReleaseDetail;
+
+function renderReleaseDetail(d){
+  const f=(n)=> (window.A&&A.fmt)?A.fmt(n):n;
+  const title=d.releaseTitle||'Release';
+  // headline KPIs
+  const kpis=[
+    {v:f(d.totalDownloads||0), l:'Total Downloads'},
+    {v:f(d.uniqueUsers||0),    l:'Unique Journalists'},
+    {v:f(d.distinctAssets||0), l:'Distinct Assets Pulled'}
+  ];
+  const kpiRow=`<div class="an-kpi3" style="margin-bottom:16px">${kpis.map(it=>`<div class="an-kpi3-item"><div class="an-kpi3-val">${it.v}</div><div class="an-kpi3-lbl">${it.l}</div></div>`).join('')}</div>`;
+
+  // embargo + speed-to-download
+  let timingHtml='';
+  if(d.embargo&&d.embargo.date){
+    const emb=new Date(d.embargo.date);
+    const embStr=emb.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+(d.embargo.time?(' '+d.embargo.time):'');
+    let speed='—';
+    if(d.timing&&d.timing.firstDownload){
+      const first=new Date(d.timing.firstDownload);
+      const embDT=new Date(d.embargo.date); if(d.embargo.time){const[h,mn]=String(d.embargo.time).split(':');embDT.setUTCHours(+h||0,+mn||0,0,0);}
+      const mins=Math.round((first-embDT)/60000);
+      speed = mins<0 ? 'before embargo lift' : mins<60 ? `${mins} min after lift` : mins<1440 ? `${(mins/60).toFixed(1)} h after lift` : `${(mins/1440).toFixed(1)} days after lift`;
+    }
+    timingHtml=`<div class="an-brief-sec"><div class="an-brief-sec-title">Embargo & Timing</div><div style="display:flex;gap:24px;font-size:13px"><div><span style="color:var(--text-secondary)">Embargo lift:</span> <strong>${embStr}</strong></div><div><span style="color:var(--text-secondary)">First download:</span> <strong>${speed}</strong></div></div></div>`;
+  }
+
+  // geo
+  const geoMax=Math.max(...(d.byGeo||[]).map(g=>g.downloads),1);
+  const geoRows=(d.byGeo||[]).map(g=>`<div class="an-rank-row"><div class="an-rank-info"><div class="an-rank-name">${g.country}</div></div><div class="an-rank-bar-wrap"><div class="an-rank-bar" style="width:${Math.round(g.downloads/geoMax*100)}%"></div></div><div class="an-rank-val">${g.downloads}</div></div>`).join('');
+  const geoHtml=(d.byGeo&&d.byGeo.length)?`<div class="an-brief-sec"><div class="an-brief-sec-title">Geographic Reach</div><div class="an-rank-list">${geoRows}</div></div>`:'';
+
+  // asset type + distinct-pull insight
+  const typeRows=(d.byType||[]).map(t=>`<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0"><span>${t.assetType}</span><strong>${t.downloads}</strong></div>`).join('');
+  const insight = (d.distinctAssets===1 && d.totalDownloads>1)
+    ? `One asset accounted for all ${d.totalDownloads} downloads — a single hero file carried this release.`
+    : (d.distinctAssets>1 ? `${d.distinctAssets} distinct assets pulled — journalists mined the full package.` : '');
+  const assetHtml=(d.byType&&d.byType.length)?`<div class="an-brief-sec"><div class="an-brief-sec-title">Asset Breakdown</div>${typeRows}${insight?`<div class="an-insight" style="margin-top:8px">${insight}</div>`:''}</div>`:'';
+
+  // funnel — honest about tracking start
+  const fn=d.funnel||{};
+  const hasFunnel=(fn.releaseViews||fn.pageViews||fn.quickViews);
+  const funnelHtml = hasFunnel
+    ? `<div class="an-brief-sec"><div class="an-brief-sec-title">Engagement Funnel</div><div style="display:flex;gap:24px;font-size:13px"><div><span style="color:var(--text-secondary)">Views:</span> <strong>${(fn.releaseViews||0)+(fn.pageViews||0)}</strong></div><div><span style="color:var(--text-secondary)">Quick views:</span> <strong>${fn.quickViews||0}</strong></div><div><span style="color:var(--text-secondary)">Downloads:</span> <strong>${fn.downloads||0}</strong></div></div></div>`
+    : `<div class="an-brief-sec"><div class="an-brief-sec-title">Engagement Funnel</div><div style="font-size:12px;color:var(--text-secondary)">View-to-download tracking began 12 Jun 2026. Funnel data accrues for releases viewed from this date onward; downloads shown above reflect full history.</div></div>`;
+
+  return kpiRow + timingHtml + geoHtml + assetHtml + funnelHtml;
+}
+
 
 function renderModalVisual(cfg,type){
   const el=$('anPaneVisual');if(!el)return;
