@@ -207,16 +207,26 @@ async function getAssetInfoFromRelease(releaseId, assetId, filename, searchPath 
 
 // Get geographic data from IP (mock for now - integrate with real service)
 async function getGeographicData(ipAddress) {
-    // Mock data - replace with real IP geolocation service
-    const regions = ['North America', 'Europe', 'Asia Pacific', 'South America', 'Africa', 'Middle East'];
-    const countries = ['USA', 'Germany', 'UK', 'France', 'Japan', 'Canada', 'Australia', 'Brazil', 'India', 'China'];
-    const cities = ['New York', 'Berlin', 'London', 'Paris', 'Tokyo', 'Toronto', 'Sydney', 'São Paulo', 'Mumbai', 'Shanghai'];
-    
-    return {
-        country: countries[Math.floor(Math.random() * countries.length)],
-        region: regions[Math.floor(Math.random() * regions.length)],
-        city: cities[Math.floor(Math.random() * cities.length)]
-    };
+    try {
+        const geoip = require('geoip-lite');
+        const REGION = { NA:'North America', EU:'Europe', AS:'Asia', SA:'South America', AF:'Africa', OC:'Oceania', AN:'Antarctica' };
+        const NAMES = { US:'United States', DE:'Germany', GB:'United Kingdom', FR:'France', JP:'Japan', CA:'Canada', IT:'Italy', ES:'Spain', CN:'China', IN:'India', BR:'Brazil', AU:'Australia', NL:'Netherlands', SE:'Sweden', CH:'Switzerland', AT:'Austria', BE:'Belgium', PL:'Poland', KR:'South Korea', MX:'Mexico' };
+        if (!ipAddress || ipAddress === 'unknown') return { country: null, region: null, city: null };
+        let ip = String(ipAddress).replace(/^::ffff:/, '').split(',')[0].trim();
+        if (/^(127\.|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|::1|fc|fd)/i.test(ip)) {
+            return { country: null, region: null, city: null };
+        }
+        const geo = geoip.lookup(ip);
+        if (!geo) return { country: null, region: null, city: null };
+        return {
+            country: NAMES[geo.country] || geo.country || null,
+            region: REGION[geo.continent] || geo.continent || null,
+            city: geo.city || null
+        };
+    } catch (e) {
+        console.error('geoip lookup failed (downloadTracker):', e.message);
+        return { country: null, region: null, city: null };
+    }
 }
 
 // Main tracking function - called from various download points
