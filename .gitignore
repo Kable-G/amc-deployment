@@ -8,4 +8,4 @@ node_modules/
 public/uploads/
 
 # Optional: Log files, build outputs, etc.
-*.log
+*.loguploads/
